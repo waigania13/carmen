@@ -57,7 +57,7 @@ a small { display:block; }
 <script type='text/javascript'>
 window.onload = function() {
 
-var term = _("<a class='item' href='#<%=type%>-<%=lon%>,<%=lat%>'><%=name%> (<%=type%>)<% if (context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
+var term = _("<a class='item' href='#<%=type%>-<%=lon%>,<%=lat%>'><%=name%> (<%=type%>)<% if (obj.context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
 var mm = com.modestmaps;
 var tilejson = {
     center: [ 0, 0, 4 ],
