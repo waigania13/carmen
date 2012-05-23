@@ -49,6 +49,6 @@ describe('geocode', function() {
     });
     after(function() {
         console.warn('');
-        console.warn('  %s% (%s / %s) in %s ms', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (+new Date) - stats.start);
+        console.warn('  %s% (%s/%s) at %sms/query', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
     });
 });
