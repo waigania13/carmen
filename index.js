@@ -248,18 +248,18 @@ Carmen.prototype.geocode = function(query, callback) {
 
         var group = this.group();
         _(data.results).each(function(t) {
-            carmen.context(t.lon, t.lat, group());
+            var next = group();
+            carmen.context(t.lon, t.lat, function(err, context) {
+                if (err) return next(err);
+                context = _(context).filter(function(term) {
+                    return types.indexOf(term.type) < types.indexOf(t.type);
+                }).reverse();
+                if (context.length) t.context = context;
+                return next();
+            });
         });
-    }, function(err, contexts) {
+    }, function(err) {
         if (err) return callback(err);
-
-        _(contexts).each(function(c, i) {
-            if (!c) return;
-            c = _(c).filter(function(term) {
-                return types.indexOf(term.type) < types.indexOf(data.results[i].type);
-            }).reverse();
-            if (c.length) data.results[i].context = c;
-        });
         return callback(null, data);
     });
 };
