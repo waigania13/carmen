@@ -6,35 +6,6 @@ var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 
-// @TODO move to a carto object constructor which takes a db config
-// hash as its initial param.
-var db = {
-    country: {
-        zoom: 6,
-        weight: 6,
-        filter: function(str) { return str.length > 3; },
-        source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
-    },
-    province: {
-        zoom: 8,
-        weight: 4,
-        filter: function(str) { return str.length >= 2; },
-        source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
-    },
-    city: {
-        zoom: 9,
-        weight: 2,
-        filter: function(str) { return str.length > 3; },
-        source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
-    }
-//    zcta: {
-//        zoom: 8,
-//        weight: 2,
-//        filter: function(str) { return str.match(/\d{5}/); },
-//        source: new MBTiles(basepath + '/carmen-zcta.mbtiles', function(){})
-//    }
-};
-
 // Split on a specified delimiter but retain it as a suffix in the parts,
 // e.g. "foo st washington dc", "st" => ["foo st", "washington dc"]
 function keepsplit(str, delim) {
@@ -58,9 +29,30 @@ function pyramid(z, x, y, parent) {
     return [z - depth, Math.floor(x / side), Math.floor(y / side)];
 };
 
-module.exports = {};
+function Carmen(options) {
+    this.db = options || {
+        country: {
+            zoom: 6,
+            weight: 6,
+            filter: function(str) { return str.length > 3; },
+            source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
+        },
+        province: {
+            zoom: 8,
+            weight: 4,
+            filter: function(str) { return str.length >= 2; },
+            source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
+        },
+        city: {
+            zoom: 9,
+            weight: 2,
+            filter: function(str) { return str.length > 3; },
+            source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
+        }
+    };
+};
 
-module.exports.tokenize = function(query) {
+Carmen.prototype.tokenize = function(query) {
     return _(query.split(/\sand\s|,|\n/i)).chain()
         .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
         .flatten()
@@ -86,11 +78,12 @@ module.exports.tokenize = function(query) {
         .value();
 };
 
-module.exports.geocode = function(query, callback) {
-    if (!_(db).all(function(d) { return d.source.open }))
+Carmen.prototype.geocode = function(query, callback) {
+    if (!_(this.db).all(function(d) { return d.source.open }))
         return callback(new Error('DB not open.'));
 
-    var data = { query: module.exports.tokenize(query) };
+    var db = this.db;
+    var data = { query: this.tokenize(query) };
 
     console.time('search');
     Step(function() {
@@ -203,4 +196,5 @@ module.exports.geocode = function(query, callback) {
     });
 };
 
+module.exports = Carmen;
 

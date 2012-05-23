@@ -1,4 +1,5 @@
-var carmen = require('../index.js');
+var Carmen = require('../index.js');
+var carmen = new Carmen();
 
 server = Bones.Server.extend({});
 
