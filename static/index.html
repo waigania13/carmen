@@ -31,6 +31,7 @@ body {
 .query { padding:5px 10px; }
 
 a { text-decoration:none; color:#444; }
+a small { display:block; }
 
 .item {
   margin:5px 0px 0px;
@@ -56,10 +57,7 @@ a { text-decoration:none; color:#444; }
 <script type='text/javascript'>
 window.onload = function() {
 
-_.templateSettings = {
-  interpolate: /\{\{(.+?)\}\}/g
-};
-
+var term = _("<a class='item' href='#<%=type%>-<%=lon%>,<%=lat%>'><%=name%> (<%=type%>)<% if (context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
 var mm = com.modestmaps;
 var tilejson = {
     center: [ 0, 0, 4 ],
@@ -99,7 +97,7 @@ $('#input').delegate('a.item', 'click', function(ev) {
 });
 $('#input').submit(function(ev) {
     var q = $('#query').val();
-    $.ajax({ url: '/api/' + q, success: function(resp) {
+    $.ajax({ url: '/geocode/' + q, success: function(resp) {
         if (!resp.results.length) {
             $('.results').html(
                 "<div class='query'>" + resp.query.join(',') + "</div>" +
@@ -109,17 +107,7 @@ $('#input').submit(function(ev) {
         }
         $('.results').html(
             "<div class='query'>" + resp.query.join(',') + "</div>" +
-            _(resp.results).chain()
-                .map(function(result) {
-                    var item = _("<a class='item' href='#{{lonlat}}'>{{terms}}</a>").template();
-                    var term = _("<span>{{name}} ({{type}})</span>").template();
-                    return item({
-                        lonlat: result.lon + ',' + result.lat + ',' + getZ(result.type),
-                        terms: term(result)
-                    });
-                })
-                .value()
-                .join('\n')
+            _(resp.results).map(term).join('\n')
         );
         map.setCenterZoom(new com.modestmaps.Location(
             resp.results[0].lat,

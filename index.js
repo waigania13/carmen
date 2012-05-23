@@ -29,6 +29,14 @@ function pyramid(z, x, y, parent) {
     return [z - depth, Math.floor(x / side), Math.floor(y / side)];
 };
 
+// Resolve the UTF-8 encoding stored in grids to simple number values.
+function resolveCode(key) {
+    if (key >= 93) key--;
+    if (key >= 35) key--;
+    key -= 32;
+    return key;
+};
+
 function Carmen(options) {
     this.db = options || {
         country: {
@@ -78,14 +86,54 @@ Carmen.prototype.tokenize = function(query) {
         .value();
 };
 
+Carmen.prototype.context = function(lon, lat, callback) {
+    if (!_(this.db).all(function(d) { return d.source.open }))
+        return callback(new Error('DB not open.'));
+
+    var db = this.db;
+    Step(function() {
+        var group = this.group();
+        _(db).each(function(d) {
+            var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
+            d.source.getGrid(d.zoom, xyz.minX, xyz.minY, group());
+        });
+    }, function(err, grids) {
+        if (err && err.message !== 'Grid does not exist') return callback(err);
+        var context = [];
+        _(db).each(function(d, type) {
+            var i = Object.keys(db).indexOf(type);
+            if (!grids[i]) return;
+
+            var resolution = 4;
+            var px = sm.px([lon,lat], d.zoom);
+            var y = Math.floor((px[1] % 256) / resolution);
+            var x = Math.floor((px[0] % 256) / resolution)
+            var code = resolveCode(grids[i].grid[y].charCodeAt(x));
+            var key = grids[i].keys[code];
+
+            if (key) {
+                var data = grids[i].data[key];
+                context.push({
+                    name: data.name,
+                    lon: data.lon,
+                    lat: data.lat,
+                    type: type
+                });
+            }
+        });
+        return callback(null, context);
+    });
+};
+
 Carmen.prototype.geocode = function(query, callback) {
     if (!_(this.db).all(function(d) { return d.source.open }))
         return callback(new Error('DB not open.'));
 
     var db = this.db;
+    var types = Object.keys(db);
     var data = { query: this.tokenize(query) };
+    var carmen = this;
 
-    console.time('search');
     Step(function() {
         var group = this.group();
         var sql = '\
@@ -166,18 +214,24 @@ Carmen.prototype.geocode = function(query, callback) {
 
         if (!results.length) return this(null, []);
 
-        var group = this.group();
+        // Not using this.group() here because somehow this
+        // code triggers Step's group bug.
+        var rows = [];
+        var remaining = results.length;
+        var sql = 'SELECT ?||"."||key_name AS id, key_json AS data FROM keymap WHERE key_name = ?';
         _(results).each(function(term) {
-            var next = group();
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            db[dbname].source._db.get('SELECT ?||"."||key_name AS id, key_json AS data FROM keymap WHERE key_name = ?', dbname, termid, next);
-        });
+            db[dbname].source._db.get(sql, dbname, termid, function(err, row) {
+                if (err) return this(err);
+                if (rows.push(row) && --remaining === 0) return this(null, rows);
+            }.bind(this));
+        }.bind(this));
     }, function(err, rows) {
-        console.timeEnd('search');
-        if (err) return callback(err);
+        if (err) throw err;
 
         data.results = _(rows).chain()
+            .compact()
             .map(function(r) { return _(r).defaults(JSON.parse(r.data)) })
             .sortBy(function(t) { return t.rank || 0 })
             .reverse()
@@ -191,7 +245,21 @@ Carmen.prototype.geocode = function(query, callback) {
                 };
             })
             .value();
-        // @TODO provide parent feature context for each result.
+
+        var group = this.group();
+        _(data.results).each(function(t) {
+            carmen.context(t.lon, t.lat, group());
+        });
+    }, function(err, contexts) {
+        if (err) return callback(err);
+
+        _(contexts).each(function(c, i) {
+            if (!c) return;
+            c = _(c).filter(function(term) {
+                return types.indexOf(term.type) < types.indexOf(data.results[i].type);
+            }).reverse();
+            if (c.length) data.results[i].context = c;
+        });
         return callback(null, data);
     });
 };
