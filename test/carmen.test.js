@@ -1,23 +1,54 @@
 var _ = require('underscore');
+var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
-var carmen = require('..');
+var carmen = new (require('..'))();
 
-var fixtures = {
-    'new york': [ -73.828125, 40.444817152078656, 8 ],
-    'massachusetts': [ -71.015625, 41.506436201030766, 8 ],
-    'boston, ma': [ -71.015625, 42.55093105330552, 8 ],
-    'miami, fl': [ -79.453125, 25.163513002343066, 8 ]
+function okay(type, a, b) {
+    var margin = 0.01;
+    return a.type === type &&
+        a.name === b.name &&
+        (a.lon >= b.lon - margin) &&
+        (a.lon <= b.lon + margin) &&
+        (a.lat >= b.lat - margin) &&
+        (a.lat <= b.lat + margin);
 };
 
+function loadFixture(path) {
+    return _(fs.readFileSync(path, 'utf8').split('\n')).chain()
+        .compact()
+        .map(function(line) {
+            var p = line.split(',');
+            return { name: p[0], lon: parseFloat(p[1]), lat: parseFloat(p[2]) };
+        })
+        .value();
+};
+
+var fixtures = {};
+fixtures.country = loadFixture(__dirname + '/countries.csv');
+fixtures.province = loadFixture(__dirname + '/provinces.csv');
+// fixtures.city = loadFixture(__dirname + '/cities.csv');
+
 describe('geocode', function() {
-    _(fixtures).each(function(lonlat, query) {
-        it(query, function(done) {
-            carmen.geocode(query, function(err, res) {
-                try { assert.deepEqual(lonlat, res.results[0].lonlat); }
-                catch(err) { console.error(err); }
-                done();
+    var stats = {
+        start: + new Date,
+        total: 0,
+        okay: 0
+    };
+    _(fixtures).each(function(fixture, type) {
+        _(fixture).each(function(row) {
+            it(row.name, function(done) {
+                carmen.geocode(row.name, function(err, res) {
+                    assert.ok(!err);
+                    stats.total++;
+                    if (res.results[0] && okay(type, res.results[0], row)) stats.okay++;
+                    done();
+                });
             });
         });
+    });
+    after(function() {
+        console.warn('');
+        console.warn('  %s% (%s / %s) in %s ms', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (+new Date) - stats.start);
     });
 });
