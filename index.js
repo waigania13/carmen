@@ -61,11 +61,12 @@ function Carmen(options) {
 };
 
 Carmen.prototype.tokenize = function(query) {
-    return _(query.split(/\sand\s|,|\n/i)).chain()
-        .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
-        .flatten()
-        .map(function(str) { return keepsplit(str, ['st','ave','dr']); })
-        .flatten()
+    return _(query.split(/,|\n/i)).chain()
+        // Don't attempt to handle streets for now.
+        // .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
+        // .flatten()
+        // .map(function(str) { return keepsplit(str, ['st','ave','dr']); })
+        // .flatten()
         // 2 letter codes that look like postal.
         .map(function(str) {
             var matches = str.match(/\s[a-z]{2}$/i);
@@ -74,12 +75,14 @@ Carmen.prototype.tokenize = function(query) {
         })
         .flatten()
         // trim, lowercase.
+        // For whatever reason, sqlite FTS does not like dashes in search
+        // tokens, e.g. "foo-bar" does not match anything, where "foo bar" does.
         .map(function(str) {
             while (str.substring(0,1) == ' ')
                 str = str.substring(1, str.length);
             while (str.substring(str.length-1,str.length) == ' ')
                 str = str.substring(0, str.length-1);
-            return str.toLowerCase();
+            return str.toLowerCase().replace('-', ' ');
         })
         .compact()
         // @TODO this uniq kills queries like "New York, New York."
