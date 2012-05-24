@@ -19,8 +19,13 @@ function loadFixture(path) {
         .compact()
         .map(function(line) {
             var p = line.split(',');
-            return { name: p[0], lon: parseFloat(p[1]), lat: parseFloat(p[2]) };
+            if (p[0]) return {
+                name: p[0],
+                lon: parseFloat(p[1]),
+                lat: parseFloat(p[2])
+            };
         })
+        .compact()
         .value();
 };
 
@@ -33,7 +38,8 @@ describe('geocode', function() {
     var stats = {
         start: + new Date,
         total: 0,
-        okay: 0
+        okay: 0,
+        failed: {}
     };
     _(fixtures).each(function(fixture, type) {
         _(fixture).each(function(row) {
@@ -41,7 +47,15 @@ describe('geocode', function() {
                 carmen.geocode(row.name, function(err, res) {
                     assert.ok(!err);
                     stats.total++;
-                    if (res.results[0] && okay(type, res.results[0], row)) stats.okay++;
+                    if (_(res.results).any(function(r) { return okay(type, r, row) })) {
+                        stats.okay++;
+                    } else {
+                        stats.failed[type] = stats.failed[type] || {};
+                        stats.failed[type][row.name] = _(res.results).chain()
+                            .map(function(r) { return r.type + '.' + r.name })
+                            .uniq()
+                            .value();
+                    }
                     done();
                 });
             });
@@ -50,5 +64,15 @@ describe('geocode', function() {
     after(function() {
         console.warn('');
         console.warn('  %s% (%s/%s) at %sms/query', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
+        _(stats.failed).each(function(group, type) {
+            console.warn('');
+            console.warn('  ' + type);
+            console.warn('  ' + new Array(type.length + 1).join('-'));
+            _(group).each(function(results, name) {
+                var results = results.join(', ');
+                if (results.length > 40) results = results.substr(0,40) + '...';
+                console.warn('  %s => %s', name, results);
+            });
+        });
     });
 });
