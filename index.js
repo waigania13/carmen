@@ -82,6 +82,8 @@ Carmen.prototype.tokenize = function(query) {
             return str.toLowerCase();
         })
         .compact()
+        // @TODO this uniq kills queries like "New York, New York."
+        // Try to do without it!
         .uniq()
         .value();
 };
@@ -189,6 +191,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 total.y = zxy[2];
                 _(zooms).each(function(z) {
                     if (zxy[0] <= z) return;
+                    if (total.terms.length >= data.query.length) return;
                     var zx = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
                     if (!totals[zx]) return;
                     if (total.score[0] > totals[zx].score[0]) {
