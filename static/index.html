@@ -57,7 +57,7 @@ a small { display:block; }
 <script type='text/javascript'>
 window.onload = function() {
 
-var term = _("<a class='item' href='#<%=type%>-<%=lon%>,<%=lat%>'><%=name%> (<%=type%>)<% if (obj.context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
+var term = _("<a class='item' href='#<%=lon%>,<%=lat%>,<%=z%>'><%=name%> (<%=type%>)<% if (obj.context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
 var mm = com.modestmaps;
 var tilejson = {
     center: [ 0, 0, 4 ],
@@ -88,11 +88,11 @@ var getZ = function(type) {
 };
 
 $('#input').delegate('a.item', 'click', function(ev) {
-    var lonlat = $(ev.currentTarget).attr('href').split('#').pop().split(',');
+    var center = $(ev.currentTarget).attr('href').split('#').pop().split(',');
     map.setCenterZoom(new com.modestmaps.Location(
-        lonlat[1],
-        lonlat[0]),
-        lonlat[2]);
+        center[1],
+        center[0]),
+        center[2]);
     return false;
 });
 $('#input').submit(function(ev) {
@@ -107,7 +107,10 @@ $('#input').submit(function(ev) {
         }
         $('.results').html(
             "<div class='query'>" + resp.query.join(',') + "</div>" +
-            _(resp.results).map(term).join('\n')
+            _(resp.results).map(function(t) {
+                t.z = getZ(t.type);
+                return term(t);
+            }).join('\n')
         );
         map.setCenterZoom(new com.modestmaps.Location(
             resp.results[0].lat,
