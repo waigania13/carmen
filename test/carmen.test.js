@@ -14,8 +14,8 @@ function okay(type, a, b) {
         (a.lat <= b.lat + margin);
 };
 
-function loadFixture(path) {
-    return _(fs.readFileSync(path, 'utf8').split('\n')).chain()
+function loadFixture(path, sample) {
+    var fixtures = _(fs.readFileSync(path, 'utf8').split('\n')).chain()
         .compact()
         .map(function(line) {
             var p = line.split(',');
@@ -27,12 +27,15 @@ function loadFixture(path) {
         })
         .compact()
         .value();
+    if (sample) fixtures = _(_(fixtures).shuffle().slice(0, sample))
+        .sortBy(function(r) { return r.name });
+    return fixtures;
 };
 
 var fixtures = {};
-fixtures.country = loadFixture(__dirname + '/countries.csv');
-fixtures.province = loadFixture(__dirname + '/provinces.csv');
-// fixtures.city = loadFixture(__dirname + '/cities.csv');
+fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
+fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
+fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 2000);
 
 describe('geocode', function() {
     var stats = {

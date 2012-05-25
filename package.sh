@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 
 mkdir -p tiles
+mkdir -p fixtures
+
+fixtures=(
+  "test-cities"
+  "test-countries"
+  "test-provinces"
+)
+
+for name in "${fixtures[@]}"
+do
+  if [ ! -f "fixtures/$name.csv" ]; then
+    echo "Downloading fixture $name..."
+    curl -s -o "fixtures/$name.csv" "http://s3.amazonaws.com/mapbox/carmen/$name.csv"
+  fi
+done
 
 tiles=(
   "carmen-city"
