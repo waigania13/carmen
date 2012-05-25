@@ -21,8 +21,7 @@ function keepsplit(str, delim) {
         .reverse();
 };
 
-// For a given z,x,y return the pyramid doc coordinate it belongs to.
-// Condenses by z0-7 into z0, z8-15 into z8, etc.
+// For a given z,x,y find its parent tile.
 function pyramid(z, x, y, parent) {
     var depth = z - parent;
     var side = Math.pow(2, depth);
