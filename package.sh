@@ -28,7 +28,7 @@ for name in "${tiles[@]}"
 do
   if [ ! -f "tiles/$name.mbtiles" ]; then
     echo "Downloading $name..."
-    curl -s -o "tiles/$name.mbtiles" "https://s3.amazonaws.com/mapbox/carmen/$name.mbtiles"
+    curl -s -o "tiles/$name.mbtiles" "http://s3.amazonaws.com/mapbox/carmen/$name.mbtiles"
   fi
 done
 
@@ -39,7 +39,7 @@ do
     # Create search table. Inserts id, text, zxy into `carmen` table.
     echo "Indexing $name..."
     echo "CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);" > carmen-index.sql
-    echo "CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=porter);" >> carmen-index.sql
+    echo "CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);" >> carmen-index.sql
     echo "BEGIN TRANSACTION;" >> carmen-index.sql
 
     sqlite3 "tiles/$name.mbtiles" "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE k.key_json LIKE '%search%'" \

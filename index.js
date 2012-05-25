@@ -40,19 +40,19 @@ function resolveCode(key) {
 function Carmen(options) {
     this.db = options || {
         country: {
-            zoom: 6,
+            zoom: 8,
             weight: 6,
             filter: function(str) { return str.length > 3; },
             source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
         },
         province: {
-            zoom: 8,
+            zoom: 9,
             weight: 4,
             filter: function(str) { return str.length >= 2; },
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
         city: {
-            zoom: 9,
+            zoom: 10,
             weight: 2,
             filter: function(str) { return str.length > 3; },
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
