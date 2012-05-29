@@ -10,6 +10,12 @@ Installs dependencies and downloads the default tiles index.
 
 ## Usage
 
+    npm start
+
+Runs an example geocoding server at `http://localhost:3000`.
+
+## API
+
     var Carmen = require('carmen');
     var carmen = new Carmen();
     carmen.geocode('Washington, DC', function(err, data) {
