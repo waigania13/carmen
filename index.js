@@ -37,36 +37,37 @@ function resolveCode(key) {
 };
 
 function Carmen(options) {
-    this.db = options || {
+    options = options || {
         country: {
             zoom: 8,
-            weight: 6,
-            filter: function(str) { return str.length > 3; },
+            weight: 3,
             source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
         },
         province: {
             zoom: 9,
-            weight: 4,
+            weight: 2,
             filter: function(str) { return str.length >= 2; },
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
         city: {
             zoom: 10,
-            weight: 2,
-            filter: function(str) { return str.length > 3; },
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
         }
     };
-    // Set a default map function if not set.
-    _(this.db).each(function(db, key) {
+    this.db = _(options).reduce(function(memo, db, key) {
         var dbname = key;
-        if (!db.map) db.map = function(data) {
-            delete data.search;
-            delete data.rank;
-            data.type = data.type || dbname;
-            return data;
-        };
-    });
+        memo[key] = _(db).defaults({
+            weight: 1,
+            filter: function(token) { return token.length > 3 },
+            map: function(data) {
+                delete data.search;
+                delete data.rank;
+                data.type = data.type || dbname;
+                return data;
+            }
+        });
+        return memo;
+    }, {});
 };
 
 Carmen.prototype.tokenize = function(query) {
