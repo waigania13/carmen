@@ -79,19 +79,19 @@ Carmen.prototype.tokenize = function(query) {
         return query.map(parseFloat);
 
     // text query.
-    return _(query).chain()
+    var tokens = _(query).chain()
         // Don't attempt to handle streets for now.
         // .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
         // .flatten()
         // .map(function(str) { return keepsplit(str, ['st','ave','dr']); })
         // .flatten()
         // 2 letter codes that look like postal.
-        .map(function(str) {
-            var matches = str.match(/\s[a-z]{2}$/i);
-            if (matches) return [str, matches[0]];
-            else return str;
-        })
-        .flatten()
+        // .map(function(str) {
+        //     var matches = str.match(/\s[a-z]{2}$/i);
+        //     if (matches && str !== matches[0]) return [str, matches[0]];
+        //     else return str;
+        // })
+        // .flatten()
         // trim, lowercase.
         // For whatever reason, sqlite FTS does not like dashes in search
         // tokens, e.g. "foo-bar" does not match anything, where "foo bar" does.
@@ -103,10 +103,8 @@ Carmen.prototype.tokenize = function(query) {
             return str.toLowerCase().replace('-', ' ');
         })
         .compact()
-        // @TODO this uniq kills queries like "New York, New York."
-        // Try to do without it!
-        .uniq()
         .value();
+    return tokens;
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
