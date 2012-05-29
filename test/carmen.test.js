@@ -35,7 +35,7 @@ function loadFixture(path, sample) {
 var fixtures = {};
 fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
-fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 2000);
+//fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 2000);
 
 describe('geocode', function() {
     var stats = {
@@ -50,11 +50,16 @@ describe('geocode', function() {
                 carmen.geocode(row.name, function(err, res) {
                     assert.ok(!err);
                     stats.total++;
-                    if (_(res.results).any(function(r) { return okay(type, r, row) })) {
+                    var inResults = _(res.results).chain()
+                        .pluck('0')
+                        .any(function(r) { return okay(type, r, row) })
+                        .value();
+                    if (inResults) {
                         stats.okay++;
                     } else {
                         stats.failed[type] = stats.failed[type] || {};
                         stats.failed[type][row.name] = _(res.results).chain()
+                            .pluck('0')
                             .map(function(r) { return r.type + '.' + r.name })
                             .uniq()
                             .value();

@@ -57,10 +57,28 @@ function Carmen(options) {
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
         }
     };
+    // Set a default map function if not set.
+    _(this.db).each(function(db, key) {
+        var dbname = key;
+        if (!db.map) db.map = function(data) {
+            delete data.search;
+            delete data.rank;
+            data.type = data.type || dbname;
+            return data;
+        };
+    });
 };
 
 Carmen.prototype.tokenize = function(query) {
-    return _(query.split(/,|\n/i)).chain()
+    query = query.split(/,|\n/i);
+
+    // lon, lat pair.
+    if (query.length === 2 &&
+        _(query).all(function(part) { return !isNaN(parseFloat(part)) }))
+        return query.map(parseFloat);
+
+    // text query.
+    return _(query).chain()
         // Don't attempt to handle streets for now.
         // .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
         // .flatten()
@@ -115,16 +133,9 @@ Carmen.prototype.context = function(lon, lat, callback) {
             var code = resolveCode(grids[i].grid[y].charCodeAt(x));
             var key = grids[i].keys[code];
 
-            if (key) {
-                var data = grids[i].data[key];
-                context.push({
-                    name: data.name,
-                    lon: data.lon,
-                    lat: data.lat,
-                    type: type
-                });
-            }
+            if (key) context.push(d.map(grids[i].data[key]));
         });
+        context.reverse();
         return callback(null, context);
     });
 };
@@ -138,6 +149,16 @@ Carmen.prototype.geocode = function(query, callback) {
     var data = { query: this.tokenize(query) };
     var carmen = this;
 
+    // lon,lat pair. Provide the context for this location.
+    if (data.query.length === 2 && _(data.query).all(_.isNumber)) {
+        return this.context(data.query[0], data.query[1], function(err, context) {
+            if (err) return callback(err);
+            data.results = context.length ? [context] : [];
+            return callback(null, data);
+        });
+    }
+
+    // keyword search. Find matching features.
     Step(function() {
         var group = this.group();
         var sql = '\
@@ -237,29 +258,26 @@ Carmen.prototype.geocode = function(query, callback) {
 
         data.results = _(rows).chain()
             .compact()
-            .map(function(r) { return _(r).defaults(JSON.parse(r.data)) })
-            .sortBy(function(t) { return t.rank || 0 })
-            .reverse()
-            .map(function(t) {
-                return {
-                    name: t.name,
-                    type: t.id.split('.')[0],
-                    lon: t.lon,
-                    lat: t.lat,
-                    rank: t.rank || 0
-                };
+            .map(function(r) {
+                r.type = r.id.split('.')[0];
+                r.data = JSON.parse(r.data) || {};
+                return r;
             })
+            .sortBy(function(r) { return r.data.rank || 0 })
+            .reverse()
+            .map(function(r) { return [db[r.type].map(r.data)] })
             .value();
 
         var group = this.group();
-        _(data.results).each(function(t) {
+        _(data.results).each(function(r) {
             var next = group();
-            carmen.context(t.lon, t.lat, function(err, context) {
+            carmen.context(r[0].lon, r[0].lat, function(err, context) {
                 if (err) return next(err);
-                context = _(context).filter(function(term) {
-                    return types.indexOf(term.type) < types.indexOf(t.type);
-                }).reverse();
-                if (context.length) t.context = context;
+                _(context).chain()
+                    .filter(function(term) {
+                        return types.indexOf(term.type) < types.indexOf(r[0].type);
+                    })
+                    .each(function(term) { r.push(term); });
                 return next();
             });
         });

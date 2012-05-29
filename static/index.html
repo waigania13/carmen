@@ -136,9 +136,9 @@ var getContext = function() {
     var lon = parseFloat(center.lon) % 360;
     if (lon > 180) lon -= 360;
     if (lon < -180) lon += 360;
-    $.ajax({ url: '/context/' + lon + ',' + lat, success: function(resp) {
-        if (!resp.length) return $('.context').empty();
-        $('.context').html(_(resp).map(context).join('<span>▶</span>'));
+    $.ajax({ url: '/geocode/' + lon + ',' + lat, success: function(resp) {
+        if (!resp.results.length) return $('.context').empty();
+        $('.context').html(_(resp.results[0]).map(context).join('<span>▶</span>'));
     }});
 };
 var getZ = function(type) {
@@ -177,13 +177,15 @@ $('#input').submit(function(ev) {
             return;
         }
         $('.results').html(_(resp.results).map(function(t) {
-            t.z = getZ(t.type);
-            return term(t);
+            var data = t[0];
+            data.z = getZ(data.type);
+            data.context = t.slice(1);
+            return term(data);
         }).join('\n'));
         map.setCenterZoom(new com.modestmaps.Location(
-            resp.results[0].lat,
-            resp.results[0].lon),
-            getZ(resp.results[0].type));
+            resp.results[0][0].lat,
+            resp.results[0][0].lon),
+            getZ(resp.results[0][0].type));
         getContext();
     }});
     return false;
