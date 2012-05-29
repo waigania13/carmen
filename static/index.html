@@ -138,7 +138,9 @@ var getContext = function() {
     if (lon < -180) lon += 360;
     $.ajax({ url: '/geocode/' + lon + ',' + lat, success: function(resp) {
         if (!resp.results.length) return $('.context').empty();
-        $('.context').html(_(resp.results[0]).map(context).join('<span>▶</span>'));
+        var c = _(resp.results[0]).map(context);
+        c.reverse();
+        $('.context').html(c.join('<span>▶</span>'));
     }});
 };
 var getZ = function(type) {
