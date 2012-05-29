@@ -77,7 +77,9 @@ Each array in `results` contains a match for the query, where the first feature 
 
 ## Indexes
 
-Each carmen index is an MBTiles file with an additional SQLite fulltext search table `carmen`. The table is currently added by `package.sh` (@TODO split out a script for generic indexing and call it from within `package.sh`).
+Each carmen index is an MBTiles file with an additional SQLite fulltext search table `carmen`. The table can be added by running
+
+    ./addindex.sh [mbtiles]
 
 The requirement for a carmen MBTiles file are as follows:
 
