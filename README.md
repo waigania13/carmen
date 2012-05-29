@@ -74,3 +74,17 @@ Geocode a string query. The result is passed to `callback(err, data)` in the fol
 Each array in `results` contains a match for the query, where the first feature in each match contains the matching element and subsequent elements describe other geographic features containing the first element.
 
 `carmen.geocode()` can also be called with a pair of coordinates in the form `lon,lat` to do "reverse" geocoding. The result data is identical for a reverse geocoding query.
+
+## Indexes
+
+Each carmen index is an MBTiles file with an additional SQLite fulltext search table `carmen`. The table is currently added by `package.sh` (@TODO split out a script for generic indexing and call it from within `package.sh`).
+
+The requirement for a carmen MBTiles file are as follows:
+
+- Must contain only 1 zoom level.
+- Must contain grids.
+- Must contain feature data with the following keys:
+  - `name` - name of the feature
+  - `search` - comma separated search terms for the feature (often, but not necessarily, the same as name)
+  - `lon` - longitude of the feature
+  - `lat` - latitude of the feature
