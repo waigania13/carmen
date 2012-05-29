@@ -40,12 +40,12 @@ function Carmen(options) {
     options = options || {
         country: {
             zoom: 8,
-            weight: 3,
+            weight: 2,
             source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
         },
         province: {
             zoom: 9,
-            weight: 2,
+            weight: 1.5,
             filter: function(str) { return str.length >= 2; },
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
@@ -189,7 +189,8 @@ Carmen.prototype.geocode = function(query, callback) {
 
                 // If search term was first amongst multiple provide
                 // a bonus if it is an exact match for the most specific
-                // data type.
+                // data type. @TODO bonus multiplier/weights need concepting
+                // to allow bonus against lowest weight to beat highest weight.
                 if (mod === 1 &&
                     data.query.length > 1 &&
                     data.query[0] === row.token &&
@@ -202,7 +203,11 @@ Carmen.prototype.geocode = function(query, callback) {
                 return memo;
             }, {})
             .value();
-        var zooms = _(db).chain().pluck('zoom').uniq().sortBy().value();
+        var zooms = _(db).chain()
+            .pluck('zoom')
+            .uniq()
+            .sortBy(function(z) { return z })
+            .value();
         var results = _(totals).chain()
             .map(function(total, key) {
                 var zxy = key.split('/').map(function(num) {
@@ -216,6 +221,8 @@ Carmen.prototype.geocode = function(query, callback) {
                     if (total.terms.length >= data.query.length) return;
                     var zx = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
                     if (!totals[zx]) return;
+                    // @TODO revisit this logic, it's not clear that parents
+                    // should ever benefit from child matches.
                     if (total.score[0] > totals[zx].score[0]) {
                         total.score = total.score.concat(totals[zx].score);
                         total.terms = total.terms.concat(totals[zx].terms);
