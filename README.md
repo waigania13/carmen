@@ -4,7 +4,7 @@ utfgrid/mbtiles-based geocoder.
 
 ## Install
 
-    npm install
+    npm install && ./scripts/install-dbs.sh
 
 Installs dependencies and downloads the default tiles index.
 
