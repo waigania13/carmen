@@ -138,6 +138,7 @@ Carmen.prototype.tokenize = function(query) {
 Carmen.prototype.context = function(lon, lat, callback) {
     var db = this.db;
     var carmen = this;
+    var context = [];
 
     Step(function() {
         carmen._open(this);
@@ -145,34 +146,52 @@ Carmen.prototype.context = function(lon, lat, callback) {
         if (err) return callback(err);
 
         var group = this.group();
-        _(db).each(function(d) {
-            var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
-            d.source.getGrid(d.zoom, xyz.minX, xyz.minY, group());
-        });
-    }, function(err, grids) {
-        if (err && err.message !== 'Grid does not exist') return callback(err);
-        var context = [];
         _(db).each(function(d, type) {
-            var i = Object.keys(db).indexOf(type);
-            if (!grids[i]) return;
+            var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
+            var next = group();
+            d.source.getGrid(d.zoom, xyz.minX, xyz.minY, function(err, grid) {
+                if (err) return next(err);
 
-            var resolution = 4;
-            var px = sm.px([lon,lat], d.zoom);
-            var y = Math.floor((px[1] % 256) / resolution);
-            var x = Math.floor((px[0] % 256) / resolution)
-            var code = resolveCode(grids[i].grid[y].charCodeAt(x));
-            var key = grids[i].keys[code];
+                var resolution = 4;
+                var px = sm.px([lon,lat], d.zoom);
+                var y = Math.floor((px[1] % 256) / resolution);
+                var x = Math.floor((px[0] % 256) / resolution)
+                var code = resolveCode(grid.grid[y].charCodeAt(x));
+                var key = grid.keys[code];
 
-            if (key) context.push(d.map(grids[i].data[key]));
+                if (!key) return next();
+
+                var data = d.map(grid.data[key]);
+                context.push(data);
+                if ('lon' in data && 'lat' in data) return next();
+                carmen.centroid(type + '.' + key, function(err, lonlat) {
+                    if (err) return next(err);
+                    data.lon = lonlat[0];
+                    data.lat = lonlat[1];
+                    return next();
+                });
+
+            });
         });
+    }, function(err) {
+        if (err && err.message !== 'Grid does not exist') return callback(err);
+
         context.reverse();
         return callback(null, context);
     });
 };
 
 // Retrieve the context for a feature given its id in the form [type].[id].
-// Looks up a point in the feature geometry using a point from a central grid.
 Carmen.prototype.contextByFeature = function(id, callback) {
+    this.centroid(id, function(err, lonlat) {
+        if (err) return callback(err);
+        this.context(lonlat[0], lonlat[1], callback);
+    }.bind(this));
+};
+
+// Get the [lon,lat] of a feature given its id in the form [type].[id].
+// Looks up a point in the feature geometry using a point from a central grid.
+Carmen.prototype.centroid = function(id, callback) {
     var type = id.split('.').shift();
     var id = id.split('.').pop();
     var carmen = this;
@@ -194,22 +213,22 @@ Carmen.prototype.contextByFeature = function(id, callback) {
         db[type].source.getGrid(c.z,c.x,c.y,this);
     }, function(err, grid) {
         if (err) return callback(err);
+        if (!grid) return callback(new Error('Grid does not exist'));
 
         var chr = toChar(grid.keys.indexOf(id));
-        for (var i = 0; i < grid.grid.length; i++) {
-            var j = grid.grid[i].indexOf(chr);
-            if (j >= 0) {
-                c.px = j;
-                c.py = i;
-                break;
-            }
-        }
-
-        var lonlat = sm.ll([
+        var xy = [];
+        _(grid.grid).each(function(row, y) {
+            if (row.indexOf(chr) === -1) return;
+            for (var x = 0; x < 64; x++) if (row[x] === chr) xy.push([x,y]);
+        });
+        xy = _(xy).sortBy(function(xy) { return (xy[0] * 1e2) + xy[1] });
+        xy = xy[xy.length * 0.5|0];
+        c.px = xy[0];
+        c.py = xy[1];
+        callback(null, sm.ll([
             (256*c.x) + (c.px*4) + 2,
             (256*c.y) + (c.py*4) + 2
-        ], c.z);
-        carmen.context(lonlat[0], lonlat[1], callback);
+        ], c.z));
     });
 };
 
@@ -363,11 +382,12 @@ Carmen.prototype.geocode = function(query, callback) {
             data.results.push(result);
             carmen.contextByFeature(r.id, function(err, context) {
                 if (err) return next(err);
-                _(context).chain()
-                    .filter(function(term) {
-                        return types.indexOf(term.type) < types.indexOf(r.type);
-                    })
-                    .each(function(term) { result.push(term); });
+                _(context).each(function(term) {
+                    if (term.type === r.data.type)
+                        result[0] = term;
+                    if (types.indexOf(term.type) < types.indexOf(r.type))
+                        result.push(term);
+                });
                 return next();
             });
         });
