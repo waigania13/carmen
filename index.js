@@ -36,6 +36,13 @@ function resolveCode(key) {
     return key;
 };
 
+function toChar(key) {
+    key += 32;
+    if (key >= 34) key++;
+    if (key >= 92) key++;
+    return String.fromCharCode(key);
+};
+
 function Carmen(options) {
     options = options || {
         country: {
@@ -158,6 +165,49 @@ Carmen.prototype.context = function(lon, lat, callback) {
         });
         context.reverse();
         return callback(null, context);
+    });
+};
+
+// Retrieve the context for a feature given its id in the form [type].[id].
+// Looks up a point in the feature geometry using a point from a central grid.
+Carmen.prototype.contextByFeature = function(id, callback) {
+    var type = id.split('.').shift();
+    var id = id.split('.').pop();
+    var carmen = this;
+    var db = this.db;
+    var c = {};
+
+    Step(function() {
+        carmen._open(this);
+    }, function(err) {
+        if (err) throw err;
+        db[type].source._db.all('SELECT zxy FROM carmen WHERE id MATCH(?) ORDER BY zxy ASC', id, this);
+    }, function(err, rows) {
+        if (err) throw err;
+        if (rows.length === 0) return this();
+        var zxy = rows[rows.length * 0.5|0].zxy.split('/');
+        c.z = zxy[0] | 0;
+        c.x = zxy[1] | 0;
+        c.y = (Math.pow(2,c.z) - zxy[2] - 1) | 0;
+        db[type].source.getGrid(c.z,c.x,c.y,this);
+    }, function(err, grid) {
+        if (err) return callback(err);
+
+        var chr = toChar(grid.keys.indexOf(id));
+        for (var i = 0; i < grid.grid.length; i++) {
+            var j = grid.grid[i].indexOf(chr);
+            if (j >= 0) {
+                c.px = j;
+                c.py = i;
+                break;
+            }
+        }
+
+        var lonlat = sm.ll([
+            (256*c.x) + (c.px*4) + 2,
+            (256*c.y) + (c.py*4) + 2
+        ], c.z);
+        carmen.context(lonlat[0], lonlat[1], callback);
     });
 };
 
@@ -285,28 +335,37 @@ Carmen.prototype.geocode = function(query, callback) {
     }, function(err, rows) {
         if (err) throw err;
 
-        data.results = _(rows).chain()
+        var results = _(rows).chain()
             .compact()
             .map(function(r) {
                 r.type = r.id.split('.')[0];
                 r.data = JSON.parse(r.data) || {};
                 return r;
             })
+            // Sort data before passing it through index.map where
+            // values used to sort may be stripped for output.
             .sortBy(function(r) { return r.data.rank || 0 })
+            .map(function(r) {
+                r.data = db[r.type].map(r.data);
+                return r;
+            })
             .reverse()
-            .map(function(r) { return [db[r.type].map(r.data)] })
             .value();
 
+        data.results = [];
+
         var group = this.group();
-        _(data.results).each(function(r) {
+        _(results).each(function(r) {
             var next = group();
-            carmen.context(r[0].lon, r[0].lat, function(err, context) {
+            var result = [r.data];
+            data.results.push(result);
+            carmen.contextByFeature(r.id, function(err, context) {
                 if (err) return next(err);
                 _(context).chain()
                     .filter(function(term) {
-                        return types.indexOf(term.type) < types.indexOf(r[0].type);
+                        return types.indexOf(term.type) < types.indexOf(r.type);
                     })
-                    .each(function(term) { r.push(term); });
+                    .each(function(term) { result.push(term); });
                 return next();
             });
         });
