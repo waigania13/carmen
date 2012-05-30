@@ -3,8 +3,8 @@
 DIR=`dirname $0`
 TILE_DIR=$DIR/../tiles
 
-if [ ! -d "$DIR" ]; then
-    mkdir "$DIR"
+if [ ! -d "$TILE_DIR" ]; then
+    mkdir "$TILE_DIR"
 fi
 
 TILES="carmen-city carmen-country carmen-province"
