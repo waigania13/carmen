@@ -39,18 +39,14 @@ function resolveCode(key) {
 function Carmen(options) {
     options = options || {
         country: {
-            zoom: 8,
             weight: 2,
             source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
         },
         province: {
-            zoom: 9,
             weight: 1.5,
-            filter: function(str) { return str.length >= 2; },
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
         city: {
-            zoom: 10,
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
         }
     };
@@ -58,7 +54,7 @@ function Carmen(options) {
         var dbname = key;
         memo[key] = _(db).defaults({
             weight: 1,
-            filter: function(token) { return token.length > 3 },
+            filter: function(token) { return true },
             map: function(data) {
                 delete data.search;
                 delete data.rank;
@@ -68,6 +64,29 @@ function Carmen(options) {
         });
         return memo;
     }, {});
+};
+
+Carmen.prototype._open = function(callback) {
+    if (!_(this.db).all(function(d) { return d.source.open }))
+        return callback(new Error('DB not open.'));
+
+    if (this._opened) return callback();
+
+    var carmen = this;
+    var remaining = _(this.db).size();
+    _(this.db).each(function(db) {
+        db.source.getInfo(function(err, info) {
+            if (info) db.zoom = info.maxzoom;
+            if (err) {
+                remaining = -1
+                return callback(err);
+            }
+            if (--remaining === 0) {
+                carmen._opened = true;
+                return callback();
+            }
+        });
+    });
 };
 
 Carmen.prototype.tokenize = function(query) {
@@ -108,11 +127,14 @@ Carmen.prototype.tokenize = function(query) {
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
-    if (!_(this.db).all(function(d) { return d.source.open }))
-        return callback(new Error('DB not open.'));
-
     var db = this.db;
+    var carmen = this;
+
     Step(function() {
+        carmen._open(this);
+    }, function(err) {
+        if (err) return callback(err);
+
         var group = this.group();
         _(db).each(function(d) {
             var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
@@ -140,9 +162,6 @@ Carmen.prototype.context = function(lon, lat, callback) {
 };
 
 Carmen.prototype.geocode = function(query, callback) {
-    if (!_(this.db).all(function(d) { return d.source.open }))
-        return callback(new Error('DB not open.'));
-
     var db = this.db;
     var types = Object.keys(db);
     var data = { query: this.tokenize(query) };
@@ -159,6 +178,10 @@ Carmen.prototype.geocode = function(query, callback) {
 
     // keyword search. Find matching features.
     Step(function() {
+        carmen._open(this);
+    }, function(err) {
+        if (err) throw err;
+
         var group = this.group();
         var sql = '\
             SELECT c.id, c.text, c.zxy, ? AS db, ? AS token\
