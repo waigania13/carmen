@@ -54,6 +54,7 @@ function Carmen(options) {
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
         city: {
+            rank: function(data) { return data.rank },
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
         }
     };
@@ -61,6 +62,7 @@ function Carmen(options) {
         var dbname = key;
         memo[key] = _(db).defaults({
             weight: 1,
+            rank: function(data) { return 0 },
             filter: function(token) { return true },
             map: function(data) {
                 delete data.search;
@@ -344,7 +346,7 @@ Carmen.prototype.geocode = function(query, callback) {
             })
             // Sort data before passing it through index.map where
             // values used to sort may be stripped for output.
-            .sortBy(function(r) { return r.data.rank || 0 })
+            .sortBy(function(r) { return db[r.type].rank(r.data) })
             .map(function(r) {
                 r.data = db[r.type].map(r.data);
                 return r;
