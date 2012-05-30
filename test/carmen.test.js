@@ -37,6 +37,23 @@ fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
 //fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 2000);
 
+var summary = function(stats, verbose) {
+    console.warn('');
+    console.warn('  %s% (%s/%s) at %sms/query', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
+
+    if (!verbose) return;
+    _(stats.failed).each(function(group, type) {
+        console.warn('');
+        console.warn('  ' + type);
+        console.warn('  ' + new Array(type.length + 1).join('-'));
+        _(group).each(function(results, name) {
+            var results = results.join(', ');
+            if (results.length > 40) results = results.substr(0,40) + '...';
+            console.warn('  %s => %s', name, results);
+        });
+    });
+}
+
 describe('geocode', function() {
     var stats = {
         start: + new Date,
@@ -48,7 +65,7 @@ describe('geocode', function() {
         _(fixture).each(function(row) {
             it(row.name, function(done) {
                 carmen.geocode(row.name, function(err, res) {
-                    assert.ok(!err);
+                    assert.ifError(err);
                     stats.total++;
                     var inResults = _(res.results).chain()
                         .pluck('0')
@@ -70,17 +87,43 @@ describe('geocode', function() {
         });
     });
     after(function() {
-        console.warn('');
-        console.warn('  %s% (%s/%s) at %sms/query', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
-        _(stats.failed).each(function(group, type) {
-            console.warn('');
-            console.warn('  ' + type);
-            console.warn('  ' + new Array(type.length + 1).join('-'));
-            _(group).each(function(results, name) {
-                var results = results.join(', ');
-                if (results.length > 40) results = results.substr(0,40) + '...';
-                console.warn('  %s => %s', name, results);
+        summary(stats);
+    });
+});
+
+describe('reverse', function() {
+    var stats = {
+        start: + new Date,
+        total: 0,
+        okay: 0,
+        failed: {}
+    };
+    _(fixtures).each(function(fixture, type) {
+        _(fixture).each(function(row) {
+            var coords = row.lon +','+ row.lat;
+            it(coords, function(done) {
+                carmen.geocode(coords, function(err, res) {
+                    assert.ifError(err);
+                    stats.total++;
+
+                    var inResults = _(res.results[0]).chain()
+                        .any(function(r) { return row.name == r.name })
+                        .value();
+                    if (inResults) {
+                        stats.okay++;
+                    } else {
+                        stats.failed[type] = stats.failed[type] || {};
+                        stats.failed[type][row.name] = _(res.results[0]).chain()
+                            .map(function(r) { return r.type + '.' + r.name })
+                            .uniq()
+                            .value().join(', ');
+                    }
+                    done();
+                });
             });
         });
+    });
+    after(function() {
+        summary(stats, false);
     });
 });
