@@ -116,7 +116,7 @@ describe('reverse', function() {
                         stats.failed[type][row.name] = _(res.results[0]).chain()
                             .map(function(r) { return r.type + '.' + r.name })
                             .uniq()
-                            .value().join(', ');
+                            .value();
                     }
                     done();
                 });
