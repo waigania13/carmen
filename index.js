@@ -46,11 +46,11 @@ function toChar(key) {
 function Carmen(options) {
     options = options || {
         country: {
-            weight: 2,
+            score: function(mod) { return mod * 2 },
             source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
         },
         province: {
-            weight: 1.5,
+            score: function(mod) { return mod * 1.5 },
             source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
         },
         city: {
@@ -60,7 +60,7 @@ function Carmen(options) {
     this.db = _(options).reduce(function(memo, db, key) {
         var dbname = key;
         memo[key] = _(db).defaults({
-            weight: 1,
+            score: function(mod, query, row) { return mod },
             filter: function(token) { return true },
             map: function(data) {
                 delete data.search;
@@ -270,7 +270,8 @@ Carmen.prototype.geocode = function(query, callback) {
                     _(db).toArray().pop() === db[row.db])
                     mod = 2.01;
 
-                var score = db[row.db].weight * mod;
+                var score = db[row.db].score(mod, query, row);
+
                 if (!memo[zxy] || memo[zxy].score[0] < score)
                     memo[zxy] = { score:[score], terms:[row.db + '.' + row.id] };
                 return memo;
