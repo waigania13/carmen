@@ -24,6 +24,8 @@ fi
 
 INDEXED=`sqlite3 "$MBTILES" "SELECT '1' FROM sqlite_master WHERE name = 'carmen';"`
 if [ -z $INDEXED ]; then
+  ZOOM=`echo "SELECT MAX(zoom_level) FROM map;" | sqlite3 $MBTILES`;
+
   # Create search table. Inserts id, text, zxy into `carmen` table.
   echo "Indexing $MBTILES..."
   echo "CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);" > carmen-index.sql
@@ -31,7 +33,7 @@ if [ -z $INDEXED ]; then
   echo "BEGIN TRANSACTION;" >> carmen-index.sql
 
   sqlite3 "$MBTILES" \
-    "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE k.key_json LIKE '%$FIELD%';" \
+    "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level='$ZOOM' AND k.key_json LIKE '%\"$FIELD\":%';" \
     | sed "s/\([^|]*\)|.*\"$FIELD\":\"\([^\"]*\)\"[^|]*|\(.*\)/INSERT INTO carmen VALUES(\"\1\",\"\2\",\"\3\");/" \
     >> carmen-index.sql
 
