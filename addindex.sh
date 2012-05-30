@@ -2,18 +2,24 @@
 
 # Usage:
 #
-# $ addindex.sh [mbtiles]
+# $ addindex.sh MBTILES [SEARCH-FIELD]
+#
 
 MBTILES=$1
+FIELD=$2
 
 if [ -z "$MBTILES" ]; then
-    echo "Usage: addindex.sh [mbtiles]"
+    echo "Usage: addindex.sh MBTILES [SEARCH-FIELD]"
     exit 1
 fi
 
 if [ ! -f $MBTILES ]; then
     echo "File '$MBTILES' does not exist."
     exit 1
+fi
+
+if [ -z "$FIELD" ]; then
+    FIELD="search"
 fi
 
 INDEXED=`sqlite3 "$MBTILES" "SELECT '1' FROM sqlite_master WHERE name = 'carmen';"`
@@ -24,11 +30,18 @@ if [ -z $INDEXED ]; then
   echo "CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);" >> carmen-index.sql
   echo "BEGIN TRANSACTION;" >> carmen-index.sql
 
-  sqlite3 "$MBTILES" "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE k.key_json LIKE '%search%'" \
-    | sed "s/\([^|]*\)|.*\"search\":\"\([^\"]*\)\"[^|]*|\(.*\)/INSERT INTO carmen VALUES(\"\1\",\"\2\",\"\3\");/" \
+  sqlite3 "$MBTILES" \
+    "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE k.key_json LIKE '%$FIELD%';" \
+    | sed "s/\([^|]*\)|.*\"$FIELD\":\"\([^\"]*\)\"[^|]*|\(.*\)/INSERT INTO carmen VALUES(\"\1\",\"\2\",\"\3\");/" \
     >> carmen-index.sql
 
   echo "COMMIT;" >> carmen-index.sql
+
+  LINES=`cat carmen-index.sql | wc -l`
+  if [ $LINES == 4 ]; then
+    echo "Failed to generate index."
+    exit 1
+  fi
 
   sqlite3 "$MBTILES" < carmen-index.sql
   rm carmen-index.sql
