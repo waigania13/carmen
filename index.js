@@ -138,6 +138,17 @@ Carmen.prototype.tokenize = function(query) {
 Carmen.prototype.context = function(lon, lat, callback) {
     var db = this.db;
     var carmen = this;
+    var scan = [
+        [0,0],
+        [0,1],
+        [0,-1],
+        [1,0],
+        [1,1],
+        [1,-1],
+        [-1,0],
+        [-1,1],
+        [-1,-1]
+    ];
 
     Step(function() {
         carmen._open(this);
@@ -153,9 +164,18 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
                 var resolution = 4;
                 var px = sm.px([lon,lat], d.zoom);
-                var y = Math.floor((px[1] % 256) / resolution);
-                var x = Math.floor((px[0] % 256) / resolution)
-                var code = resolveCode(grid.grid[y].charCodeAt(x));
+                var y = Math.round((px[1] % 256) / resolution);
+                var x = Math.round((px[0] % 256) / resolution);
+                var code, sx, sy;
+                for (var i = 0; i < scan.length; i++) {
+                    sx = x + scan[i][0];
+                    sy = y + scan[i][1];
+                    sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
+                    sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
+                    code = resolveCode(grid.grid[sy].charCodeAt(sx));
+                    if (code !== undefined) break;
+                }
+
                 var key = grid.keys[code];
 
                 if (!key) return next();
