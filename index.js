@@ -252,6 +252,8 @@ Carmen.prototype.centroid = function(id, callback) {
 Carmen.prototype.geocode = function(query, callback) {
     var db = this.db;
     var types = Object.keys(db);
+    var minweight = _(db).chain().pluck('weight').min().value();
+    var maxweight = _(db).chain().pluck('weight').max().value();
     var data = { query: this.tokenize(query) };
     var carmen = this;
 
@@ -291,24 +293,30 @@ Carmen.prototype.geocode = function(query, callback) {
             .flatten()
             .reduce(function(memo, row) {
                 var zxy = row.zxy;
+
                 // Reward exact matches.
-                // @TODO generalize ',' as search term delimiter.
-                var mod = _(row.text.split(',')).chain()
+                var exact = _(row.text.split(',')).chain()
                     .map(function(part) { return part.toLowerCase().replace(/^\s+|\s+$/g, ''); })
                     .any(function(part) { return part === row.token; })
-                    .value() ? 1 : 0.5;
+                    .value();
 
-                // If search term was first amongst multiple provide
-                // a bonus if it is an exact match for the most specific
-                // data type. @TODO bonus multiplier/weights need concepting
-                // to allow bonus against lowest weight to beat highest weight.
-                if (mod === 1 &&
+                // Allow results from the lowest weighted indexes to
+                // nevertheless beat the highest weighted DB if there are
+                // multiple tokens and it is an exact match for the first token.
+                // Handles cases like "New York, NY".
+                var score;
+                if (maxweight > minweight &&
+                    exact &&
                     data.query.length > 1 &&
                     data.query[0] === row.token &&
-                    _(db).toArray().pop() === db[row.db])
-                    mod = 2.01;
+                    db[row.db].weight === minweight) {
+                    score = maxweight + 0.01;
+                } else if (exact) {
+                    score = db[row.db].weight;
+                } else {
+                    score = db[row.db].weight * 0.5;
+                }
 
-                var score = db[row.db].weight * mod;
                 if (!memo[zxy] || memo[zxy].score[0] < score)
                     memo[zxy] = { score:[score], terms:[row.db + '.' + row.id] };
                 return memo;
