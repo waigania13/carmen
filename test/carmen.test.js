@@ -6,7 +6,10 @@ var carmen = new (require('..'))();
 
 function okay(type, a, b) {
     var margin = 0.01;
-    return a.type === type &&
+    var typecheck = type === 'city'
+        ? _(['city', 'town', 'village']).include(a.type)
+        : a.type === type;
+    return typecheck &&
         a.name === b.name &&
         (a.lon >= b.lon - margin) &&
         (a.lon <= b.lon + margin) &&
