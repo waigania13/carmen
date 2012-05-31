@@ -181,6 +181,7 @@ Carmen.prototype.context = function(lon, lat, callback) {
                 if (!key) return next();
 
                 var data = d.map(grid.data[key]);
+                data.id = data.id || type + '.' + key;
                 if ('lon' in data && 'lat' in data) return next(null, data);
                 carmen.centroid(type + '.' + key, function(err, lonlat) {
                     if (err) return next(err);
@@ -377,6 +378,7 @@ Carmen.prototype.geocode = function(query, callback) {
             .map(function(r) {
                 r.type = r.id.split('.')[0];
                 r.data = JSON.parse(r.data) || {};
+                r.data.id = r.data.id || r.id;
                 return r;
             })
             // Sort data before passing it through index.map where
@@ -399,7 +401,7 @@ Carmen.prototype.geocode = function(query, callback) {
             carmen.contextByFeature(r.id, function(err, context) {
                 if (err) return next(err);
                 _(context).each(function(term) {
-                    if (term.type === r.data.type)
+                    if (term.id === r.id)
                         result[0] = term;
                     if (types.indexOf(term.type) < types.indexOf(r.type))
                         result.push(term);
