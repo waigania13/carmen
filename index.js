@@ -138,7 +138,6 @@ Carmen.prototype.tokenize = function(query) {
 Carmen.prototype.context = function(lon, lat, callback) {
     var db = this.db;
     var carmen = this;
-    var context = [];
 
     Step(function() {
         carmen._open(this);
@@ -162,22 +161,19 @@ Carmen.prototype.context = function(lon, lat, callback) {
                 if (!key) return next();
 
                 var data = d.map(grid.data[key]);
-                context.push(data);
-                if ('lon' in data && 'lat' in data) return next();
+                if ('lon' in data && 'lat' in data) return next(null, data);
                 carmen.centroid(type + '.' + key, function(err, lonlat) {
                     if (err) return next(err);
                     data.lon = lonlat[0];
                     data.lat = lonlat[1];
-                    return next();
+                    return next(null, data);
                 });
 
             });
         });
-    }, function(err) {
+    }, function(err, context) {
         if (err && err.message !== 'Grid does not exist') return callback(err);
-
-        context.reverse();
-        return callback(null, context);
+        return callback(null, _(context).chain().compact().reverse().value());
     });
 };
 
