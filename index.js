@@ -164,8 +164,8 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
                 var resolution = 4;
                 var px = sm.px([lon,lat], d.zoom);
-                var y = Math.round((px[1] % 256) / resolution);
-                var x = Math.round((px[0] % 256) / resolution);
+                var y = Math.floor((px[1] % 256) / resolution);
+                var x = Math.floor((px[0] % 256) / resolution);
                 var code, sx, sy;
                 for (var i = 0; i < scan.length; i++) {
                     sx = x + scan[i][0];
