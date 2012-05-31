@@ -401,10 +401,11 @@ Carmen.prototype.geocode = function(query, callback) {
             carmen.contextByFeature(r.id, function(err, context) {
                 if (err) return next(err);
                 _(context).each(function(term) {
-                    if (term.id === r.id)
+                    if (term.id === r.id) {
                         result[0] = term;
-                    if (types.indexOf(term.type) < types.indexOf(r.type))
+                    } else if (types.indexOf(term.type) < types.indexOf(r.type)) {
                         result.push(term);
+                    }
                 });
                 return next();
             });
