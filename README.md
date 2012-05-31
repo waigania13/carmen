@@ -77,14 +77,12 @@ Each array in `results` contains a match for the query, where the first feature 
 
 Each carmen index is an MBTiles file with an additional SQLite fulltext search table `carmen`. The table can be added by running
 
-    ./addindex.sh [mbtiles]
+    ./scripts/addindex.sh MBTILES [SEARCH-FIELD]
 
-The requirement for a carmen MBTiles file are as follows:
+The only requirement for a carmen MBTiles file is that it contains grids and features with a field suitable for use as search terms. Any additional keys included with features will be automatically passed through to the results. The following fields have special meaning to carmen if present:
 
-- Must contain only 1 zoom level.
-- Must contain grids.
-- Must contain feature data with the following keys:
-  - `name` - name of the feature
-  - `search` - comma separated search terms for the feature (often, but not necessarily, the same as name)
-  - `lon` - longitude of the feature
-  - `lat` - latitude of the feature
+- `lon` - longitude of the feature. If omitted, `lon` is calculated from the UTFGrid.
+- `lat` - latitude of the feature. If omitted, `lat` is calculated from the UTFGrid.
+- `type` - type of feature. If omitted, the index key is used.
+
+Note that the UTFGrid-based centroid calculation for polygon features is currently very rough. Providing a more accurate lon/lat pair for these features is more performant and recommended.
