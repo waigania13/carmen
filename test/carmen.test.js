@@ -38,6 +38,7 @@ function loadFixture(path, sample) {
 var fixtures = {};
 fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
+fixtures.zipcode = loadFixture(__dirname + '/../fixtures/test-zipcodes.csv', 400);
 //fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 2000);
 
 var summary = function(stats, verbose) {
