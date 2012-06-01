@@ -41,9 +41,9 @@ fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
 fixtures.zipcode = loadFixture(__dirname + '/../fixtures/test-zipcodes.csv', 400);
 fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 200);
 
-var summary = function(stats, verbose) {
+var summary = function(label, stats, verbose) {
     console.warn('');
-    console.warn('  %s% (%s/%s) at %sms/query', (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
+    console.warn('  %s %s% (%s/%s) at %sms/query', label, (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
 
     if (!verbose) return;
     _(stats.failed).each(function(group, type) {
@@ -58,16 +58,16 @@ var summary = function(stats, verbose) {
     });
 }
 
-describe('geocode', function() {
-    var stats = {
-        start: + new Date,
-        total: 0,
-        okay: 0,
-        failed: {}
-    };
-    _(fixtures).each(function(fixture, type) {
-        if (!carmen.db[type].query) return;
+_(fixtures).each(function(fixture, type) {
+    if (!carmen.db[type].query) return;
 
+    describe('geocode ' + type, function() {
+        var stats = {
+            start: + new Date,
+            total: 0,
+            okay: 0,
+            failed: {}
+        };
         _(fixture).each(function(row) {
             it(row.name, function(done) {
                 carmen.geocode(row.name, function(err, res) {
@@ -91,22 +91,22 @@ describe('geocode', function() {
                 });
             });
         });
-    });
-    after(function() {
-        summary(stats);
+        after(function() {
+            summary('geocode ' + type, stats);
+        });
     });
 });
 
-describe('reverse', function() {
-    var stats = {
-        start: + new Date,
-        total: 0,
-        okay: 0,
-        failed: {}
-    };
-    _(fixtures).each(function(fixture, type) {
-        if (!carmen.db[type].context) return;
+_(fixtures).each(function(fixture, type) {
+    if (!carmen.db[type].context) return;
 
+    describe('reverse', function() {
+        var stats = {
+            start: + new Date,
+            total: 0,
+            okay: 0,
+            failed: {}
+        };
         _(fixture).each(function(row) {
             var coords = row.lon +','+ row.lat;
             it(coords, function(done) {
@@ -130,8 +130,8 @@ describe('reverse', function() {
                 });
             });
         });
-    });
-    after(function() {
-        summary(stats, false);
+        after(function() {
+            summary('reverse ' + type, stats);
+        });
     });
 });
