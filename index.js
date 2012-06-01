@@ -56,6 +56,10 @@ function Carmen(options) {
         city: {
             rank: function(data) { return data.rank },
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
+        },
+        zipcode: {
+            source: new MBTiles(basepath + '/carmen-zipcode.mbtiles', function(){}),
+            filter: function(token) { return /[0-9]{5}/.test(token); }
         }
     };
     this.db = _(options).reduce(function(memo, db, key) {
