@@ -148,7 +148,8 @@ var getZ = function(type) {
     if (type === 'town') return 13;
     if (type === 'city') return 13;
     if (type === 'province') return 6;
-    return 4;
+    if (type === 'country') return 4;
+    return -1;
 };
 
 map = new com.modestmaps.Map('map',
@@ -166,10 +167,14 @@ map.addCallback('panned', _(getContext).throttle(500));
 
 $('body').delegate('a.item', 'click', function(ev) {
     var center = $(ev.currentTarget).attr('href').split('#').pop().split(',');
-    map.setCenterZoom(new com.modestmaps.Location(
+    center = _(center).map(parseFloat);
+    if (center[2] >= 0) map.setCenterZoom(new com.modestmaps.Location(
         center[1],
         center[0]),
         center[2]);
+    else map.setCenter(new com.modestmaps.Location(
+        center[1],
+        center[0]));
     getContext();
     return false;
 });
@@ -186,10 +191,12 @@ $('#input').submit(function(ev) {
             data.context = t.slice(1);
             return term(data);
         }).join('\n'));
-        map.setCenterZoom(new com.modestmaps.Location(
+        var z = getZ(resp.results[0][0].type);
+        var c = new com.modestmaps.Location(
             resp.results[0][0].lat,
-            resp.results[0][0].lon),
-            getZ(resp.results[0][0].type));
+            resp.results[0][0].lon);
+        if (z >= 0) map.setCenterZoom(c, z);
+        else map.setCenter(c);
         getContext();
     }});
     return false;
