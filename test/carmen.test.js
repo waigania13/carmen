@@ -66,6 +66,8 @@ describe('geocode', function() {
         failed: {}
     };
     _(fixtures).each(function(fixture, type) {
+        if (!carmen.db[type].query) return;
+
         _(fixture).each(function(row) {
             it(row.name, function(done) {
                 carmen.geocode(row.name, function(err, res) {
@@ -103,6 +105,8 @@ describe('reverse', function() {
         failed: {}
     };
     _(fixtures).each(function(fixture, type) {
+        if (!carmen.db[type].context) return;
+
         _(fixture).each(function(row) {
             var coords = row.lon +','+ row.lat;
             it(coords, function(done) {

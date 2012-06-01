@@ -27,6 +27,10 @@ Runs an example geocoding server at `http://localhost:3000`.
 Create a new Carmen object. Takes a hash of index objects to use, keyed by each `id`. Each index object should resemble the following:
 
     myindex: {
+      // Optional. Set to `false` to skip this index for token queries.
+      query: true,
+      // Optional. Set to `false` to exclude this index from contexts.
+      context: true,
       // Required. MBTiles instance to be used.
       source: new MBTiles('./myindex.mbtiles'),
       // Optional. Search weight. Higher = greater priority.

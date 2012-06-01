@@ -58,6 +58,7 @@ function Carmen(options) {
             source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
         },
         zipcode: {
+            context: false,
             source: new MBTiles(basepath + '/carmen-zipcode.mbtiles', function(){}),
             filter: function(token) { return /[0-9]{5}/.test(token); }
         }
@@ -65,6 +66,8 @@ function Carmen(options) {
     this.db = _(options).reduce(function(memo, db, key) {
         var dbname = key;
         memo[key] = _(db).defaults({
+            context: true,
+            query: true,
             weight: 1,
             rank: function(data) { return 0 },
             filter: function(token) { return true },
@@ -161,6 +164,7 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
         var group = this.group();
         _(db).each(function(d, type) {
+            if (!d.context) return;
             var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
             var next = group();
             d.source.getGrid(d.zoom, xyz.minX, xyz.minY, function(err, grid) {
@@ -282,6 +286,7 @@ Carmen.prototype.geocode = function(query, callback) {
             FROM carmen c\
             WHERE c.text MATCH(?)';
         _(db).each(function(db, dbname) {
+            if (!db.query) return;
             var statement = db.source._db.prepare(sql);
             _(data.query).each(function(t) {
                 if (!db.filter(t)) return;
