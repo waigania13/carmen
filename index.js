@@ -411,7 +411,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 _(context).each(function(term) {
                     if (term.id === r.id) {
                         result[0] = term;
-                    } else if (types.indexOf(term.type) < types.indexOf(r.type)) {
+                    } else if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type)) {
                         result.push(term);
                     }
                 });
