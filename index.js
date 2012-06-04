@@ -414,8 +414,7 @@ Carmen.prototype.geocode = function(query, callback) {
         _(results).each(function(r) {
             var next = group();
             var result = [r.data];
-            data.results.push(result);
-            carmen.contextByFeature(r.id, function(err, context) {
+            var done = function(err, context) {
                 if (err) return next(err);
                 _(context).each(function(term) {
                     if (term.id === r.id) {
@@ -425,7 +424,13 @@ Carmen.prototype.geocode = function(query, callback) {
                     }
                 });
                 return next();
-            });
+            };
+            data.results.push(result);
+            if ('lon' in r.data && 'lat' in r.data) {
+                carmen.context(r.data.lon, r.data.lat, done);
+            } else {
+                carmen.contextByFeature(r.id, done);
+            }
         });
     }, function(err) {
         if (err) return callback(err);
