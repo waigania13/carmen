@@ -35,6 +35,17 @@ function loadFixture(path, sample) {
     return fixtures;
 };
 
+function loadContext(path) {
+    return _(fs.readFileSync(path, 'utf8').split('\n')).chain()
+        .compact()
+        .map(function(line) {
+            var p = line.split('|');
+            return { query: p[0], result: p.slice(1) };
+        })
+        .compact()
+        .value();
+};
+
 var fixtures = {};
 fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
@@ -57,6 +68,38 @@ var summary = function(label, stats, verbose) {
         });
     });
 }
+
+var context = loadContext(__dirname + '/../fixtures/test-context.csv');
+describe('context', function() {
+    var stats = {
+        start: + new Date,
+        total: 0,
+        okay: 0,
+        failed: {}
+    };
+    _(context).each(function(row) {
+        it(row.query, function(done) {
+            carmen.geocode(row.query, function(err, res) {
+                assert.ifError(err);
+                stats.total++;
+                var names = _(res.results[0]).chain()
+                    .pluck('name')
+                    .value();
+                var inResults = _(row.result).isEqual(names);
+                if (inResults) {
+                    stats.okay++;
+                } else {
+                    stats.failed.context = stats.failed.context || {};
+                    stats.failed.context[row.query] = names;
+                }
+                done();
+            });
+        });
+    });
+    after(function() {
+        summary('context', stats, true);
+    });
+});
 
 _(fixtures).each(function(fixture, type) {
     if (!carmen.db[type].query) return;
