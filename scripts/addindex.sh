@@ -55,7 +55,7 @@ if [ -z $INDEXED ]; then
     sqlite3 "$MBTILES" \
       "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'0123456789abcdefghijklmnopqrstuvwxyz,.- ') <> ''" \
       | iconv -t ASCII//TRANSLIT -f UTF-8 \
-      | grep -v "[,?]" \
+      | grep -v "[,?\"\\]" \
       | sed "s/\([^|]*\)|\(.*\)/UPDATE carmen SET text = text||', '||\"\2\" WHERE rowid = \"\1\" AND text <> \"\2\";/" \
       >> carmen-index.sql
     echo "COMMIT;" >> carmen-index.sql
