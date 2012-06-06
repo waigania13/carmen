@@ -47,6 +47,28 @@ if [ -z $INDEXED ]; then
 
   sqlite3 "$MBTILES" < carmen-index.sql
   rm carmen-index.sql
+
+  # Support addition of ASCII transliterated search terms if iconv is present.
+  if [ `which iconv` ]; then
+    echo "BEGIN TRANSACTION;" > carmen-index.sql
+    IFS=$'\n'
+    for line in `sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen"`
+    do
+      rowid=`echo "$line" | grep -o "^[^|]*"`
+      value=`echo "$line" | grep -o "[^|]*$"`
+      ascii=`echo "$value" | iconv -t ASCII//TRANSLIT -f UTF-8`
+      abort=`echo "$ascii" | grep -c "[,?]"`
+      if [ "$abort" == "0" ]; then
+        if [ "$value" != "$ascii" ]; then
+          echo "UPDATE carmen SET text = \"$value, $ascii\" WHERE rowid = \"$rowid\";" >> carmen-index.sql
+          echo "#$rowid $value => $value, $ascii"
+        fi
+      fi
+    done
+    echo "COMMIT;" >> carmen-index.sql
+    sqlite3 "$MBTILES" < carmen-index.sql
+    rm carmen-index.sql
+  fi
 else
   echo "$MBTILES is already indexed."
 fi
