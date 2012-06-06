@@ -6,7 +6,7 @@ var carmen = new (require('..'))();
 
 function okay(type, a, b) {
     var margin = 0.01;
-    var typecheck = type === 'city'
+    var typecheck = type === 'place'
         ? _(['city', 'town', 'village']).include(a.type)
         : a.type === type;
     return typecheck &&
@@ -50,7 +50,7 @@ var fixtures = {};
 fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
 fixtures.zipcode = loadFixture(__dirname + '/../fixtures/test-zipcodes.csv', 400);
-fixtures.city = loadFixture(__dirname + '/../fixtures/test-cities.csv', 200);
+fixtures.place = loadFixture(__dirname + '/../fixtures/test-cities.csv', 200);
 
 var summary = function(label, stats, verbose) {
     console.warn('');
@@ -102,7 +102,7 @@ describe('context', function() {
 });
 
 _(fixtures).each(function(fixture, type) {
-    if (!carmen.db[type].query) return;
+    if (!carmen.db[type] || !carmen.db[type].query) return;
 
     describe('geocode ' + type, function() {
         var stats = {
@@ -141,7 +141,7 @@ _(fixtures).each(function(fixture, type) {
 });
 
 _(fixtures).each(function(fixture, type) {
-    if (!carmen.db[type].context) return;
+    if (!carmen.db[type] || !carmen.db[type].context) return;
 
     describe('reverse', function() {
         var stats = {

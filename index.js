@@ -47,19 +47,18 @@ function Carmen(options) {
     options = options || {
         country: {
             weight: 2,
-            source: new MBTiles(basepath + '/carmen-country.mbtiles', function(){})
+            source: new MBTiles(basepath + '/ne-countries.mbtiles', function(){})
         },
         province: {
             weight: 1.5,
-            source: new MBTiles(basepath + '/carmen-province.mbtiles', function(){})
+            source: new MBTiles(basepath + '/ne-provinces.mbtiles', function(){})
         },
-        city: {
-            rank: function(data) { return data.rank },
-            source: new MBTiles(basepath + '/carmen-city.mbtiles', function(){})
+        place: {
+            source: new MBTiles(basepath + '/osm-places.mbtiles', function(){})
         },
         zipcode: {
             context: false,
-            source: new MBTiles(basepath + '/carmen-zipcode.mbtiles', function(){}),
+            source: new MBTiles(basepath + '/tiger-zipcodes.mbtiles', function(){}),
             filter: function(token) { return /[0-9]{5}/.test(token); }
         }
     };
@@ -69,7 +68,7 @@ function Carmen(options) {
             context: true,
             query: true,
             weight: 1,
-            rank: function(data) { return 0 },
+            sortBy: function(data) { return data.score || 0 },
             filter: function(token) { return true },
             map: function(data) {
                 delete data.search;
@@ -430,7 +429,7 @@ Carmen.prototype.geocode = function(query, callback) {
             })
             // Sort data before passing it through index.map where
             // values used to sort may be stripped for output.
-            .sortBy(function(r) { return db[r.type].rank(r.data) })
+            .sortBy(function(r) { return db[r.type].sortBy(r.data) })
             .map(function(r) {
                 r.data = db[r.type].map(r.data);
                 return r;
