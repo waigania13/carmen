@@ -50,9 +50,9 @@ if [ -z $INDEXED ]; then
 
   # Support addition of ASCII transliterated search terms if iconv is present.
   if [ `which iconv` ]; then
+    sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen" > carmen-rows.txt
     echo "BEGIN TRANSACTION;" > carmen-index.sql
-    IFS=$'\n'
-    for line in `sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen"`
+    while read line
     do
       rowid=`echo "$line" | grep -o "^[^|]*"`
       value=`echo "$line" | grep -o "[^|]*$"`
@@ -64,9 +64,10 @@ if [ -z $INDEXED ]; then
           echo "#$rowid $value => $value, $ascii"
         fi
       fi
-    done
+    done < carmen-rows.txt
     echo "COMMIT;" >> carmen-index.sql
     sqlite3 "$MBTILES" < carmen-index.sql
+    rm carmen-rows.txt
     rm carmen-index.sql
   fi
 else
