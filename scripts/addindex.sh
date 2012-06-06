@@ -52,7 +52,7 @@ if [ -z $INDEXED ]; then
   if [ `which iconv` ]; then
     echo "BEGIN TRANSACTION;" > carmen-index.sql
     IFS=$'\n'
-    for line in `sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen"`
+    for line in `sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'abcdefghijklmnopqrstuvwxyz,.- ') <> ''"`
     do
       rowid=`echo "$line" | grep -o "^[^|]*"`
       value=`echo "$line" | grep -o "[^|]*$"`
