@@ -53,21 +53,14 @@ if [ -z $INDEXED ]; then
     echo "BEGIN TRANSACTION;" > carmen-index.sql
     IFS=$'\n'
     sqlite3 "$MBTILES" \
-      "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'abcdefghijklmnopqrstuvwxyz,.- ') <> ''" \
+      "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'0123456789abcdefghijklmnopqrstuvwxyz,.- ') <> ''" \
       | iconv -t ASCII//TRANSLIT -f UTF-8 \
       | grep -v "[,?]" \
-      > carmen-ascii.txt
-    while read line
-    do
-      rowid=`echo "$line" | grep -o "^[^|]*"`
-      ascii=`echo "$line" | grep -o "[^|]*$"`
-      echo "UPDATE carmen SET text = text||', '||\"$ascii\" WHERE rowid = \"$rowid\";" >> carmen-index.sql
-      echo "#$rowid => $ascii"
-    done < carmen-ascii.txt
+      | sed "s/\([^|]*\)|\(.*\)/UPDATE carmen SET text = text||', '||\"\2\" WHERE rowid = \"\1\" AND text <> \"\2\";/" \
+      >> carmen-index.sql
     echo "COMMIT;" >> carmen-index.sql
     sqlite3 "$MBTILES" < carmen-index.sql
     rm carmen-index.sql
-    rm carmen-ascii.txt
   fi
 else
   echo "$MBTILES is already indexed."
