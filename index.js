@@ -227,10 +227,14 @@ Carmen.prototype.centroid = function(id, callback) {
         carmen._open(this);
     }, function(err) {
         if (err) throw err;
-        db[type].source._db.all('SELECT zxy FROM carmen WHERE id MATCH(?) ORDER BY zxy ASC', id, this);
-    }, function(err, rows) {
+        db[type].source._db.get('SELECT zxy FROM carmen WHERE id MATCH(?)', id, this);
+    }, function(err, row) {
         if (err) throw err;
-        if (rows.length === 0) return this();
+        if (!row) return this();
+        var rows = _(row.zxy.split(',')).chain()
+            .map(function(zxy) { return _({zxy:zxy}).defaults(row); })
+            .sortBy(function(row) { return row.zxy })
+            .value();
         var zxy = rows[rows.length * 0.5|0].zxy.split('/');
         c.z = zxy[0] | 0;
         c.x = zxy[1] | 0;
@@ -299,6 +303,12 @@ Carmen.prototype.geocode = function(query, callback) {
         if (err) throw err;
 
         var totals = _(rows).chain()
+            .flatten()
+            .map(function(row) {
+                return row.zxy.split(',').map(function(zxy) {
+                    return _({zxy:zxy}).defaults(row);
+                });
+            })
             .flatten()
             .reduce(function(memo, row) {
                 var zxy = row.zxy;

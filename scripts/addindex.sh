@@ -33,7 +33,7 @@ if [ -z $INDEXED ]; then
   echo "BEGIN TRANSACTION;" >> carmen-index.sql
 
   sqlite3 "$MBTILES" \
-    "SELECT k.key_name, k.key_json, zoom_level||'/'||tile_column ||'/'||tile_row AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level='$ZOOM' AND k.key_json LIKE '%\"$FIELD\":%';" \
+    "SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level='$ZOOM' AND k.key_json LIKE '%\"$FIELD\":%' GROUP BY k.key_name;" \
     | sed "s/\([^|]*\)|.*\"$FIELD\":\"\([^\"]*\)\"[^|]*|\(.*\)/INSERT INTO carmen VALUES(\"\1\",\"\2\",\"\3\");/" \
     >> carmen-index.sql
 
