@@ -302,7 +302,12 @@ Carmen.prototype.geocode = function(query, callback) {
     }, function(err, rows) {
         if (err) throw err;
 
-        var totals = _(rows).chain()
+        var zooms = _(db).chain()
+            .pluck('zoom')
+            .uniq()
+            .sortBy(function(z) { return z })
+            .value();
+        var results = _(rows).chain()
             .flatten()
             .map(function(row) {
                 return row.zxy.split(',').map(function(zxy) {
@@ -336,49 +341,49 @@ Carmen.prototype.geocode = function(query, callback) {
                     score = db[row.db].weight * 0.5;
                 }
 
-                if (!memo[zxy] || memo[zxy].score[0] < score)
-                    memo[zxy] = { score:[score], terms:[row.db + '.' + row.id] };
+                memo[zxy] = memo[zxy] || [];
+                memo[zxy].push(_({score:score}).defaults(row));
+                return memo;
+            }, {})
+            .reduce(function(memo, rows, zxy) {
+                rows = _(rows).chain()
+                    .sortBy(function(r) { return r.score })
+                    .reverse()
+                    .reduce(function(memo, r) {
+                        memo[r.db] = memo[r.db] || r;
+                        return memo;
+                    }, {})
+                    .toArray()
+                    .value();
+                memo[zxy] = _(rows).filter(function(r) {
+                    return types.indexOf(r.db) <= types.indexOf(rows[0].db)
+                });
                 return memo;
             }, {})
             .value();
-        var zooms = _(db).chain()
-            .pluck('zoom')
-            .uniq()
-            .sortBy(function(z) { return z })
-            .value();
-        var results = _(totals).chain()
-            .map(function(total, key) {
-                var zxy = key.split('/').map(function(num) {
+        results = _(results).chain()
+            .map(function(rows, zxy) {
+                zxy = zxy.split('/').map(function(num) {
                     return parseInt(num, 10);
                 });
-                total.z = zxy[0];
-                total.x = zxy[1];
-                total.y = zxy[2];
                 _(zooms).each(function(z) {
                     if (zxy[0] <= z) return;
-                    if (total.terms.length >= data.query.length) return;
-                    var zx = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
-                    if (!totals[zx]) return;
-                    // @TODO revisit this logic, it's not clear that parents
-                    // should ever benefit from child matches.
-                    if (total.score[0] > totals[zx].score[0]) {
-                        total.score = total.score.concat(totals[zx].score);
-                        total.terms = total.terms.concat(totals[zx].terms);
-                    } else {
-                        total.score = totals[zx].score.concat(total.score);
-                        total.terms = totals[zx].terms.concat(total.terms);
-                    }
+                    if (rows.length >= data.query.length) return;
+                    var p = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
+                    if (!results[p]) return;
+                    rows = rows.concat(_(results[p]).filter(function(r) {
+                        return types.indexOf(r.db) <= types.indexOf(rows[0].db);
+                    }));
                 });
-                total.terms = _(total.terms).uniq();
-                return total;
+                return rows;
             })
             // Highest score.
-            .groupBy(function(v) { return _(v.score).reduce(function(m,v) {
-                return m + v;
+            .groupBy(function(rows) { return _(rows).reduce(function(memo, row) {
+                return memo + row.score;
             }, 0); })
-            .sortBy(function(v, k) { return -1 * k; })
+            .sortBy(function(rows, score) { return -1 * score; })
             .first()
-            .map(function(t) { return t.terms[0] })
+            .map(function(rows) { return rows[0].db + '.' + rows[0].id })
             .uniq()
             .value();
 
