@@ -52,22 +52,22 @@ if [ -z $INDEXED ]; then
   if [ `which iconv` ]; then
     echo "BEGIN TRANSACTION;" > carmen-index.sql
     IFS=$'\n'
-    for line in `sqlite3 "$MBTILES" "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'abcdefghijklmnopqrstuvwxyz,.- ') <> ''"`
+    sqlite3 "$MBTILES" \
+      "SELECT rowid, text FROM carmen WHERE TRIM(LOWER(text),'abcdefghijklmnopqrstuvwxyz,.- ') <> ''" \
+      | iconv -t ASCII//TRANSLIT -f UTF-8 \
+      | grep -v "[,?]" \
+      > carmen-ascii.txt
+    while read line
     do
       rowid=`echo "$line" | grep -o "^[^|]*"`
-      value=`echo "$line" | grep -o "[^|]*$"`
-      ascii=`echo "$value" | iconv -t ASCII//TRANSLIT -f UTF-8`
-      abort=`echo "$ascii" | grep -c "[,?]"`
-      if [ "$abort" == "0" ]; then
-        if [ "$value" != "$ascii" ]; then
-          echo "UPDATE carmen SET text = \"$value, $ascii\" WHERE rowid = \"$rowid\";" >> carmen-index.sql
-          echo "#$rowid $value => $value, $ascii"
-        fi
-      fi
-    done
+      ascii=`echo "$line" | grep -o "[^|]*$"`
+      echo "UPDATE carmen SET text = text||', '||\"$ascii\" WHERE rowid = \"$rowid\";" >> carmen-index.sql
+      echo "#$rowid => $ascii"
+    done < carmen-ascii.txt
     echo "COMMIT;" >> carmen-index.sql
     sqlite3 "$MBTILES" < carmen-index.sql
     rm carmen-index.sql
+    rm carmen-ascii.txt
   fi
 else
   echo "$MBTILES is already indexed."
