@@ -96,9 +96,14 @@ Note that the UTFGrid-based centroid calculation for polygon features is current
 Here are some guidelines if you are creating an MBTiles specifically for carmen in TileMill:
 
 - Only the highest zoom level of an MBTiles is used by carmen. To save on disk space and render time you will probably want to export only the highest zoom level of your map.
-- Since carmen uses the rendered UTFGrid you should ensure that the zoom level of your map is high enough to get the precision you want out of the UTFGrid.
+- Since carmen uses the rendered UTFGrid you should ensure that the zoom level of your map is high enough to get the precision you need. 
 - The field you use for search terms (by default `search`) can contain comma separated "synonyms". For example, a value of `United States, America` will allow searches for either `United States` or `America` to both match the same feature.
-- Image tiles in your MBTiles can be helpful for debugging but are not strictly necessary. To remove them in order to save space:
+- Image tiles in your MBTiles can be helpful for debugging but are not strictly necessary. To remove them and reclaim space:
 
         sqlite3 [mbtiles] "DELETE FROM images; UPDATE map SET tile_id = NULL; VACUUM;"
 
+### Known issues
+
+- Cyrillic UTF-8 characters are not supported by the SQLite3 `simple` tokenizer. This issue can be fixed by compiling SQLite3 with `libicu` support. See issue #7.
+- Very small features in the default datasources are lost during the rasterization process because of the 4x4 resolution of the UTFGrid renderer. See issue #29.
+- Discrepancies between default datasources sometimes assign the wrong context to a feature. For example, the rough administrative boundaries of natural earth place the OSM point for "El Paso" in Mexico rather than Texas. See issue #30.
