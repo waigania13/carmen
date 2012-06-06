@@ -231,14 +231,24 @@ Carmen.prototype.centroid = function(id, callback) {
     }, function(err, row) {
         if (err) throw err;
         if (!row) return this();
-        var rows = _(row.zxy.split(',')).chain()
-            .map(function(zxy) { return _({zxy:zxy}).defaults(row); })
-            .sortBy(function(row) { return row.zxy })
+        var rows = row.zxy.split(',').map(function(zxy) {
+            zxy = zxy.split('/');
+            return _({
+                z: zxy[0] | 0,
+                x: zxy[1] | 0,
+                y: (Math.pow(2,zxy[0]|0) - zxy[2] - 1) | 0
+            }).defaults(row);
+        });
+        c.z = rows[0].z;
+        c.x = _(rows).chain()
+            .sortBy('x').pluck('x').uniq()
+            .find(function(x, i, xs) { return i === (xs.length * 0.5 | 0) })
             .value();
-        var zxy = rows[rows.length * 0.5|0].zxy.split('/');
-        c.z = zxy[0] | 0;
-        c.x = zxy[1] | 0;
-        c.y = (Math.pow(2,c.z) - zxy[2] - 1) | 0;
+        c.y = _(rows).chain()
+            .filter(function(row) { return row.x === c.x })
+            .sortBy('y').pluck('y').uniq()
+            .find(function(y, i, ys) { return i === (ys.length * 0.5 | 0) })
+            .value();
         db[type].source.getGrid(c.z,c.x,c.y,this);
     }, function(err, grid) {
         if (err) return callback(err);
@@ -248,12 +258,17 @@ Carmen.prototype.centroid = function(id, callback) {
         var xy = [];
         _(grid.grid).each(function(row, y) {
             if (row.indexOf(chr) === -1) return;
-            for (var x = 0; x < 64; x++) if (row[x] === chr) xy.push([x,y]);
+            for (var x = 0; x < 64; x++) if (row[x] === chr) xy.push({x:x,y:y});
         });
-        xy = _(xy).sortBy(function(xy) { return (xy[0] * 1e2) + xy[1] });
-        xy = xy[xy.length * 0.5|0];
-        c.px = xy[0];
-        c.py = xy[1];
+        c.px = _(xy).chain()
+            .sortBy('x').pluck('x').uniq()
+            .find(function(x, i, xs) { return i === (xs.length * 0.5 | 0) })
+            .value();
+        c.py = _(xy).chain()
+            .filter(function(xy) { return xy.x === c.px })
+            .sortBy('y').pluck('y').uniq()
+            .find(function(y, i, ys) { return i === (ys.length * 0.5 | 0) })
+            .value();
         callback(null, sm.ll([
             (256*c.x) + (c.px*4),
             (256*c.y) + (c.py*4)
