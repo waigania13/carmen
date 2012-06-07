@@ -142,6 +142,6 @@ Fully rendered and indexed copies of these sources can be downloaded at:
 
 ## Known issues
 
-- Cyrillic UTF-8 characters are not supported by the SQLite3 `simple` tokenizer. This issue can be fixed by compiling SQLite3 with `libicu` support. See issue #7.
-- Very small features in the default datasources are lost during the rasterization process because of the 4x4 resolution of the UTFGrid renderer. See issue #29.
-- Discrepancies between default datasources sometimes assign the wrong context to a feature. For example, the rough administrative boundaries of natural earth place the OSM point for "El Paso" in Mexico rather than Texas. See issue #30.
+- Cyrillic UTF-8 characters are not supported by the SQLite3 `simple` tokenizer. This issue can be fixed by compiling SQLite3 with `libicu` support. See issue #1.
+- Very small features in the default datasources are lost during the rasterization process because of the 4x4 resolution of the UTFGrid renderer. See issue #2.
+- Discrepancies between default datasources sometimes assign the wrong context to a feature. For example, the rough administrative boundaries of natural earth place the OSM point for "El Paso" in Mexico rather than Texas. See issue #3.
