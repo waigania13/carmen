@@ -2,7 +2,7 @@
 
 DIR=`dirname $0`
 DIR=$DIR/../fixtures
-FIXTURES="test-cities test-countries test-provinces test-zipcodes test-context"
+FIXTURES="test-places test-countries test-provinces test-zipcodes test-context"
 
 if [ ! -d "$DIR" ]; then
     mkdir "$DIR"

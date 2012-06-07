@@ -50,7 +50,7 @@ var fixtures = {};
 fixtures.country = loadFixture(__dirname + '/../fixtures/test-countries.csv');
 fixtures.province = loadFixture(__dirname + '/../fixtures/test-provinces.csv');
 fixtures.zipcode = loadFixture(__dirname + '/../fixtures/test-zipcodes.csv', 400);
-fixtures.place = loadFixture(__dirname + '/../fixtures/test-cities.csv', 200);
+fixtures.place = loadFixture(__dirname + '/../fixtures/test-places.csv', 200);
 
 var summary = function(label, stats, verbose) {
     console.warn('');
