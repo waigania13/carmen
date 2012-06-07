@@ -105,7 +105,7 @@ Carmen.prototype._open = function(callback) {
 };
 
 Carmen.prototype.tokenize = function(query) {
-    query = query.split(/,|\n/i);
+    query = query.split(/,| in | near |\n|;/i);
 
     // lon, lat pair.
     if (query.length === 2 &&
