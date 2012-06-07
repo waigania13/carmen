@@ -1,6 +1,13 @@
 {
     "name": "carmen",
     "version": "0.0.1",
+    "url": "http://github.com/mapbox/carmen",
+    "author": {
+      "name": "MapBox",
+      "url": "http://mapbox.com/",
+      "email": "info@mapbox.com"
+    },
+    "licenses": [{ "type": "BSD" }],
     "dependencies": {
         "underscore": "1.3.x",
         "express": "~2.5.x",
@@ -12,5 +19,6 @@
     "scripts": {
         "pretest": "./scripts/ensure-fixtures.sh",
         "test": "mocha -R progress"
-    }
+    },
+    "engines": { "node": "0.6.x" }
 }
