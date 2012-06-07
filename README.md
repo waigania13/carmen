@@ -6,13 +6,19 @@ utfgrid/mbtiles-based geocoder.
 
     npm install && ./scripts/install-dbs.sh
 
-Installs dependencies and downloads the default tiles index.
+Installs dependencies and downloads the default tiles indexes (about 1GB of data).
 
 ## Usage
 
     npm start
 
 Runs an example geocoding server at `http://localhost:3000`.
+
+## Tests
+
+    npm test
+
+Requires [mocha](http://visionmedia.github.com/mocha/). Run `npm install -g mocha` to install it globally.
 
 ## API
 
@@ -96,6 +102,7 @@ The only requirement for a carmen MBTiles file is that it contains grids and fea
 - `lon` - longitude of the feature. If omitted, `lon` is calculated from the UTFGrid.
 - `lat` - latitude of the feature. If omitted, `lat` is calculated from the UTFGrid.
 - `type` - type of feature. If omitted, the index key is used.
+- `score` - numeric score. If present, used by the default `sortBy` function to sort results.
 
 Note that the UTFGrid-based centroid calculation for polygon features is currently very rough. Providing a more accurate lon/lat pair for these features is more performant and recommended.
 
@@ -110,7 +117,30 @@ Here are some guidelines if you are creating an MBTiles specifically for carmen 
 
         sqlite3 [mbtiles] "DELETE FROM images; UPDATE map SET tile_id = NULL; VACUUM;"
 
-### Known issues
+## Default indexes
+
+Four index files (country/province/place/zipcode) are provided by default with carmen. Their TileMill projects are available in the `data` branch.
+
+- `ne-countries` - countries, from Natural Earth. Public domain.
+- `ne-provinces` - provinces, from Natural Earth. Public domain.
+- `osm-places` - places (cities/towns/villages/etc.), OpenStreetMap and contributors. CC-by-SA.
+- `tiger-zipcodes`- US zipcodes, from TIGER. Public domain.
+
+Two other projects are available in the `data` branch:
+
+- `flickr-places` - places (localities), from Flickr. Public domain.
+- `tiger-places` - places (cities/towns/villages/etc.), from TIGER. Public domain.
+
+Fully rendered and indexed copies of these sources can be downloaded at:
+
+    http://mapbox.s3.amazonaws.com/carmen/flickr-places.mbtiles
+    http://mapbox.s3.amazonaws.com/carmen/ne-countries.mbtiles
+    http://mapbox.s3.amazonaws.com/carmen/ne-provinces.mbtiles
+    http://mapbox.s3.amazonaws.com/carmen/osm-places.mbtiles
+    http://mapbox.s3.amazonaws.com/carmen/tiger-zipcodes.mbtiles
+    http://mapbox.s3.amazonaws.com/carmen/tiger-places.mbtiles
+
+## Known issues
 
 - Cyrillic UTF-8 characters are not supported by the SQLite3 `simple` tokenizer. This issue can be fixed by compiling SQLite3 with `libicu` support. See issue #7.
 - Very small features in the default datasources are lost during the rasterization process because of the 4x4 resolution of the UTFGrid renderer. See issue #29.
