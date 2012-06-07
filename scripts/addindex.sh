@@ -27,7 +27,6 @@ if [ -z $INDEXED ]; then
   ZOOM=`echo "SELECT MAX(zoom_level) FROM map;" | sqlite3 $MBTILES`;
 
   # Create search table. Inserts id, text, zxy into `carmen` table.
-  echo "Indexing $MBTILES..."
   echo "CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);" > carmen-index.sql
   echo "CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);" >> carmen-index.sql
   echo "BEGIN TRANSACTION;" >> carmen-index.sql
@@ -41,10 +40,16 @@ if [ -z $INDEXED ]; then
 
   LINES=`cat carmen-index.sql | wc -l`
   if [ $LINES == 4 ]; then
-    echo "Failed to generate index."
+    FIELDS=`sqlite3 "$MBTILES" "SELECT key_json FROM keymap LIMIT 1" | grep -o '"[^":,]*":' | grep -o '[^":]*' | sed "s/\(.*\)/  \1/"`
+    echo "Usage: addindex.sh MBTILES [SEARCH-FIELD]"
+    echo ""
+    echo "Available fields:"
+    echo "$FIELDS"
+    rm carmen-index.sql
     exit 1
   fi
 
+  echo "Indexing $MBTILES..."
   sqlite3 "$MBTILES" < carmen-index.sql
   rm carmen-index.sql
 
