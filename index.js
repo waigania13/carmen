@@ -62,7 +62,7 @@ function Carmen(options) {
             filter: function(token) { return /[0-9]{5}/.test(token); }
         }
     };
-    this.db = _(options).reduce(function(memo, db, key) {
+    this.indexes = _(options).reduce(function(memo, db, key) {
         var dbname = key;
         memo[key] = _(db).defaults({
             context: true,
@@ -82,14 +82,14 @@ function Carmen(options) {
 };
 
 Carmen.prototype._open = function(callback) {
-    if (!_(this.db).all(function(d) { return d.source.open }))
+    if (!_(this.indexes).all(function(d) { return d.source.open }))
         return callback(new Error('DB not open.'));
 
     if (this._opened) return callback();
 
     var carmen = this;
-    var remaining = _(this.db).size();
-    _(this.db).each(function(db) {
+    var remaining = _(this.indexes).size();
+    _(this.indexes).each(function(db) {
         db.source.getInfo(function(err, info) {
             if (info) db.zoom = info.maxzoom;
             if (err) {
@@ -142,7 +142,7 @@ Carmen.prototype.tokenize = function(query) {
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
-    var db = this.db;
+    var indexes = this.indexes;
     var carmen = this;
     var scan = [
         [0,0],
@@ -162,7 +162,7 @@ Carmen.prototype.context = function(lon, lat, callback) {
         if (err) return callback(err);
 
         var group = this.group();
-        _(db).each(function(d, type) {
+        _(indexes).each(function(d, type) {
             if (!d.context) return;
             var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
             var next = group();
@@ -219,14 +219,14 @@ Carmen.prototype.centroid = function(id, callback) {
     var type = id.split('.').shift();
     var id = id.split('.').pop();
     var carmen = this;
-    var db = this.db;
+    var indexes = this.indexes;
     var c = {};
 
     Step(function() {
         carmen._open(this);
     }, function(err) {
         if (err) throw err;
-        db[type].source._db.get('SELECT zxy FROM carmen WHERE id MATCH(?)', id, this);
+        indexes[type].source._db.get('SELECT zxy FROM carmen WHERE id MATCH(?)', id, this);
     }, function(err, row) {
         if (err) throw err;
         if (!row) return this();
@@ -248,7 +248,7 @@ Carmen.prototype.centroid = function(id, callback) {
             .sortBy('y').pluck('y').uniq()
             .find(function(y, i, ys) { return i === (ys.length * 0.5 | 0) })
             .value();
-        db[type].source.getGrid(c.z,c.x,c.y,this);
+        indexes[type].source.getGrid(c.z,c.x,c.y,this);
     }, function(err, grid) {
         if (err) return callback(err);
         if (!grid) return callback(new Error('Grid does not exist'));
@@ -276,10 +276,10 @@ Carmen.prototype.centroid = function(id, callback) {
 };
 
 Carmen.prototype.geocode = function(query, callback) {
-    var db = this.db;
-    var types = Object.keys(db);
-    var minweight = _(db).chain().pluck('weight').min().value();
-    var maxweight = _(db).chain().pluck('weight').max().value();
+    var indexes = this.indexes;
+    var types = Object.keys(indexes);
+    var minweight = _(indexes).chain().pluck('weight').min().value();
+    var maxweight = _(indexes).chain().pluck('weight').max().value();
     var data = { query: this.tokenize(query) };
     var carmen = this;
 
@@ -303,7 +303,7 @@ Carmen.prototype.geocode = function(query, callback) {
             SELECT c.id, c.text, c.zxy, ? AS db, ? AS token\
             FROM carmen c\
             WHERE c.text MATCH(?)';
-        _(db).each(function(db, dbname) {
+        _(indexes).each(function(db, dbname) {
             if (!db.query) return;
             var statement = db.source._db.prepare(sql);
             _(data.query).each(function(t) {
@@ -316,7 +316,7 @@ Carmen.prototype.geocode = function(query, callback) {
     }, function(err, rows) {
         if (err) throw err;
 
-        var zooms = _(db).chain()
+        var zooms = _(indexes).chain()
             .pluck('zoom')
             .uniq()
             .sortBy(function(z) { return z })
@@ -347,12 +347,12 @@ Carmen.prototype.geocode = function(query, callback) {
                     exact &&
                     data.query.length > 1 &&
                     data.query[0] === row.token &&
-                    db[row.db].weight === minweight) {
+                    indexes[row.db].weight === minweight) {
                     score = maxweight + 0.01;
                 } else if (exact) {
-                    score = db[row.db].weight;
+                    score = indexes[row.db].weight;
                 } else {
-                    score = db[row.db].weight * 0.5;
+                    score = indexes[row.db].weight * 0.5;
                 }
 
                 memo[zxy] = memo[zxy] || [];
@@ -411,7 +411,7 @@ Carmen.prototype.geocode = function(query, callback) {
         _(results).each(function(term) {
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            db[dbname].source._db.get(sql, dbname, termid, function(err, row) {
+            indexes[dbname].source._db.get(sql, dbname, termid, function(err, row) {
                 if (err) return this(err);
                 if (rows.push(row) && --remaining === 0) return this(null, rows);
             }.bind(this));
@@ -429,9 +429,9 @@ Carmen.prototype.geocode = function(query, callback) {
             })
             // Sort data before passing it through index.map where
             // values used to sort may be stripped for output.
-            .sortBy(function(r) { return db[r.type].sortBy(r.data) })
+            .sortBy(function(r) { return indexes[r.type].sortBy(r.data) })
             .map(function(r) {
-                r.data = db[r.type].map(r.data);
+                r.data = indexes[r.type].map(r.data);
                 return r;
             })
             .reverse()

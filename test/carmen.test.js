@@ -102,7 +102,7 @@ describe('context', function() {
 });
 
 _(fixtures).each(function(fixture, type) {
-    if (!carmen.db[type] || !carmen.db[type].query) return;
+    if (!carmen.indexes[type] || !carmen.indexes[type].query) return;
 
     describe('geocode ' + type, function() {
         var stats = {
@@ -141,7 +141,7 @@ _(fixtures).each(function(fixture, type) {
 });
 
 _(fixtures).each(function(fixture, type) {
-    if (!carmen.db[type] || !carmen.db[type].context) return;
+    if (!carmen.indexes[type] || !carmen.indexes[type].context) return;
 
     describe('reverse', function() {
         var stats = {
