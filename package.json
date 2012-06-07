@@ -1,11 +1,12 @@
 {
     "name": "carmen",
+    "description": "UTFGrid/MBTiles-based geocoder with support for swappable data sources.",
     "version": "0.0.1",
     "url": "http://github.com/mapbox/carmen",
     "author": {
-      "name": "MapBox",
-      "url": "http://mapbox.com/",
-      "email": "info@mapbox.com"
+        "name": "MapBox",
+        "url": "http://mapbox.com/",
+        "email": "info@mapbox.com"
     },
     "licenses": [{ "type": "BSD" }],
     "dependencies": {

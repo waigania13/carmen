@@ -1,6 +1,6 @@
 carmen
 ------
-utfgrid/mbtiles-based geocoder.
+UTFGrid/MBTiles-based geocoder with support for swappable data sources.
 
 ## Install
 
