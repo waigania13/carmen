@@ -2,7 +2,9 @@ var _ = require('underscore');
 var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
-var carmen = new (require('..'))();
+var MBTiles = require('mbtiles');
+var Carmen = require('..');
+var carmen = new Carmen();
 
 function okay(type, a, b) {
     var margin = 0.01;
@@ -68,6 +70,19 @@ var summary = function(label, stats, verbose) {
         });
     });
 }
+
+describe('error condition', function() {
+    it('should detect missing index', function(done) {
+        var source = new MBTiles(__dirname +'/../fixtures/no-index.mbtiles',function(){
+            var bad = new Carmen({'foo': {source: source}});
+            bad.geocode('foo', function(err, res) {
+                assert.notEqual(err, null, 'Missing index ignored');
+                assert.equal(err.message, 'SQLITE_ERROR: no such table: carmen');
+                done();
+            });
+        })
+    });
+});
 
 var context = loadContext(__dirname + '/../fixtures/test-context.csv');
 describe('context', function() {

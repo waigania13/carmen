@@ -1,4 +1,8 @@
-/fixtures
+/fixtures/test-context.csv
+/fixtures/test-countries.csv
+/fixtures/test-places.csv
+/fixtures/test-provinces.csv
+/fixtures/test-zipcodes.csv
 /tiles
 /node_modules
 npm-debug.log

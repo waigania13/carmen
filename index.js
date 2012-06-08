@@ -312,6 +312,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 statement.all(dbname, t, t, next);
             });
             statement.finalize();
+            statement.on('error', function(err) { callback(err) });
         });
     }, function(err, rows) {
         if (err) throw err;
