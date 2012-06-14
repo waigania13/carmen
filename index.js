@@ -372,17 +372,6 @@ Carmen.prototype.geocode = function(query, callback) {
                 rows = _(rows).chain()
                     .sortBy(function(r) { return r.score })
                     .reverse()
-                    // ensure at most one result for each token.
-                    .reduce(function(memo, r) {
-                        memo[r.i] = memo[r.i] || r;
-                        return memo;
-                    }, {})
-                    // ensure at most one result for each index.
-                    .reduce(function(memo, r) {
-                        memo[r.db] = memo[r.db] || r;
-                        return memo;
-                    }, {})
-                    .toArray()
                     .value();
                 memo[zxy] = _(rows).filter(function(r) {
                     return types.indexOf(r.db) <= types.indexOf(rows[0].db)
@@ -395,20 +384,35 @@ Carmen.prototype.geocode = function(query, callback) {
                 zxy = zxy.split('/').map(function(num) {
                     return parseInt(num, 10);
                 });
-                var matched = _(rows).pluck('i');
-                _(zooms).each(function(z) {
-                    if (zxy[0] <= z) return;
-                    if (rows.length >= data.query.length) return;
-                    var p = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
-                    // Early exit if no result or result is for a token we
-                    // have already accounted for.
-                    if (!results[p] || _(matched).include(results[p].i)) return;
-                    rows = rows.concat(_(results[p]).filter(function(r) {
-                        return types.indexOf(r.db) <= types.indexOf(rows[0].db);
-                    }));
-                });
+                // coalesce parent results into child results.
+                _(zooms).chain()
+                    .filter(function(z) { return z < zxy[0] })
+                    .each(function(z) {
+                        var p = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
+                        if (!results[p]) return;
+                        rows = rows.concat(_(results[p]).filter(function(r) {
+                            return types.indexOf(r.db) <= types.indexOf(rows[0].db);
+                        }));
+                    });
+                rows = _(rows).chain()
+                    // ensure at most one result for each db.
+                    .reduce(function(memo, r) {
+                        memo[r.db] = memo[r.db] || r;
+                        return memo;
+                    }, {})
+                    // ensure at most one result for each token.
+                    .reduce(function(memo, r) {
+                        memo[r.i] = memo[r.i] || r;
+                        return memo;
+                    }, {})
+                    .toArray()
+                    .value();
                 return rows;
             })
+            // Remove results that don't match enough of the query tokens.
+            // Prevents "Ohio" from being returned for queries like "Seattle, Ohio".
+            // @TODO revisit this for fuzzier matching in the future.
+            .filter(function(rows) { return rows.length >= data.query.length; })
             // Highest score.
             .groupBy(function(rows) { return _(rows).reduce(function(memo, row) {
                 return memo + row.score;
