@@ -300,16 +300,16 @@ Carmen.prototype.geocode = function(query, callback) {
 
         var group = this.group();
         var sql = '\
-            SELECT c.id, c.text, c.zxy, ? AS db, ? AS token\
+            SELECT c.id, c.text, c.zxy, ? AS db, ? AS i, ? AS token\
             FROM carmen c\
             WHERE c.text MATCH(?)';
         _(indexes).each(function(db, dbname) {
             if (!db.query) return;
             var statement = db.source._db.prepare(sql);
-            _(data.query).each(function(t) {
+            _(data.query).each(function(t, i) {
                 if (!db.filter(t)) return;
                 var next = group();
-                statement.all(dbname, t, t, next);
+                statement.all(dbname, i, t, t, next);
             });
             statement.finalize();
             statement.on('error', function(err) { callback(err) });
@@ -341,15 +341,23 @@ Carmen.prototype.geocode = function(query, callback) {
 
                 // Allow results from the lowest weighted indexes to
                 // nevertheless beat the highest weighted DB if there are
-                // multiple tokens and it is an exact match for the first token.
+                // multiple tokens and the result's token index roughly
+                // correlates with its low weight weight.
                 // Handles cases like "New York, NY".
+
+                // Token index between 0-1 relative to number of tokens.
+                var it = row.i / data.query.length;
+                // Weight index between 0-1 relative to min/maxweight.
+                var iw = (indexes[row.db].weight - minweight) / (maxweight - minweight);
+                // Bonus exact matches should receive.
+                var bonus = 1 - Math.abs(it - iw);
+
                 var score;
                 if (maxweight > minweight &&
                     exact &&
                     data.query.length > 1 &&
-                    data.query[0] === row.token &&
-                    indexes[row.db].weight === minweight) {
-                    score = maxweight + 0.01;
+                    indexes[row.db].weight < maxweight) {
+                    score = (bonus * maxweight) + 0.01;
                 } else if (exact) {
                     score = indexes[row.db].weight;
                 } else {
@@ -357,13 +365,19 @@ Carmen.prototype.geocode = function(query, callback) {
                 }
 
                 memo[zxy] = memo[zxy] || [];
-                memo[zxy].push(_({score:score}).defaults(row));
+                memo[zxy].push(_({score:score, i:row.i}).defaults(row));
                 return memo;
             }, {})
             .reduce(function(memo, rows, zxy) {
                 rows = _(rows).chain()
                     .sortBy(function(r) { return r.score })
                     .reverse()
+                    // ensure at most one result for each token.
+                    .reduce(function(memo, r) {
+                        memo[r.i] = memo[r.i] || r;
+                        return memo;
+                    }, {})
+                    // ensure at most one result for each index.
                     .reduce(function(memo, r) {
                         memo[r.db] = memo[r.db] || r;
                         return memo;
@@ -381,11 +395,14 @@ Carmen.prototype.geocode = function(query, callback) {
                 zxy = zxy.split('/').map(function(num) {
                     return parseInt(num, 10);
                 });
+                var matched = _(rows).pluck('i');
                 _(zooms).each(function(z) {
                     if (zxy[0] <= z) return;
                     if (rows.length >= data.query.length) return;
                     var p = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
-                    if (!results[p]) return;
+                    // Early exit if no result or result is for a token we
+                    // have already accounted for.
+                    if (!results[p] || _(matched).include(results[p].i)) return;
                     rows = rows.concat(_(results[p]).filter(function(r) {
                         return types.indexOf(r.db) <= types.indexOf(rows[0].db);
                     }));
