@@ -103,6 +103,7 @@ The only requirement for a carmen MBTiles file is that it contains grids and fea
 - `lat` - latitude of the feature. If omitted, `lat` is calculated from the UTFGrid.
 - `type` - type of feature. If omitted, the index key is used.
 - `score` - numeric score. If present, used by the default `sortBy` function to sort results.
+- `bounds` - comma-separated coordinates that bound the feature in order: w,s,e,n. If present, carmen will split and format this field into an array of values.
 
 Note that the UTFGrid-based centroid calculation for polygon features is currently very rough. Providing a more accurate lon/lat pair for these features is more performant and recommended.
 

@@ -74,6 +74,7 @@ function Carmen(options) {
                 delete data.search;
                 delete data.rank;
                 data.type = data.type || dbname;
+                if (data.bounds) data.bounds = data.bounds.split(',').map(parseFloat);
                 return data;
             }
         });
