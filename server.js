@@ -17,3 +17,4 @@ server.get('/geocode/:query', function(req, res, next) {
 server.use(express['static'](__dirname + '/static'));
 
 server.listen(3000);
+console.log('carmen: http://localhost:3000')
