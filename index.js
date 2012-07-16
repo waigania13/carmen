@@ -303,7 +303,8 @@ Carmen.prototype.geocode = function(query, callback) {
         var sql = '\
             SELECT c.id, c.text, c.zxy, ? AS db, ? AS i, ? AS token\
             FROM carmen c\
-            WHERE c.text MATCH(?)';
+            WHERE c.text MATCH(?)\
+            LIMIT 1000';
         _(indexes).each(function(db, dbname) {
             if (!db.query) return;
             var statement = db.source._db.prepare(sql);
