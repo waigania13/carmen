@@ -472,12 +472,20 @@ Carmen.prototype.geocode = function(query, callback) {
         if (err) return callback(err);
         data.results = _(matches).chain()
             .map(function(r) {
-                var context = _(contexts).find(function(c) {
+                // Confirm that the context contains the terms that contributed
+                // to the match's score. All other contexts are false positives
+                // and should be discarded. Example:
+                //
+                //     "Chester, NJ" => "Chester, PA"
+                //
+                // This context will be returned because Chester, PA is in
+                // close enough proximity to overlap with NJ.
+                r.context = _(contexts).find(function(c) {
                     return _(r.terms).all(function(id) {
                         return _(c).any(function(t) { return t.id === id });
                     });
                 });
-                if (context && (r.context = context)) return r;
+                if (r.context) return r;
             })
             .compact()
             .sortBy(function(r) { return indexes[r.type].sortBy(r.data) })
