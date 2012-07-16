@@ -421,7 +421,9 @@ Carmen.prototype.geocode = function(query, callback) {
             }, 0); })
             .sortBy(function(rows, score) { return -1 * score; })
             .first()
-            .map(function(rows) { return rows[0].db + '.' + rows[0].id })
+            .map(function(rows) {
+                return rows.map(function(r) { return r.db + '.' + r.id }).join(',');
+            })
             .uniq()
             .value();
 
@@ -429,64 +431,57 @@ Carmen.prototype.geocode = function(query, callback) {
 
         // Not using this.group() here because somehow this
         // code triggers Step's group bug.
-        var rows = [];
+        var next = this;
+        var matches = [];
+        var contexts = [];
         var remaining = results.length;
-        var sql = 'SELECT ?||"."||key_name AS id, key_json AS data FROM keymap WHERE key_name = ?';
-        _(results).each(function(term) {
+        var sql = 'SELECT ? AS terms, ?||"."||key_name AS id, key_json AS data FROM keymap WHERE key_name = ?';
+        _(results).each(function(terms) {
+            var term = terms.split(',')[0];
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            indexes[dbname].source._db.get(sql, dbname, termid, function(err, row) {
-                if (err) return this(err);
-                if (rows.push(row) && --remaining === 0) return this(null, rows);
-            }.bind(this));
-        }.bind(this));
-    }, function(err, rows) {
-        if (err) throw err;
-
-        var results = _(rows).chain()
-            .compact()
-            .map(function(r) {
+            indexes[dbname].source._db.get(sql, terms, dbname, termid, function(err, r) {
+                if (err) return next(err);
                 r.type = r.id.split('.')[0];
                 r.data = JSON.parse(r.data) || {};
                 r.data.id = r.data.id || r.id;
-                return r;
-            })
-            // Sort data before passing it through index.map where
-            // values used to sort may be stripped for output.
-            .sortBy(function(r) { return indexes[r.type].sortBy(r.data) })
-            .map(function(r) {
-                r.data = indexes[r.type].map(r.data);
-                return r;
-            })
-            .reverse()
-            .value();
+                r.terms = r.terms.split(',');
 
-        data.results = [];
-
-        var group = this.group();
-        _(results).each(function(r) {
-            var next = group();
-            var result = [r.data];
-            var done = function(err, context) {
-                if (err) return next(err);
-                _(context).each(function(term) {
-                    if (term.id === r.id) {
-                        result[0] = term;
-                    } else if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type)) {
-                        result.push(term);
-                    }
-                });
-                return next();
-            };
-            data.results.push(result);
-            if ('lon' in r.data && 'lat' in r.data) {
-                carmen.context(r.data.lon, r.data.lat, done);
-            } else {
-                carmen.contextByFeature(r.id, done);
-            }
+                var args = [r.id];
+                var method = 'contextByFeature';
+                if ('lon' in r.data && 'lat' in r.data) {
+                    args = [r.data.lon, r.data.lat];
+                    method = 'context';
+                }
+                carmen[method].apply(carmen, args.concat(function(err, context) {
+                    if (err) return next(err);
+                    context = _(context).filter(function(term) {
+                        if (term.id === r.id) return true;
+                        if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type)) return true;
+                        return false;
+                    });
+                    matches.push(r);
+                    contexts.push(context);
+                    if (--remaining === 0) return next(null, matches, contexts);
+                }));
+            });
         });
-    }, function(err) {
+    }, function(err, matches, contexts) {
         if (err) return callback(err);
+        data.results = _(matches).chain()
+            .map(function(r) {
+                var context = _(contexts).find(function(c) {
+                    return _(r.terms).all(function(id) {
+                        return _(c).any(function(t) { return t.id === id });
+                    });
+                });
+                if (context && (r.context = context)) return r;
+            })
+            .compact()
+            .sortBy(function(r) { return indexes[r.type].sortBy(r.data) })
+            .reverse()
+            .pluck('context')
+            .value();
         return callback(null, data);
     });
 };
