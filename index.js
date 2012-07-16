@@ -455,6 +455,8 @@ Carmen.prototype.geocode = function(query, callback) {
                 }
                 carmen[method].apply(carmen, args.concat(function(err, context) {
                     if (err) return next(err);
+                    // Add the result in manually for indexes that exclude context retrieval.
+                    if (!indexes[r.type].context) context.unshift(indexes[r.type].map(r.data));
                     context = _(context).filter(function(term) {
                         if (term.id === r.id) return true;
                         if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type)) return true;
