@@ -369,6 +369,16 @@ Carmen.prototype.geocode = function(query, callback) {
                         }));
                     });
                 rows = _(rows).chain()
+                    // prevent db/token reduction from reducing to single case
+                    // when there are identical tokens e.g. "new york, new york"
+                    // @TODO unclear whether this scales beyond x2 tokens.
+                    .groupBy(function(r) { return r.db }).toArray()
+                    .map(function(rows, i) {
+                        rows = _(rows).sortBy(function(r) { return r.i });
+                        if (i%2) rows.reverse();
+                        return rows;
+                    })
+                    .flatten()
                     // ensure at most one result for each db.
                     .reduce(function(memo, r) {
                         memo[r.db] = memo[r.db] || r;
