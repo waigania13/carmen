@@ -333,41 +333,13 @@ Carmen.prototype.geocode = function(query, callback) {
             })
             .flatten()
             .reduce(function(memo, row) {
-                var zxy = row.zxy;
-
                 // Reward exact matches.
-                var exact = _(row.text.split(',')).chain()
+                var score = (_(row.text.split(',')).chain()
                     .map(function(part) { return part.toLowerCase().replace(/^\s+|\s+$/g, ''); })
                     .any(function(part) { return part === row.token; })
-                    .value();
-
-                // Allow results from the lowest weighted indexes to
-                // nevertheless beat the highest weighted DB if there are
-                // multiple tokens and the result's token index roughly
-                // correlates with its low weight weight.
-                // Handles cases like "New York, NY".
-
-                // Token index between 0-1 relative to number of tokens.
-                var it = row.i / data.query.length;
-                // Weight index between 0-1 relative to min/maxweight.
-                var iw = (indexes[row.db].weight - minweight) / (maxweight - minweight);
-                // Bonus exact matches should receive.
-                var bonus = 1 - Math.abs(it - iw);
-
-                var score;
-                if (maxweight > minweight &&
-                    exact &&
-                    data.query.length > 1 &&
-                    indexes[row.db].weight < maxweight) {
-                    score = (bonus * maxweight) + 0.01;
-                } else if (exact) {
-                    score = indexes[row.db].weight;
-                } else {
-                    score = indexes[row.db].weight * 0.5;
-                }
-
-                memo[zxy] = memo[zxy] || [];
-                memo[zxy].push(_({score:score, i:row.i}).defaults(row));
+                    .value() ? 1 : 0.5) * indexes[row.db].weight
+                memo[row.zxy] = memo[row.zxy] || [];
+                memo[row.zxy].push(_({score:score, i:row.i}).defaults(row));
                 return memo;
             }, {})
             .reduce(function(memo, rows, zxy) {
