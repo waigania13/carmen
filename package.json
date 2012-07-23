@@ -18,7 +18,7 @@
     },
     "main": "./index.js",
     "scripts": {
-        "pretest": "./scripts/ensure-fixtures.sh",
+        "pretest": "./scripts/ensure-fixtures.sh && ./scripts/install-dbs.sh",
         "test": "mocha -R progress -t 3000"
     },
     "engines": { "node": "0.6.x" }
