@@ -152,6 +152,8 @@ var getZ = function(type) {
     return -1;
 };
 
+map.addCallback('panned', _(getContext).throttle(500));
+
 $('body').delegate('a.item', 'click', function(ev) {
     var center = $(ev.currentTarget).attr('href').split('#').pop().split(',');
     center = _(center).map(parseFloat);
