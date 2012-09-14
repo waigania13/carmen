@@ -439,11 +439,22 @@ Carmen.prototype.geocode = function(query, callback) {
                     if (err) return next(err);
                     // Add the result in manually for indexes that exclude context retrieval.
                     if (!indexes[r.type].context) context.unshift(indexes[r.type].map(r.data));
-                    context = _(context).filter(function(term) {
-                        if (term.id === r.id) return true;
-                        if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type)) return true;
+                    // Context adjustments.
+                    context = _(context).chain().map(function(term) {
+                        // Term matches result.
+                        if (term.id === r.id) return term;
+                        // Term is parent of result.
+                        if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type))
+                            return term;
+                        // A context that includes a different term at the
+                        // same level as the result likely has a different
+                        // overlapping feature that obscures the result
+                        // feature. Replace the obscuring feature with the
+                        // result.
+                        if (types.indexOf(term.id.split('.')[0]) === types.indexOf(r.type))
+                            return indexes[r.type].map(r.data);
                         return false;
-                    });
+                    }).compact().value();
                     matches.push(r);
                     contexts.push(context);
                     if (--remaining === 0) return next(null, matches, contexts);
