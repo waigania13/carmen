@@ -227,11 +227,11 @@ Carmen.prototype.centroid = function(id, callback) {
         carmen._open(this);
     }, function(err) {
         if (err) throw err;
-        indexes[type].source._db.get('SELECT zxy FROM carmen WHERE id MATCH(?)', id, this);
+        indexes[type].source.search(null, id, this);
     }, function(err, row) {
         if (err) throw err;
         if (!row) return this();
-        var rows = row.zxy.split(',').map(function(zxy) {
+        var rows = row.zxy.map(function(zxy) {
             zxy = zxy.split('/');
             return _({
                 z: zxy[0] | 0,
@@ -303,7 +303,7 @@ Carmen.prototype.geocode = function(query, callback) {
         _(indexes).each(function(db, dbname) {
             _(data.query||[]).each(function(t, i) {
                 var next = group();
-                db.source.search(t, function(err, rows) {
+                db.source.search(t, null, function(err, rows) {
                     if (err) return next(err);
                     rows = rows.map(function(row) {
                         row.token = t;
