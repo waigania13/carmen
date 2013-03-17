@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
-var MBTiles = require('mbtiles');
+var MBTiles = require('./mbtiles');
 var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
@@ -300,21 +300,20 @@ Carmen.prototype.geocode = function(query, callback) {
         if (err) throw err;
 
         var group = this.group();
-        var sql = '\
-            SELECT c.id, c.text, c.zxy, ? AS db, ? AS i, ? AS token\
-            FROM carmen c\
-            WHERE c.text MATCH(?)\
-            LIMIT 1000';
         _(indexes).each(function(db, dbname) {
-            if (!db.query) return;
-            var statement = db.source._db.prepare(sql);
-            _(data.query).each(function(t, i) {
-                if (!db.filter(t)) return;
+            _(data.query||[]).each(function(t, i) {
                 var next = group();
-                statement.all(dbname, i, t, t, next);
+                db.source.search(t, function(err, rows) {
+                    if (err) return next(err);
+                    rows = rows.map(function(row) {
+                        row.token = t;
+                        row.db = dbname;
+                        row.i = i;
+                        return row;
+                    });
+                    next(err, rows);
+                });
             });
-            statement.finalize();
-            statement.on('error', function(err) { callback(err) });
         });
     }, function(err, rows) {
         if (err) throw err;
@@ -326,20 +325,16 @@ Carmen.prototype.geocode = function(query, callback) {
             .value();
         var results = _(rows).chain()
             .flatten()
-            .map(function(row) {
-                return row.zxy.split(',').map(function(zxy) {
-                    return _({zxy:zxy}).defaults(row);
-                });
-            })
-            .flatten()
             .reduce(function(memo, row) {
                 // Reward exact matches.
                 var score = (_(row.text.split(',')).chain()
                     .map(function(part) { return part.toLowerCase().replace(/^\s+|\s+$/g, ''); })
                     .any(function(part) { return part === row.token; })
-                    .value() ? 1 : 0.5) * indexes[row.db].weight
-                memo[row.zxy] = memo[row.zxy] || [];
-                memo[row.zxy].push(_({score:score, i:row.i}).defaults(row));
+                    .value() ? 1 : 0.5) * indexes[row.db].weight;
+                _(row.zxy).forEach(function(zxy) {
+                    memo[zxy] = memo[zxy] || [];
+                    memo[zxy].push(_({score:score, i:row.i}).defaults(row));
+                });
                 return memo;
             }, {})
             .reduce(function(memo, rows, zxy) {
@@ -417,17 +412,17 @@ Carmen.prototype.geocode = function(query, callback) {
         var matches = [];
         var contexts = [];
         var remaining = results.length;
-        var sql = 'SELECT ? AS terms, ?||"."||key_name AS id, key_json AS data FROM keymap WHERE key_name = ?';
         _(results).each(function(terms) {
             var term = terms.split(',')[0];
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            indexes[dbname].source._db.get(sql, terms, dbname, termid, function(err, r) {
+            indexes[dbname].source.feature(termid, function(err, data) {
                 if (err) return next(err);
-                r.type = r.id.split('.')[0];
-                r.data = JSON.parse(r.data) || {};
-                r.data.id = r.data.id || r.id;
-                r.terms = r.terms.split(',');
+                var r = {};
+                r.type = dbname;
+                r.data = data;
+                r.data.id = r.data.id || dbname + '.' + termid;
+                r.terms = terms.split(',');
 
                 var args = [r.id];
                 var method = 'contextByFeature';
