@@ -93,7 +93,7 @@ S3.prototype.search = function(query, id, callback) {
                 var key = obj.split('/').pop().split('.');
                 memo[key[1]] = memo[key[1]] || {};
                 memo[key[1]].id = key[1];
-                memo[key[1]].text = key[0];
+                memo[key[1]].text = key[0].replace(/_/g,' ');
                 memo[key[1]].zxy = (memo[key[1]].zxy || [])
                     .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
                 return memo;
