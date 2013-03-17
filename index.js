@@ -419,9 +419,10 @@ Carmen.prototype.geocode = function(query, callback) {
             indexes[dbname].source.feature(termid, function(err, data) {
                 if (err) return next(err);
                 var r = {};
+                r.id = dbname + '.' + termid;
                 r.type = dbname;
                 r.data = data;
-                r.data.id = r.data.id || dbname + '.' + termid;
+                r.data.id = r.data.id || r.id;
                 r.terms = terms.split(',');
 
                 var args = [r.id];
