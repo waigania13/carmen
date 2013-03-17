@@ -56,12 +56,16 @@ var abbr = [
 ].map(function(s) { return s.toLowerCase() });
 
 S3.terms = function(doc) {
-    var parts = doc.split(' ')
-        .map(function(w) { return w.replace(/[^A-Za-z]/g, '').toLowerCase(); })
-        .filter(function(w) { return w.length });
-    return []
-        .concat(parts.filter(function(w) { return abbr.indexOf(w) === -1 }))
-        .concat(parts.length > 1 ? parts.join('_') : []);
+    var terms = [];
+    doc.split(',').forEach(function(doc) {
+        var parts = doc.split(' ')
+            .map(function(w) { return w.replace(/[^A-Za-z]/g, '').toLowerCase(); })
+            .filter(function(w) { return w.length });
+        terms = terms
+            .concat(parts.filter(function(w) { return abbr.indexOf(w) === -1 }))
+            .concat(parts.length > 1 ? parts.join('_') : []);
+    });
+    return terms;
 };
 
 // Implements carmen#search method.
