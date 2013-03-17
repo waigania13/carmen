@@ -27,3 +27,30 @@ MBTiles.prototype.feature = function(id, callback) {
         catch(err) { return callback(err); }
     });
 };
+
+// Implements carmen#index method.
+MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
+    var remaining = 2;
+    var done = function(err) {
+        if (err) {
+            remaining = -1;
+            callback(err);
+        } else if (!--remaining) {
+            callback(null);
+        }
+    };
+    this._db.run('REPLACE INTO carmen (id, text, zxy) VALUES (?, ?, ?)', id, text, zxy.join(','), done);
+    this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', id, JSON.stringify(doc), done);
+};
+
+// Adds carmen schema to startWriting.
+MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function(parent, callback) {
+    parent.call(this, function(err) {
+        if (err) return callback(err);
+        var sql = '\
+        CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);\
+        CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);'
+        this._db.exec(sql, callback);
+    }.bind(this));
+});
+
