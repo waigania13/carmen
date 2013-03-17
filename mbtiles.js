@@ -43,6 +43,23 @@ MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
     this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', id, JSON.stringify(doc), done);
 };
 
+// Implements carmen#indexable method.
+MBTiles.prototype.indexable = function(callback) {
+    this.getInfo(function(err, info) {
+        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name;", info.maxzoom, function(err, rows) {
+            if (err) return callback(err);
+            var docs = rows.map(function(row) {
+                var doc = {};
+                doc.id = row.key_name;
+                doc.doc = JSON.parse(row.key_json);
+                doc.zxy = row.zxy.split(',');
+                return doc;
+            });
+            return callback(null, docs);
+        }.bind(this));
+    }.bind(this));
+};
+
 // Adds carmen schema to startWriting.
 MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function(parent, callback) {
     parent.call(this, function(err) {
