@@ -52,6 +52,9 @@ MBTiles.prototype.indexable = function(callback) {
                 var doc = {};
                 doc.id = row.key_name;
                 doc.doc = JSON.parse(row.key_json);
+                // @TODO the doc field name for searching probably (?) belongs
+                // in `metadata` and should be un-hardcoded in the future.
+                doc.text = doc.doc.search;
                 doc.zxy = row.zxy.split(',');
                 return doc;
             });
