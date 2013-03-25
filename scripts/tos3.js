@@ -26,21 +26,25 @@ new MBTiles(mbtiles, function(err, from) {
         if (err) throw err;
         s3.startWriting(function(err) {
             if (err) throw err;
-            from.indexable(function(err, docs) {
-                if (err) throw err;
-                var write = function() {
+            var index = function(pointer) {
+                from.indexable(pointer, function(err, docs, pointer) {
+                    if (err) throw err;
                     if (!docs.length) return s3.stopWriting(function(err) {
                         if (err) throw err;
                         console.log('Done.');
                     });
-                    var doc = docs.shift();
-                    s3.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
-                        if (err) throw err;
-                        write();
-                    });
-                };
-                write();
-            });
+                    var write = function() {
+                        if (!docs.length) return index(pointer);
+                        var doc = docs.shift();
+                        s3.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
+                            if (err) throw err;
+                            write();
+                        });
+                    };
+                    write();
+                });
+            };
+            index();
         });
     });
 });

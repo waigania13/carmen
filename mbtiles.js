@@ -44,9 +44,10 @@ MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
 };
 
 // Implements carmen#indexable method.
-MBTiles.prototype.indexable = function(callback) {
+MBTiles.prototype.indexable = function(pointer, callback) {
+    pointer = pointer || 0;
     this.getInfo(function(err, info) {
-        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name;", info.maxzoom, function(err, rows) {
+        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT 10000 OFFSET ?;", info.maxzoom, pointer, function(err, rows) {
             if (err) return callback(err);
             var docs = rows.map(function(row) {
                 var doc = {};
@@ -58,7 +59,8 @@ MBTiles.prototype.indexable = function(callback) {
                 doc.zxy = row.zxy.split(',');
                 return doc;
             });
-            return callback(null, docs);
+            pointer += 10000;
+            return callback(null, docs, pointer);
         }.bind(this));
     }.bind(this));
 };
