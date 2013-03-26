@@ -32,7 +32,7 @@ S3.prototype.search = function(query, id, callback) {
         uri: url.format({
             hostname:uri.hostname,
             protocol:uri.protocol,
-            query:{prefix:path.join(uri.pathname.substr(1), 'term/' + S3.terms(query).pop()).substr(1)}
+            query:{prefix:path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1)}
         }),
         headers: {Connection:'Keep-Alive'},
         agent: S3.agent
@@ -176,7 +176,7 @@ S3.prototype.indexable = function(pointer, callback) {
             protocol:uri.protocol,
             query:{
                 marker: pointer,
-                prefix: path.join(uri.pathname.substr(1), 'data'),
+                prefix: path.join(uri.pathname, 'data').substr(1),
                 'max-keys':1000
             }
         }),
