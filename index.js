@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
-var MBTiles = require('./mbtiles');
+var MBTiles = require('./api-mbtiles');
 var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
