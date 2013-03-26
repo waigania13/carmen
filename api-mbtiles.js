@@ -72,7 +72,13 @@ MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function
         var sql = '\
         CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);\
         CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);'
-        this._db.exec(sql, callback);
+        this._db.exec(sql, function(err) {
+            if (err && !/table carmen already exists/.test(err.message)) {
+                return callback(err);
+            } else {
+                return callback();
+            }
+        });
     }.bind(this));
 });
 

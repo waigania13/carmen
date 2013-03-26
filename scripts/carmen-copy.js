@@ -1,42 +1,45 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
+var path = require('path');
 var argv = process.argv;
-var MBTiles = require('../mbtiles');
-var mbtiles = argv[2];
-var S3 = require('../s3');
-var s3 = argv[3];
+var api = {
+    '.s3': require('../api-s3'),
+    '.mbtiles': require('../api-mbtiles')
+};
+var f = argv[2];
+var t = argv[3];
 
-if (!mbtiles) {
-    console.warn('Usage: tos3.js <from.mbtiles> <to.s3>');
+if (!f || !t) {
+    console.warn('Usage: carmen-copy.js <from> <to>');
     process.exit(1);
 }
-if (!fs.existsSync(mbtiles)) {
-    console.warn('File %s does not exist.', mbtiles);
-    process.exit(1);
-}
-if (!fs.existsSync(s3)) {
-    console.warn('File %s does not exist.', s3);
-    process.exit(1);
-}
+[f, t].forEach(function(arg) {
+    if (!api[path.extname(arg)]) {
+        console.warn('File %s format not recognized.', arg);
+        process.exit(1);
+    }
+});
 
-new MBTiles(mbtiles, function(err, from) {
+console.log('Copy %s => %s ...', f, t);
+new api[path.extname(f)](f, function(err, from) {
     if (err) throw err;
-    new S3(s3, function(err, s3) {
+    new api[path.extname(t)](t, function(err, to) {
         if (err) throw err;
-        s3.startWriting(function(err) {
+        to.startWriting(function(err) {
             if (err) throw err;
             var index = function(pointer) {
                 from.indexable(pointer, function(err, docs, pointer) {
                     if (err) throw err;
-                    if (!docs.length) return s3.stopWriting(function(err) {
+                    if (!docs.length) return to.stopWriting(function(err) {
                         if (err) throw err;
                         console.log('Done.');
                     });
+                    console.log('Indexing %s docs ...', docs.length);
                     var write = function() {
                         if (!docs.length) return index(pointer);
                         var doc = docs.shift();
-                        s3.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
+                        to.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
                             if (err) throw err;
                             write();
                         });

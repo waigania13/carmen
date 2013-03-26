@@ -160,6 +160,10 @@ S3.prototype.indexable = function(pointer, callback) {
     catch (err) { return callback(new Error('Carmen not supported')); }
 
     pointer = pointer || null;
+
+    // Pointer true means all docs have been read.
+    if (pointer === true) return callback(null, [], pointer);
+
     new S3.get({
         uri: url.format({
             hostname:uri.hostname,
@@ -177,10 +181,14 @@ S3.prototype.indexable = function(pointer, callback) {
         var xml = buffer.toString('utf8');
         var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
         var truncated = /true<\/IsTruncated>/ig.test(xml);
-        if (truncated) pointer = parsed[parsed.length-1];
+        if (truncated) {
+            pointer = parsed[parsed.length-1];
+        } else {
+            pointer = true;
+        }
 
         // No more results.
-        if (!parsed.length) return callback(null, []);
+        if (!parsed.length) return callback(null, [], pointer);
 
         var docs = [];
         var next = function() {
