@@ -13,7 +13,9 @@ S3.terms = function(doc) {
         var parts = doc.split(' ')
             .map(function(w) { return w.replace(/[^A-Za-z]/g, '').toLowerCase(); })
             .filter(function(w) { return w.length });
-        terms = terms.concat(parts.length > 1 ? parts.join('_') : []);
+        terms = terms
+            .concat(parts.filter(function(w) { return w.length > 1 }))
+            .concat(parts.length > 1 ? parts.join('_') : []);
     });
     return terms;
 };
