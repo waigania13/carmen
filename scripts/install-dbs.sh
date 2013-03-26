@@ -18,5 +18,5 @@ done
 
 for NAME in $TILES; do
   echo "Indexing $NAME..."
-  $DIR/addindex.sh "$TILE_DIR/$NAME.mbtiles"
+  $DIR/carmen-index.js "$TILE_DIR/$NAME.mbtiles"
 done
