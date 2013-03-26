@@ -2,7 +2,6 @@ var _ = require('underscore');
 var S3 = require('tilelive-s3');
 var url = require('url');
 var path = require('path');
-var zlib = require('zlib');
 
 module.exports = S3;
 
