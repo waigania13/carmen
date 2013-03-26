@@ -95,9 +95,10 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
     // Add each search term shard.
     var terms = [];
     var puts = [];
+    var clean = text.replace(/[^\w,]/g,'').replace(/ /g,'_');
     S3.terms(text).forEach(function(shard) {
         var coords = zxy.map(function(zxy) { return zxy.replace(/\//g,',') });
-        var prefix = path.join(uri.pathname, 'term/' + shard + '.' + id + '.');
+        var prefix = path.join(uri.pathname, 'term/' + shard + '.' + clean + '.' + id + '.');
         while (coords.length) {
             var chunk = [];
             do {
