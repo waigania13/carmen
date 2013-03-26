@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var MBTiles = require('mbtiles');
+var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 module.exports = MBTiles;
 
@@ -30,6 +31,9 @@ MBTiles.prototype.feature = function(id, callback) {
 
 // Implements carmen#index method.
 MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
+    try { text = iconv.convert(text).toString(); }
+    catch(err) { return callback(err); }
+
     var remaining = 2;
     var done = function(err) {
         if (err) {

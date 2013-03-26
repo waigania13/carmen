@@ -2,6 +2,7 @@ var _ = require('underscore');
 var S3 = require('tilelive-s3');
 var url = require('url');
 var path = require('path');
+var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 module.exports = S3;
 
@@ -85,6 +86,9 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
     // Parse carmen URL.
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
+
+    try { text = iconv.convert(text).toString(); }
+    catch(err) { return callback(err); }
 
     // Add each search term shard.
     var terms = [];
