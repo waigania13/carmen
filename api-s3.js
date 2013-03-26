@@ -55,14 +55,17 @@ S3.prototype.search = function(query, id, callback) {
         var docs = _(parsed).chain()
             .reduce(function(memo, obj) {
                 var key = obj.split('/').pop().split('.');
-                memo[key[1]] = memo[key[1]] || {};
+                memo[key[1]] = memo[key[1]] || { text:[] };
                 memo[key[1]].id = key[1];
-                memo[key[1]].text = key[0].replace(/_/g,' ');
                 memo[key[1]].zxy = (memo[key[1]].zxy || [])
                     .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
+                memo[key[1]].text.push(key[0].replace(/_/g,' '));
                 return memo;
             }, {})
-            .toArray()
+            .map(function(res) {
+                res.text = _(res.text).uniq().join(',');
+                return res;
+            })
             .value();
         return callback(null, docs);
     }.bind(this));
