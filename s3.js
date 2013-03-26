@@ -6,64 +6,14 @@ var zlib = require('zlib');
 
 module.exports = S3;
 
-// From mapbox-streets carto_table_updates.sql.
-// @TODO this should be defined per-source, not hardcoded into the API.
-var abbr = [
-    'Intl',
-    'Mt',
-    'Natl',
-    'St',
-    'E',
-    'N',
-    'NE',
-    'NW',
-    'S',
-    'SE',
-    'SW',
-    'W',
-    'Ave',
-    'Blvd',
-    'Cir',
-    'Ct',
-    'Cr',
-    'Dr',
-    'Exwy',
-    'Fwy',
-    'Hwy',
-    'Ln',
-    'Pk',
-    'Pkwy',
-    'Pt',
-    'Pl',
-    'Rd',
-    'Sq',
-    'St',
-    'Ter',
-    'str',
-
-    // Others that should not standalone...
-    'of',
-    'the',
-    'saint',
-    'republic',
-    'north',
-    'south',
-    'east',
-    'west',
-    'island',
-    'and',
-    'new'
-].map(function(s) { return s.toLowerCase() });
-
+// Converts a doc into an array of search terms.
 S3.terms = function(doc) {
     var terms = [];
     doc.split(',').forEach(function(doc) {
         var parts = doc.split(' ')
             .map(function(w) { return w.replace(/[^A-Za-z]/g, '').toLowerCase(); })
             .filter(function(w) { return w.length });
-        terms = terms
-            .concat(parts.filter(function(w) { return abbr.indexOf(w) === -1 }))
-            .concat(parts.length > 1 ? parts.join('_') : []);
+        terms = terms.concat(parts.length > 1 ? parts.join('_') : []);
     });
     return terms;
 };
@@ -80,7 +30,7 @@ S3.prototype.search = function(query, id, callback) {
         uri: url.format({
             hostname:uri.hostname,
             protocol:uri.protocol,
-            query:{prefix:path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1)}
+            query:{prefix:path.join(uri.pathname.substr(1), 'term/' + S3.terms(query).pop()).substr(1)}
         }),
         headers: {Connection:'Keep-Alive'},
         agent: S3.agent
@@ -203,8 +153,71 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
 };
 
 // Implements carmen#indexable method.
-S3.prototype.indexable = function(callback) {
-    // @TODO
-    return callback();
+S3.prototype.indexable = function(pointer, callback) {
+    if (!this.data) return callback(new Error('Tilesource not loaded'));
+
+    // Parse carmen URL.
+    try { var uri = url.parse(this.data._carmen); }
+    catch (err) { return callback(new Error('Carmen not supported')); }
+
+    pointer = pointer || null;
+    new S3.get({
+        uri: url.format({
+            hostname:uri.hostname,
+            protocol:uri.protocol,
+            query:{
+                marker: pointer,
+                prefix: path.join(uri.pathname.substr(1), 'data'),
+                'max-keys':1000
+            }
+        }),
+        headers: {Connection:'Keep-Alive'},
+        agent: S3.agent
+    }).asBuffer(function(err, buffer) {
+        if (err) return callback(err);
+        var xml = buffer.toString('utf8');
+        var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
+        var truncated = /true<\/IsTruncated>/ig.test(xml);
+        if (truncated) pointer = parsed[parsed.length-1];
+
+        // No more results.
+        if (!parsed.length) return callback(null, []);
+
+        var docs = [];
+        var next = function() {
+            if (!parsed.length) return callback(null, docs, pointer);
+            var key = parsed[0];
+            new S3.get({
+                uri: url.format({
+                    hostname:uri.hostname,
+                    protocol:uri.protocol,
+                    pathname:key
+                }),
+                headers: {Connection:'Keep-Alive'},
+                agent: S3.agent
+            }).asBuffer(function(err, buffer) {
+                // @TODO consider retry here.
+                if (err) return callback(err);
+
+                try { var data = JSON.parse(buffer.toString('utf8')); }
+                catch(err) { return callback(err); }
+
+                var zxy = data._terms && data._terms.length &&
+                    data._terms[0].split('/').pop().split('.').slice(2)
+                    .map(function(zxy) { return zxy.replace(/,/g,'/') });
+                var doc = {};
+                doc.id = path.basename(key, path.extname(key));
+                doc.doc = data;
+                doc.text = data.search;
+                doc.zxy = zxy || [];
+                delete data._terms;
+
+                docs.push(doc);
+                parsed.shift();
+                next();
+            });
+        };
+        next();
+    }.bind(this));
 };
 
