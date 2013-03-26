@@ -7,6 +7,7 @@ var api = {
     '.s3': require('../api-s3'),
     '.mbtiles': require('../api-mbtiles')
 };
+var Queue = require('../queue');
 var f = argv[2];
 
 if (!f) {
@@ -27,21 +28,18 @@ new api[path.extname(f)](f, function(err, from) {
     if (err) throw err;
     from.startWriting(function(err) {
         if (err) throw err;
+        var queue = new Queue(function(doc, done) {
+            from.index(doc.id, doc.text, doc.doc, doc.zxy, done);
+        }, 128);
         var index = function(pointer) {
             from.indexable(pointer, function(err, docs, pointer) {
                 if (!docs.length) return from.stopWriting(function(err) {
                     if (err) throw err;
                     console.log('Done.');
                 });
-                var write = function() {
-                    if (!docs.length) return index(pointer);
-                    var doc = docs.shift();
-                    from.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
-                        if (err) throw err;
-                        write();
-                    });
-                };
-                write();
+                docs.forEach(queue.add);
+                console.log('Indexing %s docs ...', docs.length);
+                queue.once('empty', function() { index(pointer) });
             });
         };
         index();
