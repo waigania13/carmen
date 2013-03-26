@@ -17,6 +17,8 @@ for NAME in $TILES; do
 done
 
 for NAME in $TILES; do
-  echo "Indexing $NAME..."
-  $DIR/carmen-index.js "$TILE_DIR/$NAME.mbtiles"
+  if [ -z "$(sqlite3 "$TILE_DIR/$NAME.mbtiles" "select 1 from sqlite_master where name = 'carmen' and type = 'table'")" ]; then
+    echo "Indexing $NAME..."
+    $DIR/carmen-index.js "$TILE_DIR/$NAME.mbtiles"
+  fi
 done
