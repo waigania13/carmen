@@ -25,22 +25,26 @@ if (!api[path.extname(f)]) {
 console.log('Indexing %s ...', f);
 new api[path.extname(f)](f, function(err, from) {
     if (err) throw err;
-    from.indexable(function(err, docs) {
+    from.startWriting(function(err) {
         if (err) throw err;
-        from.startWriting(function(err) {
-            var write = function() {
+        var index = function(pointer) {
+            from.indexable(pointer, function(err, docs, pointer) {
                 if (!docs.length) return from.stopWriting(function(err) {
                     if (err) throw err;
                     console.log('Done.');
                 });
-                var doc = docs.shift();
-                from.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
-                    if (err) throw err;
-                    write();
-                });
-            };
-            write();
-        });
+                var write = function() {
+                    if (!docs.length) return index(pointer);
+                    var doc = docs.shift();
+                    from.index(doc.id, doc.text, doc.doc, doc.zxy, function(err) {
+                        if (err) throw err;
+                        write();
+                    });
+                };
+                write();
+            });
+        };
+        index();
     });
 });
 
