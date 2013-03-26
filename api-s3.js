@@ -7,6 +7,16 @@ var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 module.exports = S3;
 
 // Converts a doc into an array of search terms.
+// Terms that are part of a larger phrase are suffixed with an '-' indicating
+// that they do not represent the complete text of the document, e.g.
+//
+//   united states =>
+//     united-
+//     states-
+//     united_states
+//
+// A full normalized version of the doc is ensured to be the last entry making
+// it possible to .pop() a normalized string usable as a search query prefix.
 S3.terms = function(doc) {
     var terms = [];
     doc.split(',').forEach(function(doc) {
@@ -14,10 +24,12 @@ S3.terms = function(doc) {
             .map(function(w) { return w.replace(/[^\w]/g, '').toLowerCase(); })
             .filter(function(w) { return w.length });
         terms = terms
-            .concat(parts.filter(function(w) { return w.length > 1 }))
+            .concat(parts
+                .filter(function(w) { return w.length > 1 })
+                .map(function(w) { return parts.length > 1 ? w + '-' : w }))
             .concat(parts.length > 1 ? parts.join('_') : []);
     });
-    return terms;
+    return _(terms).uniq();
 };
 
 // Implements carmen#search method.
