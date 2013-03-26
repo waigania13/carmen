@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
-var MBTiles = require('./api-mbtiles');
 var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
@@ -44,24 +43,7 @@ function toChar(key) {
 };
 
 function Carmen(options) {
-    options = options || {
-        country: {
-            weight: 2,
-            source: new MBTiles(basepath + '/ne-countries.mbtiles', function(){})
-        },
-        province: {
-            weight: 1.5,
-            source: new MBTiles(basepath + '/ne-provinces.mbtiles', function(){})
-        },
-        place: {
-            source: new MBTiles(basepath + '/osm-places.mbtiles', function(){})
-        },
-        zipcode: {
-            context: false,
-            source: new MBTiles(basepath + '/tiger-zipcodes.mbtiles', function(){}),
-            filter: function(token) { return /[0-9]{5}/.test(token); }
-        }
-    };
+    if (!options) throw new Error('Carmen options required.');
     this.indexes = _(options).reduce(function(memo, db, key) {
         var dbname = key;
         memo[key] = _(db).defaults({
@@ -81,6 +63,9 @@ function Carmen(options) {
         return memo;
     }, {});
 };
+
+Carmen.S3 = function() { return require('./api-s3') };
+Carmen.MBTiles = function() { return require('./api-mbtiles') };
 
 Carmen.prototype._open = function(callback) {
     if (!_(this.indexes).all(function(d) { return d.source.open }))

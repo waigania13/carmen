@@ -2,9 +2,26 @@ var _ = require('underscore');
 var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
-var MBTiles = require('mbtiles');
 var Carmen = require('..');
-var carmen = new Carmen();
+var MBTiles = Carmen.MBTiles();
+var carmen = new Carmen({
+    country: {
+        weight: 2,
+        source: new MBTiles(__dirname + '/../tiles/ne-countries.mbtiles', function(){})
+    },
+    province: {
+        weight: 1.5,
+        source: new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){})
+    },
+    place: {
+        source: new MBTiles(__dirname + '/../tiles/osm-places.mbtiles', function(){})
+    },
+    zipcode: {
+        context: false,
+        source: new MBTiles(__dirname + '/../tiles/tiger-zipcodes.mbtiles', function(){}),
+        filter: function(token) { return /[0-9]{5}/.test(token); }
+    }
+});
 
 function okay(type, a, b) {
     var margin = 0.01;
