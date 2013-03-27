@@ -49,9 +49,30 @@ MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
 
 // Implements carmen#indexable method.
 MBTiles.prototype.indexable = function(pointer, callback) {
-    pointer = pointer || 0;
+    pointer = pointer || {};
+    pointer.offset = pointer.offset || 0;
+
+    // If 'carmen' option is passed in initial pointer, retrieve indexables from
+    // carmen table. This option can be used to access the previously indexed
+    // documents from an MBTiles database without having to know what search
+    // field was used in the past (see comment below).
+    if (pointer.table === 'carmen') return this._db.all("SELECT c.id, c.text, c.zxy, k.key_json FROM carmen c JOIN keymap k ON c.id = k.key_name LIMIT 10000 OFFSET ?", pointer.offset, function(err, rows) {
+        if (err) return callback(err);
+        var docs = rows.map(function(row) {
+            var doc = {};
+            doc.id = row.id;
+            doc.doc = JSON.parse(row.key_json);
+            doc.text = row.text;
+            doc.zxy = row.zxy.split(',');
+            return doc;
+        });
+        pointer.offset += 10000;
+        return callback(null, docs, pointer);
+    }.bind(this));
+
+    // By default the keymap table contains all indexable documents.
     this.getInfo(function(err, info) {
-        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT 10000 OFFSET ?;", info.maxzoom, pointer, function(err, rows) {
+        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT 10000 OFFSET ?;", info.maxzoom, pointer.offset, function(err, rows) {
             if (err) return callback(err);
             var docs = rows.map(function(row) {
                 var doc = {};
@@ -63,7 +84,7 @@ MBTiles.prototype.indexable = function(pointer, callback) {
                 doc.zxy = row.zxy.split(',');
                 return doc;
             });
-            pointer += 10000;
+            pointer.offset += 10000;
             return callback(null, docs, pointer);
         }.bind(this));
     }.bind(this));
