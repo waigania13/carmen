@@ -287,6 +287,9 @@ Carmen.prototype.geocode = function(query, callback) {
         var group = this.group();
         _(indexes).each(function(db, dbname) {
             _(data.query||[]).each(function(t, i) {
+                // Skip tokens that do not pass filter callback.
+                if (!db.filter(t)) return;
+
                 var next = group();
                 db.source.search(t, null, function(err, rows) {
                     if (err) return next(err);
