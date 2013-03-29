@@ -35,26 +35,18 @@ S3.terms = function(doc) {
 // Implements carmen#search method.
 S3.prototype.search = function(query, id, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
+    if (!this.client) return callback(new Error('No S3 client found'));
 
     // Parse carmen URL.
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    new S3.get({
-        uri: url.format({
-            hostname:uri.hostname,
-            protocol:uri.protocol,
-            query:{prefix:path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1)}
-        }),
-        headers: {Connection:'Keep-Alive'},
-        agent: S3.agent
-    }).asBuffer(function(err, buffer) {
+    var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
+    this.client.list({ prefix:prefix }, function(err, data) {
         if (err) return callback(err);
-        var xml = buffer.toString('utf8');
-        var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
-        var docs = _(parsed).chain()
+        var docs = _(data.Contents).chain()
             .reduce(function(memo, obj) {
-                var key = obj.split('/').pop().split('.');
+                var key = obj.Key.split('/').pop().split('.');
                 memo[key[1]] = memo[key[1]] || { text:[] };
                 memo[key[1]].id = key[1];
                 memo[key[1]].zxy = (memo[key[1]].zxy || [])
