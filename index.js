@@ -326,6 +326,8 @@ Carmen.prototype.geocode = function(query, callback) {
                 return memo;
             }, {})
             .reduce(function(memo, rows, zxy) {
+                if (rows.length <= 1) return (memo[zxy] = rows) && memo;
+
                 rows = _(rows).chain()
                     .sortBy(function(r) { return r.score })
                     .reverse()
@@ -351,6 +353,9 @@ Carmen.prototype.geocode = function(query, callback) {
                             return types.indexOf(r.db) <= types.indexOf(rows[0].db);
                         }));
                     });
+
+                if (rows.length <= 1) return rows;
+
                 rows = _(rows).chain()
                     // prevent db/token reduction from reducing to single case
                     // when there are identical tokens e.g. "new york, new york"
