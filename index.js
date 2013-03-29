@@ -83,6 +83,11 @@ Carmen.prototype._open = function(callback) {
                 return callback(err);
             }
             if (--remaining === 0) {
+                carmen.zooms = _(carmen.indexes).chain()
+                    .pluck('zoom')
+                    .uniq()
+                    .sortBy(function(z) { return z })
+                    .value();
                 carmen._opened = true;
                 return callback();
             }
@@ -262,10 +267,14 @@ Carmen.prototype.centroid = function(id, callback) {
 };
 
 Carmen.prototype.geocode = function(query, callback) {
+    if (!this._opened) return this._open(function(err) {
+        if (err) return callback(err);
+        this.geocode(query, callback);
+    }.bind(this));
+
     var indexes = this.indexes;
+    var zooms = this.zooms;
     var types = Object.keys(indexes);
-    var minweight = _(indexes).chain().pluck('weight').min().value();
-    var maxweight = _(indexes).chain().pluck('weight').max().value();
     var data = { query: this.tokenize(query) };
     var carmen = this;
 
@@ -280,10 +289,6 @@ Carmen.prototype.geocode = function(query, callback) {
 
     // keyword search. Find matching features.
     Step(function() {
-        carmen._open(this);
-    }, function(err) {
-        if (err) throw err;
-
         var group = this.group();
         _(indexes).each(function(db, dbname) {
             _(data.query||[]).each(function(t, i) {
@@ -306,11 +311,6 @@ Carmen.prototype.geocode = function(query, callback) {
     }, function(err, rows) {
         if (err) throw err;
 
-        var zooms = _(indexes).chain()
-            .pluck('zoom')
-            .uniq()
-            .sortBy(function(z) { return z })
-            .value();
         var results = _(rows).chain()
             .flatten()
             .reduce(function(memo, row) {
@@ -319,15 +319,21 @@ Carmen.prototype.geocode = function(query, callback) {
                     .map(function(part) { return part.toLowerCase().replace(/^\s+|\s+$/g, ''); })
                     .any(function(part) { return part === row.token; })
                     .value() ? 1 : 0.5) * indexes[row.db].weight;
-                _(row.zxy).forEach(function(zxy) {
+                row.zxy.forEach(function(zxy) {
                     memo[zxy] = memo[zxy] || [];
-                    memo[zxy].push(_({score:score, i:row.i}).defaults(row));
+                    memo[zxy].push({
+                        i:row.i,
+                        id:row.id,
+                        db:row.db,
+                        text:row.text,
+                        token:row.token,
+                        score:score
+                    });
                 });
                 return memo;
             }, {})
             .reduce(function(memo, rows, zxy) {
                 if (rows.length <= 1) return (memo[zxy] = rows) && memo;
-
                 rows = _(rows).chain()
                     .sortBy(function(r) { return r.score })
                     .reverse()
