@@ -42,24 +42,30 @@ S3.prototype.search = function(query, id, callback) {
     catch (err) { return callback(new Error('Carmen not supported')); }
 
     var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
-    this.client.list({ prefix:prefix }, function(err, data) {
+    this.client.getFile('?prefix=' + prefix, function(err, res){
         if (err) return callback(err);
-        var docs = _(data.Contents).chain()
-            .reduce(function(memo, obj) {
-                var key = obj.Key.split('/').pop().split('.');
-                memo[key[1]] = memo[key[1]] || { text:[] };
-                memo[key[1]].id = key[1];
-                memo[key[1]].zxy = (memo[key[1]].zxy || [])
-                    .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
-                memo[key[1]].text.push(key[0].replace(/_/g,' '));
-                return memo;
-            }, {})
-            .map(function(res) {
-                res.text = _(res.text).uniq().join(',');
-                return res;
-            })
-            .value();
-        return callback(null, docs);
+        var xml = '';
+        res.on('data', function(chunk){ xml += chunk; });
+        res.on('end', function() {
+            var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
+            var docs = _(parsed).chain()
+                .reduce(function(memo, obj) {
+                    var key = obj.split('/').pop().split('.');
+                    memo[key[1]] = memo[key[1]] || { text:[] };
+                    memo[key[1]].id = key[1];
+                    memo[key[1]].zxy = (memo[key[1]].zxy || [])
+                        .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
+                    memo[key[1]].text.push(key[0].replace(/_/g,' '));
+                    return memo;
+                }, {})
+                .map(function(res) {
+                    res.text = _(res.text).uniq().join(',');
+                    return res;
+                })
+                .value();
+            return callback(null, docs);
+        });
+        res.on('error', callback);
     }.bind(this));
 };
 
