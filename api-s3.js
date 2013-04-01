@@ -41,6 +41,35 @@ S3.prototype.search = function(query, id, callback) {
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
+    // Reduce callback for object keys.
+    var toDocs = function(memo, obj) {
+        var key = obj.split('/').pop().split('.');
+        memo[key[1]] = memo[key[1]] || { text:[] };
+        memo[key[1]].id = key[1];
+        memo[key[1]].zxy = (memo[key[1]].zxy || [])
+            .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
+        memo[key[1]].zxy = _(memo[key[1]].zxy).uniq();
+        memo[key[1]].text.push(key[0].replace(/_/g,' '));
+        return memo;
+    };
+
+    // ID search.
+    if (id) return this.feature(id, function(err, data) {
+        if (err) return callback(err);
+        var docs = _(data._terms).chain()
+            .reduce(toDocs, {})
+            .map(function(res) {
+                res.zxy = _(res.zxy).uniq();
+                res.text = _(res.text).uniq()
+                    .filter(function(t) { return t.indexOf('-') === -1 })
+                    .join(',');
+                return res;
+            })
+            .value();
+        return callback(null, docs);
+    }, true);
+
+    // Query search.
     var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
     this.client.getFile('?prefix=' + prefix, function(err, res){
         if (err) return callback(err);
@@ -49,16 +78,9 @@ S3.prototype.search = function(query, id, callback) {
         res.on('end', function() {
             var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
             var docs = _(parsed).chain()
-                .reduce(function(memo, obj) {
-                    var key = obj.split('/').pop().split('.');
-                    memo[key[1]] = memo[key[1]] || { text:[] };
-                    memo[key[1]].id = key[1];
-                    memo[key[1]].zxy = (memo[key[1]].zxy || [])
-                        .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
-                    memo[key[1]].text.push(key[0].replace(/_/g,' '));
-                    return memo;
-                }, {})
+                .reduce(toDocs, {})
                 .map(function(res) {
+                    res.zxy = _(res.zxy).uniq();
                     res.text = _(res.text).uniq().join(',');
                     return res;
                 })
@@ -178,19 +200,22 @@ S3.prototype.indexable = function(pointer, callback) {
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    pointer = pointer || null;
+    pointer = pointer || {};
+    pointer.done = pointer.done || false;
+    pointer.limit = pointer.limit || 1000;
+    pointer.marker = pointer.marker || null;
 
     // Pointer true means all docs have been read.
-    if (pointer === true) return callback(null, [], pointer);
+    if (pointer.done) return callback(null, [], pointer);
 
     new S3.get({
         uri: url.format({
             hostname:uri.hostname,
             protocol:uri.protocol,
             query:{
-                marker: pointer,
+                marker: pointer.marker,
                 prefix: path.join(uri.pathname, 'data').substr(1),
-                'max-keys':1000
+                'max-keys':pointer.limit
             }
         }),
         headers: {Connection:'Keep-Alive'},
@@ -201,9 +226,9 @@ S3.prototype.indexable = function(pointer, callback) {
         var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
         var truncated = /true<\/IsTruncated>/ig.test(xml);
         if (truncated) {
-            pointer = parsed[parsed.length-1];
+            pointer.marker = parsed[parsed.length-1];
         } else {
-            pointer = true;
+            pointer.done = true;
         }
 
         // No more results.
