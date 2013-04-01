@@ -53,7 +53,6 @@ S3.prototype.search = function(query, id, callback) {
         memo[key[1]].id = key[1];
         memo[key[1]].zxy = (memo[key[1]].zxy || [])
             .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
-        memo[key[1]].zxy = _(memo[key[1]].zxy).uniq();
         memo[key[1]].text.push(key[0].replace(/_/g,' '));
         return memo;
     };
