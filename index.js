@@ -207,6 +207,11 @@ Carmen.prototype.contextByFeature = function(id, callback) {
 // Get the [lon,lat] of a feature given its id in the form [type].[id].
 // Looks up a point in the feature geometry using a point from a central grid.
 Carmen.prototype.centroid = function(id, callback) {
+    if (!this._opened) return this._open(function(err) {
+        if (err) return callback(err);
+        this.centroid(id, callback);
+    }.bind(this));
+
     var type = id.split('.').shift();
     var id = id.split('.').pop();
     var carmen = this;
@@ -214,13 +219,11 @@ Carmen.prototype.centroid = function(id, callback) {
     var c = {};
 
     Step(function() {
-        carmen._open(this);
-    }, function(err) {
-        if (err) throw err;
         indexes[type].source.search(null, id, this);
     }, function(err, row) {
         if (err) throw err;
-        if (!row) return this();
+        if (!row || !row.length) return this();
+        row = row.shift();
         var rows = row.zxy.map(function(zxy) {
             zxy = zxy.split('/');
             return _({
