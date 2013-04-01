@@ -18,9 +18,14 @@ module.exports = S3;
 // A full normalized version of the doc is ensured to be the last entry making
 // it possible to .pop() a normalized string usable as a search query prefix.
 S3.terms = function(doc) {
+    try {
+        var converted = iconv.convert(doc).toString();
+        doc = converted;
+    } catch(err) {}
+
     var terms = [];
     doc.split(',').forEach(function(doc) {
-        var parts = doc.split(' ')
+        var parts = doc.split(/[ -]/g)
             .map(function(w) { return w.replace(/[^\w]/g, '').toLowerCase(); })
             .filter(function(w) { return w.length });
         terms = terms
@@ -123,9 +128,6 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
     // Parse carmen URL.
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
-
-    try { text = iconv.convert(text).toString(); }
-    catch(err) { return callback(err); }
 
     // Add each search term shard.
     var terms = [];
