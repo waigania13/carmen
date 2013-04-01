@@ -83,8 +83,8 @@ if (backend === 's3') try {
     console.warn('S3 backend will not be tested.');
 }
 
-function okay(type, a, b) {
-    var margin = 0.01;
+function okay(type, a, b, margin) {
+    var margin = margin || 0.01;
     var typecheck = type === 'place'
         ? _(['city', 'town', 'village']).include(a.type)
         : a.type === type;
@@ -190,6 +190,32 @@ describe('context', function() {
     });
     after(function() {
         summary('context', stats, true);
+    });
+});
+
+describe('centroid', function() {
+    var stats = {
+        start: + new Date,
+        total: 0,
+        okay: 0,
+        failed: {}
+    };
+    _(fixtures.country.slice(60,70)).each(function(row) {
+        it (row.name, function(done) {
+            carmen.geocode(row.name, function(err, res) {
+                assert.ifError(err);
+                carmen.centroid(res.results[0][0].id, function(err, res) {
+                    assert.ifError(err);
+                    assert.ok(okay('country', {
+                        name:row.name,
+                        type:'country',
+                        lon:res[0],
+                        lat:res[1]
+                    }, row, 5));
+                    done();
+                });
+            });
+        });
     });
 });
 
