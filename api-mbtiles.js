@@ -6,7 +6,7 @@ module.exports = MBTiles;
 
 // Implements carmen#search method.
 MBTiles.prototype.search = function(query, id, callback) {
-    var arg = query ? query : id;
+    var arg = query ? query.split(/-/g).join(' ') + '*' : id;
     var sql = query
         ? 'SELECT c.id, c.text, c.zxy FROM carmen c WHERE c.text MATCH(?) LIMIT 1000'
         : 'SELECT c.id, c.text, c.zxy FROM carmen c WHERE c.id MATCH(?) LIMIT 1000';
