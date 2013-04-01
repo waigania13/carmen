@@ -12,7 +12,7 @@ TILES="osm-places ne-countries ne-provinces tiger-zipcodes"
 for NAME in $TILES; do
   if [ ! -f "$TILE_DIR/$NAME.mbtiles" ]; then
     echo "Downloading $NAME..."
-    curl -s -o "$TILE_DIR/$NAME.mbtiles" "http://s3.amazonaws.com/mapbox/carmen/$NAME.mbtiles"
+    curl -s -o "$TILE_DIR/$NAME.mbtiles" "http://mapbox-carmen.s3.amazonaws.com/carmen/$NAME.mbtiles"
   fi
 done
 
