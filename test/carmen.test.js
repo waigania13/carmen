@@ -3,8 +3,19 @@ var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
+var S3 = Carmen.S3();
 var MBTiles = Carmen.MBTiles();
-var carmen = new Carmen({
+
+// Use BACKEND=<backend> env var to specify the carmen backend to be tested.
+var backend = (process.env.BACKEND||'mbtiles').toLowerCase();
+if (backend !== 'mbtiles' && backend !== 's3') {
+    console.warn('Backend %s unknown.', backend);
+    process.exit(1);
+} else {
+    console.warn('Testing %s backend.', backend);
+}
+
+if (backend === 'mbtiles') var carmen = new Carmen({
     country: {
         weight: 2,
         source: new MBTiles(__dirname + '/../tiles/ne-countries.mbtiles', function(){})
@@ -22,6 +33,55 @@ var carmen = new Carmen({
         filter: function(token) { return /[0-9]{5}/.test(token); }
     }
 });
+
+if (backend === 's3') try {
+    var s3cfg = require('fs').readFileSync(require('path').join(process.env.HOME, '.s3cfg'), 'utf8');
+    var awsKey = s3cfg.match(/access_key = (.*)/)[1];
+    var awsSecret = s3cfg.match(/secret_key = (.*)/)[1];
+    var carmen = new Carmen({
+        country: {
+            weight: 2,
+            source: new S3({data:{
+                "grids": [ "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-countries/{z}/{x}/{y}.grid.json" ],
+                "_carmen": "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-countries",
+                "maxzoom": 8,
+                "awsKey": awsKey,
+                "awsSecret": awsSecret
+            }}, function(){})
+        },
+        province: {
+            weight: 1.5,
+            source: new S3({data:{
+                "grids": [ "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-provinces/{z}/{x}/{y}.grid.json" ],
+                "_carmen": "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-provinces",
+                "maxzoom": 9,
+                "awsKey": awsKey,
+                "awsSecret": awsSecret
+            }}, function(){})
+        },
+        place: {
+            source: new S3({data:{
+                "grids": [ "http://mapbox-carmen.s3.amazonaws.com/fixtures/osm-places/{z}/{x}/{y}.grid.json" ],
+                "_carmen": "http://mapbox-carmen.s3.amazonaws.com/fixtures/osm-places",
+                "maxzoom": 11,
+                "awsKey": awsKey,
+                "awsSecret": awsSecret
+            }}, function(){})
+        },
+        zipcode: {
+            context: false,
+            source: new S3({data:{
+                "grids": [ "http://mapbox-carmen.s3.amazonaws.com/fixtures/tiger-zipcodes/{z}/{x}/{y}.grid.json" ],
+                "_carmen": "http://mapbox-carmen.s3.amazonaws.com/fixtures/tiger-zipcodes",
+                "maxzoom": 10
+            }}, function(){}),
+            filter: function(token) { return /[0-9]{5}/.test(token); }
+        }
+    });
+} catch(err) {
+    console.warn('Could not read AWS credentials from .s3cfg.');
+    console.warn('S3 backend will not be tested.');
+}
 
 function okay(type, a, b) {
     var margin = 0.01;

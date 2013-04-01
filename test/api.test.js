@@ -6,10 +6,24 @@ var Carmen = require('..');
 var MBTiles = Carmen.MBTiles();
 var S3 = Carmen.S3();
 
-var backends = {
-    mbtiles: new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){}),
-    s3: new S3(__dirname + '/../tiles/ne-provinces.s3', function(){})
-};
+var backends = {};
+backends.mbtiles = new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){});
+
+try {
+    var s3cfg = require('fs').readFileSync(require('path').join(process.env.HOME, '.s3cfg'), 'utf8');
+    var awsKey = s3cfg.match(/access_key = (.*)/)[1];
+    var awsSecret = s3cfg.match(/secret_key = (.*)/)[1];
+    backends.s3 = new S3({data:{
+        "grids": [ "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-provinces/{z}/{x}/{y}.grid.json" ],
+        "_carmen": "http://mapbox-carmen.s3.amazonaws.com/fixtures/ne-provinces",
+        "maxzoom": 9,
+        "awsKey": awsKey,
+        "awsSecret": awsSecret
+    }}, function(){});
+} catch(err) {
+    console.warn('Could not read AWS credentials from .s3cfg.');
+    console.warn('S3 backend will not be tested.');
+}
 
 _(backends).each(function(backend, name) { describe('api ' + name, function() {
 
