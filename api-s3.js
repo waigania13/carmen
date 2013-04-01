@@ -183,7 +183,6 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
                 puts.shift();
                 return put();
             } else {
-                console.warn(res);
                 return put(new Error('S3 put failed: ' + res.statusCode));
             }
         });
