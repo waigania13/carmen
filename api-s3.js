@@ -107,7 +107,8 @@ S3.prototype.feature = function(id, callback, raw) {
     new S3.get({
         uri: url.format(uri),
         headers: {Connection:'Keep-Alive'},
-        agent: S3.agent
+        agent: S3.agent,
+        timeout: 5000
     }).asBuffer(function(err, buffer) {
         if (err) return callback(err);
         try { var data = JSON.parse(buffer.toString('utf8')); }
