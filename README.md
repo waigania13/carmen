@@ -2,6 +2,11 @@ carmen
 ------
 UTFGrid/MBTiles-based geocoder with support for swappable data sources.
 
+## Depends
+
+ - Node v0.8.x
+ - sqlite3 command line program (`apt-get install sqlite3`)
+
 ## Install
 
     npm install && ./scripts/install-dbs.sh
