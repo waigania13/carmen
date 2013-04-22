@@ -28,7 +28,7 @@ Requires [mocha](http://visionmedia.github.com/mocha/). Run `npm install -g moch
 ## API
 
     var Carmen = require('carmen');
-    var carmen = new Carmen();
+    var carmen = new Carmen(options /*see below for details on options*/);
     carmen.geocode('Washington, DC', function(err, data) {
         console.log(data);
     });
@@ -59,8 +59,6 @@ Create a new Carmen object. Takes a hash of index objects to use, keyed by each 
       // Optional. Map the feature data to a different output format.
       map: function(data) { return data; }
     }
-
-If called with no arguments the default index objects are used.
 
 ### carmen.geocode([string], callback)
 
