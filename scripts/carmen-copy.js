@@ -29,9 +29,6 @@ new api[path.extname(f)](f, function(err, from) {
         if (err) throw err;
         to.startWriting(function(err) {
             if (err) throw err;
-            var queue = new Queue(function(doc, done) {
-                to.index(doc.id, doc.text, doc.doc, doc.zxy, done);
-            }, 128);
             var index = function(pointer) {
                 from.indexable(pointer, function(err, docs, pointer) {
                     if (err) throw err;
@@ -39,9 +36,11 @@ new api[path.extname(f)](f, function(err, from) {
                         if (err) throw err;
                         console.log('Done.');
                     });
-                    docs.forEach(queue.add);
                     console.log('Indexing %s docs ...', docs.length);
-                    queue.once('empty', function() { index(pointer) });
+                    to.index(docs, function(err) {
+                        if (err) throw err;
+                        index(pointer);
+                    });
                 });
             };
             index();

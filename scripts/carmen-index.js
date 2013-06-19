@@ -28,18 +28,18 @@ new api[path.extname(f)](f, function(err, from) {
     if (err) throw err;
     from.startWriting(function(err) {
         if (err) throw err;
-        var queue = new Queue(function(doc, done) {
-            from.index(doc.id, doc.text, doc.doc, doc.zxy, done);
-        }, 128);
         var index = function(pointer) {
             from.indexable(pointer, function(err, docs, pointer) {
+                if (err) throw err;
                 if (!docs.length) return from.stopWriting(function(err) {
                     if (err) throw err;
                     console.log('Done.');
                 });
-                docs.forEach(queue.add);
                 console.log('Indexing %s docs ...', docs.length);
-                queue.once('empty', function() { index(pointer) });
+                from.index(docs, function(err) {
+                    if (err) throw err;
+                    index(pointer);
+                });
             });
         };
         index();

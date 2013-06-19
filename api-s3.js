@@ -119,7 +119,7 @@ S3.prototype.feature = function(id, callback, raw) {
 };
 
 // Implements carmen#index method.
-S3.prototype.index = function(id, text, doc, zxy, callback) {
+S3.prototype.index = function(docs, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
     if (!this.client) return callback(new Error('Tilesource not writing'));
 
@@ -132,29 +132,36 @@ S3.prototype.index = function(id, text, doc, zxy, callback) {
     // Add each search term shard.
     var terms = [];
     var puts = [];
-    S3.terms(text).forEach(function(shard) {
-        var coords = zxy.map(function(zxy) { return zxy.replace(/\//g,',') });
-        var prefix = path.join(uri.pathname, 'term/' + shard + '.' + id + '.');
-        while (coords.length) {
-            var chunk = [];
-            do {
-                var next = prefix + chunk.join('.') + (coords.length ? '.' + coords[0] : '');
-            } while (
-                next.length < 1024 &&
-                coords.length &&
-                chunk.push(coords.shift())
-            );
-            var key = prefix + chunk.join('.');
-            terms.push(key);
-            puts.push({ key:key, data:'' });
-        }
-    });
+    docs.forEach(function(doc) {
+        var id = doc.id;
+        var zxy = doc.zxy;
+        var text = doc.text;
+        var doc = doc.doc;
 
-    // Add actual doc to queue.
-    puts.push({
-        key:path.join(uri.pathname, 'data/' + id + '.json'),
-        data:JSON.stringify(_({_terms:terms}).defaults(doc))
-     });
+        S3.terms(text).forEach(function(shard) {
+            var coords = zxy.map(function(zxy) { return zxy.replace(/\//g,',') });
+            var prefix = path.join(uri.pathname, 'term/' + shard + '.' + id + '.');
+            while (coords.length) {
+                var chunk = [];
+                do {
+                    var next = prefix + chunk.join('.') + (coords.length ? '.' + coords[0] : '');
+                } while (
+                    next.length < 1024 &&
+                    coords.length &&
+                    chunk.push(coords.shift())
+                );
+                var key = prefix + chunk.join('.');
+                terms.push(key);
+                puts.push({ key:key, data:'' });
+            }
+        });
+
+        // Add actual doc to queue.
+        puts.push({
+            key:path.join(uri.pathname, 'data/' + id + '.json'),
+            data:JSON.stringify(_({_terms:terms}).defaults(doc))
+        });
+    });
 
     var put = function(err) {
         if (!puts.length) return callback();

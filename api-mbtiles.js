@@ -30,11 +30,8 @@ MBTiles.prototype.feature = function(id, callback) {
 };
 
 // Implements carmen#index method.
-MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
-    try { text = iconv.convert(text).toString(); }
-    catch(err) { return callback(err); }
-
-    var remaining = 2;
+MBTiles.prototype.index = function(docs, callback) {
+    var remaining = docs.length * 2;
     var done = function(err) {
         if (err) {
             remaining = -1;
@@ -43,8 +40,12 @@ MBTiles.prototype.index = function(id, text, doc, zxy, callback) {
             callback(null);
         }
     };
-    this._db.run('REPLACE INTO carmen (id, text, zxy) VALUES (?, ?, ?)', id, text, zxy.join(','), done);
-    this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', id, JSON.stringify(doc), done);
+    docs.forEach(function(doc) {
+        try { var text = iconv.convert(doc.text).toString(); }
+        catch(err) { return callback(err); }
+        this._db.run('REPLACE INTO carmen (id, text, zxy) VALUES (?, ?, ?)', doc.id, text, doc.zxy.join(','), done);
+        this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
+    }.bind(this));
 };
 
 // Implements carmen#indexable method.
