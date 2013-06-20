@@ -57,13 +57,20 @@ intstore.terms = function(text) {
     var terms = [];
     text.split(',').forEach(function(term) {
         terms = terms.concat(term.split(/[ -]/g)
-            .map(function(w) { return w.replace(/[^\w]/g, '').toLowerCase(); })
-            .filter(function(w) { return w.length > 1 })
+            .map(function(w) {
+                return w.replace(/[^\w]/g, '').toLowerCase();
+            })
             .map(function(w) {
                 return parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16);
             }));
     });
     return _(terms).uniq();
+};
+
+// Assumes an integer space of Math.pow(16,8);
+intstore.shard = function(level, id) {
+    if (level === 0) return 0;
+    return id % Math.pow(16, level);
 };
 
 // Converts zxy coordinates into an array of zxy IDs.

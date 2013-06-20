@@ -57,10 +57,30 @@ MBTiles.prototype.feature = function(id, callback) {
     });
 };
 
+MBTiles.prototype.getCarmen = function(type, shard, callback) {
+    if (this._carmen[type][shard]) return callback(null, this._carmen[type][shard]);
+
+    return this._db.get('SELECT data FROM carmen_' + type + ' WHERE shard = ?', shard, function(err, row) {
+        if (err) return callback(err);
+        this._carmen[type][shard] = row ? intstore.unserialize(row.data) : {};
+        callback(null, this._carmen[type][shard]);
+    }.bind(this));
+};
+
+MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
+    return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, intstore.serialize(data), function(err) {
+        if (err) return callback(err);
+        this._carmen[type][shard] = data;
+        callback(null);
+    }.bind(this));
+};
+
 // Implements carmen#index method.
 MBTiles.prototype.index = function(docs, callback) {
-    var shard = 0; // @TODO make configurable.
-    var remaining = docs.length + 2;
+    var source = this;
+    var shardlevel = 2;
+    var remaining = docs.length;
+    var patch = { term: {}, grid: {} };
     var done = function(err) {
         if (err) {
             remaining = -1;
@@ -69,32 +89,40 @@ MBTiles.prototype.index = function(docs, callback) {
             callback(null);
         }
     };
-    var term;
-    var grid;
-    this._db.get('SELECT data FROM carmen_term WHERE shard = ?', shard, function(err, row) {
-        if (err) return callback(err);
-        term = row ? intstore.unserialize(row.data) : {};
-        this._db.get('SELECT data FROM carmen_grid WHERE shard = ?', shard, function(err, row) {
-            if (err) return callback(err);
-            grid = row ? intstore.unserialize(row.data) : {};
-
-            // @TODO invalidate stale terms, grid items based on docs.
-            docs.forEach(function(doc) {
-                var id = doc.id|0;
-                intstore.terms(doc.text).reduce(function(memo, key) {
-                    memo[key] = memo[key] || [];
-                    memo[key].push(id);
-                    return memo;
-                }, term);
-                grid[id] = doc.zxy.map(intstore.zxy);
-                this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
-            }.bind(this));
-            var termBuffer = intstore.serialize(term);
-            var gridBuffer = intstore.serialize(grid);
-            this._db.run('REPLACE INTO carmen_term (shard, data) VALUES (?, ?)', shard, termBuffer, done);
-            this._db.run('REPLACE INTO carmen_grid (shard, data) VALUES (?, ?)', shard, gridBuffer, done);
-        }.bind(this));
+    docs.forEach(function(doc) {
+        var docid = doc.id|0;
+        intstore.terms(doc.text).reduce(function(memo, id) {
+            var shard = intstore.shard(shardlevel, id);
+            memo[shard] = memo[shard] || {};
+            memo[shard][id] = memo[shard][id] || [];
+            memo[shard][id].push(docid);
+            return memo;
+        }, patch.term);
+        var shard = intstore.shard(shardlevel, docid);
+        patch.grid[shard] = patch.grid[shard] || {};
+        patch.grid[shard][docid] = doc.zxy.map(intstore.zxy);
     }.bind(this));
+    // Number of term shards.
+    remaining += Object.keys(patch.term).length;
+    // Number of grid shards.
+    remaining += Object.keys(patch.grid).length;
+    // Add each doc individually to the keymap table.
+    docs.forEach(function(doc) {
+        source._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
+    });
+    _(patch).each(function(shards, type) {
+        _(shards).each(function(data, shard) {
+            source.getCarmen(type, shard, function(err, current) {
+                // This merges new entries on top of old ones.
+                // @TODO invalidate old entries (?) can this be done incrementally?
+                _(data).each(function(val, key) {
+                    current[key] = current[key] || [];
+                    current[key] = _(current[key].concat(val)).uniq();
+                });
+                source.putCarmen(type, shard, current, done);
+            });
+        });
+    });
 };
 
 // Implements carmen#indexable method.
