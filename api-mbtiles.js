@@ -1,23 +1,51 @@
 var _ = require('underscore');
 var MBTiles = require('mbtiles');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
+var crypto = require('crypto');
+var intstore = require('./intstore');
 
 module.exports = MBTiles;
 
+MBTiles.prototype._carmen = {
+    term: {},
+    grid: {}
+};
+
 // Implements carmen#search method.
 MBTiles.prototype.search = function(query, id, callback) {
-    var arg = query ? query.split(/-/g).join(' ') + '*' : id;
-    var sql = query
-        ? 'SELECT c.id, c.text, c.zxy FROM carmen c WHERE c.text MATCH(?) LIMIT 1000'
-        : 'SELECT c.id, c.text, c.zxy FROM carmen c WHERE c.id MATCH(?) LIMIT 1000';
-    this._db.all(sql, arg, function(err, rows) {
+    var shard = 0; // @TODO make configurable.
+
+    // Load shard. @TODO this will potentially be a shard per term.
+    // Probably needs to be abstracted!
+    if (!this._carmen.term[shard]) return this._db.get('SELECT data FROM carmen_term WHERE shard = ?', shard, function(err, row) {
         if (err) return callback(err);
-        rows = rows.map(function(row) {
-            row.zxy = row.zxy.split(',');
-            return row;
+        this._carmen.term[shard] = row ? intstore.unserialize(row.data) : {};
+        return this.search(query, id, callback);
+    }.bind(this));
+
+    // Load shard. @TODO this will potentially be a shard per id.
+    // Probably needs to be abstracted!
+    if (!this._carmen.grid[shard]) return this._db.get('SELECT data FROM carmen_grid WHERE shard = ?', shard, function(err, row) {
+        if (err) return callback(err);
+        this._carmen.grid[shard] = row ? intstore.unserialize(row.data) : {};
+        return this.search(query, id, callback);
+    }.bind(this));
+
+    var ids = [];
+    var terms = intstore.terms(query);
+    for (var a = 0; a < terms.length; a++) {
+        ids = ids.concat(this._carmen.term[shard][terms[a]]);
+    }
+    ids = intstore.mostfreq(ids);
+
+    var rows = [];
+    for (var a = 0; a < ids.length; a++) {
+        rows.push({
+            id: ids[a],
+            zxy: this._carmen.grid[shard][ids[a]]
         });
-        callback(null, rows);
-    });
+    }
+    callback(null, rows);
 };
 
 // Implements carmen#feature method.
@@ -31,7 +59,8 @@ MBTiles.prototype.feature = function(id, callback) {
 
 // Implements carmen#index method.
 MBTiles.prototype.index = function(docs, callback) {
-    var remaining = docs.length * 2;
+    var shard = 0; // @TODO make configurable.
+    var remaining = docs.length + 2;
     var done = function(err) {
         if (err) {
             remaining = -1;
@@ -40,11 +69,31 @@ MBTiles.prototype.index = function(docs, callback) {
             callback(null);
         }
     };
-    docs.forEach(function(doc) {
-        try { var text = iconv.convert(doc.text).toString(); }
-        catch(err) { return callback(err); }
-        this._db.run('REPLACE INTO carmen (id, text, zxy) VALUES (?, ?, ?)', doc.id, text, doc.zxy.join(','), done);
-        this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
+    var term;
+    var grid;
+    this._db.get('SELECT data FROM carmen_term WHERE shard = ?', shard, function(err, row) {
+        if (err) return callback(err);
+        term = row ? intstore.unserialize(row.data) : {};
+        this._db.get('SELECT data FROM carmen_grid WHERE shard = ?', shard, function(err, row) {
+            if (err) return callback(err);
+            grid = row ? intstore.unserialize(row.data) : {};
+
+            // @TODO invalidate stale terms, grid items based on docs.
+            docs.forEach(function(doc) {
+                var id = doc.id|0;
+                intstore.terms(doc.text).reduce(function(memo, key) {
+                    memo[key] = memo[key] || [];
+                    memo[key].push(id);
+                    return memo;
+                }, term);
+                grid[id] = doc.zxy.map(intstore.zxy);
+                this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
+            }.bind(this));
+            var termBuffer = intstore.serialize(term);
+            var gridBuffer = intstore.serialize(grid);
+            this._db.run('REPLACE INTO carmen_term (shard, data) VALUES (?, ?)', shard, termBuffer, done);
+            this._db.run('REPLACE INTO carmen_grid (shard, data) VALUES (?, ?)', shard, gridBuffer, done);
+        }.bind(this));
     }.bind(this));
 };
 
@@ -98,9 +147,10 @@ MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function
         if (err) return callback(err);
         var sql = '\
         CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);\
-        CREATE VIRTUAL TABLE carmen USING fts4(id,text,zxy,tokenize=simple);'
+        CREATE TABLE IF NOT EXISTS carmen_term(shard INTEGER PRIMARY KEY, data BLOB);\
+        CREATE TABLE IF NOT EXISTS carmen_grid(shard INTEGER PRIMARY KEY, data BLOB);';
         this._db.exec(sql, function(err) {
-            if (err && !/table carmen already exists/.test(err.message)) {
+            if (err) {
                 return callback(err);
             } else {
                 return callback();
