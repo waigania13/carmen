@@ -13,40 +13,80 @@ MBTiles.prototype._carmen = {
 
 // Implements carmen#search method.
 MBTiles.prototype.search = function(query, id, callback) {
-    var shardlevel = 2;
-    var ids = [];
-    var zxy = [];
-    var terms = intstore.terms(query);
     var source = this;
+    var shardlevel = 2;
+    var terms = intstore.terms(query);
+    var freqs = {};
 
-    var getids = function() {
-        if (!terms.length) {
-            ids = intstore.mostfreq(ids);
-            return getzxy();
-        }
-        var term = terms.shift();
+    var getids = function(queue, result, callback) {
+        if (!queue.length) return callback(null, intstore.mostfreq(result));
+
+        var term = queue.shift();
         var shard = intstore.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
-            ids = ids.concat(data[term]);
-            getids();
+            result = result.concat(data[term]);
+            freqs[term] = data[term] ? data[term].length : 0;
+            getids(queue, result, callback);
         });
     };
 
-    var getzxy = function() {
-        if (!ids.length) {
-            return callback(null, zxy);
-        }
-        var id = ids.shift();
+    var getzxy = function(queue, result, callback) {
+        if (!queue.length) return callback(null, result);
+
+        var id = queue.shift();
         var shard = intstore.shard(shardlevel, id);
         source.getCarmen('grid', shard, function(err, data) {
             if (err) return callback(err);
-            zxy.push({ id: id, zxy: data[id] });
-            getzxy();
+            termfreq(_(data[id].text).chain().flatten().uniq().value(), function(err) {
+                if (err) return callback(err);
+
+                var score = 0;
+                for (var i = 0; i < data[id].text.length; i++) {
+                    var total = 0;
+                    var local = 0;
+                    var text = data[id].text[i];
+                    for (var j = 0; j < text.length; j++) {
+                        total += freqs[text[j]];
+                    }
+                    for (var j = 0; j < terms.length; j++) {
+                        local += text.indexOf(terms[j]) >= 0 ? freqs[terms[j]]/total : 0;
+                    }
+                    score = Math.max(score, local);
+                }
+
+                // @TODO opportunity to filter out results here based on
+                // score + threshold.
+                result.push({
+                    id: id,
+                    score: score,
+                    zxy: data[id].zxy
+                });
+                getzxy(queue, result, callback);
+            });
         });
     };
 
-    getids();
+    var termfreq = function(terms, callback) {
+        if (!terms.length) return callback();
+        var term = terms.shift();
+
+        // Term frequency is already known. Continue.
+        if (freqs[term]) return termfreq(terms, callback);
+
+        // Look up term frequency.
+        var shard = intstore.shard(shardlevel, term);
+        source.getCarmen('term', shard, function(err, data) {
+            if (err) return callback(err);
+            freqs[term] = data[term].length;
+            return termfreq(terms, callback);
+        });
+    };
+
+    getids([].concat(terms), [], function(err, ids) {
+        if (err) return callback(err);
+        getzxy(ids, [], callback);
+    });
 };
 
 // Implements carmen#feature method.
@@ -63,13 +103,13 @@ MBTiles.prototype.getCarmen = function(type, shard, callback) {
 
     return this._db.get('SELECT data FROM carmen_' + type + ' WHERE shard = ?', shard, function(err, row) {
         if (err) return callback(err);
-        this._carmen[type][shard] = row ? intstore.unserialize(row.data) : {};
+        this._carmen[type][shard] = row ? JSON.parse(row.data) : {};
         callback(null, this._carmen[type][shard]);
     }.bind(this));
 };
 
 MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
-    return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, intstore.serialize(data), function(err) {
+    return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, JSON.stringify(data), function(err) {
         if (err) return callback(err);
         this._carmen[type][shard] = data;
         callback(null);
@@ -101,7 +141,10 @@ MBTiles.prototype.index = function(docs, callback) {
         }, patch.term);
         var shard = intstore.shard(shardlevel, docid);
         patch.grid[shard] = patch.grid[shard] || {};
-        patch.grid[shard][docid] = doc.zxy.map(intstore.zxy);
+        patch.grid[shard][docid] = {
+            text: doc.text.split(',').map(intstore.terms),
+            zxy: doc.zxy.map(intstore.zxy)
+        };
     }.bind(this));
     // Number of term shards.
     remaining += Object.keys(patch.term).length;
@@ -115,12 +158,19 @@ MBTiles.prototype.index = function(docs, callback) {
     _(patch).each(function(shards, type) {
         _(shards).each(function(data, shard) {
             source.getCarmen(type, shard, function(err, current) {
-                // This merges new entries on top of old ones.
-                // @TODO invalidate old entries (?) can this be done incrementally?
-                _(data).each(function(val, key) {
-                    current[key] = current[key] || [];
-                    current[key] = _(current[key].concat(val)).uniq();
-                });
+                switch (type) {
+                case 'term':
+                    // This merges new entries on top of old ones.
+                    // @TODO invalidate old entries (?) can this be done incrementally?
+                    _(data).each(function(val, key) {
+                        current[key] = current[key] || [];
+                        current[key] = _(current[key].concat(val)).uniq();
+                    });
+                    break;
+                case 'grid':
+                    _(data).each(function(val, key) { current[key] = val });
+                    break;
+                }
                 source.putCarmen(type, shard, current, done);
             });
         });

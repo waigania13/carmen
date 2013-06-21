@@ -4,6 +4,8 @@ var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var intstore = {};
 
 intstore.unserialize = function(buffer) {
+    return JSON.parse(buffer);
+
     var hash = {};
     var length = buffer.length;
     var offset = 0;
@@ -24,6 +26,8 @@ intstore.unserialize = function(buffer) {
 // 8 bytes: key double be
 // 8 bytes * len: val double be
 intstore.serialize = function(hash) {
+    return JSON.stringify(hash);
+
     var keys = Object.keys(hash);
     var count = keys.length;
     var length = 0;
@@ -60,6 +64,7 @@ intstore.terms = function(text) {
             .map(function(w) {
                 return w.replace(/[^\w]/g, '').toLowerCase();
             })
+            .filter(function(w) { return w.length })
             .map(function(w) {
                 return parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16);
             }));
@@ -86,8 +91,8 @@ intstore.mostfreq = function(list) {
     var values = [];
     var maxfreq = 1;
     var curfreq = 1;
-    var current = list.shift();
-    while (list.length) {
+    do {
+        var current = list.shift();
         if (current === list[0]) {
             curfreq++;
             if (curfreq > maxfreq) {
@@ -96,11 +101,13 @@ intstore.mostfreq = function(list) {
             } else if (curfreq === maxfreq && values.indexOf(current) === -1) {
                 values.push(current);
             }
+        } else if (maxfreq === 1) {
+            values.push(current);
+            curfreq = 1;
         } else {
             curfreq = 1;
         }
-        current = list.shift();
-    }
+    } while (list.length);
     return values;
 };
 
