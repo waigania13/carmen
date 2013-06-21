@@ -13,39 +13,40 @@ MBTiles.prototype._carmen = {
 
 // Implements carmen#search method.
 MBTiles.prototype.search = function(query, id, callback) {
-    var shard = 0; // @TODO make configurable.
-
-    // Load shard. @TODO this will potentially be a shard per term.
-    // Probably needs to be abstracted!
-    if (!this._carmen.term[shard]) return this._db.get('SELECT data FROM carmen_term WHERE shard = ?', shard, function(err, row) {
-        if (err) return callback(err);
-        this._carmen.term[shard] = row ? intstore.unserialize(row.data) : {};
-        return this.search(query, id, callback);
-    }.bind(this));
-
-    // Load shard. @TODO this will potentially be a shard per id.
-    // Probably needs to be abstracted!
-    if (!this._carmen.grid[shard]) return this._db.get('SELECT data FROM carmen_grid WHERE shard = ?', shard, function(err, row) {
-        if (err) return callback(err);
-        this._carmen.grid[shard] = row ? intstore.unserialize(row.data) : {};
-        return this.search(query, id, callback);
-    }.bind(this));
-
+    var shardlevel = 2;
     var ids = [];
+    var zxy = [];
     var terms = intstore.terms(query);
-    for (var a = 0; a < terms.length; a++) {
-        ids = ids.concat(this._carmen.term[shard][terms[a]]);
-    }
-    ids = intstore.mostfreq(ids);
+    var source = this;
 
-    var rows = [];
-    for (var a = 0; a < ids.length; a++) {
-        rows.push({
-            id: ids[a],
-            zxy: this._carmen.grid[shard][ids[a]]
+    var getids = function() {
+        if (!terms.length) {
+            ids = intstore.mostfreq(ids);
+            return getzxy();
+        }
+        var term = terms.shift();
+        var shard = intstore.shard(shardlevel, term);
+        source.getCarmen('term', shard, function(err, data) {
+            if (err) return callback(err);
+            ids = ids.concat(data[term]);
+            getids();
         });
-    }
-    callback(null, rows);
+    };
+
+    var getzxy = function() {
+        if (!ids.length) {
+            return callback(null, zxy);
+        }
+        var id = ids.shift();
+        var shard = intstore.shard(shardlevel, id);
+        source.getCarmen('grid', shard, function(err, data) {
+            if (err) return callback(err);
+            zxy.push({ id: id, zxy: data[id] });
+            getzxy();
+        });
+    };
+
+    getids();
 };
 
 // Implements carmen#feature method.
@@ -107,6 +108,7 @@ MBTiles.prototype.index = function(docs, callback) {
     // Number of grid shards.
     remaining += Object.keys(patch.grid).length;
     // Add each doc individually to the keymap table.
+    // @TODO API method for get/put features.
     docs.forEach(function(doc) {
         source._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
     });
