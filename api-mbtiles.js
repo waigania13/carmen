@@ -6,11 +6,6 @@ var intstore = require('./intstore');
 
 module.exports = MBTiles;
 
-MBTiles.prototype._carmen = {
-    term: {},
-    grid: {}
-};
-
 // Implements carmen#search method.
 MBTiles.prototype.search = function(query, id, callback) {
     var source = this;
@@ -25,6 +20,8 @@ MBTiles.prototype.search = function(query, id, callback) {
         var shard = intstore.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
+            if (!data[term]) return getids(queue, result, callback);
+
             result = result.concat(data[term]);
             freqs[term] = data[term] ? data[term].length : 0;
             getids(queue, result, callback);
@@ -38,6 +35,8 @@ MBTiles.prototype.search = function(query, id, callback) {
         var shard = intstore.shard(shardlevel, id);
         source.getCarmen('grid', shard, function(err, data) {
             if (err) return callback(err);
+            if (!data[id]) return getzxy(queue, result, callback);
+
             termfreq(_(data[id].text).chain().flatten().uniq().value(), function(err) {
                 if (err) return callback(err);
 
@@ -99,6 +98,8 @@ MBTiles.prototype.feature = function(id, callback) {
 };
 
 MBTiles.prototype.getCarmen = function(type, shard, callback) {
+    if (!this._carmen) this._carmen = { term: {}, grid: {} };
+
     if (this._carmen[type][shard]) return callback(null, this._carmen[type][shard]);
 
     return this._db.get('SELECT data FROM carmen_' + type + ' WHERE shard = ?', shard, function(err, row) {
@@ -109,6 +110,8 @@ MBTiles.prototype.getCarmen = function(type, shard, callback) {
 };
 
 MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
+    if (!this._carmen) this._carmen = { term: {}, grid: {} };
+
     return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, JSON.stringify(data), function(err) {
         if (err) return callback(err);
         this._carmen[type][shard] = data;
