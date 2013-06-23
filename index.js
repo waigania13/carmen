@@ -1,25 +1,9 @@
 var _ = require('underscore');
-var fs = require('fs');
 var path = require('path');
 var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
-
-// Split on a specified delimiter but retain it as a suffix in the parts,
-// e.g. "foo st washington dc", "st" => ["foo st", "washington dc"]
-function keepsplit(str, delim) {
-    var rev = function(str) {
-        return str.split('').reverse().join('');
-    };
-    return rev(str)
-        .split(new RegExp('\\s(?=' + delim
-            .map(rev)
-            .map(function(s) { return s + '\\s' })
-            .join('|')  + ')', 'i'))
-        .map(rev)
-        .reverse();
-};
 
 // For a given z,x,y find its parent tile.
 function pyramid(zxy, parent) {
