@@ -37,28 +37,42 @@ MBTiles.prototype.search = function(query, id, callback) {
             if (err) return callback(err);
             if (!data[id]) return getzxy(queue, result, callback);
 
-            termfreq(_(data[id].text).chain().flatten().uniq().value(), function(err) {
+            var loadfreqs = [];
+            termfreq(Array.prototype.concat.apply([], data[id].text), function(err) {
                 if (err) return callback(err);
 
+                // Score each feature:
+                // - across all feature synonyms, find the max score of the sum
+                //   of each synonym's terms based on each term's frequency of
+                //   occurrence in the dataset.
+                // - for the max score also store the 'reason' -- the index of
+                //   each query token that contributed to its score.
                 var score = 0;
+                var reason = [];
                 for (var i = 0; i < data[id].text.length; i++) {
                     var total = 0;
-                    var local = 0;
+                    var localScore = 0;
+                    var localReason = [];
                     var text = data[id].text[i];
                     for (var j = 0; j < text.length; j++) {
                         total += freqs[text[j]];
                     }
                     for (var j = 0; j < terms.length; j++) {
-                        local += text.indexOf(terms[j]) >= 0 ? freqs[terms[j]]/total : 0;
+                        if (text.indexOf(terms[j]) !== -1 && localReason.indexOf(j) === -1) {
+                            localScore += (1 - freqs[terms[j]]/total) || 1;
+                            localReason.push(j);
+                        }
                     }
-                    score = Math.max(score, local);
+                    if (localScore > score) {
+                        score = localScore;
+                        reason = localReason;
+                    }
                 }
 
-                // @TODO opportunity to filter out results here based on
-                // score + threshold.
-                result.push({
+                if (score > 0.5) result.push({
                     id: id,
                     score: score,
+                    reason: reason,
                     zxy: data[id].zxy
                 });
                 getzxy(queue, result, callback);

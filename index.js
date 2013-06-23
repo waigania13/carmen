@@ -4,6 +4,7 @@ var path = require('path');
 var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
+var crypto = require('crypto');
 
 // Split on a specified delimiter but retain it as a suffix in the parts,
 // e.g. "foo st washington dc", "st" => ["foo st", "washington dc"]
@@ -21,10 +22,13 @@ function keepsplit(str, delim) {
 };
 
 // For a given z,x,y find its parent tile.
-function pyramid(z, x, y, parent) {
-    var depth = z - parent;
+function pyramid(zxy, parent) {
+    var z = (zxy / 1e14) | 0;
+    var x = ((zxy % 1e14) / 1e7) | 0;
+    var y = zxy % 1e7;
+    var depth = Math.max(z - parent, 0);
     var side = Math.pow(2, depth);
-    return [z - depth, Math.floor(x / side), Math.floor(y / side)];
+    return ((z - depth) * 1e14) + (Math.floor(x/side) * 1e7) + Math.floor(y/side);
 };
 
 // Resolve the UTF-8 encoding stored in grids to simple number values.
@@ -96,40 +100,19 @@ Carmen.prototype._open = function(callback) {
 };
 
 Carmen.prototype.tokenize = function(query) {
-    query = query.split(/,| in | near |\n|;/i);
+    var numeric = query.
+        split(/[^\.\-\d+]+/i)
+        .filter(function(t) { return t.length })
+        .map(function(t) { return parseFloat(t) })
+        .filter(function(t) { return !isNaN(t) });
 
     // lon, lat pair.
-    if (query.length === 2 &&
-        _(query).all(function(part) { return !isNaN(parseFloat(part)) }))
-        return query.map(parseFloat);
+    if (numeric.length === 2) return numeric;
 
-    // text query.
-    var tokens = _(query).chain()
-        // Don't attempt to handle streets for now.
-        // .map(function(str) { return keepsplit(str, ['nw','ne','sw','se']); })
-        // .flatten()
-        // .map(function(str) { return keepsplit(str, ['st','ave','dr']); })
-        // .flatten()
-        // 2 letter codes that look like postal.
-        // .map(function(str) {
-        //     var matches = str.match(/\s[a-z]{2}$/i);
-        //     if (matches && str !== matches[0]) return [str, matches[0]];
-        //     else return str;
-        // })
-        // .flatten()
-        // trim, lowercase.
-        // For whatever reason, sqlite FTS does not like dashes in search
-        // tokens, e.g. "foo-bar" does not match anything, where "foo bar" does.
-        .map(function(str) {
-            while (str.substring(0,1) == ' ')
-                str = str.substring(1, str.length);
-            while (str.substring(str.length-1,str.length) == ' ')
-                str = str.substring(0, str.length-1);
-            return str.toLowerCase().replace('-', ' ');
-        })
-        .compact()
-        .value();
-    return tokens;
+    return query
+        .toLowerCase()
+        .split(/[^\w+]+/i)
+        .filter(function(t) { return t.length });
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
@@ -278,7 +261,10 @@ Carmen.prototype.geocode = function(query, callback) {
     var indexes = this.indexes;
     var zooms = this.zooms;
     var types = Object.keys(indexes);
-    var data = { query: this.tokenize(query) };
+    var data = {
+        query: this.tokenize(query),
+        stats: {}
+    };
     var carmen = this;
 
     // lon,lat pair. Provide the context for this location.
@@ -291,122 +277,109 @@ Carmen.prototype.geocode = function(query, callback) {
     }
 
     // keyword search. Find matching features.
+    data.stats.searchTime = +new Date;
     Step(function() {
         var group = this.group();
         _(indexes).each(function(db, dbname) {
-            _(data.query||[]).each(function(t, i) {
-                // Skip tokens that do not pass filter callback.
-                if (!db.filter(t)) return;
-
-                var next = group();
-                db.source.search(t, null, function(err, rows) {
-                    if (err) return next(err);
-                    rows = rows.map(function(row) {
-                        row.token = t;
-                        row.db = dbname;
-                        row.i = i;
-                        return row;
-                    });
-                    next(err, rows);
-                });
+            var next = group();
+            db.source.search(data.query.join(' '), null, function(err, rows) {
+                if (err) return next(err);
+                for (var j = 0, l = rows.length; j < l; j++) {
+                    rows[j].db = dbname;
+                    rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
+                    rows[j].score = rows[j].score;
+                    rows[j].reason = rows[j].reason;
+                };
+                next(null, rows);
             });
         });
     }, function(err, rows) {
         if (err) throw err;
 
+        data.stats.searchTime = +new Date - data.stats.searchTime;
+        data.stats.searchCount = _(rows).flatten().length;
+
+        data.stats.scoreTime = +new Date;
+
+        var features = {};
+        _(rows).chain().flatten().each(function(row) {
+            features[row.tmpid] = row;
+            features[row.db + '.' + row.id] = row;
+        });
+
         var results = _(rows).chain()
             .flatten()
+            // Coalesce scores into higher zooms, e.g.
+            // z5 inherits score of overlapping tiles at z4.
             .reduce(function(memo, row) {
-                // Reward exact matches.
-                var score = (_(row.text.split(',')).chain()
-                    .map(function(part) { return part.toLowerCase().replace(/^\s+|\s+$/g, ''); })
-                    .any(function(part) { return part === row.token; })
-                    .value() ? 1 : 0.5) * indexes[row.db].weight;
-                row.zxy.forEach(function(zxy) {
-                    memo[zxy] = memo[zxy] || [];
-                    memo[zxy].push({
-                        i:row.i,
-                        id:row.id,
-                        db:row.db,
-                        text:row.text,
-                        token:row.token,
-                        score:score
-                    });
-                });
+                var f = features[row.tmpid];
+                for (var i = 0, l = row.zxy.length; i < l; i++) {
+                    for (var j = 0, m = zooms.length; j < m; j++) {
+                        var zxy = pyramid(row.zxy[i], zooms[j]);
+                        memo[zxy] = memo[zxy] || [];
+                        if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
+                    }
+                }
                 return memo;
             }, {})
-            .reduce(function(memo, rows, zxy) {
-                if (rows.length <= 1) return (memo[zxy] = rows) && memo;
-                rows = _(rows).chain()
-                    .sortBy(function(r) { return r.score })
-                    .reverse()
-                    .value();
-                memo[zxy] = _(rows).filter(function(r) {
-                    return types.indexOf(r.db) <= types.indexOf(rows[0].db)
+            .reduce(function(memo, rows) {
+                // Sort by db, score such that total score can be
+                // calculated without results for the same db being summed.
+                rows.sort(function(a, b) {
+                    var ai = types.indexOf(a.db);
+                    var bi = types.indexOf(b.db);
+                    if (ai < bi) return -1;
+                    if (ai > bi) return 1;
+                    if (a.score > b.score) return -1;
+                    if (a.score < b.score) return 1;
+                    return 0;
                 });
+
+                var lastdb = '';
+                var maxscore = 0;
+                var query = [].concat(data.query);
+                for (var i = 0, l = rows.length; i < l; i++) {
+                    if (lastdb === rows[i].db) continue;
+                    var hasreason = true;
+                    var reason = rows[i].reason;
+                    for (var j = 0; j < reason.length; j++) {
+                        hasreason = hasreason && query[reason[j]];
+                        query[reason[j]] = false;
+                    }
+                    if (hasreason) {
+                        maxscore += rows[i].score;
+                        lastdb = rows[i].db;
+                    }
+                }
+                for (var i = 0, l = rows.length; i < l; i++) {
+                    memo[rows[i].tmpid] = memo[rows[i].tmpid] || {
+                        db: rows[i].db,
+                        id: rows[i].id,
+                        tmpid: rows[i].tmpid,
+                        score: Math.max(rows[i].score, maxscore)
+                    };
+                }
+
                 return memo;
             }, {})
+            .reduce(function(memo, feature) {
+                if (!memo.length || feature.score === memo[0].score) {
+                    memo.push(feature);
+                    return memo;
+                } else if (feature.score > memo[0].score) {
+                    return [feature];
+                }
+                return memo;
+            }, [])
+            .map(function(f) { return f.db + '.' + f.id; })
             .value();
-        results = _(results).chain()
-            .map(function(rows, zxy) {
-                zxy = zxy.split('/').map(function(num) {
-                    return parseInt(num, 10);
-                });
-                // coalesce parent results into child results.
-                _(zooms).chain()
-                    .filter(function(z) { return z < zxy[0] })
-                    .each(function(z) {
-                        var p = pyramid(zxy[0], zxy[1], zxy[2], z).join('/');
-                        if (!results[p]) return;
-                        rows = rows.concat(_(results[p]).filter(function(r) {
-                            return types.indexOf(r.db) <= types.indexOf(rows[0].db);
-                        }));
-                    });
 
-                if (rows.length <= 1) return rows;
-
-                rows = _(rows).chain()
-                    // prevent db/token reduction from reducing to single case
-                    // when there are identical tokens e.g. "new york, new york"
-                    // @TODO unclear whether this scales beyond x2 tokens.
-                    .groupBy(function(r) { return r.db }).toArray()
-                    .map(function(rows, i) {
-                        rows = _(rows).sortBy(function(r) { return r.i });
-                        if (i%2) rows.reverse();
-                        return rows;
-                    })
-                    .flatten()
-                    // ensure at most one result for each db.
-                    .reduce(function(memo, r) {
-                        memo[r.db] = memo[r.db] || r;
-                        return memo;
-                    }, {})
-                    // ensure at most one result for each token.
-                    .reduce(function(memo, r) {
-                        memo[r.i] = memo[r.i] || r;
-                        return memo;
-                    }, {})
-                    .toArray()
-                    .value();
-                return rows;
-            })
-            // Remove results that don't match enough of the query tokens.
-            // Prevents "Ohio" from being returned for queries like "Seattle, Ohio".
-            // @TODO revisit this for fuzzier matching in the future.
-            .filter(function(rows) { return rows.length >= data.query.length; })
-            // Highest score.
-            .groupBy(function(rows) { return _(rows).reduce(function(memo, row) {
-                return memo + row.score;
-            }, 0); })
-            .sortBy(function(rows, score) { return -1 * score; })
-            .first()
-            .map(function(rows) {
-                return rows.map(function(r) { return r.db + '.' + r.id }).join(',');
-            })
-            .uniq()
-            .value();
+        data.stats.scoreTime = +new Date - data.stats.scoreTime;
+        data.stats.scoreCount = results.length;
 
         if (!results.length) return this(null, []);
+
+        data.stats.contextTime = +new Date;
 
         // Not using this.group() here because somehow this
         // code triggers Step's group bug.
@@ -453,36 +426,80 @@ Carmen.prototype.geocode = function(query, callback) {
                             return indexes[r.type].map(r.data);
                         return false;
                     }).compact().value();
-                    matches.push(r);
                     contexts.push(context);
-                    if (--remaining === 0) return next(null, matches, contexts);
+                    if (--remaining === 0) return next(null, contexts, features);
                 }));
             });
         });
-    }, function(err, matches, contexts) {
+    }, function(err, contexts, features) {
         if (err) return callback(err);
-        data.results = _(matches).chain()
-            .map(function(r) {
-                // Confirm that the context contains the terms that contributed
-                // to the match's score. All other contexts are false positives
-                // and should be discarded. Example:
-                //
-                //     "Chester, NJ" => "Chester, PA"
-                //
-                // This context will be returned because Chester, PA is in
-                // close enough proximity to overlap with NJ.
-                r.context = _(contexts).find(function(c) {
-                    return _(r.terms).all(function(id) {
-                        return _(c).any(function(t) { return t.id === id });
-                    });
-                });
-                if (r.context) return r;
-            })
-            .compact()
-            .sortBy(function(r) { return indexes[r.type].sortBy(r.data) })
-            .reverse()
-            .pluck('context')
+
+        // Confirm that the context contains the terms that contributed
+        // to the match's score. All other contexts are false positives
+        // and should be discarded. Example:
+        //
+        //     "Chester, NJ" => "Chester, PA"
+        //
+        // This context will be returned because Chester, PA is in
+        // close enough proximity to overlap with NJ.
+        data.results = _(contexts).chain()
+            .reduce(function(memo, c) {
+                // Clone original query tokens. These will be crossed off one
+                // by one to ensure each query token only counts once towards
+                // the final score.
+                var query = [].concat(data.query);
+                // Score for this context. Each context element that is amongst
+                // features found by the initial search contribute to its score.
+                var score = 0;
+                // Count the number of original query tokens that contribute
+                // to the final score.
+                var usage = 0;
+                for (var i = 0; i < c.length; i++) {
+                    if (features[c[i].id]) {
+                        var hasreason = true;
+                        var reason = features[c[i].id].reason;
+                        for (var j = 0; j < reason.length; j++) {
+                            hasreason = hasreason && query[reason[j]] && ++usage;
+                            query[reason[j]] = false;
+                        }
+                        if (hasreason) score += features[c[i].id].score;
+                    }
+                }
+                score = score * (usage / data.query.length);
+
+                if (!memo.length || score === memo[0][1]) {
+                    memo.push([c, score]);
+                    return memo;
+                } else if (score > memo[0][1]) {
+                    return [[c, score]];
+                } else {
+                    return memo;
+                }
+            }, [])
+            .pluck('0')
             .value();
+
+        data.results.sort(function(a, b) {
+            a = a[0], b = b[0];
+
+            // primary sort by result's index.
+            var adb = a.id.split('.')[0];
+            var bdb = b.id.split('.')[0];
+            var ai = types.indexOf(adb);
+            var bi = types.indexOf(bdb);
+            if (ai < bi) return -1;
+            if (ai > bi) return 1;
+
+            // secondary sort by index sortBy callback.
+            var as = indexes[adb].sortBy(a);
+            var bs = indexes[bdb].sortBy(b);
+            if (as > bs) return -1;
+            if (as < bs) return 1;
+            return 0;
+        });
+        data.stats.contextTime = +new Date - data.stats.contextTime;
+        data.stats.contextCount = contexts.length;
+
         return callback(null, data);
     });
 };
