@@ -266,7 +266,7 @@ Carmen.prototype.geocode = function(query, callback) {
         var group = this.group();
         _(indexes).each(function(db, dbname) {
             var next = group();
-            db.source.search(data.query.join(' '), null, function(err, rows) {
+            carmen.search(db.source, data.query.join(' '), null, function(err, rows) {
                 if (err) return next(err);
                 for (var j = 0, l = rows.length; j < l; j++) {
                     rows[j].db = dbname;
@@ -485,6 +485,105 @@ Carmen.prototype.geocode = function(query, callback) {
         data.stats.contextCount = contexts.length;
 
         return callback(null, data);
+    });
+};
+
+var intstore = require('./intstore');
+Carmen.prototype.search = function(source, query, id, callback) {
+    var shardlevel = 2;
+    var terms = intstore.terms(query);
+    var freqs = {};
+
+    var getids = function(queue, result, callback) {
+        if (!queue.length) return callback(null, intstore.mostfreq(result));
+
+        var term = queue.shift();
+        var shard = intstore.shard(shardlevel, term);
+        source.getCarmen('term', shard, function(err, data) {
+            if (err) return callback(err);
+            if (!data[term]) return getids(queue, result, callback);
+
+            result = result.concat(data[term]);
+            freqs[term] = data[term] ? Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length) : 0;
+            getids(queue, result, callback);
+        });
+    };
+
+    var getzxy = function(queue, result, callback) {
+        if (!queue.length) return callback(null, result);
+
+        var id = queue.shift();
+        var shard = intstore.shard(shardlevel, id);
+        source.getCarmen('grid', shard, function(err, data) {
+            if (err) return callback(err);
+            if (!data[id]) return getzxy(queue, result, callback);
+
+            var loadfreqs = [];
+            termfreq(Array.prototype.concat.apply([], data[id].text), function(err) {
+                if (err) return callback(err);
+
+                // Score each feature:
+                // - across all feature synonyms, find the max score of the sum
+                //   of each synonym's terms based on each term's frequency of
+                //   occurrence in the dataset.
+                // - for the max score also store the 'reason' -- the index of
+                //   each query token that contributed to its score.
+                var score = 0;
+                var reason = [];
+                for (var i = 0; i < data[id].text.length; i++) {
+                    var total = 0;
+                    var localScore = 0;
+                    var localReason = [];
+                    var text = data[id].text[i];
+
+                    for (var j = 0; j < text.length; j++) {
+                        total += freqs[text[j]];
+                        if (id === 56660) {
+                            console.warn('TEXT', text[j], freqs[text[j]]);
+                        }
+                    }
+                    for (var j = 0; j < terms.length; j++) {
+                        if (text.indexOf(terms[j]) !== -1 && localReason.indexOf(j) === -1) {
+                            localScore += freqs[terms[j]]/total;
+                            localReason.push(j);
+                        }
+                    }
+                    if (localScore > score) {
+                        score = localScore;
+                        reason = localReason;
+                    }
+                }
+
+                if (score > 0.9) result.push({
+                    id: id,
+                    score: score,
+                    reason: reason,
+                    zxy: data[id].zxy
+                });
+                getzxy(queue, result, callback);
+            });
+        });
+    };
+
+    var termfreq = function(terms, callback) {
+        if (!terms.length) return callback();
+        var term = terms.shift();
+
+        // Term frequency is already known. Continue.
+        if (freqs[term]) return termfreq(terms, callback);
+
+        // Look up term frequency.
+        var shard = intstore.shard(shardlevel, term);
+        source.getCarmen('term', shard, function(err, data) {
+            if (err) return callback(err);
+            freqs[term] = Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length);
+            return termfreq(terms, callback);
+        });
+    };
+
+    getids([].concat(terms), [], function(err, ids) {
+        if (err) return callback(err);
+        getzxy(ids, [], callback);
     });
 };
 
