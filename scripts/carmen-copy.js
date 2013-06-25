@@ -27,10 +27,7 @@ console.log('Copy %s => %s ...', f, t);
 
 var from = new api[path.extname(f)](f, function() {});
 var to = new api[path.extname(t)](t, function() {});
-var carmen = new Carmen({
-    from: { source: from },
-    to: { source: to }
-});
+var carmen = new Carmen({ from: from, to: to });
 
 carmen._open(function(err) {
     if (err) throw err;

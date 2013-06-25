@@ -27,7 +27,7 @@ if (!api[path.extname(f)]) {
 console.log('Indexing %s ...', f);
 
 var from = new api[path.extname(f)](f, function() {});
-var carmen = new Carmen({ from: { source: from } });
+var carmen = new Carmen({ from: from });
 
 carmen._open(function(err) {
     if (err) throw err;

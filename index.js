@@ -58,25 +58,26 @@ function Carmen(options) {
         }
     }.bind(this);
 
-    this.indexes = _(options).reduce(function(memo, db, key) {
-        var dbname = key;
-        memo[key] = _(db).defaults({});
-        if (db.source.open) {
-            db.source.getInfo(function(err, info) {
+    this.indexes = _(options).reduce(function(memo, source, key) {
+        // Legacy support.
+        source = source.source ? source.source : source;
+
+        memo[key] = source;
+        source._carmen = source._carmen || { term: {}, grid: {} };
+        if (source.open) {
+            source.getInfo(function(err, info) {
                 if (err) return done(err);
-                db.zoom = info.maxzoom;
-                db.shardlevel = info.shardlevel || 0;
-                db.source.shardlevel = db.shardlevel;
+                source._carmen.zoom = info.maxzoom;
+                source._carmen.shardlevel = info.shardlevel || 0;
                 return done();
             });
         } else {
-            db.source.once('open', function(err) {
+            source.once('open', function(err) {
                 if (err) return done(err);
-                db.source.getInfo(function(err, info) {
+                source.getInfo(function(err, info) {
                     if (err) return done(err);
-                    db.zoom = info.maxzoom;
-                    db.shardlevel = info.shardlevel || 0;
-                    db.source.shardlevel = db.shardlevel; // @TODO eliminated db/source distinction.
+                    source._carmen.zoom = info.maxzoom;
+                    source._carmen.shardlevel = info.shardlevel || 0;
                     return done();
                 });
             });
@@ -130,14 +131,15 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
     Step(function() {
         var group = this.group();
-        _(indexes).each(function(d, type) {
-            var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
+        _(indexes).each(function(source, type) {
+            var zoom = source._carmen.zoom;
+            var xyz = sm.xyz([lon,lat,lon,lat], zoom);
             var next = group();
-            d.source.getGrid(d.zoom, xyz.minX, xyz.minY, function(err, grid) {
+            source.getGrid(zoom, xyz.minX, xyz.minY, function(err, grid) {
                 if (err) return next(err);
 
                 var resolution = 4;
-                var px = sm.px([lon,lat], d.zoom);
+                var px = sm.px([lon,lat], zoom);
                 var y = Math.round((px[1] % 256) / resolution);
                 var x = Math.round((px[0] % 256) / resolution);
                 x = x > 63 ? 63 : x;
@@ -214,9 +216,9 @@ Carmen.prototype.geocode = function(query, callback) {
     data.stats.searchTime = +new Date;
     Step(function() {
         var group = this.group();
-        _(indexes).each(function(db, dbname) {
+        _(indexes).each(function(source, dbname) {
             var next = group();
-            carmen.search(db.source, data.query.join(' '), null, function(err, rows) {
+            carmen.search(source, data.query.join(' '), null, function(err, rows) {
                 if (err) return next(err);
                 if (rows.length) {
                     var z = rows[0].zxy[0]/1e14|0;
@@ -332,7 +334,7 @@ Carmen.prototype.geocode = function(query, callback) {
             var term = terms.split(',')[0];
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            indexes[dbname].source.getFeature(termid, function(err, data) {
+            indexes[dbname].getFeature(termid, function(err, data) {
                 if (err) return next(err);
                 carmen.contextByFeature(feature(termid, dbname, data), function(err, context) {
                     if (err) return next(err);
@@ -420,7 +422,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
-    var shardlevel = source.shardlevel;
+    var shardlevel = source._carmen.shardlevel;
     var terms = intstore.terms(query);
     var freqs = {};
 
@@ -521,7 +523,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         this.index(source, docs, callback);
     }.bind(this));
 
-    var shardlevel = source.shardlevel;
+    var shardlevel = source._carmen.shardlevel;
     var remaining = docs.length;
     var patch = { term: {}, grid: {} };
     var done = function(err) {
