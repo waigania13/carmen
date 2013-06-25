@@ -31,6 +31,18 @@ function toChar(key) {
     return String.fromCharCode(key);
 };
 
+function feature(id, type, data) {
+    data.id = type + '.' + id;
+    data.type = data.type || type;
+    if ('string' === typeof data.bounds)
+        data.bounds = data.bounds.split(',').map(parseFloat);
+    if ('search' in data)
+        delete data.search;
+    if ('rank' in data)
+        delete data.rank;
+    return data;
+};
+
 require('util').inherits(Carmen, require('events').EventEmitter);
 
 function Carmen(options) {
@@ -48,18 +60,7 @@ function Carmen(options) {
 
     this.indexes = _(options).reduce(function(memo, db, key) {
         var dbname = key;
-        memo[key] = _(db).defaults({
-            context: true,
-            query: true,
-            sortBy: function(data) { return data.score || 0 },
-            map: function(data) {
-                delete data.search;
-                delete data.rank;
-                data.type = data.type || dbname;
-                if (data.bounds) data.bounds = data.bounds.split(',').map(parseFloat);
-                return data;
-            }
-        });
+        memo[key] = _(db).defaults({});
         if (db.source.open) {
             db.source.getInfo(function(err, info) {
                 if (err) return done(err);
@@ -130,7 +131,6 @@ Carmen.prototype.context = function(lon, lat, callback) {
     Step(function() {
         var group = this.group();
         _(indexes).each(function(d, type) {
-            if (!d.context) return;
             var xyz = sm.xyz([lon,lat,lon,lat], d.zoom);
             var next = group();
             d.source.getGrid(d.zoom, xyz.minX, xyz.minY, function(err, grid) {
@@ -154,16 +154,10 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
                 if (!key) return next();
 
-                var data = d.map(grid.data[key]);
-                data.id = data.id || type + '.' + key;
-                if ('lon' in data && 'lat' in data) return next(null, data);
-                carmen.centroid(type + '.' + key, function(err, lonlat) {
-                    if (err) return next(err);
-                    data.lon = lonlat[0];
-                    data.lat = lonlat[1];
-                    return next(null, data);
-                });
-
+                var data = feature(key, type, grid.data[key]);
+                if (!'lon' in data) return next(new Error('No lon field in data'));
+                if (!'lat' in data) return next(new Error('No lat field in data'));
+                return next(null, data);
             });
         });
     }, function(err, context) {
@@ -172,76 +166,23 @@ Carmen.prototype.context = function(lon, lat, callback) {
     });
 };
 
-// Retrieve the context for a feature given its id in the form [type].[id].
-Carmen.prototype.contextByFeature = function(id, callback) {
-    this.centroid(id, function(err, lonlat) {
-        if (err) return callback(err);
-        this.context(lonlat[0], lonlat[1], callback);
-    }.bind(this));
-};
-
-// Get the [lon,lat] of a feature given its id in the form [type].[id].
-// Looks up a point in the feature geometry using a point from a central grid.
-Carmen.prototype.centroid = function(id, callback) {
-    if (!this._opened) return this._open(function(err) {
-        if (err) return callback(err);
-        this.centroid(id, callback);
-    }.bind(this));
-
-    var type = id.split('.').shift();
-    var id = id.split('.').pop();
+// Retrieve the context for a feature (document).
+Carmen.prototype.contextByFeature = function(data, callback) {
+    if (!'lon' in data) return callback(new Error('No lon field in data'));
+    if (!'lat' in data) return callback(new Error('No lat field in data'));
     var carmen = this;
-    var indexes = this.indexes;
-    var c = {};
-
-    Step(function() {
-        indexes[type].source.search(null, id, this);
-    }, function(err, row) {
-        if (err) throw err;
-        if (!row || !row.length) return this();
-        row = row.shift();
-        var rows = row.zxy.map(function(zxy) {
-            zxy = zxy.split('/');
-            return _({
-                z: zxy[0] | 0,
-                x: zxy[1] | 0,
-                y: (Math.pow(2,zxy[0]|0) - zxy[2] - 1) | 0
-            }).defaults(row);
-        });
-        c.z = rows[0].z;
-        c.x = _(rows).chain()
-            .sortBy('x').pluck('x').uniq()
-            .find(function(x, i, xs) { return i === (xs.length * 0.5 | 0) })
-            .value();
-        c.y = _(rows).chain()
-            .filter(function(row) { return row.x === c.x })
-            .sortBy('y').pluck('y').uniq()
-            .find(function(y, i, ys) { return i === (ys.length * 0.5 | 0) })
-            .value();
-        indexes[type].source.getGrid(c.z,c.x,c.y,this);
-    }, function(err, grid) {
+    this.context(data.lon, data.lat, function(err, context) {
         if (err) return callback(err);
-        if (!grid) return callback(new Error('Grid does not exist'));
 
-        var chr = toChar(grid.keys.indexOf(id));
-        var xy = [];
-        _(grid.grid).each(function(row, y) {
-            if (row.indexOf(chr) === -1) return;
-            for (var x = 0; x < 64; x++) if (row[x] === chr) xy.push({x:x,y:y});
+        // Filter out levels that match or exceed the detail of the feature.
+        var types = Object.keys(carmen.indexes);
+        var index = types.indexOf(data.id.split('.')[0]);
+        context = context.filter(function(c) {
+            return types.indexOf(c.id.split('.')[0]) < index;
         });
-        c.px = _(xy).chain()
-            .sortBy('x').pluck('x').uniq()
-            .find(function(x, i, xs) { return i === (xs.length * 0.5 | 0) })
-            .value();
-        c.py = _(xy).chain()
-            .filter(function(xy) { return xy.x === c.px })
-            .sortBy('y').pluck('y').uniq()
-            .find(function(y, i, ys) { return i === (ys.length * 0.5 | 0) })
-            .value();
-        callback(null, sm.ll([
-            (256*c.x) + (c.px*4),
-            (256*c.y) + (c.py*4)
-        ], c.z));
+        // Push feature onto the top level.
+        context.unshift(data);
+        return callback(null, context);
     });
 };
 
@@ -393,42 +334,11 @@ Carmen.prototype.geocode = function(query, callback) {
             var dbname = term.split('.')[0];
             indexes[dbname].source.getFeature(termid, function(err, data) {
                 if (err) return next(err);
-                var r = {};
-                r.id = dbname + '.' + termid;
-                r.type = dbname;
-                r.data = data;
-                r.data.id = r.data.id || r.id;
-                r.terms = terms.split(',');
-
-                var args = [r.id];
-                var method = 'contextByFeature';
-                if ('lon' in r.data && 'lat' in r.data) {
-                    args = [r.data.lon, r.data.lat];
-                    method = 'context';
-                }
-                carmen[method].apply(carmen, args.concat(function(err, context) {
+                carmen.contextByFeature(feature(termid, dbname, data), function(err, context) {
                     if (err) return next(err);
-                    // Add the result in manually for indexes that exclude context retrieval.
-                    if (!indexes[r.type].context) context.unshift(indexes[r.type].map(r.data));
-                    // Context adjustments.
-                    context = _(context).chain().map(function(term) {
-                        // Term matches result.
-                        if (term.id === r.id) return term;
-                        // Term is parent of result.
-                        if (types.indexOf(term.id.split('.')[0]) < types.indexOf(r.type))
-                            return term;
-                        // A context that includes a different term at the
-                        // same level as the result likely has a different
-                        // overlapping feature that obscures the result
-                        // feature. Replace the obscuring feature with the
-                        // result.
-                        if (types.indexOf(term.id.split('.')[0]) === types.indexOf(r.type))
-                            return indexes[r.type].map(r.data);
-                        return false;
-                    }).compact().value();
                     contexts.push(context);
                     if (--remaining === 0) return next(null, contexts, features);
-                }));
+                });
             });
         });
     }, function(err, contexts, features) {
@@ -490,9 +400,9 @@ Carmen.prototype.geocode = function(query, callback) {
             if (ai < bi) return -1;
             if (ai > bi) return 1;
 
-            // secondary sort by index sortBy callback.
-            var as = indexes[adb].sortBy(a);
-            var bs = indexes[bdb].sortBy(b);
+            // secondary sort by score key.
+            var as = a.score || 0;
+            var bs = b.score || 0;
             if (as > bs) return -1;
             if (as < bs) return 1;
             return 0;

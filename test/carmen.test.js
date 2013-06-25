@@ -220,7 +220,7 @@ describe('centroid', function() {
 });
 
 _(fixtures).each(function(fixture, type) {
-    if (!carmen.indexes[type] || !carmen.indexes[type].query) return;
+    if (!carmen.indexes[type]) return;
 
     describe('geocode ' + type, function() {
         var stats = {
