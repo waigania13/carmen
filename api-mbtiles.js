@@ -1,10 +1,18 @@
 var _ = require('underscore');
-var MBTiles = require('mbtiles');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var crypto = require('crypto');
 var intstore = require('./intstore');
+var Parent = require('mbtiles');
 
 module.exports = MBTiles;
+require('util').inherits(MBTiles, Parent);
+
+function MBTiles(uri, callback) {
+    return Parent.call(this, uri, function(err, source) {
+        source.emit('open', err);
+        callback(err, source);
+    });
+};
 
 // Implements carmen#feature method.
 MBTiles.prototype.feature = function(id, callback) {
