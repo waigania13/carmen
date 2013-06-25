@@ -7,6 +7,7 @@ var api = {
     '.s3': require('../api-s3'),
     '.mbtiles': require('../api-mbtiles')
 };
+var Carmen = require('../index.js');
 var Queue = require('../queue');
 var f = argv[2];
 
@@ -24,7 +25,11 @@ if (!api[path.extname(f)]) {
 }
 
 console.log('Indexing %s ...', f);
-new api[path.extname(f)](f, function(err, from) {
+
+var from = new api[path.extname(f)](f, function() {});
+var carmen = new Carmen({ from: { source: from } });
+
+carmen._open(function(err) {
     if (err) throw err;
     from.startWriting(function(err) {
         if (err) throw err;
@@ -36,7 +41,7 @@ new api[path.extname(f)](f, function(err, from) {
                     console.log('Done.');
                 });
                 console.log('Indexing %s docs ...', docs.length);
-                from.index(docs, function(err) {
+                carmen.index(from, docs, function(err) {
                     if (err) throw err;
                     index(pointer);
                 });

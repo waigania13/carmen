@@ -7,6 +7,7 @@ var api = {
     '.s3': require('../api-s3'),
     '.mbtiles': require('../api-mbtiles')
 };
+var Carmen = require('../index.js');
 var Queue = require('../queue');
 var f = argv[2];
 var t = argv[3];
@@ -23,28 +24,33 @@ if (!f || !t) {
 });
 
 console.log('Copy %s => %s ...', f, t);
-new api[path.extname(f)](f, function(err, from) {
+
+var from = new api[path.extname(f)](f, function() {});
+var to = new api[path.extname(t)](t, function() {});
+var carmen = new Carmen({
+    from: { source: from },
+    to: { source: to }
+});
+
+carmen._open(function(err) {
     if (err) throw err;
-    new api[path.extname(t)](t, function(err, to) {
+    to.startWriting(function(err) {
         if (err) throw err;
-        to.startWriting(function(err) {
-            if (err) throw err;
-            var index = function(pointer) {
-                from.indexable(pointer, function(err, docs, pointer) {
+        var index = function(pointer) {
+            from.indexable(pointer, function(err, docs, pointer) {
+                if (err) throw err;
+                if (!docs.length) return to.stopWriting(function(err) {
                     if (err) throw err;
-                    if (!docs.length) return to.stopWriting(function(err) {
-                        if (err) throw err;
-                        console.log('Done.');
-                    });
-                    console.log('Indexing %s docs ...', docs.length);
-                    to.index(docs, function(err) {
-                        if (err) throw err;
-                        index(pointer);
-                    });
+                    console.log('Done.');
                 });
-            };
-            index();
-        });
+                console.log('Indexing %s docs ...', docs.length);
+                carmen.index(to, docs, function(err) {
+                    if (err) throw err;
+                    index(pointer);
+                });
+            });
+        };
+        index();
     });
 });
 

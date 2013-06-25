@@ -4,6 +4,7 @@ var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
+var intstore = require('./intstore');
 
 // For a given z,x,y find its parent tile.
 function pyramid(zxy, parent) {
@@ -63,6 +64,8 @@ function Carmen(options) {
             db.source.getInfo(function(err, info) {
                 if (err) return done(err);
                 db.zoom = info.maxzoom;
+                db.shardlevel = info.shardlevel || 0;
+                db.source.shardlevel = db.shardlevel;
                 return done();
             });
         } else {
@@ -71,6 +74,8 @@ function Carmen(options) {
                 db.source.getInfo(function(err, info) {
                     if (err) return done(err);
                     db.zoom = info.maxzoom;
+                    db.shardlevel = info.shardlevel || 0;
+                    db.source.shardlevel = db.shardlevel; // @TODO eliminated db/source distinction.
                     return done();
                 });
             });
@@ -386,7 +391,7 @@ Carmen.prototype.geocode = function(query, callback) {
             var term = terms.split(',')[0];
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            indexes[dbname].source.feature(termid, function(err, data) {
+            indexes[dbname].source.getFeature(termid, function(err, data) {
                 if (err) return next(err);
                 var r = {};
                 r.id = dbname + '.' + termid;
@@ -499,9 +504,13 @@ Carmen.prototype.geocode = function(query, callback) {
     });
 };
 
-var intstore = require('./intstore');
 Carmen.prototype.search = function(source, query, id, callback) {
-    var shardlevel = 2;
+    if (!this._opened) return this._open(function(err) {
+        if (err) return callback(err);
+        this.search(source, query, id, callback);
+    }.bind(this));
+
+    var shardlevel = source.shardlevel;
     var terms = intstore.terms(query);
     var freqs = {};
 
@@ -592,6 +601,70 @@ Carmen.prototype.search = function(source, query, id, callback) {
     getids([].concat(terms), [], function(err, ids) {
         if (err) return callback(err);
         getzxy(ids, [], callback);
+    });
+};
+
+// Implements carmen#index method.
+Carmen.prototype.index = function(source, docs, callback) {
+    if (!this._opened) return this._open(function(err) {
+        if (err) return callback(err);
+        this.index(source, docs, callback);
+    }.bind(this));
+
+    var shardlevel = source.shardlevel;
+    var remaining = docs.length;
+    var patch = { term: {}, grid: {} };
+    var done = function(err) {
+        if (err) {
+            remaining = -1;
+            callback(err);
+        } else if (!--remaining) {
+            callback(null);
+        }
+    };
+    docs.forEach(function(doc) {
+        var docid = doc.id|0;
+        intstore.terms(doc.text).reduce(function(memo, id) {
+            var shard = intstore.shard(shardlevel, id);
+            memo[shard] = memo[shard] || {};
+            memo[shard][id] = memo[shard][id] || [];
+            memo[shard][id].push(docid);
+            return memo;
+        }, patch.term);
+        var shard = intstore.shard(shardlevel, docid);
+        patch.grid[shard] = patch.grid[shard] || {};
+        patch.grid[shard][docid] = {
+            text: doc.text.split(',').map(intstore.terms),
+            zxy: doc.zxy.map(intstore.zxy)
+        };
+    });
+    // Number of term shards.
+    remaining += Object.keys(patch.term).length;
+    // Number of grid shards.
+    remaining += Object.keys(patch.grid).length;
+    // Add each doc.
+    docs.forEach(function(doc) {
+        source.putFeature(doc.id, doc.doc, done);
+    });
+    _(patch).each(function(shards, type) {
+        _(shards).each(function(data, shard) {
+            source.getCarmen(type, shard, function(err, current) {
+                switch (type) {
+                case 'term':
+                    // This merges new entries on top of old ones.
+                    // @TODO invalidate old entries in a separate command/op.
+                    _(data).each(function(val, key) {
+                        current[key] = current[key] || [];
+                        current[key] = _(current[key].concat(val)).uniq();
+                    });
+                    break;
+                case 'grid':
+                    _(data).each(function(val, key) { current[key] = val });
+                    break;
+                }
+                source.putCarmen(type, shard, current, done);
+            });
+        });
     });
 };
 

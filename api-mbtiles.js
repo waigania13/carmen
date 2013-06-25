@@ -14,8 +14,8 @@ function MBTiles(uri, callback) {
     });
 };
 
-// Implements carmen#feature method.
-MBTiles.prototype.feature = function(id, callback) {
+// Implements carmen#getFeature method.
+MBTiles.prototype.getFeature = function(id, callback) {
     this._db.get('SELECT key_name AS id, key_json AS data FROM keymap WHERE key_name = ?', id, function(err, row) {
         if (err) return callback(err);
         try { return callback(null, JSON.parse(row.data)); }
@@ -23,6 +23,12 @@ MBTiles.prototype.feature = function(id, callback) {
     });
 };
 
+// Implements carmen#putFeature method.
+MBTiles.prototype.putFeature = function(id, data, callback) {
+    this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', id, JSON.stringify(data), callback);
+};
+
+// Implements carmen#getCarmen method.
 MBTiles.prototype.getCarmen = function(type, shard, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
@@ -35,6 +41,7 @@ MBTiles.prototype.getCarmen = function(type, shard, callback) {
     }.bind(this));
 };
 
+// Implements carmen#putCarmen method.
 MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
@@ -43,67 +50,6 @@ MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
         this._carmen[type][shard] = data;
         callback(null);
     }.bind(this));
-};
-
-// Implements carmen#index method.
-MBTiles.prototype.index = function(docs, callback) {
-    var source = this;
-    var shardlevel = 2;
-    var remaining = docs.length;
-    var patch = { term: {}, grid: {} };
-    var done = function(err) {
-        if (err) {
-            remaining = -1;
-            callback(err);
-        } else if (!--remaining) {
-            callback(null);
-        }
-    };
-    docs.forEach(function(doc) {
-        var docid = doc.id|0;
-        intstore.terms(doc.text).reduce(function(memo, id) {
-            var shard = intstore.shard(shardlevel, id);
-            memo[shard] = memo[shard] || {};
-            memo[shard][id] = memo[shard][id] || [];
-            memo[shard][id].push(docid);
-            return memo;
-        }, patch.term);
-        var shard = intstore.shard(shardlevel, docid);
-        patch.grid[shard] = patch.grid[shard] || {};
-        patch.grid[shard][docid] = {
-            text: doc.text.split(',').map(intstore.terms),
-            zxy: doc.zxy.map(intstore.zxy)
-        };
-    }.bind(this));
-    // Number of term shards.
-    remaining += Object.keys(patch.term).length;
-    // Number of grid shards.
-    remaining += Object.keys(patch.grid).length;
-    // Add each doc individually to the keymap table.
-    // @TODO API method for get/put features.
-    docs.forEach(function(doc) {
-        source._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', doc.id, JSON.stringify(doc.doc), done);
-    });
-    _(patch).each(function(shards, type) {
-        _(shards).each(function(data, shard) {
-            source.getCarmen(type, shard, function(err, current) {
-                switch (type) {
-                case 'term':
-                    // This merges new entries on top of old ones.
-                    // @TODO invalidate old entries (?) can this be done incrementally?
-                    _(data).each(function(val, key) {
-                        current[key] = current[key] || [];
-                        current[key] = _(current[key].concat(val)).uniq();
-                    });
-                    break;
-                case 'grid':
-                    _(data).each(function(val, key) { current[key] = val });
-                    break;
-                }
-                source.putCarmen(type, shard, current, done);
-            });
-        });
-    });
 };
 
 // Implements carmen#indexable method.
