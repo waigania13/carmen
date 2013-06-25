@@ -6,97 +6,38 @@ var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 module.exports = S3;
 
-// Converts a doc into an array of search terms.
-// Terms that are part of a larger phrase are suffixed with an '-' indicating
-// that they do not represent the complete text of the document, e.g.
-//
-//   united states =>
-//     united-
-//     states-
-//     united_states
-//
-// A full normalized version of the doc is ensured to be the last entry making
-// it possible to .pop() a normalized string usable as a search query prefix.
-S3.terms = function(doc) {
-    try {
-        var converted = iconv.convert(doc).toString();
-        doc = converted;
-    } catch(err) {}
-
-    var terms = [];
-    doc.split(',').forEach(function(doc) {
-        var parts = doc.split(/[ -]/g)
-            .map(function(w) { return w.replace(/[^\w]/g, '').toLowerCase(); })
-            .filter(function(w) { return w.length });
-        terms = terms
-            .concat(parts
-                .filter(function(w) { return w.length > 1 })
-                .map(function(w) { return parts.length > 1 ? w + '-' : w }))
-            .concat(parts.length > 1 ? parts.join('_') : []);
-    });
-    return _(terms).uniq();
-};
-
-// Implements carmen#search method.
-S3.prototype.search = function(query, id, callback) {
-    if (!this.data) return callback(new Error('Tilesource not loaded'));
-    if (!this.client) return callback(new Error('No S3 client found'));
-
-    // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
-    catch (err) { return callback(new Error('Carmen not supported')); }
-
-    // Reduce callback for object keys.
-    var toDocs = function(memo, obj) {
-        var key = obj.split('/').pop().split('.');
-        memo[key[1]] = memo[key[1]] || { text:[] };
-        memo[key[1]].id = key[1];
-        memo[key[1]].zxy = (memo[key[1]].zxy || [])
-            .concat(key.slice(2).map(function(v) { return v.replace(/,/g,'/') }));
-        memo[key[1]].text.push(key[0].replace(/_/g,' '));
-        return memo;
+var put = function(client, key, data, callback) {
+    var retry = function(err) {
+        console.error(err);
+        setTimeout(function() { put(client, key, data, callback) }, 500);
     };
-
-    // ID search.
-    if (id) return this.feature(id, function(err, data) {
-        if (err) return callback(err);
-        var docs = _(data._terms).chain()
-            .reduce(toDocs, {})
-            .map(function(res) {
-                res.zxy = _(res.zxy).uniq();
-                res.text = _(res.text).uniq()
-                    .filter(function(t) { return t.indexOf('-') === -1 })
-                    .join(',');
-                return res;
-            })
-            .value();
-        return callback(null, docs);
-    }, true);
-
-    // Query search.
-    var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
-    this.client.getFile('?prefix=' + prefix, function(err, res){
-        if (err) return callback(err);
-        var xml = '';
-        res.on('data', function(chunk){ xml += chunk; });
-        res.on('end', function() {
-            var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
-            var docs = _(parsed).chain()
-                .reduce(toDocs, {})
-                .map(function(res) {
-                    res.zxy = _(res.zxy).uniq();
-                    res.text = _(res.text).uniq().join(',');
-                    return res;
-                })
-                .value();
-            return callback(null, docs);
-        });
-        res.on('error', callback);
-    }.bind(this));
+    var req = client.put(key, {
+        'x-amz-acl': 'public-read',
+        'Connection': 'keep-alive',
+        'Content-Length': data ? Buffer.byteLength(data, 'utf8') : 0,
+        'Content-Type': 'application/json'
+    });
+    req.on('close', retry);
+    req.on('error', retry);
+    req.setTimeout(60e3, function() {
+        req.abort();
+        var err = new Error('ESOCKETTIMEDOUT');
+        err.code = 'ESOCKETTIMEDOUT';
+        req.emit('error', err);
+    });
+    req.on('response', function(res) {
+        res.on('error', retry);
+        if (res.statusCode === 200) {
+            return callback();
+        } else {
+            return callback(new Error('S3 put failed: ' + res.statusCode));
+        }
+    });
+    req.end(data);
 };
 
-// Implements carmen#feature method.
-S3.prototype.feature = function(id, callback, raw) {
+// Implements carmen#getFeature method.
+S3.prototype.getFeature = function(id, callback, raw) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
@@ -118,86 +59,62 @@ S3.prototype.feature = function(id, callback, raw) {
     });
 };
 
-// Implements carmen#index method.
-S3.prototype.index = function(docs, callback) {
+// Implements carmen#putFeature method.
+S3.prototype.putFeature = function(id, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
-    if (!this.client) return callback(new Error('Tilesource not writing'));
-
-    // @TODO get existing document and purge its terms.
 
     // Parse carmen URL.
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    // Add each search term shard.
-    var terms = [];
-    var puts = [];
-    docs.forEach(function(doc) {
-        var id = doc.id;
-        var zxy = doc.zxy;
-        var text = doc.text;
-        var doc = doc.doc;
+    uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
+    put(this.client, uri.pathname, JSON.stringify(data), callback);
+};
 
-        S3.terms(text).forEach(function(shard) {
-            var coords = zxy.map(function(zxy) { return zxy.replace(/\//g,',') });
-            var prefix = path.join(uri.pathname, 'term/' + shard + '.' + id + '.');
-            while (coords.length) {
-                var chunk = [];
-                do {
-                    var next = prefix + chunk.join('.') + (coords.length ? '.' + coords[0] : '');
-                } while (
-                    next.length < 1024 &&
-                    coords.length &&
-                    chunk.push(coords.shift())
-                );
-                var key = prefix + chunk.join('.');
-                terms.push(key);
-                puts.push({ key:key, data:'' });
-            }
-        });
+// Implements carmen#getCarmen method.
+S3.prototype.getCarmen = function(type, shard, callback) {
+    if (!this.data) return callback(new Error('Tilesource not loaded'));
 
-        // Add actual doc to queue.
-        puts.push({
-            key:path.join(uri.pathname, 'data/' + id + '.json'),
-            data:JSON.stringify(_({_terms:terms}).defaults(doc))
-        });
-    });
+    // Parse carmen URL.
+    try { var uri = url.parse(this.data._carmen); }
+    catch (err) { return callback(new Error('Carmen not supported')); }
 
-    var put = function(err) {
-        if (!puts.length) return callback();
-        if (err) {
-            console.error(err);
-            return setTimeout(put, 500);
-        }
+    // Init carmen cache.
+    this._carmen = this._carmen || { term: {}, grid: {} };
 
-        var obj = puts[0];
-        var req = this.client.put(obj.key, {
-            'x-amz-acl': 'public-read',
-            'Connection': 'keep-alive',
-            'Content-Length': obj.data ? Buffer.byteLength(obj.data, 'utf8') : 0,
-            'Content-Type': 'application/json'
-        });
-        req.on('close', put);
-        req.on('error', put);
-        req.setTimeout(60e3, function() {
-            req.abort();
-            var err = new Error('ESOCKETTIMEDOUT');
-            err.code = 'ESOCKETTIMEDOUT';
-            req.emit('error', err);
-        });
-        req.on('response', function(res) {
-            res.on('error', put);
-            if (res.statusCode === 200) {
-                puts.shift();
-                return put();
-            } else {
-                return put(new Error('S3 put failed: ' + res.statusCode));
-            }
-        });
-        req.end(obj.data);
-    }.bind(this);
+    // Cache hit.
+    if (this._carmen[type][shard]) return callback(null, this._carmen[type][shard]);
 
-    put();
+    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.json');
+    new S3.get({
+        uri: url.format(uri),
+        headers: {Connection:'Keep-Alive'},
+        agent: S3.agent,
+        timeout: 5000
+    }).asBuffer(function(err, buffer) {
+        if (err && err.status > 499) return callback(err);
+        this._carmen[type][shard] = buffer ? JSON.parse(buffer.toString('utf8')) : {};
+        callback(null, this._carmen[type][shard]);
+    }.bind(this));
+};
+
+// Implements carmen#putCarmen method.
+S3.prototype.putCarmen = function(type, shard, data, callback) {
+    if (!this.data) return callback(new Error('Tilesource not loaded'));
+
+    // Parse carmen URL.
+    try { var uri = url.parse(this.data._carmen); }
+    catch (err) { return callback(new Error('Carmen not supported')); }
+
+    // Init carmen cache.
+    this._carmen = this._carmen || { term: {}, grid: {} };
+
+    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.json');
+    put(this.client, uri.pathname, JSON.stringify(data), function(err) {
+        if (err) return callback(err);
+        this._carmen[type][shard] = data;
+        callback(null);
+    }.bind(this));
 };
 
 // Implements carmen#indexable method.
