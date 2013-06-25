@@ -30,16 +30,27 @@ function toChar(key) {
     return String.fromCharCode(key);
 };
 
+require('util').inherits(Carmen, require('events').EventEmitter);
+
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
+
+    var remaining = Object.keys(options).length;
+    var done = function(err) {
+        if (!--remaining || err) {
+            remaining = -1;
+            this._error = err;
+            this._opened = true;
+            this.emit('open', err);
+        }
+    }.bind(this);
+
     this.indexes = _(options).reduce(function(memo, db, key) {
         var dbname = key;
         memo[key] = _(db).defaults({
             context: true,
             query: true,
-            weight: 1,
             sortBy: function(data) { return data.score || 0 },
-            filter: function(token) { return true },
             map: function(data) {
                 delete data.search;
                 delete data.rank;
@@ -48,6 +59,22 @@ function Carmen(options) {
                 return data;
             }
         });
+        if (db.source.open) {
+            db.source.getInfo(function(err, info) {
+                if (err) return done(err);
+                db.zoom = info.maxzoom;
+                return done();
+            });
+        } else {
+            db.source.once('open', function(err) {
+                if (err) return done(err);
+                db.source.getInfo(function(err, info) {
+                    if (err) return done(err);
+                    db.zoom = info.maxzoom;
+                    return done();
+                });
+            });
+        }
         return memo;
     }, {});
 };
@@ -56,31 +83,7 @@ Carmen.S3 = function() { return require('./api-s3') };
 Carmen.MBTiles = function() { return require('./api-mbtiles') };
 
 Carmen.prototype._open = function(callback) {
-    if (!_(this.indexes).all(function(d) { return d.source.open }))
-        return callback(new Error('DB not open.'));
-
-    if (this._opened) return callback();
-
-    var carmen = this;
-    var remaining = _(this.indexes).size();
-    _(this.indexes).each(function(db) {
-        db.source.getInfo(function(err, info) {
-            if (info) db.zoom = info.maxzoom;
-            if (err) {
-                remaining = -1
-                return callback(err);
-            }
-            if (--remaining === 0) {
-                carmen.zooms = _(carmen.indexes).chain()
-                    .pluck('zoom')
-                    .uniq()
-                    .sortBy(function(z) { return z })
-                    .value();
-                carmen._opened = true;
-                return callback();
-            }
-        });
-    });
+    return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
 Carmen.prototype.tokenize = function(query) {
@@ -100,6 +103,11 @@ Carmen.prototype.tokenize = function(query) {
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
+    if (!this._opened) return this._open(function(err) {
+        if (err) return callback(err);
+        this.context(lon, lat, callback);
+    }.bind(this));
+
     var indexes = this.indexes;
     var carmen = this;
     var scan = [
@@ -115,10 +123,6 @@ Carmen.prototype.context = function(lon, lat, callback) {
     ];
 
     Step(function() {
-        carmen._open(this);
-    }, function(err) {
-        if (err) return callback(err);
-
         var group = this.group();
         _(indexes).each(function(d, type) {
             if (!d.context) return;
@@ -243,8 +247,8 @@ Carmen.prototype.geocode = function(query, callback) {
     }.bind(this));
 
     var indexes = this.indexes;
-    var zooms = this.zooms;
     var types = Object.keys(indexes);
+    var zooms = [];
     var data = {
         query: this.tokenize(query),
         stats: {}
@@ -268,6 +272,10 @@ Carmen.prototype.geocode = function(query, callback) {
             var next = group();
             carmen.search(db.source, data.query.join(' '), null, function(err, rows) {
                 if (err) return next(err);
+                if (rows.length) {
+                    var z = rows[0].zxy[0]/1e14|0;
+                    if (zooms.indexOf(z) === -1) zooms.push(z);
+                }
                 for (var j = 0, l = rows.length; j < l; j++) {
                     rows[j].db = dbname;
                     rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
@@ -284,6 +292,9 @@ Carmen.prototype.geocode = function(query, callback) {
         data.stats.searchCount = _(rows).flatten().length;
 
         data.stats.scoreTime = +new Date;
+
+        // Sort zooms.
+        zooms = _(zooms).sortBy();
 
         var features = {};
         _(rows).chain().flatten().each(function(row) {
@@ -538,9 +549,6 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
                     for (var j = 0; j < text.length; j++) {
                         total += freqs[text[j]];
-                        if (id === 56660) {
-                            console.warn('TEXT', text[j], freqs[text[j]]);
-                        }
                     }
                     for (var j = 0; j < terms.length; j++) {
                         if (text.indexOf(terms[j]) !== -1 && localReason.indexOf(j) === -1) {
