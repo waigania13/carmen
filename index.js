@@ -4,7 +4,7 @@ var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
-var intstore = require('./intstore');
+var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 // For a given z,x,y find its parent tile.
 function pyramid(zxy, parent) {
@@ -91,22 +91,6 @@ Carmen.MBTiles = function() { return require('./api-mbtiles') };
 
 Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
-};
-
-Carmen.prototype.tokenize = function(query) {
-    var numeric = query.
-        split(/[^\.\-\d+]+/i)
-        .filter(function(t) { return t.length })
-        .map(function(t) { return parseFloat(t) })
-        .filter(function(t) { return !isNaN(t) });
-
-    // lon, lat pair.
-    if (numeric.length === 2) return numeric;
-
-    return query
-        .toLowerCase()
-        .split(/[^\w+]+/i)
-        .filter(function(t) { return t.length });
 };
 
 Carmen.prototype.context = function(lon, lat, callback) {
@@ -198,7 +182,7 @@ Carmen.prototype.geocode = function(query, callback) {
     var types = Object.keys(indexes);
     var zooms = [];
     var data = {
-        query: this.tokenize(query),
+        query: Carmen.tokenize(query),
         stats: {}
     };
     var carmen = this;
@@ -407,6 +391,10 @@ Carmen.prototype.geocode = function(query, callback) {
             var bs = b.score || 0;
             if (as > bs) return -1;
             if (as < bs) return 1;
+
+            // last sort by id.
+            if (a.id > b.id) return -1;
+            if (a.id < b.id) return 1;
             return 0;
         });
         data.stats.contextTime = +new Date - data.stats.contextTime;
@@ -423,17 +411,16 @@ Carmen.prototype.search = function(source, query, id, callback) {
     }.bind(this));
 
     var shardlevel = source._carmen.shardlevel;
-    var terms = intstore.terms(query);
+    var terms = Carmen.terms(query);
     var freqs = {};
 
     var getids = function(queue, result, callback) {
-        if (!queue.length) return callback(null, intstore.mostfreq(result));
+        if (!queue.length) return callback(null, Carmen.mostfreq(result));
 
         var term = queue.shift();
-        var shard = intstore.shard(shardlevel, term);
+        var shard = Carmen.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[term]) return getids(queue, result, callback);
 
             result = result.concat(data[term]);
             freqs[term] = data[term] ? Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length) : 0;
@@ -445,7 +432,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         if (!queue.length) return callback(null, result);
 
         var id = queue.shift();
-        var shard = intstore.shard(shardlevel, id);
+        var shard = Carmen.shard(shardlevel, id);
         source.getCarmen('grid', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[id]) return getzxy(queue, result, callback);
@@ -485,7 +472,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
                 if (score > 0.9) result.push({
                     id: id,
-                    score: score,
+                    // patch up javascript float precision errors -- scores
+                    // that should add to 1 sometimes come back as 0.99999...
+                    score: score > 0.9999 ? 1 : score,
                     reason: reason,
                     zxy: data[id].zxy
                 });
@@ -502,7 +491,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         if (freqs[term]) return termfreq(terms, callback);
 
         // Look up term frequency.
-        var shard = intstore.shard(shardlevel, term);
+        var shard = Carmen.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
             freqs[term] = Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length);
@@ -536,18 +525,18 @@ Carmen.prototype.index = function(source, docs, callback) {
     };
     docs.forEach(function(doc) {
         var docid = doc.id|0;
-        intstore.terms(doc.text).reduce(function(memo, id) {
-            var shard = intstore.shard(shardlevel, id);
+        Carmen.terms(doc.text).reduce(function(memo, id) {
+            var shard = Carmen.shard(shardlevel, id);
             memo[shard] = memo[shard] || {};
             memo[shard][id] = memo[shard][id] || [];
             memo[shard][id].push(docid);
             return memo;
         }, patch.term);
-        var shard = intstore.shard(shardlevel, docid);
+        var shard = Carmen.shard(shardlevel, docid);
         patch.grid[shard] = patch.grid[shard] || {};
         patch.grid[shard][docid] = {
-            text: doc.text.split(',').map(intstore.terms),
-            zxy: doc.zxy.map(intstore.zxy)
+            text: doc.text.split(',').map(Carmen.terms),
+            zxy: doc.zxy.map(Carmen.zxy)
         };
     });
     // Number of term shards.
@@ -578,6 +567,78 @@ Carmen.prototype.index = function(source, docs, callback) {
             });
         });
     });
+};
+
+Carmen.tokenize = function(query) {
+    var numeric = query.
+        split(/[^\.\-\d+]+/i)
+        .filter(function(t) { return t.length })
+        .map(function(t) { return parseFloat(t) })
+        .filter(function(t) { return !isNaN(t) });
+
+    // lon, lat pair.
+    if (numeric.length === 2) return numeric;
+
+    try {
+        var converted = iconv.convert(query).toString();
+        query = converted;
+    } catch(err) {}
+
+    return query
+        .toLowerCase()
+        .replace(/[\^]+/g, '')
+        .replace(/[-,]+/g, ' ')
+        .split(/[^\w+^\s+]/gi)
+        .join('')
+        .split(/[\s+]+/gi)
+        .filter(function(t) { return t.length });
+};
+
+// Converts text into an array of search term hash IDs.
+Carmen.terms = function(text) {
+    var terms = Carmen.tokenize(text).map(function(w) {
+        return parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16);
+    });
+    return _(terms).uniq();
+};
+
+// Assumes an integer space of Math.pow(16,8);
+Carmen.shard = function(level, id) {
+    if (level === 0) return 0;
+    return id % Math.pow(16, level);
+};
+
+// Converts zxy coordinates into an array of zxy IDs.
+Carmen.zxy = function(zxy) {
+    zxy = zxy.split('/');
+    return ((zxy[0]|0) * 1e14) + ((zxy[1]|0) * 1e7) + (zxy[2]|0);
+};
+
+// Return an array of values with the highest frequency from the original array.
+Carmen.mostfreq = function(list) {
+    if (!list.length) return [];
+    list.sort();
+    var values = [];
+    var maxfreq = 1;
+    var curfreq = 1;
+    do {
+        var current = list.shift();
+        if (current === list[0]) {
+            curfreq++;
+            if (curfreq > maxfreq) {
+                maxfreq = curfreq;
+                values = [current];
+            } else if (curfreq === maxfreq && values.indexOf(current) === -1) {
+                values.push(current);
+            }
+        } else if (maxfreq === 1) {
+            values.push(current);
+            curfreq = 1;
+        } else {
+            curfreq = 1;
+        }
+    } while (list.length);
+    return values;
 };
 
 module.exports = Carmen;

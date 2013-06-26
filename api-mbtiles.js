@@ -1,7 +1,6 @@
 var _ = require('underscore');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var crypto = require('crypto');
-var intstore = require('./intstore');
 var Parent = require('mbtiles');
 
 module.exports = MBTiles;
@@ -78,6 +77,7 @@ MBTiles.prototype.indexable = function(pointer, callback) {
 
     // By default the keymap table contains all indexable documents.
     this.getInfo(function(err, info) {
+        if (err) return callback(err);
         this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT ? OFFSET ?;", info.maxzoom, pointer.limit, pointer.offset, function(err, rows) {
             if (err) return callback(err);
             var docs = rows.map(function(row) {
