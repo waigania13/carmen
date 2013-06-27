@@ -410,6 +410,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
+    var approxdocs = 0;
     var shardlevel = source._carmen.shardlevel;
     var terms = Carmen.terms(query);
     var freqs = {};
@@ -422,8 +423,11 @@ Carmen.prototype.search = function(source, query, id, callback) {
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
 
+            // Calculate approx doc count once.
+            if (!approxdocs) approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
+
             result = result.concat(data[term]);
-            freqs[term] = data[term] ? Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length) : 0;
+            freqs[term] = data[term] ? Math.log(approxdocs / data[term].length) : 0;
             getids(queue, result, callback);
         });
     };
@@ -494,7 +498,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         var shard = Carmen.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
-            freqs[term] = Math.log(Object.keys(data).length * Math.pow(16, shardlevel) / data[term].length);
+            freqs[term] = Math.log(approxdocs / data[term].length);
             return termfreq(terms, callback);
         });
     };
