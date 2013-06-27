@@ -70,7 +70,7 @@ _(carmen.indexes).each(function(source, type) {
             });
         });
         before(function(done) {
-            source.indexable({}, function(err, rows, pointer) {
+            source.indexable({nogrids:true}, function(err, rows, pointer) {
                 assert.ifError(err);
                 queues.geocode = queues.geocode.concat(rows);
                 queues.reverse = queues.reverse.concat(rows);

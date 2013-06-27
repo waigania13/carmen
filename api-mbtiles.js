@@ -58,6 +58,7 @@ MBTiles.prototype.indexable = function(pointer, callback) {
     pointer = pointer || {};
     pointer.limit = pointer.limit || 10000;
     pointer.offset = pointer.offset || 0;
+    pointer.nogrids = 'nogrids' in pointer ? pointer.nogrids : false;
 
     // If 'carmen' option is passed in initial pointer, retrieve indexables from
     // carmen table. This option can be used to access the previously indexed
@@ -80,7 +81,14 @@ MBTiles.prototype.indexable = function(pointer, callback) {
     // By default the keymap table contains all indexable documents.
     this.getInfo(function(err, info) {
         if (err) return callback(err);
-        this._db.all("SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT ? OFFSET ?;", info.maxzoom, pointer.limit, pointer.offset, function(err, rows) {
+        if (pointer.nogrids) {
+            var sql = "SELECT key_name, key_json FROM keymap LIMIT ? OFFSET ?;";
+            var args = [pointer.limit, pointer.offset];
+        } else {
+            var sql = "SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT ? OFFSET ?;"
+            var args = [info.maxzoom, pointer.limit, pointer.offset];
+        }
+        this._db.all(sql, args, function(err, rows) {
             if (err) return callback(err);
             var docs = rows.map(function(row) {
                 var doc = {};
@@ -89,7 +97,7 @@ MBTiles.prototype.indexable = function(pointer, callback) {
                 // @TODO the doc field name for searching probably (?) belongs
                 // in `metadata` and should be un-hardcoded in the future.
                 doc.text = doc.doc.search || '';
-                doc.zxy = row.zxy.split(',');
+                if (row.zxy) doc.zxy = row.zxy.split(',');
                 return doc;
             });
             pointer.offset += pointer.limit;
