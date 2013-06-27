@@ -23,7 +23,7 @@ if (backend === 'mbtiles') var carmen = new Carmen({
 function okay(type, a, b, margin) {
     var margin = margin || 0.01;
     var typecheck = type === 'place'
-        ? _(['city', 'town', 'village']).include(a.type)
+        ? a.type === b.type
         : a.type === type;
     return typecheck &&
         a.name === b.name &&
@@ -88,6 +88,9 @@ _(carmen.indexes).each(function(source, type) {
 
             // @TODO determine why some docs are without a search field.
             if (!('search' in doc)) return done();
+
+            // @TODO some languages do not get tokenized/converted by iconv.
+            if (!Carmen.tokenize(doc.name).length) return done();
 
             carmen.geocode(doc.name || '', function(err, res) {
                 assert.ifError(err);
