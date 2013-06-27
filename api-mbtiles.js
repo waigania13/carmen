@@ -31,7 +31,9 @@ MBTiles.prototype.putFeature = function(id, data, callback) {
 MBTiles.prototype.getCarmen = function(type, shard, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
-    if (this._carmen[type][shard]) return callback(null, this._carmen[type][shard]);
+    if (this._carmen[type][shard]) return process.nextTick(function() {
+        callback(null, this._carmen[type][shard]);
+    }.bind(this));
 
     return this._db.get('SELECT data FROM carmen_' + type + ' WHERE shard = ?', shard, function(err, row) {
         if (err) return callback(err);
