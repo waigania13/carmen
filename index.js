@@ -182,7 +182,7 @@ Carmen.prototype.geocode = function(query, callback) {
     var types = Object.keys(indexes);
     var zooms = [];
     var data = {
-        query: Carmen.tokenize(query),
+        query: Carmen.tokenize(query, true),
         stats: {}
     };
     var carmen = this;
@@ -573,15 +573,15 @@ Carmen.prototype.index = function(source, docs, callback) {
     });
 };
 
-Carmen.tokenize = function(query) {
-    var numeric = query.
-        split(/[^\.\-\d+]+/i)
-        .filter(function(t) { return t.length })
-        .map(function(t) { return parseFloat(t) })
-        .filter(function(t) { return !isNaN(t) });
-
-    // lon, lat pair.
-    if (numeric.length === 2) return numeric;
+Carmen.tokenize = function(query, lonlat) {
+    if (lonlat) {
+        var numeric = query.
+            split(/[^\.\-\d+]+/i)
+            .filter(function(t) { return t.length })
+            .map(function(t) { return parseFloat(t) })
+            .filter(function(t) { return !isNaN(t) });
+        if (numeric.length === 2) return numeric;
+    }
 
     try {
         var converted = iconv.convert(query).toString();
