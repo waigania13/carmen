@@ -17,7 +17,9 @@ if (backend !== 'mbtiles' && backend !== 's3') {
 
 if (backend === 'mbtiles') var carmen = new Carmen({
     country: new MBTiles(__dirname + '/../tiles/ne-countries.mbtiles', function(){}),
-    province: new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){})
+    province: new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){}),
+    zipcode: new MBTiles(__dirname + '/../tiles/tiger-zipcodes.mbtiles', function(){}),
+    place: new MBTiles(__dirname + '/../tiles/osm-places.mbtiles', function(){})
 });
 
 function okay(type, a, b, margin) {
@@ -141,7 +143,9 @@ _(carmen.indexes).each(function(source, type) {
         };
         var testcount = {
             'country': 400,
-            'province': 4000
+            'province': 400,
+            'zipcode': 400,
+            'place': 400
         };
         for (var i = 0; i < testcount[type]; i++) {
             it(type + ' geocode ' + i, geocode);
