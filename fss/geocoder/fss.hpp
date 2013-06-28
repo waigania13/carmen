@@ -73,8 +73,6 @@ public:
         base_dict_.push_back(word);
         std::size_t index = base_dict_.size() - 1;
 
-        insert_residual_token(word, index);
-
         if (word.size() > min_length_)
         {
             std::vector<std::string> && neighbors = d_neighborhood(word, distance_);
@@ -82,6 +80,10 @@ public:
             {
                 insert_residual_token(neighbor, index);
             }
+        }
+        else
+        {
+            insert_residual_token(word, index);
         }
     }
 
