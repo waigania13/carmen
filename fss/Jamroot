@@ -1,0 +1,21 @@
+
+local BOOST_DIR = "/opt/boost" ;
+
+lib system : : <name>boost_system <search>$(BOOST_DIR)/lib ;
+lib timer : chrono : <name>boost_timer <search>$(BOOST_DIR)/lib ;
+lib chrono : system : <name>boost_chrono <search>$(BOOST_DIR)/lib ;
+
+exe fss
+    :
+    main.cpp
+    .//timer
+    :
+    <include>$(BOOST_DIR)/include
+    ;
+
+exe test
+    :
+    test.cpp
+    :
+    <include>$(BOOST_DIR)/include
+    ;
