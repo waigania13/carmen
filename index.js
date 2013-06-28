@@ -416,7 +416,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var freqs = {};
 
     var getids = function(queue, result, callback) {
-        if (!queue.length) return callback(null, Carmen.mostfreq(result));
+        if (!queue.length) return callback(null, _(result).uniq());
 
         var term = queue.shift();
         var shard = Carmen.shard(shardlevel, term);
