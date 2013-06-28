@@ -31,26 +31,29 @@ MBTiles.prototype.putFeature = function(id, data, callback) {
 MBTiles.prototype.getCarmen = function(type, shard, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
-    if (this._carmen[type][shard]) return process.nextTick(function() {
-        callback(null, this._carmen[type][shard]);
-    }.bind(this));
+    var shards = this._carmen[type];
+    if (shards[shard]) return process.nextTick(function() {
+        callback(null, shards[shard]);
+    });
 
     return this._db.get('SELECT data FROM carmen_' + type + ' WHERE shard = ?', shard, function(err, row) {
         if (err) return callback(err);
-        this._carmen[type][shard] = row ? JSON.parse(row.data) : {};
-        callback(null, this._carmen[type][shard]);
-    }.bind(this));
+        shards[shard] = row ? JSON.parse(row.data) : {};
+        callback(null, shards[shard]);
+    });
 };
 
 // Implements carmen#putCarmen method.
 MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
+    var shards = this._carmen[type];
+
     return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, JSON.stringify(data), function(err) {
         if (err) return callback(err);
-        this._carmen[type][shard] = data;
+        shards[shard] = data;
         callback(null);
-    }.bind(this));
+    });
 };
 
 // Implements carmen#indexable method.

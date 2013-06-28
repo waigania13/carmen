@@ -437,11 +437,11 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
         var id = queue.shift();
         var shard = Carmen.shard(shardlevel, id);
+
         source.getCarmen('grid', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[id]) return getzxy(queue, result, callback);
 
-            var loadfreqs = [];
             termfreq(Array.prototype.concat.apply([], data[id].text), function(err) {
                 if (err) return callback(err);
 
