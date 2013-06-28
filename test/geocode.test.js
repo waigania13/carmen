@@ -19,7 +19,7 @@ if (backend === 'mbtiles') var carmen = new Carmen({
     country: new MBTiles(__dirname + '/../tiles/ne-countries.mbtiles', function(){}),
     province: new MBTiles(__dirname + '/../tiles/ne-provinces.mbtiles', function(){}),
     zipcode: new MBTiles(__dirname + '/../tiles/tiger-zipcodes.mbtiles', function(){}),
-    place: new MBTiles(__dirname + '/../tiles/osm-places.mbtiles', function(){})
+    place: new MBTiles(__dirname + '/../tiles/mb-places.mbtiles', function(){})
 });
 
 function okay(type, a, b, margin) {
