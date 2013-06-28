@@ -6,9 +6,10 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/timer/timer.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/locale.hpp>
+
 // geocoder
 #include "geocoder/fss.hpp"
-
 
 int main(int argc, char** argv)
 {
@@ -28,6 +29,10 @@ int main(int argc, char** argv)
         std::cerr << "Can't open dictionary file" << std::endl;
         return EXIT_FAILURE;
     }
+    boost::locale::generator gen;
+    std::locale loc = gen("");
+    std::locale::global(loc);
+    std::cerr.imbue(loc);
 
     std::string line;
     uint64_t count = 0;
@@ -39,36 +44,14 @@ int main(int argc, char** argv)
             std::cerr << "\rLoading " << count;
         }
 
-        // normalise
-        std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-        //temp_dict.insert(line);
-        // extract tokens
-        boost::tokenizer<> tok(line);
+        // normalize and extract tokens
+        boost::tokenizer<> tok(boost::locale::to_lower(line));
 
         for( boost::tokenizer<>::iterator beg=tok.begin(); beg!=tok.end();++beg)
         {
             ++count;
             temp_dict.insert(*beg);
         }
-
-        //std::vector<std::string> words;
-        //bool result = boost::spirit::qi::parse (
-        //    line.begin(), line.end(),
-        //    +boost::spirit::qi::alnum % +boost::spirit::qi::space,
-        //   words
-        //    );
-
-        //if (!result)
-        //{
-        //   std::cerr << "Failed to parse input:" << line << std::endl;
-        //}
-        //else
-        //{
-        //   for (auto && word: words)
-        //   {
-        //       temp_dict.insert(word);
-        //   }
-        // }
     }
     std::cerr << "\nINPUT SIZE=" << temp_dict.size() << std::endl;
     //
@@ -85,7 +68,6 @@ int main(int argc, char** argv)
 
             std::cerr << "\rCreating index " << count << "/" << temp_dict.size() << " " << int(100*(count/(float)temp_dict.size())) << "%";
         }
-        //std::cerr << word << std::endl;
         dict.add(word);
     }
     temp_dict.clear();
@@ -106,12 +88,8 @@ int main(int argc, char** argv)
         std::getline (std::cin,query);
         if (query.size() > 0 )
         {
-            // normalise query
-            std::transform(query.begin(), query.end(), query.begin(), ::tolower);
-
-            // extract tokens
-
-            boost::tokenizer<> tok(query);
+            // normalise query,  extract tokens
+            boost::tokenizer<> tok(boost::locale::to_lower(query));
 
             std::vector<std::string> tokens;
 
