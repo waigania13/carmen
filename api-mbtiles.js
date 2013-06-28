@@ -28,12 +28,12 @@ MBTiles.prototype.putFeature = function(id, data, callback) {
 };
 
 // Implements carmen#getCarmen method.
-var setImmediate = setImmediate || process.nextTick;
+var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
 MBTiles.prototype.getCarmen = function(type, shard, callback) {
     if (!this._carmen) this._carmen = { term: {}, grid: {} };
 
     var shards = this._carmen[type];
-    if (shards[shard]) return setImmediate(function() {
+    if (shards[shard]) return defer(function() {
         callback(null, shards[shard]);
     });
 
