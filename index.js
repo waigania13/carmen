@@ -491,7 +491,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
                     }
                 }
 
-                if (score > 0.9) result.push({
+                if (score > 0.6) result.push({
                     id: id,
                     // patch up javascript float precision errors -- scores
                     // that should add to 1 sometimes come back as 0.99999...
