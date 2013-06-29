@@ -465,10 +465,24 @@ Carmen.prototype.search = function(source, query, id, callback) {
                     for (var j = 0; j < text.length; j++) {
                         total += freqs[text[j]];
                     }
+
+                    var term = 0;
+                    var termpos = -1;
+                    var lastpos = -1;
                     for (var j = 0; j < terms.length; j++) {
-                        if (text.indexOf(terms[j]) !== -1 && localReason.indexOf(j) === -1) {
-                            localScore += freqs[terms[j]]/total;
+                        term = terms[j];
+                        termpos = text.indexOf(term);
+
+                        if (termpos === -1) {
+                            if (localReason.length) {
+                                break;
+                            } else {
+                                continue;
+                            }
+                        } else if (localReason.length === 0 || termpos === lastpos + 1) {
+                            localScore += freqs[term]/total;
                             localReason.push(j);
+                            lastpos = termpos;
                         }
                     }
                     if (localScore > score) {
