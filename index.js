@@ -338,42 +338,45 @@ Carmen.prototype.geocode = function(query, callback) {
         //
         // This context will be returned because Chester, PA is in
         // close enough proximity to overlap with NJ.
-        data.results = _(contexts).chain()
-            .reduce(function(memo, c) {
-                // Clone original query tokens. These will be crossed off one
-                // by one to ensure each query token only counts once towards
-                // the final score.
-                var query = [].concat(data.query);
-                // Score for this context. Each context element that is amongst
-                // features found by the initial search contribute to its score.
-                var score = 0;
-                // Count the number of original query tokens that contribute
-                // to the final score.
-                var usage = 0;
-                for (var i = 0; i < c.length; i++) {
-                    if (features[c[i].id]) {
-                        var hasreason = true;
-                        var reason = features[c[i].id].reason;
-                        for (var j = 0; j < reason.length; j++) {
-                            hasreason = hasreason && query[reason[j]] && ++usage;
-                            query[reason[j]] = false;
-                        }
-                        if (hasreason) score += features[c[i].id].score;
+        var maxscore = 0;
+        var results = _(contexts).reduce(function(memo, c) {
+            // Clone original query tokens. These will be crossed off one
+            // by one to ensure each query token only counts once towards
+            // the final score.
+            var query = [].concat(data.query);
+            // Score for this context. Each context element that is amongst
+            // features found by the initial search contribute to its score.
+            var score = 0;
+            // Count the number of original query tokens that contribute
+            // to the final score.
+            var usage = 0;
+            for (var i = 0; i < c.length; i++) {
+                if (features[c[i].id]) {
+                    var hasreason = true;
+                    var reason = features[c[i].id].reason;
+                    for (var j = 0; j < reason.length; j++) {
+                        hasreason = hasreason && query[reason[j]] && ++usage;
+                        query[reason[j]] = false;
                     }
+                    if (hasreason) score += features[c[i].id].score;
                 }
-                score = score * (usage / data.query.length);
+            }
+            score = score * (usage / data.query.length);
 
-                if (!memo.length || score === memo[0][1]) {
-                    memo.push([c, score]);
-                    return memo;
-                } else if (score > memo[0][1]) {
-                    return [[c, score]];
-                } else {
-                    return memo;
-                }
-            }, [])
-            .pluck('0')
-            .value();
+            if (!memo.length || score === maxscore) {
+                memo.push(c);
+                maxscore = score;
+                return memo;
+            } else if (score > maxscore) {
+                maxscore = score;
+                return [c];
+            } else {
+                return memo;
+            }
+        }, []);
+
+        data.results = results;
+        data.stats.score = maxscore;
 
         data.results.sort(function(a, b) {
             a = a[0], b = b[0];
