@@ -432,6 +432,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         var shard = Carmen.shard(shardlevel, term);
         source.getCarmen('term', shard, function(err, data) {
             if (err) return callback(err);
+            if (!data[term]) return getids(queue, result, callback);
 
             // Calculate approx doc count once.
             if (!approxdocs) approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
