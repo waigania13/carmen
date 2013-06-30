@@ -419,7 +419,14 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var freqs = {};
 
     var getids = function(queue, result, callback) {
-        if (!queue.length) return callback(null, _(result).uniq());
+        // @TODO do this mostfreq operation in a way where result id frequency
+        // must be adjacent in the original query, e.g. such that the following
+        // does not occur:
+        //
+        // new washington york
+        // => new york (x2 id freq)
+        // => washington (x1 id freq)
+        if (!queue.length) return callback(null, Carmen.mostfreq(result));
 
         var term = queue.shift();
         var shard = Carmen.shard(shardlevel, term);
@@ -545,7 +552,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         }
     };
     docs.forEach(function(doc) {
-        var docid = doc.id|0;
+        var docid = parseInt(doc.id,10);
         Carmen.terms(doc.text).reduce(function(memo, id) {
             var shard = Carmen.shard(shardlevel, id);
             memo[shard] = memo[shard] || {};
@@ -566,7 +573,7 @@ Carmen.prototype.index = function(source, docs, callback) {
     remaining += Object.keys(patch.grid).length;
     // Add each doc.
     docs.forEach(function(doc) {
-        source.putFeature(doc.id, doc.doc, done);
+        source.putFeature(doc.id.toFixed(0), doc.doc, done);
     });
     _(patch).each(function(shards, type) {
         _(shards).each(function(data, shard) {
