@@ -2,7 +2,16 @@
 
 var express = require('express');
 var server = express.createServer();
-var carmen = new (require('./index.js'))();
+var MBTiles = require('./api-mbtiles');
+var Carmen = require('./index.js');
+
+var carmen = new Carmen({
+    country: new MBTiles(__dirname + '/tiles/ne-countries.mbtiles', function(){}),
+    province: new MBTiles(__dirname + '/tiles/ne-provinces.mbtiles', function(){}),
+    zipcode: new MBTiles(__dirname + '/tiles/tiger-zipcodes.mbtiles', function(){}),
+    place: new MBTiles(__dirname + '/tiles/mb-places.mbtiles', function(){}),
+    street: new MBTiles(__dirname + '/tiles/osm-streets-dc.mbtiles', function(){})
+});
 
 server.get('/geocode/:query', function(req, res, next) {
     if (!req.param('query')) return res.send(404);
@@ -10,6 +19,8 @@ server.get('/geocode/:query', function(req, res, next) {
     carmen.geocode(req.param('query'), function(err, data) {
         console.timeEnd('geocode ' + req.param('query'));
         if (err) return next(err);
+        // @TODO ...
+        if (data.stats.score < 0.75) data.results = [];
         res.send(data);
     });
 });

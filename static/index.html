@@ -1,211 +1,225 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset='UTF-8'/>
-<title>carmen</title>
-<style type='text/css'>
-body {
-  font:12px/20px Arial,sans-serif;
-  }
-
-#map {
-  position:absolute;
-  left:0px; right:0px; top:0px; bottom:0px;
-  }
-
-#input {
-  position:absolute;
-  left:10px;
-  top:10px;
-  padding:10px;
-  z-index:1;
-  background:rgba(255,255,255,0.9);
-  box-shadow:rgba(0,0,0,0.25) 0px 0px 5px;
-  }
-
-#input,
-.item,
-.query {
-  border-radius:3px;
-  }
-
-.query { padding:5px 10px; }
-
-#input .results {
-  max-height:400px;
-  overflow:auto;
-  }
-
-a { text-decoration:none; color:#444; }
-a small { display:block; }
-
-form .item {
-  margin:5px 0px 0px;
-  padding:4px 9px;
-  line-height:15px;
-  border:1px solid #d0d8dc;
-  background:#e0e8ec;
-  display:block;
-  }
-form .item:hover { background:#fff; border-color:#ccc; }
-form .item span { display:block; }
-
-.spotlight {
-  width:240px;
-  height:240px;
-  position:absolute;
-  left:50%;
-  top:50%;
-  margin:-120px 0px 0px -120px;
-  z-index:1;
-  border-radius:50%;
-  box-shadow:
-    inset rgba(0,0,0,0.25) 0px 0px 20px 20px,
-    rgba(0,0,0,0.25) 0px 0px 0px 2000px;
-  }
-
-.cross-y {
-  height:19px;
-  width:1px;
-  position:absolute;
-  left:50%;
-  top:50%;
-  margin:-9px 0px 0px 0px;
-  background:rgba(0,0,0,0.5);
-  }
-
-.cross-x {
-  height:1px;
-  width:19px;
-  position:absolute;
-  left:50%;
-  top:50%;
-  margin:0px 0px 0px -9px;
-  background:rgba(0,0,0,0.5);
-  }
-
-.context {
-  z-index:1;
-  position:absolute;
-  bottom:0px;
-  left:0px;
-  right:0px;
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+<script src='http://underscorejs.org/underscore-min.js'></script>
+<script src='http://api.tiles.mapbox.com/mapbox.js/v1.1.0/mapbox.js'></script>
+<link href='http://api.tiles.mapbox.com/mapbox.js/v1.1.0/mapbox.css' rel='stylesheet' />
+<style>
+* {
+  box-sizing:border-box;
+  font-family:"Open Sans";
   font-size:20px;
-  color:#fff;
+  line-height:20px;
+  }
+body {
+  margin:0; padding:0;
+  color:#222;
+  }
+a {
+  text-decoration:none;
+  }
+#map {
+  position:fixed; top:0; bottom:0; width:100%;
+  background:#eee;
+}
+.leaflet-control-zoom {
+  opacity: 0;
+  -webkit-transition:opacity 500ms ease-in 2000ms;
+}
+.moving .leaflet-control-zoom {
+  opacity: 1;
+  -webkit-transition:opacity 100ms;
+}
+
+#geocoder {
+  position:fixed;
+  left:0px;
+  bottom:0px;
+  right:0px;
+  opacity: 0;
+  -webkit-transition:opacity 500ms ease-in 1000ms;
+  }
+.typing #geocoder {
+  opacity: 1;
+  -webkit-transition:opacity 100ms;
+  }
+#geocoder::after {
+  content:'Enter';
+  display:block;
+  position:absolute;
+  right:20px;
+  bottom:15px;
+  background:#eee;
+  color:#888;
+  padding:8px 18px;
+  font-weight:bold;
+  font-size:16px;
+  text-transform:uppercase;
+  border:2px solid #ddd;
+  border-radius:4px;
+  box-shadow:0px 2px 0px #ddd;
+  }
+#search {
+  position:absolute;
+  left:0px; right:0px; bottom:0px;
+  border:0px;
+  outline:0px;
+  padding:20px;
+  font-weight:bold;
   text-align:center;
-  text-shadow:rgba(0,0,0,0.5) 0px 1px 3px;
+  background:rgba(255,255,255,0.5);
   }
 
-.context a,
-.context span {
-  color:#fff;
-  display:inline-block;
-  vertical-align:middle;
-  padding:10px 5px;
+.message {
+  font-weight:bold;
+  position:fixed;
+  right:40px;
+  bottom:20px;
+  max-width:50%;
+  margin-bottom:120px;
+  text-align:right;
+  text-shadow:#fff 0px 2px 4px;
+  opacity:0;
+  -webkit-animation: message 5000ms;
   }
-
-.context span { font-size:12px; }
+.message .item { margin-bottom:20px; }
+.message .item strong { display:block; font-size:20px; }
+.message .item small { font-size:14px; opacity:0.5; }
+@-webkit-keyframes message {
+  00.00% { opacity:0; margin-bottom:120px; }
+  5.00%,
+  95.00% { opacity:1; margin-bottom:80px; }
+  100.00% { opacity:0; margin-bottom:20px; }
+  }
 </style>
-
-<script src='http://documentcloud.github.com/underscore/underscore-min.js' type='text/javascript'></script>
-<script src='http://js.mapbox.com/mapbox.js/v0.5.5/mapbox.js' type='text/javascript'></script>
-<script src='http://code.jquery.com/jquery-1.7.1.min.js' type='text/javascript'></script>
-
-<script type='text/javascript'>
-window.onload = function() {
-
-var term = _("<a class='item' href='#<%=lon%>,<%=lat%>,<%=z%>'><%=name%> (<%=type%>)<% if (obj.context) { %><small><%= _(context).pluck('name').join(', ') %></small><% } %></a>").template();
-var context = _("<a class='item'><%=name%></a>").template();
-
-var map = mapbox.map('map', [ mapbox.layer().tilejson({
-    center: [ 0, 0, 4 ],
-    scheme: "xyz",
-    tiles: [
-        "http://a.tiles.mapbox.com/v3/examples.map-zgrqqx0w/{z}/{x}/{y}.png",
-        "http://b.tiles.mapbox.com/v3/examples.map-zgrqqx0w/{z}/{x}/{y}.png",
-        "http://c.tiles.mapbox.com/v3/examples.map-zgrqqx0w/{z}/{x}/{y}.png",
-        "http://d.tiles.mapbox.com/v3/examples.map-zgrqqx0w/{z}/{x}/{y}.png"
-    ]
-}) ]);
-map.setCenterZoom(new com.modestmaps.Location(0,0), 4);
-
-var getContext = function() {
-    var center = map.getCenter();
-    var lat = parseFloat(center.lat) % 90;
-    var lon = parseFloat(center.lon) % 360;
-    if (lon > 180) lon -= 360;
-    if (lon < -180) lon += 360;
-    $.ajax({ url: '/geocode/' + lon + ',' + lat, success: function(resp) {
-        if (!resp.results.length) return $('.context').empty();
-        var c = _(resp.results[0]).map(context);
-        c.reverse();
-        $('.context').html(c.join('<span>▶</span>'));
-    }});
-};
-var getZ = function(type) {
-    if (type === 'village') return 14;
-    if (type === 'town') return 13;
-    if (type === 'city') return 13;
-    if (type === 'zipcode') return 13;
-    if (type === 'province') return 6;
-    if (type === 'country') return 4;
-    return -1;
-};
-
-map.addCallback('panned', _(getContext).throttle(500));
-
-$('body').delegate('a.item', 'click', function(ev) {
-    var center = $(ev.currentTarget).attr('href').split('#').pop().split(',');
-    center = _(center).map(parseFloat);
-    if (center[2] >= 0) map.setCenterZoom(new com.modestmaps.Location(
-        center[1],
-        center[0]),
-        center[2]);
-    else map.setCenter(new com.modestmaps.Location(
-        center[1],
-        center[0]));
-    getContext();
-    return false;
-});
-$('#input').submit(function(ev) {
-    var q = $('#query').val();
-    $.ajax({ url: '/geocode/' + q, success: function(resp) {
-        if (!resp.results.length) {
-            $('.results').html("<a class='item'>No matches.</a>");
-            return;
-        }
-        $('.results').html(_(resp.results).map(function(t) {
-            var data = t[0];
-            data.z = getZ(data.type);
-            data.context = t.slice(1);
-            return term(data);
-        }).join('\n'));
-        var z = getZ(resp.results[0][0].type);
-        var c = new com.modestmaps.Location(
-            resp.results[0][0].lat,
-            resp.results[0][0].lon);
-        if (z >= 0) map.setCenterZoom(c, z);
-        else map.setCenter(c);
-        getContext();
-    }});
-    return false;
-});
-
-};
-</script>
 </head>
 <body>
-  <div id='map'>
-    <div class='spotlight'>
-      <div class='cross-x'></div>
-      <div class='cross-y'></div>
-    </div>
-  </div>
-  <form id='input'>
-    <input id='query' type='text' />
-    <input type='submit' value='Go' />
-    <div class='results'></div>
-  </form>
-  <div class='context'></div>
+
+<div id='app'>
+
+<div id='map'></div>
+<form id='geocoder' action='/'><input id='search' type='text' autocomplete='off' /></form>
+
+</div>
+
+<script type='text/javascript'>
+var app = document.getElementById('app');
+var map = L.mapbox.map('map', 'yhahn.map-zz3wm34f', {
+  attributionControl: false,
+  zoomControl: false
+});
+map.setView([38.8934, -77.0362], 15);
+L.control.zoom({position:'topright'}).addTo(map);
+
+var marker = L.marker([38.8934, -77.0362], {
+  icon: L.mapbox.marker.icon({
+    'marker-size': 'large',
+    'marker-symbol': 'star',
+    'marker-color': '#4488aa'
+  })
+});
+marker.addTo(map);
+
+var carmen = L.mapbox.geocoder({
+  geocoder: '/geocode/{query}'
+});
+var search = document.getElementById('search');
+var timers = {};
+
+map.on('move', function() {
+  app.className += !(/(\s+)?moving/.test(app.className)) ? ' moving' : '';
+});
+map.on('moveend', function() {
+  app.className = app.className.replace(/(\s+)?moving/, '');
+});
+
+document.body.onkeydown = function(ev) {
+  if (ev.ctrlKey) return;
+  if (ev.metaKey) return;
+  if (ev.altKey) return;
+
+  if (document.activeElement == search) {
+    app.className += !(/(\s+)?typing/.test(app.className)) ? ' typing' : '';
+    if (timers.search) clearTimeout(timers.search);
+    timers.search = setTimeout(function() {
+      app.className = app.className.replace(/(\s+)?typing/, '');
+      app.focus();
+    }, 1000);
+  } else {
+    search.focus();
+    search.value = '';
+  }
+};
+
+var messages = [];
+var message = function(data, timeout) {
+  if (data) messages.push(data);
+  timers.messages = setTimeout(function() {
+    if (messages.length) {
+      var html = messages.shift();
+      var stale = document.getElementsByTagName('caption');
+      for (var i = 0; i < stale.length; i++) {
+        document.body.removeChild(stale[i]);
+      }
+
+      var el = document.createElement('caption');
+      el.className = 'message';
+      el.innerHTML = html;
+      document.body.appendChild(el);
+    }
+    return message();
+  }, timeout || (10000 + Math.random()*10000));
+};
+message('Start typing to search', 500);
+
+var geocoder = document.getElementById('geocoder');
+geocoder.onsubmit = function() {
+  carmen.query(search.value, function(err, data) {
+    search.value = '';
+    if (err) return console.error(err);
+    if (!data) {
+        message('No results', 100);
+        return;
+    };
+
+    var id = data.results[0][0].id;
+    var text = _(data.results).chain()
+        .map(function(r) {
+            var output = '<div class="item">';
+            output += '<strong>' + r[0].name + '</strong>';
+            if (r[0].type === 'country') {
+                output += '<small>Country</small>';
+            } else {
+                output += '<small>' + _(r.slice(1)).chain()
+                    .filter(function(v) { return v.type !== 'zipcode' })
+                    .map(function(v) { return v.name })
+                    .value()
+                    .join(', ') + '</small>';
+            }
+            output += '</div>';
+            return output;
+        })
+        .uniq()
+        .value()
+        .slice(0,5)
+        .join('\n');
+    message(text, 100);
+    switch (id.split('.')[0]) {
+        case 'country':
+        case 'province':
+        case 'zipcode':
+        case 'place':
+            data.lbounds ? map.fitBounds(data.lbounds) : map.panTo(data.latlng);
+            break;
+        case 'street':
+            map.setView(data.latlng, 18);
+            break;
+    }
+    marker.setLatLng(data.latlng);
+  });
+  return false;
+};
+</script>
 </body>
 </html>
