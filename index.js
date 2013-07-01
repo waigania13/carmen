@@ -242,11 +242,15 @@ Carmen.prototype.geocode = function(query, callback) {
                 for (var i = 0, l = row.zxy.length; i < l; i++) {
                     var zxy = row.zxy[i];
                     memo[zxy] = memo[zxy] || [];
-                    memo[zxy].push(f);
+                    if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
 
                     for (var j = zooms.length - 1; j >= 0; j--) {
                         var pxy = pyramid(row.zxy[i], zooms[j]);
-                        if (memo[pxy]) memo[zxy] = memo[zxy].concat(memo[pxy]);
+                        if (!memo[pxy]) continue;
+                        for (var k = 0; k < memo[pxy].length; k++) {
+                            if (memo[zxy].indexOf(memo[pxy][k]) >= 0) continue;
+                            memo[zxy].push(memo[pxy][k]);
+                        }
                     }
                 }
                 return memo;
