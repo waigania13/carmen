@@ -20,7 +20,7 @@ server.get('/geocode/:query', function(req, res, next) {
         console.timeEnd('geocode ' + req.param('query'));
         if (err) return next(err);
         // @TODO ...
-        if (data.stats.score < 0.75) data.results = [];
+        if (data.stats.score < 0.5) data.results = [];
         res.send(data);
     });
 });
