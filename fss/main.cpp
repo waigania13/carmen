@@ -7,6 +7,7 @@
 #include <boost/timer/timer.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/locale.hpp>
+#include <boost/regex/pending/unicode_iterator.hpp>
 
 // geocoder
 #include "geocoder/fss.hpp"
@@ -29,6 +30,7 @@ int main(int argc, char** argv)
         std::cerr << "Can't open dictionary file" << std::endl;
         return EXIT_FAILURE;
     }
+
     boost::locale::generator gen;
     std::locale loc = gen("");
     std::locale::global(loc);
@@ -36,21 +38,32 @@ int main(int argc, char** argv)
 
     std::string line;
     uint64_t count = 0;
-    std::set<std::string> temp_dict;
+
+    std::set<std::u32string> temp_dict;
+
     while (std::getline(file, line))
     {
+        ++count;
         if (count%1000 == 0)
         {
             std::cerr << "\rLoading " << count;
         }
 
-        // normalize and extract tokens
-        boost::tokenizer<> tok(boost::locale::to_lower(line));
+        // normalize
+        line = boost::locale::to_lower(line);
+        boost::u8_to_u32_iterator<std::string::const_iterator> begin(line.begin());
+        boost::u8_to_u32_iterator<std::string::const_iterator> end(line.end());
 
-        for( boost::tokenizer<>::iterator beg=tok.begin(); beg!=tok.end();++beg)
+        std::vector<std::u32string> words;
+        // extract tokens
+        bool result = boost::spirit::qi::parse(begin, end,
+                                               +(boost::spirit::standard_wide::char_ - boost::spirit::standard_wide::space)
+                                               % +(boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")),
+                                               temp_dict);
+
+        if (!result)
         {
-            ++count;
-            temp_dict.insert(*beg);
+            std::cerr << "FAIL:" << line << std::endl;
         }
     }
     std::cerr << "\nINPUT SIZE=" << temp_dict.size() << std::endl;
@@ -65,10 +78,11 @@ int main(int argc, char** argv)
         ++count;
         if (count%1000 == 0)
         {
-
             std::cerr << "\rCreating index " << count << "/" << temp_dict.size() << " " << int(100*(count/(float)temp_dict.size())) << "%";
         }
-        dict.add(word);
+        boost::u32_to_u8_iterator<std::u32string::const_iterator> begin(word.begin());
+        boost::u32_to_u8_iterator<std::u32string::const_iterator> end(word.end());
+        dict.add(std::string(begin,end));
     }
     temp_dict.clear();
 
@@ -89,16 +103,30 @@ int main(int argc, char** argv)
         if (query.size() > 0 )
         {
             // normalise query,  extract tokens
-            boost::tokenizer<> tok(boost::locale::to_lower(query));
+            query = boost::locale::to_lower(query);
 
-            std::vector<std::string> tokens;
+            boost::u8_to_u32_iterator<std::string::const_iterator> begin(query.begin());
+            boost::u8_to_u32_iterator<std::string::const_iterator> end(query.end());
+            std::vector<std::u32string> tokens;
+            // extract tokens
+            bool result = boost::spirit::qi::parse(begin, end,
+                                                   +(boost::spirit::standard_wide::char_ - boost::spirit::standard_wide::space)
+                                                   % +(boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")),
+                                                   tokens);
 
+            if (!result)
+            {
+                std::cerr << "FAIL:" << query << std::endl;
+            }
             std::cerr << "======= START RESULT=======" << std::endl;
             boost::timer::auto_cpu_timer t;
 
-            for( boost::tokenizer<>::iterator beg=tok.begin(); beg!=tok.end();++beg)
+            for (auto token : tokens)
             {
-                auto && r = dict.search(*beg, distance, k);
+
+                boost::u32_to_u8_iterator<std::u32string::const_iterator> begin(token.begin());
+                boost::u32_to_u8_iterator<std::u32string::const_iterator> end(token.end());
+                auto && r = dict.search(std::string(begin,end), distance, k);
                 if (r.size() > 0)
                 {
                     if (r.front().second == 0)
@@ -107,7 +135,8 @@ int main(int argc, char** argv)
                     }
                     else
                     {
-                        std::for_each(r.begin(), r.end(), [] (std::pair<std::string,unsigned> const& p) { std::cerr << p.first << "[" << p.second << "] ";} );
+                        std::for_each(r.begin(), r.end(), [] (std::pair<std::string,unsigned> const& p)
+                                      { std::cerr << p.first << "[" << p.second << "] ";} );
                     }
                     std::cerr << "+ ";
                 }
