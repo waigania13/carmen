@@ -10,6 +10,9 @@
 #include <set>
 #include <functional>
 #include <unordered_map>
+#include <iostream>
+// boost
+#include <boost/regex/pending/unicode_iterator.hpp>
 
 // default distance
 #include "levenshtein_distance.hpp"
@@ -19,7 +22,9 @@ namespace geocoder {
 template <typename T>
 std::vector<T> d_neighborhood( T const& str, int distance)
 {
-    std::vector<std::string> output;
+    typedef T string_type;
+
+    std::vector<string_type> output;
     output.push_back(str);
     if (distance == 0)
     {
@@ -29,16 +34,16 @@ std::vector<T> d_neighborhood( T const& str, int distance)
     std::size_t size = str.length();
     for (std::size_t i = 0; i < size; ++i)
     {
-        std::string s(str);
+        T s(str);
         s.erase(i,1);
-        std::vector<std::string> n = d_neighborhood(s, distance - 1);
+        std::vector<string_type> n = d_neighborhood(s, distance - 1);
         output.insert( output.end(), n.begin(), n.end());
     }
     return output;
 }
 
-template <typename T0 = levenshtein_distance<std::string>,
-          typename T1 = std::hash<std::string> >
+template <typename T0 = levenshtein_distance<std::u32string>,
+          typename T1 = std::hash<std::u32string> >
 class fss_engine
 {
     struct sort_by_distance
@@ -70,20 +75,32 @@ public:
     // modifiers
     void add(std::string const& word)
     {
-        base_dict_.push_back(word);
-        std::size_t index = base_dict_.size() - 1;
-
-        if (word.size() > min_length_)
+        try
         {
-            std::vector<std::string> && neighbors = d_neighborhood(word, distance_);
-            for (auto && neighbor : neighbors)
+            base_dict_.push_back(word); // push original (utf8 encoded) token
+            std::size_t index = base_dict_.size() - 1;
+
+            boost::u8_to_u32_iterator<std::string::const_iterator> begin(word.begin());
+            boost::u8_to_u32_iterator<std::string::const_iterator> end(word.end());
+
+            std::u32string wide_word(begin, end);
+
+            if (wide_word.size() > min_length_)
             {
-                insert_residual_token(neighbor, index);
+                std::vector<std::u32string> && neighbors = d_neighborhood(wide_word, distance_);
+                for (auto && neighbor : neighbors)
+                {
+                    insert_residual_token(neighbor, index);
+                }
+            }
+            else
+            {
+                insert_residual_token(wide_word, index);
             }
         }
-        else
+        catch (...)
         {
-            insert_residual_token(word, index);
+            std::cerr << "Exception caught converting:" << word << std::endl;
         }
     }
 
@@ -99,14 +116,16 @@ public:
         return residual_dict_.size();
     }
 
-
-
     // search
     result_type search(std::string const& word, std::size_t distance, std::size_t num_results) const
     {
+        // convert to wide string
+        boost::u8_to_u32_iterator<std::string::const_iterator> begin(word.begin());
+        boost::u8_to_u32_iterator<std::string::const_iterator> end(word.end());
+        std::u32string wide_word(begin, end);
         // fetch candidates
         std::set<std::pair<std::string,unsigned> > candidates;
-        for (auto && neighbor : d_neighborhood(word, distance))
+        for (auto && neighbor : d_neighborhood(wide_word, distance))
         {
             auto itr = residual_dict_.find(hasher_(neighbor));
             if (itr != residual_dict_.end())
@@ -116,7 +135,10 @@ public:
                     if (index < base_dict_.size())
                     {
                         std::string const& candidate = base_dict_[index];
-                        unsigned ed = distance_calc_(candidate, word);
+                        boost::u8_to_u32_iterator<std::string::const_iterator> begin(candidate.begin());
+                        boost::u8_to_u32_iterator<std::string::const_iterator> end(candidate.end());
+                        std::u32string wide_candidate(begin,end);
+                        unsigned ed = distance_calc_(wide_candidate, wide_word);
                         if (ed <= distance_)
                         {
                             candidates.insert(std::make_pair(candidate,ed));
@@ -135,7 +157,7 @@ public:
 
 private:
 
-    void insert_residual_token(std::string const& token, std::size_t index)
+    void insert_residual_token(std::u32string const& token, std::size_t index)
     {
         unsigned hash = hasher_(token);
         auto itr = residual_dict_.find(hash);
