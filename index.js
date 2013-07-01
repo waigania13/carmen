@@ -274,32 +274,15 @@ Carmen.prototype.geocode = function(query, callback) {
                     if (a.score < b.score) return 1;
                     return 0;
                 });
-
-                var lastdb = '';
-                var maxscore = 0;
-                var query = [].concat(data.query);
-                for (var i = 0, l = rows.length; i < l; i++) {
-                    if (lastdb === rows[i].db) continue;
-                    var hasreason = true;
-                    var reason = rows[i].reason;
-                    for (var j = 0; j < reason.length; j++) {
-                        hasreason = hasreason && query[reason[j]];
-                        query[reason[j]] = false;
-                    }
-                    if (hasreason) {
-                        maxscore += rows[i].score;
-                        lastdb = rows[i].db;
-                    }
-                }
+                var score = Carmen.usagescore(data.query, rows);
                 for (var i = 0, l = rows.length; i < l; i++) {
                     memo[rows[i].tmpid] = memo[rows[i].tmpid] || {
                         db: rows[i].db,
                         id: rows[i].id,
                         tmpid: rows[i].tmpid,
-                        score: Math.max(rows[i].score, maxscore)
+                        score: score
                     };
                 }
-
                 return memo;
             }, {})
             .sortBy(function(feature) { return -1 * feature.score })
@@ -351,29 +334,11 @@ Carmen.prototype.geocode = function(query, callback) {
         // close enough proximity to overlap with NJ.
         var maxscore = 0;
         var results = _(contexts).reduce(function(memo, c) {
-            // Clone original query tokens. These will be crossed off one
-            // by one to ensure each query token only counts once towards
-            // the final score.
-            var query = [].concat(data.query);
-            // Score for this context. Each context element that is amongst
-            // features found by the initial search contribute to its score.
-            var score = 0;
-            // Count the number of original query tokens that contribute
-            // to the final score.
-            var usage = 0;
+            var scored = [];
             for (var i = 0; i < c.length; i++) {
-                if (features[c[i].id]) {
-                    var hasreason = true;
-                    var reason = features[c[i].id].reason;
-                    for (var j = 0; j < reason.length; j++) {
-                        hasreason = hasreason && query[reason[j]] && ++usage;
-                        query[reason[j]] = false;
-                    }
-                    if (hasreason) score += features[c[i].id].score;
-                }
+                if (features[c[i].id]) scored.push(features[c[i].id]);
             }
-            score = score * (usage / data.query.length);
-
+            var score = Carmen.usagescore(data.query, scored);
             if (!memo.length || score === maxscore) {
                 memo.push(c);
                 maxscore = score;
@@ -416,6 +381,36 @@ Carmen.prototype.geocode = function(query, callback) {
 
         return callback(null, data);
     });
+};
+
+// Return a "usage" score by comparing a set of scored elements against the
+// input query. Each scored element must include the following keys: score,
+// reason, db.
+Carmen.usagescore = function(query, scored) {
+    // Clone original query tokens. These will be crossed off one
+    // by one to ensure each query token only counts once towards
+    // the final score.
+    var query = query.slice(0);
+
+    var score = 0;
+    var usage = 0;
+    var lastdb = false;
+
+    for (var i = 0; i < scored.length; i++) {
+        if (lastdb === scored[i].db) continue;
+
+        var hasreason = true;
+        var reason = scored[i].reason;
+        for (var j = 0; j < reason.length; j++) {
+            hasreason = hasreason && query[reason[j]] && ++usage;
+            query[reason[j]] = false;
+        }
+        if (hasreason) {
+            score += scored[i].score;
+            lastdb = scored[i].db;
+        }
+    }
+    return score * Math.pow(usage / query.length, 2);
 };
 
 Carmen.prototype.search = function(source, query, id, callback) {
