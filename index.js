@@ -211,8 +211,6 @@ Carmen.prototype.geocode = function(query, callback) {
                 for (var j = 0, l = rows.length; j < l; j++) {
                     rows[j].db = dbname;
                     rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
-                    rows[j].score = rows[j].score;
-                    rows[j].reason = rows[j].reason;
                 };
                 next(null, rows);
             });
@@ -238,13 +236,17 @@ Carmen.prototype.geocode = function(query, callback) {
             .flatten()
             // Coalesce scores into higher zooms, e.g.
             // z5 inherits score of overlapping tiles at z4.
+            // @TODO assumes sources are in zoom ascending order.
             .reduce(function(memo, row) {
                 var f = features[row.tmpid];
                 for (var i = 0, l = row.zxy.length; i < l; i++) {
-                    for (var j = 0, m = zooms.length; j < m; j++) {
-                        var zxy = pyramid(row.zxy[i], zooms[j]);
-                        memo[zxy] = memo[zxy] || [];
-                        if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
+                    var zxy = row.zxy[i];
+                    memo[zxy] = memo[zxy] || [];
+                    memo[zxy].push(f);
+
+                    for (var j = zooms.length - 1; j >= 0; j--) {
+                        var pxy = pyramid(row.zxy[i], zooms[j]);
+                        if (memo[pxy]) memo[zxy] = memo[zxy].concat(memo[pxy]);
                     }
                 }
                 return memo;
@@ -289,12 +291,10 @@ Carmen.prototype.geocode = function(query, callback) {
 
                 return memo;
             }, {})
+            .sortBy(function(feature) { return -1 * feature.score })
             .reduce(function(memo, feature) {
-                if (!memo.length || feature.score === memo[0].score) {
+                if (!memo.length || memo[0].score - feature.score < 0.5) {
                     memo.push(feature);
-                    return memo;
-                } else if (feature.score > memo[0].score) {
-                    return [feature];
                 }
                 return memo;
             }, [])
