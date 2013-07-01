@@ -224,7 +224,7 @@ Carmen.prototype.geocode = function(query, callback) {
         data.stats.scoreTime = +new Date;
 
         // Sort zooms.
-        zooms = _(zooms).sortBy();
+        zooms = _(zooms).sortBy(function(z) { return z });
 
         var features = {};
         _(rows).chain().flatten().each(function(row) {
@@ -233,26 +233,33 @@ Carmen.prototype.geocode = function(query, callback) {
         });
 
         var results = _(rows).chain()
-            .flatten()
             // Coalesce scores into higher zooms, e.g.
             // z5 inherits score of overlapping tiles at z4.
             // @TODO assumes sources are in zoom ascending order.
-            .reduce(function(memo, row) {
-                var f = features[row.tmpid];
-                for (var i = 0, l = row.zxy.length; i < l; i++) {
-                    var zxy = row.zxy[i];
-                    memo[zxy] = memo[zxy] || [];
-                    if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
+            .reduce(function(memo, sourcerows) {
+                if (!sourcerows.length) return memo;
 
-                    for (var j = zooms.length - 1; j >= 0; j--) {
-                        var pxy = pyramid(row.zxy[i], zooms[j]);
-                        if (!memo[pxy]) continue;
-                        for (var k = 0; k < memo[pxy].length; k++) {
-                            if (memo[zxy].indexOf(memo[pxy][k]) >= 0) continue;
-                            memo[zxy].push(memo[pxy][k]);
+                var sourcezoom = sourcerows[0].zxy[0]/1e14|0;
+                for (var a = 0; zooms[a] <= sourcezoom; a++) {
+                    var z = zooms[a];
+                    for (var b = 0; b < sourcerows.length; b++) {
+                        var row = sourcerows[b];
+                        var f = features[row.tmpid];
+                        for (var c = 0; c < row.zxy.length; c++) {
+                            var zxy = row.zxy[c];
+                            memo[zxy] = memo[zxy] || [];
+                            if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
+
+                            var pxy = pyramid(zxy, z);
+                            if (!memo[pxy]) continue;
+                            for (var d = 0; d < memo[pxy].length; d++) {
+                                if (memo[zxy].indexOf(memo[pxy][d]) >= 0) continue;
+                                memo[zxy].push(memo[pxy][d]);
+                            }
                         }
                     }
                 }
+
                 return memo;
             }, {})
             .reduce(function(memo, rows) {
