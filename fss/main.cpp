@@ -5,7 +5,7 @@
 // boost
 #include <boost/spirit/include/qi.hpp>
 #include <boost/timer/timer.hpp>
-#include <boost/tokenizer.hpp>
+//#include <boost/tokenizer.hpp>
 #include <boost/locale.hpp>
 #include <boost/regex/pending/unicode_iterator.hpp>
 
