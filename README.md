@@ -6,6 +6,7 @@ UTFGrid/MBTiles-based geocoder with support for swappable data sources.
 
  - Node v0.8.x
  - sqlite3 command line program (`apt-get install sqlite3`)
+ - node-gyp >= v0.10.4 (`npm install node-gyp@latest -g`)
 
 ## Install
 
