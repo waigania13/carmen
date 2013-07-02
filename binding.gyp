@@ -36,7 +36,7 @@
       ],
       'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
       'cflags_cc' : ['-std=c++11'],
-      'libraries': [ '-lboost_system' ]
+      'libraries': [ '-lboost_system' , '-lboost_locale' ]
   },
   'targets': [
     {
