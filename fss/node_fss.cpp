@@ -150,7 +150,7 @@ Handle<Value> Engine::addSync(Arguments const& args)
         std::vector<std::u32string> words;
         // extract tokens
         bool result = boost::spirit::qi::parse(begin, end,
-                                               +(boost::spirit::standard_wide::char_ - boost::spirit::standard_wide::space)
+                                               +(boost::spirit::standard_wide::char_ - (boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")))
                                                % +(boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")),
                                                temp_dict);
 
@@ -326,7 +326,7 @@ Handle<Value> Engine::search(Arguments const& args)
     std::vector<std::u32string> tokens;
     // extract tokens
     bool result = boost::spirit::qi::parse(begin, end,
-                                           +(boost::spirit::standard_wide::char_ - boost::spirit::standard_wide::space)
+                                           +(boost::spirit::standard_wide::char_ - (boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")))
                                            % +(boost::spirit::standard_wide::space | boost::spirit::qi::lit(L",")),
                                            tokens);
 
