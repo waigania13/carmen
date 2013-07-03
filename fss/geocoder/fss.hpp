@@ -15,7 +15,7 @@
 #include <boost/regex/pending/unicode_iterator.hpp>
 
 // default distance
-#include "levenshtein_distance.hpp"
+#include "levenshtein.hpp"
 
 namespace geocoder {
 
@@ -58,7 +58,7 @@ class fss_engine
 public:
     typedef T0 distance_type;
     typedef T1 hasher_type;
-    typedef std::unordered_map<unsigned, std::forward_list<int> > dictionary_type;
+    typedef std::unordered_map<unsigned, std::forward_list<int32_t> > dictionary_type;
     typedef std::vector<std::string> base_dictionary_type;
     typedef std::vector<std::pair<std::string,unsigned> > result_type;
 
