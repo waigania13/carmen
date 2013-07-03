@@ -11,6 +11,7 @@
 
 // geocoder
 #include "geocoder/fss.hpp"
+#include "geocoder/damerau_levenshtein.hpp"
 
 int main(int argc, char** argv)
 {
@@ -68,7 +69,7 @@ int main(int argc, char** argv)
     }
     std::cerr << "\nINPUT SIZE=" << temp_dict.size() << std::endl;
     //
-    geocoder::fss_engine<> dict;
+    geocoder::fss_engine<geocoder::damerau_levenshtein_distance<std::u32string> > dict;
 
     // populate fss dictionary
     count = 0;

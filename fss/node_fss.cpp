@@ -18,15 +18,16 @@
 
 // geocoder
 #include "geocoder/fss.hpp"
+#include "geocoder/damerau_levenshtein.hpp"
 
 namespace node_fss {
 
 using namespace v8;
 
 // interfaces
-
-typedef geocoder::fss_engine<> geocoder;
-typedef boost::shared_ptr<geocoder> fss_ptr;
+// use
+typedef geocoder::fss_engine<geocoder::damerau_levenshtein_distance<std::u32string> > fss_engine_type;
+typedef boost::shared_ptr<fss_engine_type> fss_ptr;
 
 class Engine: public node::ObjectWrap {
 public:
@@ -65,7 +66,7 @@ void Engine::Initialize(Handle<Object> target) {
 
 Engine::Engine()
   : ObjectWrap(),
-    this_(boost::make_shared<geocoder>()) { }
+    this_(boost::make_shared<fss_engine_type>()) { }
 
 Engine::~Engine() { }
 
