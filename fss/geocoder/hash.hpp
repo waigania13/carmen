@@ -26,4 +26,6 @@ For 64-bit: offset = 14695981039346656037, prime 1099511628211
 
 */
 
+}
+
 #endif // GEOCODER_HASH_HPP
