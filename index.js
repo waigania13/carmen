@@ -1,6 +1,5 @@
 var _ = require('underscore');
 var path = require('path');
-var Step = require('step');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
@@ -197,68 +196,67 @@ Carmen.prototype.geocode = function(query, callback) {
 
     // keyword search. Find matching features.
     data.stats.searchTime = +new Date;
-    Step(function() {
-        var group = this.group();
-        _(indexes).each(function(source, dbname) {
-            var next = group();
-            carmen.search(source, data.query.join(' '), null, function(err, rows) {
-                if (err) return next(err);
+
+    function search(callback) {
+        var result = [];
+        var remaining = types.length;
+        types.forEach(function(dbname, pos) {
+            carmen.search(indexes[dbname], data.query.join(' '), null, function(err, rows) {
+                if (err) {
+                    remaining = 0;
+                    return callback(err);
+                }
                 if (rows.length) {
                     var z = rows[0].zxy[0]/1e14|0;
                     if (zooms.indexOf(z) === -1) zooms.push(z);
+                    for (var j = 0, l = rows.length; j < l; j++) {
+                        rows[j].db = dbname;
+                        rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
+                    }
                 }
-                for (var j = 0, l = rows.length; j < l; j++) {
-                    rows[j].db = dbname;
-                    rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
-                };
-                next(null, rows);
+                result[pos] = rows;
+                if (!--remaining) {
+                    zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1 });
+                    result = result.concat.apply([], result);
+                    data.stats.searchTime = +new Date - data.stats.searchTime;
+                    data.stats.searchCount = result.length;
+                    data.stats.scoreTime = +new Date;
+                    callback(null, result, zooms);
+                }
             });
         });
-    }, function(err, rows) {
-        if (err) throw err;
+    };
 
-        data.stats.searchTime = +new Date - data.stats.searchTime;
-        data.stats.searchCount = _(rows).flatten().length;
-
-        data.stats.scoreTime = +new Date;
-
-        // Sort zooms.
-        zooms = _(zooms).sortBy(function(z) { return z });
-
+    function score(rows, zooms, callback) {
         var features = {};
-        _(rows).chain().flatten().each(function(row) {
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
             features[row.tmpid] = row;
             features[row.db + '.' + row.id] = row;
-        });
+        }
 
         var results = _(rows).chain()
             // Coalesce scores into higher zooms, e.g.
             // z5 inherits score of overlapping tiles at z4.
             // @TODO assumes sources are in zoom ascending order.
-            .reduce(function(memo, sourcerows) {
-                if (!sourcerows.length) return memo;
-
-                var sourcezoom = sourcerows[0].zxy[0]/1e14|0;
+            .reduce(function(memo, row) {
+                var sourcezoom = row.zxy[0]/1e14|0;
                 for (var a = 0; zooms[a] <= sourcezoom; a++) {
                     var z = zooms[a];
-                    for (var b = 0; b < sourcerows.length; b++) {
-                        var row = sourcerows[b];
-                        var f = features[row.tmpid];
-                        for (var c = 0; c < row.zxy.length; c++) {
-                            var zxy = row.zxy[c];
-                            memo[zxy] = memo[zxy] || [];
-                            if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
+                    var f = features[row.tmpid];
+                    for (var c = 0; c < row.zxy.length; c++) {
+                        var zxy = row.zxy[c];
+                        memo[zxy] = memo[zxy] || [];
+                        if (memo[zxy].indexOf(f) === -1) memo[zxy].push(f);
 
-                            var pxy = pyramid(zxy, z);
-                            if (!memo[pxy]) continue;
-                            for (var d = 0; d < memo[pxy].length; d++) {
-                                if (memo[zxy].indexOf(memo[pxy][d]) >= 0) continue;
-                                memo[zxy].push(memo[pxy][d]);
-                            }
+                        var pxy = pyramid(zxy, z);
+                        if (!memo[pxy]) continue;
+                        for (var d = 0; d < memo[pxy].length; d++) {
+                            if (memo[zxy].indexOf(memo[pxy][d]) >= 0) continue;
+                            memo[zxy].push(memo[pxy][d]);
                         }
                     }
                 }
-
                 return memo;
             }, {})
             .reduce(function(memo, rows) {
@@ -297,88 +295,89 @@ Carmen.prototype.geocode = function(query, callback) {
         data.stats.scoreTime = +new Date - data.stats.scoreTime;
         data.stats.scoreCount = results.length;
 
-        if (!results.length) return this(null, []);
+        if (!results.length) return callback(null, results);
 
-        data.stats.contextTime = +new Date;
-
-        // Not using this.group() here because somehow this
-        // code triggers Step's group bug.
-        var next = this;
+        var start = +new Date;
         var matches = [];
         var contexts = [];
         var remaining = results.length;
-        _(results).each(function(terms) {
+        results.forEach(function(terms) {
             var term = terms.split(',')[0];
             var termid = term.split('.')[1];
             var dbname = term.split('.')[0];
-            indexes[dbname].getFeature(termid, function(err, data) {
-                if (err) return next(err);
-                carmen.contextByFeature(feature(termid, dbname, data), function(err, context) {
-                    if (err) return next(err);
+            indexes[dbname].getFeature(termid, function(err, feat) {
+                if (err) return (remaining = 0) && callback(err);
+                carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
+                    if (err) return (remaining = 0) && callback(err);
                     contexts.push(context);
-                    if (--remaining === 0) return next(null, contexts, features);
+                    if (!--remaining) {
+                        data.stats.contextTime = +new Date - start;
+                        data.stats.contextCount = contexts.length;
+                        return callback(null, contexts, features);
+                    }
                 });
             });
         });
-    }, function(err, contexts, features) {
+    };
+
+    search(function(err, rows, zooms) {
         if (err) return callback(err);
+        score(rows, zooms, function(err, contexts, features) {
+            if (err) return callback(err);
 
-        // Confirm that the context contains the terms that contributed
-        // to the match's score. All other contexts are false positives
-        // and should be discarded. Example:
-        //
-        //     "Chester, NJ" => "Chester, PA"
-        //
-        // This context will be returned because Chester, PA is in
-        // close enough proximity to overlap with NJ.
-        var maxscore = 0;
-        var results = _(contexts).reduce(function(memo, c) {
-            var scored = [];
-            for (var i = 0; i < c.length; i++) {
-                if (features[c[i].id]) scored.push(features[c[i].id]);
-            }
-            var score = Carmen.usagescore(data.query, scored);
-            if (!memo.length || score === maxscore) {
-                memo.push(c);
-                maxscore = score;
-                return memo;
-            } else if (score > maxscore) {
-                maxscore = score;
-                return [c];
-            } else {
-                return memo;
-            }
-        }, []);
+            // Confirm that the context contains the terms that contributed
+            // to the match's score. All other contexts are false positives
+            // and should be discarded. Example:
+            //
+            //     "Chester, NJ" => "Chester, PA"
+            //
+            // This context will be returned because Chester, PA is in
+            // close enough proximity to overlap with NJ.
+            var maxscore = 0;
+            var results = contexts.reduce(function(memo, c) {
+                var scored = [];
+                for (var i = 0; i < c.length; i++) {
+                    if (features[c[i].id]) scored.push(features[c[i].id]);
+                }
+                var score = Carmen.usagescore(data.query, scored);
+                if (!memo.length || score === maxscore) {
+                    memo.push(c);
+                    maxscore = score;
+                    return memo;
+                } else if (score > maxscore) {
+                    maxscore = score;
+                    return [c];
+                } else {
+                    return memo;
+                }
+            }, []);
+            results.sort(function(a, b) {
+                a = a[0], b = b[0];
 
-        data.results = results;
-        data.stats.score = maxscore;
+                // primary sort by result's index.
+                var adb = a.id.split('.')[0];
+                var bdb = b.id.split('.')[0];
+                var ai = types.indexOf(adb);
+                var bi = types.indexOf(bdb);
+                if (ai < bi) return -1;
+                if (ai > bi) return 1;
 
-        data.results.sort(function(a, b) {
-            a = a[0], b = b[0];
+                // secondary sort by score key.
+                var as = a.score || 0;
+                var bs = b.score || 0;
+                if (as > bs) return -1;
+                if (as < bs) return 1;
 
-            // primary sort by result's index.
-            var adb = a.id.split('.')[0];
-            var bdb = b.id.split('.')[0];
-            var ai = types.indexOf(adb);
-            var bi = types.indexOf(bdb);
-            if (ai < bi) return -1;
-            if (ai > bi) return 1;
+                // last sort by id.
+                if (a.id > b.id) return -1;
+                if (a.id < b.id) return 1;
+                return 0;
+            });
+            data.results = results;
+            data.stats.score = maxscore;
 
-            // secondary sort by score key.
-            var as = a.score || 0;
-            var bs = b.score || 0;
-            if (as > bs) return -1;
-            if (as < bs) return 1;
-
-            // last sort by id.
-            if (a.id > b.id) return -1;
-            if (a.id < b.id) return 1;
-            return 0;
+            return callback(null, data);
         });
-        data.stats.contextTime = +new Date - data.stats.contextTime;
-        data.stats.contextCount = contexts.length;
-
-        return callback(null, data);
     });
 };
 
