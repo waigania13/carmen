@@ -4,6 +4,7 @@ var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
+var EventEmitter = require('events').EventEmitter;
 
 // For a given z,x,y find its parent tile.
 function pyramid(zxy, parent) {
@@ -42,7 +43,7 @@ function feature(id, type, data) {
     return data;
 };
 
-require('util').inherits(Carmen, require('events').EventEmitter);
+require('util').inherits(Carmen, EventEmitter);
 
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
@@ -62,7 +63,7 @@ function Carmen(options) {
         source = source.source ? source.source : source;
 
         memo[key] = source;
-        source._carmen = source._carmen || { term: {}, grid: {} };
+        source._carmen = source._carmen || { term: {}, grid: {}, cache: {} };
         if (source.open) {
             source.getInfo(function(err, info) {
                 if (err) return done(err);
@@ -123,7 +124,10 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
         var source = indexes[type];
         var zoom = source._carmen.zoom;
         var xyz = sm.xyz([lon,lat,lon,lat], zoom);
-        source.getGrid(zoom, xyz.minX, xyz.minY, function(err, grid) {
+        var ckey = (zoom * 1e14) + (xyz.minX * 1e7) + xyz.minY;
+        var cache = source._carmen.cache;
+
+        function done(err, grid) {
             if (err && err.message !== 'Grid does not exist') {
                 remaining = 0;
                 return callback(err);
@@ -152,7 +156,15 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
                 context.reverse();
                 return callback(null, context.filter(function(v) { return v }));
             }
-        });
+        };
+        if (cache[ckey] && cache[ckey].open) {
+            done(null, cache[ckey].data);
+        } else if (cache[ckey]) {
+            cache[ckey].once('open', done);
+        } else {
+            cache[ckey] = new Locking();
+            source.getGrid(zoom, xyz.minX, xyz.minY, cache[ckey].loader(done));
+        }
     });
 };
 
@@ -674,5 +686,18 @@ Carmen.mostfreq = function(list) {
     return values;
 };
 
-module.exports = Carmen;
+require('util').inherits(Locking, EventEmitter);
 
+function Locking() { this.setMaxListeners(0); };
+
+Locking.prototype.loader = function(callback) {
+    var locking = this;
+    return function(err, data) {
+        locking.open = true;
+        locking.data = data;
+        locking.emit('open', err, data);
+        callback(err, data);
+    };
+};
+
+module.exports = Carmen;
