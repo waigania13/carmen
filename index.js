@@ -93,14 +93,16 @@ Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
-Carmen.prototype.context = function(lon, lat, callback) {
+Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) return this._open(function(err) {
         if (err) return callback(err);
-        this.context(lon, lat, callback);
+        this.context(lon, lat, maxtype, callback);
     }.bind(this));
 
     var indexes = this.indexes;
-    var carmen = this;
+    var types = Object.keys(indexes);
+    types = types.slice(0, maxtype ? types.indexOf(maxtype) : types.length);
+
     var scan = [
         [0,0],
         [0,1],
@@ -115,7 +117,8 @@ Carmen.prototype.context = function(lon, lat, callback) {
 
     Step(function() {
         var group = this.group();
-        _(indexes).each(function(source, type) {
+        _(types).each(function(type) {
+            var source = indexes[type];
             var zoom = source._carmen.zoom;
             var xyz = sm.xyz([lon,lat,lon,lat], zoom);
             var next = group();
@@ -157,15 +160,9 @@ Carmen.prototype.contextByFeature = function(data, callback) {
     if (!'lon' in data) return callback(new Error('No lon field in data'));
     if (!'lat' in data) return callback(new Error('No lat field in data'));
     var carmen = this;
-    this.context(data.lon, data.lat, function(err, context) {
+    this.context(data.lon, data.lat, data.id.split('.')[0], function(err, context) {
         if (err) return callback(err);
 
-        // Filter out levels that match or exceed the detail of the feature.
-        var types = Object.keys(carmen.indexes);
-        var index = types.indexOf(data.id.split('.')[0]);
-        context = context.filter(function(c) {
-            return types.indexOf(c.id.split('.')[0]) < index;
-        });
         // Push feature onto the top level.
         context.unshift(data);
         return callback(null, context);
@@ -189,7 +186,7 @@ Carmen.prototype.geocode = function(query, callback) {
 
     // lon,lat pair. Provide the context for this location.
     if (data.query.length === 2 && _(data.query).all(_.isNumber)) {
-        return this.context(data.query[0], data.query[1], function(err, context) {
+        return this.context(data.query[0], data.query[1], null, function(err, context) {
             if (err) return callback(err);
             data.results = context.length ? [context] : [];
             return callback(null, data);
