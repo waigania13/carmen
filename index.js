@@ -99,9 +99,14 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
         this.context(lon, lat, maxtype, callback);
     }.bind(this));
 
+    var context = [];
     var indexes = this.indexes;
     var types = Object.keys(indexes);
     types = types.slice(0, maxtype ? types.indexOf(maxtype) : types.length);
+    var remaining = types.length;
+
+    // No-op context.
+    if (!remaining) return callback(null, context);
 
     var scan = [
         [0,0],
@@ -115,16 +120,16 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
         [-1,-1]
     ];
 
-    Step(function() {
-        var group = this.group();
-        _(types).each(function(type) {
-            var source = indexes[type];
-            var zoom = source._carmen.zoom;
-            var xyz = sm.xyz([lon,lat,lon,lat], zoom);
-            var next = group();
-            source.getGrid(zoom, xyz.minX, xyz.minY, function(err, grid) {
-                if (err) return next(err);
-
+    types.forEach(function(type, pos) {
+        var source = indexes[type];
+        var zoom = source._carmen.zoom;
+        var xyz = sm.xyz([lon,lat,lon,lat], zoom);
+        source.getGrid(zoom, xyz.minX, xyz.minY, function(err, grid) {
+            if (err && err.message !== 'Grid does not exist') {
+                remaining = 0;
+                return callback(err);
+            }
+            if (grid) {
                 var resolution = 4;
                 var px = sm.px([lon,lat], zoom);
                 var y = Math.round((px[1] % 256) / resolution);
@@ -138,20 +143,17 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
                     sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
                     sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
                     key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
-                    if (key) break;
+                    if (key) {
+                        context[pos] = key && feature(key, type, grid.data[key]);
+                        break;
+                    }
                 }
-
-                if (!key) return next();
-
-                var data = feature(key, type, grid.data[key]);
-                if (!'lon' in data) return next(new Error('No lon field in data'));
-                if (!'lat' in data) return next(new Error('No lat field in data'));
-                return next(null, data);
-            });
+            }
+            if (!--remaining) {
+                context.reverse();
+                return callback(null, context.filter(function(v) { return v }));
+            }
         });
-    }, function(err, context) {
-        if (err && err.message !== 'Grid does not exist') return callback(err);
-        return callback(null, _(context).chain().compact().reverse().value());
     });
 };
 
