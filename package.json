@@ -16,7 +16,7 @@
         "sphericalmercator": "~1.0.1"
     },
     "devDependencies": {
-        "mbtiles": "~0.3.x",
+        "mbtiles": "~0.3.2",
         "tilelive-s3": "0.5.x"
     },
     "main": "./index.js",

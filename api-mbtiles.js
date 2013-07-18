@@ -24,7 +24,10 @@ MBTiles.prototype.getFeature = function(id, callback) {
 
 // Implements carmen#putFeature method.
 MBTiles.prototype.putFeature = function(id, data, callback) {
-    this._db.run('REPLACE INTO keymap (key_name, key_json) VALUES (?, ?)', id, JSON.stringify(data), callback);
+    this.write('keymap', id, {
+        key_name: id,
+        key_json: JSON.stringify(data)
+    }, callback);
 };
 
 // Implements carmen#getCarmen method.
@@ -50,7 +53,10 @@ MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
 
     var shards = this._carmen[type];
 
-    return this._db.run('REPLACE INTO carmen_' + type + ' (shard, data) VALUES (?, ?)', shard, JSON.stringify(data), function(err) {
+    this.write('carmen_' + type, shard, {
+        shard: shard,
+        data: JSON.stringify(data)
+    }, function(err) {
         if (err) return callback(err);
         shards[shard] = data;
         callback(null);
