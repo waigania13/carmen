@@ -590,7 +590,7 @@ Carmen.prototype.index = function(source, docs, callback) {
     remaining += Object.keys(patch.grid).length;
     // Add each doc.
     docs.forEach(function(doc) {
-        source.putFeature(doc.id.toFixed(0), doc.doc, done);
+        source.putFeature(typeof doc.id === 'number' ? doc.id.toFixed(0) : doc.id, doc.doc, done);
     });
     _(patch).each(function(shards, type) {
         _(shards).each(function(data, shard) {
