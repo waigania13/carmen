@@ -63,7 +63,7 @@ function Carmen(options) {
         source = source.source ? source.source : source;
 
         memo[key] = source;
-        source._carmen = source._carmen || { term: {}, grid: {}, cache: {} };
+        source._carmen = source._carmen || { freq:{}, term: {}, grid: {}, cache: {} };
         if (source.open) {
             source.getInfo(function(err, info) {
                 if (err) return done(err);
@@ -559,7 +559,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
     var shardlevel = source._carmen.shardlevel;
     var remaining = docs.length;
-    var patch = { term: {}, grid: {} };
+    var patch = { freq: {}, term: {}, grid: {} };
     var done = function(err) {
         if (err) {
             remaining = -1;
@@ -570,13 +570,16 @@ Carmen.prototype.index = function(source, docs, callback) {
     };
     docs.forEach(function(doc) {
         var docid = parseInt(doc.id,10);
-        Carmen.terms(doc.text).reduce(function(memo, id) {
+        var terms = Carmen.terms(doc.text);
+        terms.forEach(function(id) {
             var shard = Carmen.shard(shardlevel, id);
-            memo[shard] = memo[shard] || {};
-            memo[shard][id] = memo[shard][id] || [];
-            memo[shard][id].push(docid);
-            return memo;
-        }, patch.term);
+            patch.term[shard] = patch.term[shard] || {};
+            patch.term[shard][id] = patch.term[shard][id] || [];
+            patch.term[shard][id].push(docid);
+            patch.freq[shard] = patch.freq[shard] || {};
+            patch.freq[shard][id] = patch.freq[shard][id] || 0;
+            patch.freq[shard][id]++;
+        });
         var shard = Carmen.shard(shardlevel, docid);
         patch.grid[shard] = patch.grid[shard] || {};
         patch.grid[shard][docid] = {
@@ -584,6 +587,8 @@ Carmen.prototype.index = function(source, docs, callback) {
             zxy: doc.zxy.map(Carmen.zxy)
         };
     });
+    // Number of freq shards.
+    remaining += Object.keys(patch.freq).length;
     // Number of term shards.
     remaining += Object.keys(patch.term).length;
     // Number of grid shards.
@@ -595,10 +600,12 @@ Carmen.prototype.index = function(source, docs, callback) {
     _(patch).each(function(shards, type) {
         _(shards).each(function(data, shard) {
             source.getCarmen(type, shard, function(err, current) {
+                // This merges new entries on top of old ones.
                 switch (type) {
+                case 'freq':
+                    for (var key in data) current[key] = (current[key]||0) + data[key];
+                    break;
                 case 'term':
-                    // This merges new entries on top of old ones.
-                    // @TODO invalidate old entries in a separate command/op.
                     for (var key in data) {
                         current[key] = current[key] || [];
                         for (var i = 0; i < data[key].length; i++) {
