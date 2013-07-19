@@ -557,7 +557,14 @@ Carmen.prototype.index = function(source, docs, callback) {
         this.index(source, docs, callback);
     }.bind(this));
 
+    var approxdocs = source._carmen.approxdocs;
     var shardlevel = source._carmen.shardlevel;
+    if (approxdocs === undefined) return source.getCarmen('term', 0, function(err, data) {
+        if (err) return callback(err);
+        source._carmen.approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
+        this.index(source, docs, callback);
+    }.bind(this));
+
     var remaining = docs.length;
     var patch = { freq: {}, term: {}, grid: {} };
     var done = function(err) {
@@ -613,6 +620,8 @@ Carmen.prototype.index = function(source, docs, callback) {
                             current[key].push(data[key][i]);
                         }
                     }
+                    // Update approx doc count.
+                    source._carmen.approxdocs = Math.max(approxdocs, Object.keys(current).length * Math.pow(16, shardlevel));
                     break;
                 case 'grid':
                     for (var key in data) current[key] = data[key];
