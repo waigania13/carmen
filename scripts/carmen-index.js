@@ -24,6 +24,9 @@ if (!api[path.extname(f)]) {
     process.exit(1);
 }
 
+var nogrids = ('NOGRIDS' in process.env);
+if (nogrids) console.log('Indexing without grids.');
+
 console.log('Indexing %s ...', f);
 
 var from = new api[path.extname(f)](f, function() {});
@@ -48,7 +51,7 @@ carmen._open(function(err) {
                 });
             });
         };
-        index();
+        index({nogrids:nogrids});
     });
 });
 
