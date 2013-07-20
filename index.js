@@ -666,6 +666,14 @@ Carmen.terms = function(text) {
     return _(terms).uniq();
 };
 
+// Create a debug hash for term IDs.
+Carmen.termsDebug = function(text) {
+    return Carmen.tokenize(text).reduce(function(memo, w) {
+        memo[parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16)] = w;
+        return memo;
+    }, {});
+};
+
 // Assumes an integer space of Math.pow(16,8);
 Carmen.shard = function(level, id) {
     if (level === 0) return 0;
