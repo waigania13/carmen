@@ -686,7 +686,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                 var shard = Carmen.shard(shardlevel, docid);
                 patch.grid[shard] = patch.grid[shard] || {};
                 patch.grid[shard][docid] = {
-                    text: doc.text.split(',').map(Carmen.terms),
+                    text: doc.termsets,
                     zxy: doc.zxy.map(Carmen.zxy)
                 };
             }
