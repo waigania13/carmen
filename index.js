@@ -446,7 +446,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
         var term = queue.shift();
         var shard = Carmen.shard(shardlevel, term);
-        source.getCarmen('term', shard, function(err, data) {
+        Carmen.get(source, 'term', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[term]) return getids(queue, result, callback);
 
@@ -464,7 +464,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         var id = queue.shift();
         var shard = Carmen.shard(shardlevel, id);
 
-        source.getCarmen('grid', shard, function(err, data) {
+        Carmen.get(source, 'grid', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[id]) return getzxy(queue, result, callback);
             termfreq(Array.prototype.concat.apply([], data[id].text), function(err) {
@@ -535,7 +535,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
         // Look up term frequency.
         var shard = Carmen.shard(shardlevel, term);
-        source.getCarmen('freq', shard, function(err, data) {
+        Carmen.get(source, 'freq', shard, function(err, data) {
             if (err) return callback(err);
             freqs[term] = Math.log(approxdocs / data[term]);
             return termfreq(terms, callback);
@@ -559,7 +559,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
     indexFreqs(function(err, freq) {
         if (err) return callback(err);
-        source.getCarmen('freq', 0, function(err, data) {
+        Carmen.get(source, 'freq', 0, function(err, data) {
             if (err) return callback(err);
             // @TODO fix this approxdoc calc.
             var approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
@@ -602,12 +602,12 @@ Carmen.prototype.index = function(source, docs, callback) {
         }
         remaining += Object.keys(freq).length;
         _(freq).each(function(data, shard) {
-            source.getCarmen('freq', shard, function(err, current) {
+            Carmen.get(source, 'freq', shard, function(err, current) {
                 for (var key in data) {
                     current[key] = (current[key]||0) + data[key];
                     data[key] = current[key];
                 }
-                source.putCarmen('freq', shard, current, done);
+                Carmen.put(source, 'freq', shard, current, done);
             });
         });
     };
@@ -704,7 +704,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         });
         _(patch).each(function(shards, type) {
             _(shards).each(function(data, shard) {
-                source.getCarmen(type, shard, function(err, current) {
+                Carmen.get(source, type, shard, function(err, current) {
                     // This merges new entries on top of old ones.
                     switch (type) {
                     case 'term':
@@ -722,7 +722,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                         for (var key in data) current[key] = data[key];
                         break;
                     }
-                    source.putCarmen(type, shard, current, done);
+                    Carmen.put(source, type, shard, current, done);
                 });
             });
         });
@@ -807,6 +807,31 @@ Carmen.mostfreq = function(list) {
         }
     } while (list.length);
     return values;
+};
+
+var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
+Carmen.get = function(source, type, shard, callback) {
+    if (!source._carmen) source._carmen = { freq: {}, term: {}, grid: {} };
+    var shards = source._carmen[type];
+    if (shards[shard]) return defer(function() {
+        callback(null, shards[shard]);
+    });
+    source.getCarmen(type, shard, function(err, data) {
+        if (err) return callback(err);
+        shards[shard] = data ? JSON.parse(data) : {};
+        callback(null, shards[shard]);
+    });
+};
+
+Carmen.put = function(source, type, shard, data, callback) {
+    if (!source._carmen) source._carmen = { freq: {}, term: {}, grid: {} };
+    var shards = source._carmen[type];
+    var json = JSON.stringify(data);
+    source.putCarmen(type, shard, json, function(err) {
+        if (err) return callback(err);
+        shards[shard] = data;
+        callback(null);
+    })
 };
 
 require('util').inherits(Locking, EventEmitter);
