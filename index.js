@@ -561,7 +561,9 @@ Carmen.prototype.index = function(source, docs, callback) {
         if (err) return callback(err);
         source.getCarmen('freq', 0, function(err, data) {
             if (err) return callback(err);
+            // @TODO fix this approxdoc calc.
             var approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
+            approxdocs = approxdocs || Object.keys(freq).length;
             indexDocs(approxdocs, freq, callback);
         });
     });
