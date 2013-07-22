@@ -80,7 +80,7 @@ S3.prototype.getCarmen = function(type, shard, callback) {
     catch (err) { return callback(new Error('Carmen not supported')); }
 
     // Init carmen cache.
-    this._carmen = this._carmen || { term: {}, grid: {} };
+    this._carmen = this._carmen || { freq:{}, term: {}, grid: {} };
 
     // Cache hit.
     if (this._carmen[type][shard]) return callback(null, this._carmen[type][shard]);
