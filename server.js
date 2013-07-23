@@ -2,7 +2,20 @@
 
 var express = require('express');
 var server = express.createServer();
-var carmen = new (require('./index.js'))();
+var Carmen = require('./index.js');
+var MBTiles = Carmen.MBTiles();
+
+var carmen = new Carmen({
+    country: {
+        source: new MBTiles(__dirname + '/tiles/ne-countries.mbtiles',function(){})
+    },
+    province: {
+        source: new MBTiles(__dirname + '/tiles/ne-provinces.mbtiles',function(){})
+    },
+    place: {
+        source: new MBTiles(__dirname + '/tiles/osm-places.mbtiles',function(){})
+    }
+});
 
 server.get('/geocode/:query', function(req, res, next) {
     if (!req.param('query')) return res.send(404);
