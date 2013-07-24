@@ -42,6 +42,7 @@ carmen._open(function(err) {
                 if (!docs.length) return from.stopWriting(function(err) {
                     if (err) throw err;
                     console.log('Done.');
+                    process.exit(0);
                 });
                 var start = +new Date;
                 carmen.index(from, docs, function(err) {
