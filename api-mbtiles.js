@@ -101,6 +101,7 @@ MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function
         if (err) return callback(err);
         var sql = '\
         CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);\
+        CREATE TABLE IF NOT EXISTS carmen_docs(shard INTEGER PRIMARY KEY, data BLOB);\
         CREATE TABLE IF NOT EXISTS carmen_freq(shard INTEGER PRIMARY KEY, data BLOB);\
         CREATE TABLE IF NOT EXISTS carmen_term(shard INTEGER PRIMARY KEY, data BLOB);\
         CREATE TABLE IF NOT EXISTS carmen_grid(shard INTEGER PRIMARY KEY, data BLOB);';
