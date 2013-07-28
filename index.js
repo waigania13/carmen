@@ -620,6 +620,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         docs.forEach(function(doc) {
             var docid = parseInt(doc.id,10);
             var termsets = doc.termsets;
+            var termsmem = [];
             termsets.forEach(function(terms, x) {
                 var weights = {};
                 var total = 0;
@@ -668,9 +669,11 @@ Carmen.prototype.index = function(source, docs, callback) {
                 for (var i = 0; i < sigterms.length; i++) {
                     var id = sigterms[i];
                     var shard = Carmen.shard(shardlevel, id);
+                    if (termsmem.indexOf(id) !== -1) continue;
                     patch.term[shard] = patch.term[shard] || {};
                     patch.term[shard][id] = patch.term[shard][id] || [];
                     patch.term[shard][id].push(docid);
+                    termsmem.push(id);
                 }
             });
 
