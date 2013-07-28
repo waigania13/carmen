@@ -704,13 +704,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                     // This merges new entries on top of old ones.
                     switch (type) {
                     case 'term':
-                        for (var key in data) {
-                            current[key] = current[key] || [];
-                            for (var i = 0; i < data[key].length; i++) {
-                                if (current[key].indexOf(data[key][i]) >= 0) continue;
-                                current[key].push(data[key][i]);
-                            }
-                        }
+                        for (var key in data) current[key] = (current[key] || []).concat(data[key]);
                         break;
                     case 'grid':
                     case 'docs':
