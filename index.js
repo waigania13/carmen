@@ -731,24 +731,25 @@ Carmen.prototype.store = function(source, callback) {
         this.store(source, callback);
     }.bind(this));
 
-    var remaining = 0;
-    remaining += Object.keys(source._carmen.freq).length;
-    remaining += Object.keys(source._carmen.term).length;
-    remaining += Object.keys(source._carmen.grid).length;
-    remaining += Object.keys(source._carmen.docs).length;
-    if (!remaining) return callback();
-
+    var queue = [];
     ['freq','term','grid','docs'].forEach(function(type) {
-        _(source._carmen[type]).each(function(data, shard) {
-            Carmen.put(source, type, shard, data, function(err) {
-                if (err && remaining > 0) {
-                    remaining = -1;
-                    return callback(err);
-                }
-                if (!--remaining) return callback();
-            });
-        });
+        queue = queue.concat(Object.keys(source._carmen[type]).map(function(shard) {
+            return [type, shard];
+        }));
     });
+
+    var write = function() {
+        if (!queue.length) return callback();
+        var task = queue.shift();
+        var type = task[0];
+        var shard = task[1];
+        var data = source._carmen[type][shard];
+        Carmen.put(source, type, shard, data, function(err) {
+            if (err) return callback(err);
+            write();
+        });
+    };
+    write();
 };
 
 Carmen.tokenize = function(query, lonlat) {
