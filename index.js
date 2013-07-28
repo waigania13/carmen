@@ -740,7 +740,7 @@ Carmen.prototype.store = function(source, callback) {
         var data = source._carmen[type][shard];
         Carmen.put(source, type, shard, data, function(err) {
             if (err) return callback(err);
-            write();
+            defer(function() { write(); });
         });
     };
     write();
