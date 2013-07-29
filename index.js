@@ -68,6 +68,7 @@ function Carmen(options) {
             freq:{},
             term:{},
             grid:{},
+            logs:{},
             cache:{}
         };
         if (source.open) {
@@ -438,10 +439,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
-    var approxdocs = 0;
+    var approxdocs = source._carmen.approxdocs;
     var shardlevel = source._carmen.shardlevel;
     var terms = Carmen.terms(query);
-    var freqs = {};
+    var freqs = source._carmen.logs;
 
     var getids = function(queue, result, callback) {
         // @TODO do this mostfreq operation in a way where result id frequency
@@ -460,7 +461,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (!data[term]) return getids(queue, result, callback);
 
             // Calculate approx doc count once.
-            if (!approxdocs) approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
+            if (!approxdocs) {
+                approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
+                source._carmen.approxdocs = approxdocs;
+            }
 
             result = result.concat(data[term]);
             getids(queue, result, callback);
@@ -537,12 +541,13 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
     var termfreq = function(terms, callback) {
         if (!terms.length) return callback();
-        var term = terms.shift();
 
         // Term frequency is already known. Continue.
-        if (freqs[term]) return termfreq(terms, callback);
+        var term = terms.shift();
+        while (freqs[term]) { term = terms.shift(); }
+        if (!term) return callback();
 
-        // Look up term frequency.
+        // Look up + calculate term frequency.
         var shard = Carmen.shard(shardlevel, term);
         Carmen.get(source, 'freq', shard, function(err, data) {
             if (err) return callback(err);
@@ -814,7 +819,7 @@ Carmen.mostfreq = function(list) {
             if (curfreq > maxfreq) {
                 maxfreq = curfreq;
                 values = [current];
-            } else if (curfreq === maxfreq && values.indexOf(current) === -1) {
+            } else if (curfreq === maxfreq) {
                 values.push(current);
             }
         } else if (maxfreq === 1) {
