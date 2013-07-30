@@ -316,24 +316,18 @@ Carmen.prototype.geocode = function(query, callback) {
         var matches = [];
         var contexts = [];
         var remaining = results.length;
-        results.forEach(function(terms) {
-            var term = terms.split(',')[0];
+        results.forEach(function(term) {
             var termid = parseInt(term.split('.')[1], 10);
             var dbname = term.split('.')[0];
-            var shard = Carmen.shard(indexes[dbname]._carmen.shardlevel, termid);
-            Carmen.get(indexes[dbname], 'docs', shard, function(err, docs) {
+            var feat = features[term].doc;
+            carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
                 if (err) return (remaining = 0) && callback(err);
-                if (!docs[termid]) return (remaining = 0) && callback(new Error('No doc for ' + termid));
-                var feat = docs[termid].doc;
-                carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
-                    if (err) return (remaining = 0) && callback(err);
-                    contexts.push(context);
-                    if (!--remaining) {
-                        data.stats.contextTime = +new Date - start;
-                        data.stats.contextCount = contexts.length;
-                        return callback(null, contexts, features);
-                    }
-                });
+                contexts.push(context);
+                if (!--remaining) {
+                    data.stats.contextTime = +new Date - start;
+                    data.stats.contextCount = contexts.length;
+                    return callback(null, contexts, features);
+                }
             });
         });
     };
