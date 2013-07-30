@@ -812,7 +812,7 @@ Carmen.phrase = function(text) {
     var tokens = _(Carmen.tokenize(text)).uniq();
     var phrase = tokens.join(' ');
     var a = parseInt(crypto.createHash('md5').update(phrase).digest('hex').substr(0,8), 16);
-    var b = parseInt(crypto.createHash('md5').update(tokens[0]).digest('hex').substr(0,4), 16);
+    var b = parseInt(crypto.createHash('md5').update(tokens[0]||'').digest('hex').substr(0,4), 16);
     return (a * Math.pow(4,16)) + b;
 };
 
