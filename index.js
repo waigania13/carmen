@@ -433,6 +433,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var shardlevel = source._carmen.shardlevel;
     var terms = Carmen.terms(query);
     var freqs = source._carmen.logs;
+    var docs = {};
 
     var getphrases = function(queue, result, callback) {
         if (!queue.length) {
@@ -501,11 +502,12 @@ Carmen.prototype.search = function(source, query, id, callback) {
                     }
                 }
                 if (score > 0.6) for (var i = 0; i < data[id].docs.length; i++) {
-                    result.push({
-                        id: data[id].docs[i],
+                    var docid = data[id].docs[i];
+                    if (result.indexOf(docid) === -1) result.push(docid);
+                    if (!docs[docid] || docs[docid].score < score) docs[docid] = {
                         score: score > 0.9999 ? 1 : score,
                         reason: reason
-                    });
+                    };
                 };
                 getdocs(queue, result, callback);
             });
@@ -515,14 +517,18 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var getzxy = function(queue, result, callback) {
         if (!queue.length) return callback(null, result);
 
-        var doc = queue.shift();
-        var shard = Carmen.shard(shardlevel, doc.id);
+        var id = queue.shift();
+        var shard = Carmen.shard(shardlevel, id);
         Carmen.get(source, 'docs', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[doc.id]) return getzxy(queue, result, callback);
-            doc.doc = data[doc.id].doc;
-            doc.zxy = data[doc.id].zxy;
-            result.push(doc);
+            if (!data[id]) return getzxy(queue, result, callback);
+            result.push({
+                id: id,
+                score: docs[id].score,
+                reason: docs[id].reason,
+                doc: data[id].doc,
+                zxy: data[id].zxy
+            });
             getzxy(queue, result, callback);
         });
     };
