@@ -54,6 +54,7 @@ function Carmen(options) {
 
         memo[key] = source;
         source._carmen = source._carmen || {
+            id: key,
             docs:{},
             freq:{},
             term:{},
@@ -440,14 +441,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var freqs = source._carmen.logs;
 
     var getphrases = function(queue, result, callback) {
-        // @TODO do this mostfreq operation in a way where result id frequency
-        // must be adjacent in the original query, e.g. such that the following
-        // does not occur:
-        //
-        // new washington york
-        // => new york (x2 id freq)
-        // => washington (x1 id freq)
-        if (!queue.length) return callback(null, Carmen.mostfreq(result));
+        if (!queue.length) {
+            result.sort();
+            return callback(null, _(result).uniq(true));
+        }
 
         var term = queue.shift();
         var shard = Carmen.shard(shardlevel, term);
@@ -810,9 +807,13 @@ Carmen.terms = function(text) {
 };
 
 // Converts text into a name ID.
+// Appends a suffix based on the first term to help cluster phrases in shards.
 Carmen.phrase = function(text) {
-    var phrase = _(Carmen.tokenize(text)).uniq().join(' ');
-    return parseInt(crypto.createHash('md5').update(phrase).digest('hex').substr(0,8), 16);
+    var tokens = _(Carmen.tokenize(text)).uniq();
+    var phrase = tokens.join(' ');
+    var a = parseInt(crypto.createHash('md5').update(phrase).digest('hex').substr(0,8), 16);
+    var b = parseInt(crypto.createHash('md5').update(tokens[0]).digest('hex').substr(0,4), 16);
+    return (a * Math.pow(4,16)) + b;
 };
 
 // Create a debug hash for term IDs.
