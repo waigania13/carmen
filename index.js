@@ -6,6 +6,18 @@ var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var EventEmitter = require('events').EventEmitter;
 
+// FNV-1a hash.
+// For 32-bit: offset = 2166136261, prime = 16777619.
+function fnv1a(str) {
+    var hash = 0x811C9DC5;
+    if (str.length) for (var i = 0; i < str.length; i++) {
+        hash = hash ^ str.charCodeAt(i);
+        // 2**24 + 2**8 + 0x93 = 16777619
+        hash += (hash << 24) + (hash << 8) + (hash << 7) + (hash << 4) + (hash << 1);
+    }
+    return hash >>> 0;
+};
+
 // Resolve the UTF-8 encoding stored in grids to simple number values.
 function resolveCode(key) {
     if (key >= 93) key--;
@@ -794,26 +806,22 @@ Carmen.tokenize = function(query, lonlat) {
 
 // Converts text into an array of search term hash IDs.
 Carmen.terms = function(text) {
-    var terms = Carmen.tokenize(text).map(function(w) {
-        return parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16);
-    });
-    return _(terms).uniq();
+    return Carmen.tokenize(text).map(fnv1a);
 };
 
 // Converts text into a name ID.
 // Appends a suffix based on the first term to help cluster phrases in shards.
 Carmen.phrase = function(text) {
-    var tokens = _(Carmen.tokenize(text)).uniq();
-    var phrase = tokens.join(' ');
-    var a = parseInt(crypto.createHash('md5').update(phrase).digest('hex').substr(0,8), 16);
-    var b = parseInt(crypto.createHash('md5').update(tokens[0]).digest('hex').substr(0,4), 16);
-    return (a * Math.pow(4,16)) + b;
+    var tokens = Carmen.tokenize(text);
+    var a = fnv1a(tokens.join(' '));
+    var b = fnv1a(tokens.length ? tokens[0] : '') % 65536;
+    return (a * 65536) + b;
 };
 
 // Create a debug hash for term IDs.
 Carmen.termsDebug = function(text) {
     return Carmen.tokenize(text).reduce(function(memo, w) {
-        memo[parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16)] = w;
+        memo[fnv1a(w)] = w;
         return memo;
     }, {});
 };
