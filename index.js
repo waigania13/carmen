@@ -57,7 +57,7 @@ function Carmen(options) {
             docs:{},
             freq:{},
             term:{},
-            grid:{},
+            phrase:{},
             logs:{},
             cache:{}
         };
@@ -323,7 +323,7 @@ Carmen.prototype.geocode = function(query, callback) {
             Carmen.get(indexes[dbname], 'docs', shard, function(err, docs) {
                 if (err) return (remaining = 0) && callback(err);
                 if (!docs[termid]) return (remaining = 0) && callback(new Error('No doc for ' + termid));
-                var feat = docs[termid];
+                var feat = docs[termid].doc;
                 carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
                     if (err) return (remaining = 0) && callback(err);
                     contexts.push(context);
@@ -439,7 +439,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var terms = Carmen.terms(query);
     var freqs = source._carmen.logs;
 
-    var getids = function(queue, result, callback) {
+    var getphrases = function(queue, result, callback) {
         // @TODO do this mostfreq operation in a way where result id frequency
         // must be adjacent in the original query, e.g. such that the following
         // does not occur:
@@ -453,7 +453,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         var shard = Carmen.shard(shardlevel, term);
         Carmen.get(source, 'term', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[term]) return getids(queue, result, callback);
+            if (!data[term]) return getphrases(queue, result, callback);
 
             // Calculate approx doc count once.
             if (!approxdocs) {
@@ -462,20 +462,20 @@ Carmen.prototype.search = function(source, query, id, callback) {
             }
 
             result = result.concat(data[term]);
-            getids(queue, result, callback);
+            getphrases(queue, result, callback);
         });
     };
 
-    var getzxy = function(queue, result, callback) {
+    var getdocs = function(queue, result, callback) {
         if (!queue.length) return callback(null, result);
 
         var id = queue.shift();
         var shard = Carmen.shard(shardlevel, id);
 
-        Carmen.get(source, 'grid', shard, function(err, data) {
+        Carmen.get(source, 'phrase', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[id]) return getzxy(queue, result, callback);
-            termfreq(Array.prototype.concat.apply([], data[id].text), function(err) {
+            if (!data[id]) return getdocs(queue, result, callback);
+            termfreq(data[id].term.slice(0), function(err) {
                 if (err) return callback(err);
 
                 // Score each feature:
@@ -484,53 +484,55 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 //   occurrence in the dataset.
                 // - for the max score also store the 'reason' -- the index of
                 //   each query token that contributed to its score.
+                var term = 0;
                 var score = 0;
+                var total = 0;
                 var reason = [];
-                for (var i = 0; i < data[id].text.length; i++) {
-                    var total = 0;
-                    var localScore = 0;
-                    var localReason = [];
-                    var text = data[id].text[i];
-
-                    for (var j = 0; j < text.length; j++) {
-                        total += freqs[text[j]];
-                    }
-
-                    var term = 0;
-                    var termpos = -1;
-                    var lastpos = -1;
-                    for (var j = 0; j < terms.length; j++) {
-                        term = terms[j];
-                        termpos = text.indexOf(term);
-
-                        if (termpos === -1) {
-                            if (localReason.length) {
-                                break;
-                            } else {
-                                continue;
-                            }
-                        } else if (localReason.length === 0 || termpos === lastpos + 1) {
-                            localScore += freqs[term]/total;
-                            localReason.push(j);
-                            lastpos = termpos;
+                var termpos = -1;
+                var lastpos = -1;
+                var text = data[id].term;
+                for (var i = 0; i < data[id].term.length; i++) {
+                    total += freqs[data[id].term[i]];
+                }
+                for (var i = 0; i < terms.length; i++) {
+                    term = terms[i];
+                    termpos = text.indexOf(term);
+                    if (termpos === -1) {
+                        if (score !== 0) {
+                            break;
+                        } else {
+                            continue;
                         }
-                    }
-                    if (localScore > score) {
-                        score = localScore;
-                        reason = localReason;
+                    } else if (score === 0 || termpos === lastpos + 1) {
+                        score += freqs[term]/total;
+                        reason.push(i);
+                        lastpos = termpos;
                     }
                 }
-
-                if (score > 0.6) result.push({
-                    id: id,
-                    // patch up javascript float precision errors -- scores
-                    // that should add to 1 sometimes come back as 0.99999...
-                    score: score > 0.9999 ? 1 : score,
-                    reason: reason,
-                    zxy: data[id].zxy
-                });
-                getzxy(queue, result, callback);
+                if (score > 0.6) for (var i = 0; i < data[id].docs.length; i++) {
+                    result.push({
+                        id: data[id].docs[i],
+                        score: score > 0.9999 ? 1 : score,
+                        reason: reason
+                    });
+                };
+                getdocs(queue, result, callback);
             });
+        });
+    };
+
+    var getzxy = function(queue, result, callback) {
+        if (!queue.length) return callback(null, result);
+
+        var doc = queue.shift();
+        var shard = Carmen.shard(shardlevel, doc.id);
+        Carmen.get(source, 'docs', shard, function(err, data) {
+            if (err) return callback(err);
+            if (!data[doc.id]) return getzxy(queue, result, callback);
+            doc.doc = data[doc.id].doc;
+            doc.zxy = data[doc.id].zxy;
+            result.push(doc);
+            getzxy(queue, result, callback);
         });
     };
 
@@ -551,9 +553,15 @@ Carmen.prototype.search = function(source, query, id, callback) {
         });
     };
 
-    getids([].concat(terms), [], function(err, ids) {
+    getphrases([].concat(terms), [], function(err, phrases) {
         if (err) return callback(err);
-        getzxy(ids, [], callback);
+        getdocs(phrases, [], function(err, docs) {
+            if (err) return callback(err);
+            getzxy(docs, [], function(err, docs) {
+                if (err) return callback(err);
+                return callback(null, docs);
+            });
+        });
     });
 };
 
@@ -588,6 +596,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         var freq = {};
         for (var i = 0; i < docs.length; i++) {
             var doc = docs[i];
+            var phrases = doc.text.split(',').map(Carmen.phrase);
             var termsets = doc.text.split(',').map(Carmen.terms);
             for (var j = 0; j < termsets.length; j++) {
                 var terms = termsets[j];
@@ -599,6 +608,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                     freq[shard][id]++;
                 }
             }
+            doc.phrases = phrases;
             doc.termsets = termsets;
         }
         var remaining = Object.keys(freq).length;
@@ -615,12 +625,26 @@ Carmen.prototype.index = function(source, docs, callback) {
     //   significant terms for each document.
     // - Create id => grid zxy index.
     function indexDocs(approxdocs, freq, callback) {
-        var patch = { docs:{}, term: {}, grid: {} };
+        var patch = { docs:{}, term: {}, phrase:{} };
 
         docs.forEach(function(doc) {
             var docid = parseInt(doc.id,10);
+            var phrases = doc.phrases;
             var termsets = doc.termsets;
+
+            phrases.forEach(function(id, x) {
+                var shard = Carmen.shard(shardlevel, id);
+                patch.phrase[shard] = patch.phrase[shard] || {};
+                patch.phrase[shard][id] = patch.phrase[shard][id] || {};
+                patch.phrase[shard][id].term = patch.phrase[shard][id].term || termsets[x];
+                patch.phrase[shard][id].docs = patch.phrase[shard][id].docs || [];
+                if (patch.phrase[shard][id].docs.indexOf(docid === -1)) {
+                    patch.phrase[shard][id].docs.push(docid);
+                }
+            });
+
             termsets.forEach(function(terms, x) {
+                var name = phrases[x];
                 var weights = {};
                 var total = 0;
 
@@ -670,28 +694,25 @@ Carmen.prototype.index = function(source, docs, callback) {
                     var shard = Carmen.shard(shardlevel, id);
                     patch.term[shard] = patch.term[shard] || {};
                     patch.term[shard][id] = patch.term[shard][id] || [];
-                    if (patch.term[shard][id].indexOf(docid) !== -1) continue;
-                    patch.term[shard][id].push(docid);
+                    if (patch.term[shard][id].indexOf(name) === -1) {
+                        patch.term[shard][id].push(name);
+                    }
                 }
             });
 
             var shard = Carmen.shard(shardlevel, docid);
             patch.docs[shard] = patch.docs[shard] || {};
-            patch.docs[shard][docid] = doc.doc;
-            if (doc.zxy) {
-                patch.grid[shard] = patch.grid[shard] || {};
-                patch.grid[shard][docid] = {
-                    text: doc.termsets,
-                    zxy: doc.zxy.map(Carmen.zxy)
-                };
-            }
+            patch.docs[shard][docid] = {
+                doc:doc.doc,
+                zxy:doc.zxy ? doc.zxy.map(Carmen.zxy) : []
+            };
         });
 
         var remaining = 0;
         // Number of term shards.
         remaining += Object.keys(patch.term).length;
-        // Number of grid shards.
-        remaining += Object.keys(patch.grid).length;
+        // Number of phrase shards.
+        remaining += Object.keys(patch.phrase).length;
         // Number of docs shards.
         remaining += Object.keys(patch.docs).length;
 
@@ -707,9 +728,17 @@ Carmen.prototype.index = function(source, docs, callback) {
                     case 'term':
                         for (var key in data) current[key] = (current[key] || []).concat(data[key]);
                         break;
-                    case 'grid':
                     case 'docs':
                         for (var key in data) current[key] = data[key];
+                        break;
+                    case 'phrase':
+                        for (var key in data) {
+                            if (!current[key]) {
+                                current[key] = data[key];
+                            } else {
+                                current[key].docs = current[key].docs.concat(data[key].docs);
+                            }
+                        }
                         break;
                     }
                     if (!--remaining) callback(null);
@@ -727,7 +756,7 @@ Carmen.prototype.store = function(source, callback) {
     }.bind(this));
 
     var queue = [];
-    ['freq','term','grid','docs'].forEach(function(type) {
+    ['freq','term','phrase','docs'].forEach(function(type) {
         queue = queue.concat(Object.keys(source._carmen[type]).map(function(shard) {
             return [type, shard];
         }));
@@ -778,6 +807,12 @@ Carmen.terms = function(text) {
         return parseInt(crypto.createHash('md5').update(w).digest('hex').substr(0,8), 16);
     });
     return _(terms).uniq();
+};
+
+// Converts text into a name ID.
+Carmen.phrase = function(text) {
+    var phrase = _(Carmen.tokenize(text)).uniq().join(' ');
+    return parseInt(crypto.createHash('md5').update(phrase).digest('hex').substr(0,8), 16);
 };
 
 // Create a debug hash for term IDs.
