@@ -423,9 +423,11 @@ Carmen.usagescore = function(query, scored) {
 
         var hasreason = true;
         var reason = scored[i].reason;
-        for (var j = 0; j < reason.length; j++) {
-            hasreason = hasreason && query[reason[j]] && ++usage;
-            query[reason[j]] = false;
+        for (var j = 0; j < query.length; j++) {
+            if (1<<j & reason) {
+                hasreason = hasreason && query[j] && ++usage;
+                query[j] = false;
+            }
         }
         if (hasreason) {
             score += scored[i].score;
@@ -449,98 +451,124 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
     var getphrases = function(queue, result, callback) {
         if (!queue.length) {
-            result.sort();
-            return callback(null, _(result).uniq(true));
+            result.sort(Carmen.shardsort(shardlevel));
+            result = Carmen.mostfreq(result); // _(result).uniq(true);
+            return callback(null, result);
         }
-
-        var term = queue.shift();
-        var shard = Carmen.shard(shardlevel, term);
+        var shard = Carmen.shard(shardlevel, queue[0]);
         Carmen.get(source, 'term', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[term]) return getphrases(queue, result, callback);
-
-            // Calculate approx doc count once.
+            while (shard === Carmen.shard(shardlevel, queue[0])) {
+                var id = queue.shift();
+                if (data[id]) {
+                    data[id].sort();
+                    result = result.concat(_(data[id]).uniq(true));
+                }
+            }
             if (!approxdocs) {
                 approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
                 source._carmen.approxdocs = approxdocs;
             }
-
-            result = result.concat(data[term]);
             getphrases(queue, result, callback);
         });
     };
 
-    var getdocs = function(queue, result, callback) {
-        if (!queue.length) return callback(null, result);
-
-        var id = queue.shift();
-        var shard = Carmen.shard(shardlevel, id);
-
+    var getterms = function(queue, result, callback) {
+        if (!queue.length) {
+            result.sort(Carmen.shardsort(shardlevel));
+            result = _(result).uniq(true);
+            return callback(null, result);
+        }
+        var shard = Carmen.shard(shardlevel, queue[0]);
         Carmen.get(source, 'phrase', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[id]) return getdocs(queue, result, callback);
-            termfreq(data[id].term.slice(0), function(err) {
-                if (err) return callback(err);
-
-                // Score each feature:
-                // - across all feature synonyms, find the max score of the sum
-                //   of each synonym's terms based on each term's frequency of
-                //   occurrence in the dataset.
-                // - for the max score also store the 'reason' -- the index of
-                //   each query token that contributed to its score.
-                var term = 0;
-                var score = 0;
-                var total = 0;
-                var reason = [];
-                var termpos = -1;
-                var lastpos = -1;
-                var text = data[id].term;
-                for (var i = 0; i < data[id].term.length; i++) {
-                    total += freqs[data[id].term[i]];
-                }
-                for (var i = 0; i < terms.length; i++) {
-                    term = terms[i];
-                    termpos = text.indexOf(term);
-                    if (termpos === -1) {
-                        if (score !== 0) {
-                            break;
-                        } else {
-                            continue;
-                        }
-                    } else if (score === 0 || termpos === lastpos + 1) {
-                        score += freqs[term]/total;
-                        reason.push(i);
-                        lastpos = termpos;
-                    }
-                }
-                if (score > 0.6) for (var i = 0; i < data[id].docs.length; i++) {
-                    var docid = data[id].docs[i];
-                    if (result.indexOf(docid) === -1) result.push(docid);
-                    if (!docs[docid] || docs[docid].score < score) docs[docid] = {
-                        score: score > 0.9999 ? 1 : score,
-                        reason: reason
-                    };
-                };
-                getdocs(queue, result, callback);
-            });
+            while (shard === Carmen.shard(shardlevel, queue[0])) {
+                var id = queue.shift();
+                if (data[id]) result = result.concat(data[id].term);
+            }
+            getterms(queue, result, callback);
         });
+    };
+
+    var getfreqs = function(queue, callback) {
+        if (!queue.length) return callback(null, freqs);
+        var shard = Carmen.shard(shardlevel, queue[0]);
+        Carmen.get(source, 'freq', shard, function(err, data) {
+            if (err) return callback(err);
+            while (shard === Carmen.shard(shardlevel, queue[0])) {
+                var id = queue.shift();
+                // @TODO error out if data[id] is missing?
+                // @TODO this 1+ is a hack to ensure log is not < 0.
+                // Fix this (?) by making approxdocs count accurate.
+                if (!freqs[id]) freqs[id] = Math.log(1 + approxdocs/data[id]);
+            }
+            getfreqs(queue, callback);
+        });
+    };
+
+    var getdocs = function(phrases, callback) {
+        var result = [];
+        for (var a = 0; a < phrases.length; a++) {
+            var id = phrases[a];
+            var shard = Carmen.shard(shardlevel, id);
+            var data = source._carmen.phrase[shard][id];
+            if (!data) throw new Error('Failed to get phrase');
+
+            // Score each feature:
+            // - across all feature synonyms, find the max score of the sum
+            //   of each synonym's terms based on each term's frequency of
+            //   occurrence in the dataset.
+            // - for the max score also store the 'reason' -- the index of
+            //   each query token that contributed to its score.
+            var term = 0;
+            var score = 0;
+            var total = 0;
+            var reason = 0;
+            var termpos = -1;
+            var lastpos = -1;
+            var text = data.term;
+            for (var i = 0; i < data.term.length; i++) {
+                total += freqs[data.term[i]];
+            }
+
+            if (total < 0) throw new Error('Bad freq total ' + total);
+
+            for (var i = 0; i < terms.length; i++) {
+                term = terms[i];
+                termpos = text.indexOf(term);
+                if (termpos === -1) {
+                    if (score !== 0) {
+                        break;
+                    } else {
+                        continue;
+                    }
+                } else if (score === 0 || termpos === lastpos + 1) {
+                    score += freqs[term]/total;
+                    reason += 1 << i;
+                    lastpos = termpos;
+                }
+            }
+            if (score > 0.8) for (var i = 0; i < data.docs.length; i++) {
+                var docid = data.docs[i];
+                result.push(docid);
+                if (!docs[docid] || docs[docid][0] < score)
+                    docs[docid] = [score > 0.9999 ? 1 : score, reason];
+            };
+        }
+        result.sort(Carmen.shardsort(shardlevel));
+        return _(result).uniq(true);
     };
 
     var getzxy = function(queue, result, callback) {
         if (!queue.length) return callback(null, result);
 
-        var id = queue.shift();
-        var shard = Carmen.shard(shardlevel, id);
+        var shard = Carmen.shard(shardlevel, queue[0]);
         Carmen.get(source, 'docs', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[id]) return getzxy(queue, result, callback);
-            result.push({
-                id: id,
-                score: docs[id].score,
-                reason: docs[id].reason,
-                doc: data[id].doc,
-                zxy: data[id].zxy
-            });
+            while (shard === Carmen.shard(shardlevel, queue[0])) {
+                var id = queue.shift();
+                if (data[id]) result.push(new Carmen.Scored(id, docs[id][0], docs[id][1], data[id].doc, data[id].zxy));
+            }
             getzxy(queue, result, callback);
         });
     };
@@ -562,16 +590,30 @@ Carmen.prototype.search = function(source, query, id, callback) {
         });
     };
 
-    getphrases([].concat(terms), [], function(err, phrases) {
+    var termsqueue = terms.slice(0);
+    termsqueue.sort(Carmen.shardsort(shardlevel));
+    getphrases(termsqueue, [], function(err, phrases) {
         if (err) return callback(err);
-        getdocs(phrases, [], function(err, docs) {
+        getterms(phrases.slice(0), [], function(err, terms) {
             if (err) return callback(err);
-            getzxy(docs, [], function(err, docs) {
+            getfreqs(terms, function(err) {
                 if (err) return callback(err);
-                return callback(null, docs);
+                var docs = getdocs(phrases);
+                getzxy(docs, [], function(err, docs) {
+                    if (err) return callback(err);
+                    return callback(null, docs);
+                });
             });
         });
     });
+};
+
+Carmen.Scored = function(id, score, reason, doc, zxy) {
+    this.id = id;
+    this.score = score;
+    this.reason = reason;
+    this.doc = doc;
+    this.zxy = zxy;
 };
 
 // Add docs to a source's index.
@@ -834,8 +876,19 @@ Carmen.termsDebug = function(text) {
 
 // Assumes an integer space of Math.pow(16,8);
 Carmen.shard = function(level, id) {
+    if (id === undefined) return false;
     if (level === 0) return 0;
     return id % Math.pow(16, level);
+};
+
+// Generate a sort callback method that sorts by shard.
+Carmen.shardsort = function(level) {
+    var mod = Math.pow(16, level);
+    return function(a,b) {
+        var as = a % mod;
+        var bs = b % mod;
+        return as < bs ? -1 : as > bs ? 1 : a < b ? -1 : a > b ? 1 : 0;
+    };
 };
 
 // Converts zxy coordinates into an array of zxy IDs.
@@ -845,9 +898,9 @@ Carmen.zxy = function(zxy) {
 };
 
 // Return an array of values with the highest frequency from the original array.
+// Assumes input array is sorted.
 Carmen.mostfreq = function(list) {
     if (!list.length) return [];
-    list.sort();
     var values = [];
     var maxfreq = 1;
     var curfreq = 1;
