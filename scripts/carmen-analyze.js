@@ -9,6 +9,7 @@ var api = {
 };
 var Carmen = require('../index.js');
 var Queue = require('../queue');
+var _ = require('underscore');
 var f = argv[2];
 
 if (!f) {
@@ -43,6 +44,7 @@ carmen._open(function(err) {
     };
     (function term2phrase(i, callback) {
         var rels;
+        var uniq;
         var stat = stats.term2phrase;
 
         // If complete or on a 100th run go through maxes.
@@ -85,6 +87,13 @@ carmen._open(function(err) {
             if (err) return callback(err);
             for (var id in data) {
                 rels = data[id].length;
+
+                // Verify that term <=> phrase relations are unique.
+                data[id].sort();
+                if (rels !== _(data[id]).uniq(true).length) {
+                    throw new Error('term ' + id + ' has non-unique phrase relations');
+                }
+
                 stat.min = Math.min(stat.min, rels);
                 stat.max = Math.max(stat.max, rels);
                 stat.mean = ((stat.mean * stat.count) + rels) / (stat.count + 1);
