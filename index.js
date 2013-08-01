@@ -761,8 +761,6 @@ Carmen.prototype.index = function(source, docs, callback) {
                     case 'term':
                         for (var key in data) {
                             current[key] = (current[key] || []).concat(data[key]);
-                            current[key].sort();
-                            current[key] = _(current[key]).uniq(true);
                         }
                         break;
                     case 'phrase':
@@ -772,12 +770,12 @@ Carmen.prototype.index = function(source, docs, callback) {
                             } else {
                                 current[key].docs = current[key].docs.concat(data[key].docs);
                             }
-                            current[key].docs.sort();
-                            current[key].docs = _(current[key].docs).uniq(true);
                         }
                         break;
                     case 'docs':
-                        for (var key in data) current[key] = data[key];
+                        for (var key in data) {
+                            current[key] = data[key];
+                        }
                         break;
                     }
                     if (!--remaining) callback(null);
@@ -807,6 +805,23 @@ Carmen.prototype.store = function(source, callback) {
         var type = task[0];
         var shard = task[1];
         var data = source._carmen[type][shard];
+
+        // Remove duplicate references.
+        switch (type) {
+        case 'term':
+            for (var key in data) {
+                data[key].sort();
+                data[key] = _(data[key]).uniq(true);
+            }
+            break;
+        case 'phrase':
+            for (var key in data) {
+                data[key].docs.sort();
+                data[key].docs = _(data[key].docs).uniq(true);
+            }
+            break;
+        }
+
         Carmen.put(source, type, shard, data, function(err) {
             if (err) return callback(err);
             defer(function() { write(); });
