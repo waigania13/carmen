@@ -552,7 +552,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (score > 0.8) for (var i = 0; i < data.docs.length; i++) {
                 var docid = data.docs[i];
                 result.push(docid);
-                if (!docs[docid] || docs[docid][0] < score)
+                if (!docs[docid] ||
+                    docs[docid][0] < score ||
+                    (docs[docid][0] === score && reason > docs[docid][1]))
                     docs[docid] = [score > 0.9999 ? 1 : score, reason];
             };
         }
@@ -571,23 +573,6 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 if (data[id]) result.push(new Carmen.Scored(id, docs[id][0], docs[id][1], data[id].doc, data[id].zxy));
             }
             getzxy(queue, result, callback);
-        });
-    };
-
-    var termfreq = function(terms, callback) {
-        if (!terms.length) return callback();
-
-        // Term frequency is already known. Continue.
-        var term = terms.shift();
-        while (freqs[term]) { term = terms.shift(); }
-        if (!term) return callback();
-
-        // Look up + calculate term frequency.
-        var shard = Carmen.shard(shardlevel, term);
-        Carmen.get(source, 'freq', shard, function(err, data) {
-            if (err) return callback(err);
-            freqs[term] = Math.log(approxdocs / data[term]);
-            return termfreq(terms, callback);
         });
     };
 
