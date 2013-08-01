@@ -720,12 +720,12 @@ Carmen.prototype.index = function(source, docs, callback) {
                 //
                 // kalorama road
                 // - since this document has 2 terms, a significant term is
-                //   as one with weight >= 0.25 (1/2/2 = 0.25).
+                //   as one with weight >= 0.49999...
                 //
                 // united states of america
                 // - since this document has 4 terms, a significant term is
-                //   as one with weight >= 0.125 (1/4/2 = 0.125).
-                var threshold = 1 / terms.length / 2;
+                //   as one with weight >= 0.24999...
+                var threshold = (1 / terms.length) * 0.99;
 
                 var sigterms = [];
                 for (var i = 0; i < terms.length; i++) {
