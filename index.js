@@ -706,6 +706,9 @@ Carmen.prototype.index = function(source, docs, callback) {
                     total += weight;
                 }
 
+                // Limit indexing to the *most* significant terms for a
+                // document. Currently uses rough heuristic (floor+sqrt) to
+                // determine how many of the top words to grab.
                 weights.sort(function(a,b) {
                     return a[1] > b[1] ? -1 : a[1] < b[1] ? 1 : 0;
                 });
