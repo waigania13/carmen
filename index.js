@@ -689,9 +689,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                 patch.phrase[shard][id] = patch.phrase[shard][id] || {};
                 patch.phrase[shard][id].term = patch.phrase[shard][id].term || termsets[x];
                 patch.phrase[shard][id].docs = patch.phrase[shard][id].docs || [];
-                if (patch.phrase[shard][id].docs.indexOf(docid === -1)) {
-                    patch.phrase[shard][id].docs.push(docid);
-                }
+                patch.phrase[shard][id].docs.push(docid);
             });
 
             termsets.forEach(function(terms, x) {
@@ -745,9 +743,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                     var shard = Carmen.shard(shardlevel, id);
                     patch.term[shard] = patch.term[shard] || {};
                     patch.term[shard][id] = patch.term[shard][id] || [];
-                    if (patch.term[shard][id].indexOf(name) === -1) {
-                        patch.term[shard][id].push(name);
-                    }
+                    patch.term[shard][id].push(name);
                 }
             });
 
@@ -777,10 +773,11 @@ Carmen.prototype.index = function(source, docs, callback) {
                     // This merges new entries on top of old ones.
                     switch (type) {
                     case 'term':
-                        for (var key in data) current[key] = (current[key] || []).concat(data[key]);
-                        break;
-                    case 'docs':
-                        for (var key in data) current[key] = data[key];
+                        for (var key in data) {
+                            current[key] = (current[key] || []).concat(data[key]);
+                            current[key].sort();
+                            current[key] = _(current[key]).uniq(true);
+                        }
                         break;
                     case 'phrase':
                         for (var key in data) {
@@ -789,7 +786,12 @@ Carmen.prototype.index = function(source, docs, callback) {
                             } else {
                                 current[key].docs = current[key].docs.concat(data[key].docs);
                             }
+                            current[key].docs.sort();
+                            current[key].docs = _(current[key].docs).uniq(true);
                         }
+                        break;
+                    case 'docs':
+                        for (var key in data) current[key] = data[key];
                         break;
                     }
                     if (!--remaining) callback(null);
