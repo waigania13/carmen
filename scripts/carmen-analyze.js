@@ -35,17 +35,74 @@ carmen._open(function(err) {
     if (err) throw err;
     var shardlevel = s._carmen.shardlevel;
     stats.shardlevel = shardlevel;
-    stats.term2phrase = {
+    stats.term = {
         min:Infinity,
         max:0,
         mean:0,
         count:0,
         maxes:[]
     };
-    (function term2phrase(i, callback) {
+    stats.phrase = {
+        min:Infinity,
+        max:0,
+        mean:0,
+        count:0,
+        maxes:[]
+    };
+
+    function termlookup(maxes, i, callback) {
+        if (i >= maxes.length) return callback();
+        var term = maxes[i][0];
+        var phrase = maxes[i][2];
+        var shard = Carmen.shard(shardlevel, phrase);
+        Carmen.get(s, 'phrase', shard, function(err, data) {
+            if (err) return callback(err);
+            if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
+            var docid = data[phrase].docs[0];
+            var shard = Carmen.shard(shardlevel, docid);
+            Carmen.get(s, 'docs', shard, function(err, data) {
+                if (err) return callback(err);
+                if (!data[docid]) return callback(new Error('Doc ' + docid + ' not found'));
+                var text = data[docid].doc.search || data[docid].doc.name || '';
+                var query = Carmen.tokenize(text);
+                var terms = Carmen.terms(text);
+                var idx = terms.indexOf(+term);
+                if (idx !== -1) {
+                    maxes[i].unshift(query[idx]);
+                } else {
+                    maxes[i].unshift(text);
+                }
+                termlookup(maxes, ++i, callback);
+            });
+        });
+    };
+
+    function phraselookup(maxes, i, callback) {
+        if (i >= maxes.length) return callback();
+        var phrase = maxes[i][0];
+        var docid = maxes[i][2];
+        var shard = Carmen.shard(shardlevel, docid);
+        Carmen.get(s, 'docs', shard, function(err, data) {
+            if (err) return callback(err);
+            if (!data[docid]) return callback(new Error('Doc ' + docid + ' not found'));
+            var text = data[docid].doc.search || data[docid].doc.name || '';
+            _(text.split(',')).each(function(syn) {
+                if (Carmen.phrase(syn) === +phrase) {
+                    maxes[i].unshift(Carmen.tokenize(syn).join(' '));
+                }
+            });
+            if (maxes[i].length === 3) maxes[i].unshift(text);
+            phraselookup(maxes, ++i, callback);
+        });
+    };
+
+    function relstats(type, i, callback) {
+        i = i || 0;
+
         var rels;
         var uniq;
-        var stat = stats.term2phrase;
+        var list;
+        var stat = stats[type];
 
         // If complete or on a 100th run go through maxes.
         if (i >= Math.pow(16, shardlevel) || (i % 100) === 0) {
@@ -56,54 +113,65 @@ carmen._open(function(err) {
         }
 
         // Done.
-        if (i >= Math.pow(16, shardlevel)) return (function finalize(i, callback) {
-            if (i >= stat.maxes.length) return callback();
-            var term = stat.maxes[i][0];
-            var phrase = stat.maxes[i][2];
-            var shard = Carmen.shard(shardlevel, phrase);
-            Carmen.get(s, 'phrase', shard, function(err, data) {
-                if (err) return callback(err);
-                if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
-                var docid = data[phrase].docs[0];
-                var shard = Carmen.shard(shardlevel, docid);
-                Carmen.get(s, 'docs', shard, function(err, data) {
-                    if (err) return callback(err);
-                    if (!data[docid]) return callback(new Error('Doc ' + docid + ' not found'));
-                    var text = data[docid].doc.search || data[docid].doc.name || '';
-                    var query = Carmen.tokenize(text);
-                    var terms = Carmen.terms(text);
-                    var idx = terms.indexOf(+term);
-                    if (idx !== -1) {
-                        stat.maxes[i].unshift(query[idx]);
-                    } else {
-                        stat.maxes[i].unshift(text);
-                    }
-                    finalize(++i, callback);
-                });
-            });
-        })(0, callback);
+        if (i >= Math.pow(16, shardlevel)) {
+            return type === 'term'
+                ? termlookup(stat.maxes, 0, callback)
+                : phraselookup(stat.maxes, 0, callback);
+        }
 
-        Carmen.get(s, 'term', i, function(err, data) {
+        Carmen.get(s, type, i, function(err, data) {
             if (err) return callback(err);
             for (var id in data) {
-                rels = data[id].length;
+                list = type === 'term' ? data[id] : data[id].docs;
+                rels = list.length;
 
-                // Verify that term <=> phrase relations are unique.
-                data[id].sort();
-                if (rels !== _(data[id]).uniq(true).length) {
-                    throw new Error('term ' + id + ' has non-unique phrase relations');
+                // Verify that relations are unique.
+                list.sort();
+                if (rels !== _(list).uniq(true).length) {
+                    throw new Error(type + '.' + id + ' has non-unique relations: ' + list);
                 }
 
                 stat.min = Math.min(stat.min, rels);
                 stat.max = Math.max(stat.max, rels);
                 stat.mean = ((stat.mean * stat.count) + rels) / (stat.count + 1);
                 stat.count++;
-                stat.maxes.push([id,rels,data[id][0]]);
+                stat.maxes.push([id,rels,list[0]]);
             }
-            term2phrase(++i, callback);
+            relstats(type, ++i, callback);
         });
-    })(0, function(err) {
+    };
+
+    relstats('term', 0, function(err) {
         if (err) throw err;
-        console.warn(stats.term2phrase);
+        relstats('phrase', 0, function(err) {
+            if (err) throw err;
+            console.log('term <=> phrase index');
+            console.log('---------------------');
+            _(stats.term).each(function(val, key) {
+                if (key === 'maxes') {
+                    console.log('- %s:', key);
+                    _(val).each(function(entry, i) {
+                        console.log('  %s. %s (%s) %s', i+1, entry[0], entry[1], entry[2]);
+                    });
+                } else {
+                    console.log('- %s: %s', key, val);
+                }
+            });
+
+            console.log('');
+
+            console.log('phrase <=> doc index');
+            console.log('--------------------');
+            _(stats.phrase).each(function(val, key) {
+                if (key === 'maxes') {
+                    console.log('- %s:', key);
+                    _(val).each(function(entry, i) {
+                        console.log('  %s. %s (%s) %s', i+1, entry[0], entry[1], entry[2]);
+                    });
+                } else {
+                    console.log('- %s: %s', key, val);
+                }
+            });
+        });
     });
 });
