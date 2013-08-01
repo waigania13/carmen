@@ -453,7 +453,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var getphrases = function(queue, result, callback) {
         if (!queue.length) {
             result.sort(Carmen.shardsort(shardlevel));
-            result = Carmen.mostfreq(result); // _(result).uniq(true);
+            result = _(result).uniq(true);
             return callback(null, result);
         }
         var shard = Carmen.shard(shardlevel, queue[0]);
