@@ -27,6 +27,7 @@ function resolveCode(key) {
     return key;
 };
 
+// Convert character code to UTF grid key.
 function toChar(key) {
     key += 32;
     if (key >= 34) key++;
@@ -34,6 +35,7 @@ function toChar(key) {
     return String.fromCharCode(key);
 };
 
+// Clean up internal fields/prep a feature entry for external consumption.
 function feature(id, type, data) {
     data.id = type + '.' + id;
     data.type = data.type || type;
@@ -100,10 +102,12 @@ function Carmen(options) {
 Carmen.S3 = function() { return require('./api-s3') };
 Carmen.MBTiles = function() { return require('./api-mbtiles') };
 
+// Ensure that all carmen sources are opened.
 Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
+// Returns a hierarchy of features ("context") for a given lon,lat pair.
 Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) return this._open(function(err) {
         if (err) return callback(err);
@@ -193,6 +197,8 @@ Carmen.prototype.contextByFeature = function(data, callback) {
     });
 };
 
+// Main geocoding API entry point.
+// Returns results across all indexes for a given query.
 Carmen.prototype.geocode = function(query, callback) {
     if (!this._opened) return this._open(function(err) {
         if (err) return callback(err);
@@ -438,6 +444,7 @@ Carmen.usagescore = function(query, scored) {
     return score * Math.pow(usage / query.length, 2);
 };
 
+// Search a carmen source for features matching query.
 Carmen.prototype.search = function(source, query, id, callback) {
     if (!this._opened) return this._open(function(err) {
         if (err) return callback(err);
@@ -570,7 +577,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
             while (shard === Carmen.shard(shardlevel, queue[0])) {
                 var id = queue.shift();
-                if (data[id]) result.push(new Carmen.Scored(id, docs[id][0], docs[id][1], data[id].doc, data[id].zxy));
+                if (data[id]) result.push(new Scored(id, docs[id][0], docs[id][1], data[id].doc, data[id].zxy));
             }
             getzxy(queue, result, callback);
         });
@@ -592,14 +599,6 @@ Carmen.prototype.search = function(source, query, id, callback) {
             });
         });
     });
-};
-
-Carmen.Scored = function(id, score, reason, doc, zxy) {
-    this.id = id;
-    this.score = score;
-    this.reason = reason;
-    this.doc = doc;
-    this.zxy = zxy;
 };
 
 // Add docs to a source's index.
@@ -815,6 +814,7 @@ Carmen.prototype.store = function(source, callback) {
     write();
 };
 
+// Normalize input text into lowercase, asciified tokens.
 Carmen.tokenize = function(query, lonlat) {
     if (lonlat) {
         var numeric = query.
@@ -885,33 +885,7 @@ Carmen.zxy = function(zxy) {
     return ((zxy[0]|0) * 1e14) + ((zxy[1]|0) * 1e7) + (zxy[2]|0);
 };
 
-// Return an array of values with the highest frequency from the original array.
-// Assumes input array is sorted.
-Carmen.mostfreq = function(list) {
-    if (!list.length) return [];
-    var values = [];
-    var maxfreq = 1;
-    var curfreq = 1;
-    do {
-        var current = list.shift();
-        if (current === list[0]) {
-            curfreq++;
-            if (curfreq > maxfreq) {
-                maxfreq = curfreq;
-                values = [current];
-            } else if (curfreq === maxfreq) {
-                values.push(current);
-            }
-        } else if (maxfreq === 1) {
-            values.push(current);
-            curfreq = 1;
-        } else {
-            curfreq = 1;
-        }
-    } while (list.length);
-    return values;
-};
-
+// Get data from a carmen source.
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
 Carmen.get = function(source, type, shard, callback) {
     var shards = source._carmen[type];
@@ -925,6 +899,7 @@ Carmen.get = function(source, type, shard, callback) {
     });
 };
 
+// Put data to a carmen source.
 Carmen.put = function(source, type, shard, data, callback) {
     var shards = source._carmen[type];
     var json = JSON.stringify(data);
@@ -935,6 +910,7 @@ Carmen.put = function(source, type, shard, data, callback) {
     });
 };
 
+// Locking event emitter for consolidating I/O for identical requests.
 require('util').inherits(Locking, EventEmitter);
 
 function Locking() { this.setMaxListeners(0); };
@@ -947,6 +923,16 @@ Locking.prototype.loader = function(callback) {
         locking.emit('open', err, data);
         callback(err, data);
     };
+};
+
+// Prototype for scored rows of Carmen.search.
+// Defined to take advantage of V8 class performance.
+function Scored(id, score, reason, doc, zxy) {
+    this.id = id;
+    this.score = score;
+    this.reason = reason;
+    this.doc = doc;
+    this.zxy = zxy;
 };
 
 module.exports = Carmen;
