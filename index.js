@@ -695,43 +695,23 @@ Carmen.prototype.index = function(source, docs, callback) {
 
             termsets.forEach(function(terms, x) {
                 var name = phrases[x];
-                var weights = {};
+                var weights = [];
                 var total = 0;
 
                 for (var i = 0; i < terms.length; i++) {
                     var id = terms[i];
                     var shard = Carmen.shard(shardlevel, id);
-                    weights[id] = Math.log(approxdocs/freq[shard][id]);
-                    total += weights[id];
+                    var weight = Math.log(approxdocs/freq[shard][id]);
+                    weights.push([id, weight]);
+                    total += weight;
                 }
 
-                // This threshold defines broadly how significant a term
-                // must be within the context of a document to be indexed.
-                // Indexing of only significant terms is an optimization meant
-                // to reduce the burden of indexing high cardinality terms
-                // (e.g. road, lane, way, etc.) when they are insignificant
-                // within the context of a document.
-                //
-                // *Intended* to preserve indexing of high cardinality terms
-                // when they are of relative importance within a document
-                // context, e.g. alley from "alley street".
-                //
-                // Examples:
-                //
-                // kalorama road
-                // - since this document has 2 terms, a significant term is
-                //   as one with weight >= 0.49999...
-                //
-                // united states of america
-                // - since this document has 4 terms, a significant term is
-                //   as one with weight >= 0.24999...
-                var threshold = (1 / terms.length) * 0.99;
-
+                weights.sort(function(a,b) {
+                    return a[1] > b[1] ? -1 : a[1] < b[1] ? 1 : 0;
+                });
                 var sigterms = [];
-                for (var i = 0; i < terms.length; i++) {
-                    var id = terms[i];
-                    if ((weights[id]/total) >= threshold) sigterms.push(id);
-                }
+                var limit = Math.floor(Math.sqrt(weights.length));
+                for (var i = 0; i < limit; i++) sigterms.push(weights[i][0]);
 
                 // Debug significant term selection.
                 if (DEBUG) {
