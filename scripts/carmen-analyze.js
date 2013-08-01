@@ -128,7 +128,7 @@ carmen._open(function(err) {
                 // Verify that relations are unique.
                 list.sort();
                 if (rels !== _(list).uniq(true).length) {
-                    throw new Error(type + '.' + id + ' has non-unique relations: ' + list);
+                    console.warn(type + '.' + id + ' has non-unique relations: ' + list);
                 }
 
                 stat.min = Math.min(stat.min, rels);
