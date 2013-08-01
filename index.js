@@ -5,6 +5,7 @@ var sm = new (require('sphericalmercator'))();
 var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var EventEmitter = require('events').EventEmitter;
+var DEBUG = process.env.DEBUG;
 
 // FNV-1a hash.
 // For 32-bit: offset = 2166136261, prime = 16777619.
@@ -733,10 +734,12 @@ Carmen.prototype.index = function(source, docs, callback) {
                 }
 
                 // Debug significant term selection.
-                // var debug = Carmen.termsDebug(doc.text.split(',')[x]);
-                // var oldtext = terms.map(function(id) { return debug[id]; }).join(' ');
-                // var sigtext = sigterms.map(function(id) { return debug[id]; }).join(' ');
-                // if (oldtext !== sigtext)  console.log('%s => %s', oldtext, sigtext);
+                if (DEBUG) {
+                    var debug = Carmen.termsDebug(doc.text.split(',')[x]);
+                    var oldtext = terms.map(function(id) { return debug[id]; }).join(' ');
+                    var sigtext = sigterms.map(function(id) { return debug[id]; }).join(' ');
+                    if (oldtext !== sigtext)  console.log('%s => %s', oldtext, sigtext);
+                }
 
                 for (var i = 0; i < sigterms.length; i++) {
                     var id = sigterms[i];
