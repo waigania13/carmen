@@ -42,7 +42,7 @@ carmen._open(function(err) {
         count:0,
         maxes:[]
     };
-    stats.phrase = {
+    stats.docs = {
         min:Infinity,
         max:0,
         mean:0,
@@ -55,43 +55,35 @@ carmen._open(function(err) {
         var term = maxes[i][0];
         var phrase = maxes[i][2];
         var shard = Carmen.shard(shardlevel, phrase);
-        Carmen.get(s, 'phrase', shard, function(err, data) {
+        Carmen.get(s, 'docs', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
-            var docid = data[phrase].docs[0];
-            var shard = Carmen.shard(shardlevel, docid);
-            Carmen.get(s, 'docs', shard, function(err, data) {
-                if (err) return callback(err);
-                if (!data[docid]) return callback(new Error('Doc ' + docid + ' not found'));
-                var text = data[docid].doc.search || data[docid].doc.name || '';
-                var query = Carmen.tokenize(text);
-                var terms = Carmen.terms(text);
-                var idx = terms.indexOf(+term);
-                if (idx !== -1) {
-                    maxes[i].unshift(query[idx]);
-                } else {
-                    maxes[i].unshift(text);
-                }
-                termlookup(maxes, ++i, callback);
-            });
+            var text = data[phrase][0].doc.search || data[phrase][0].doc.name || '';
+            var query = Carmen.tokenize(text);
+            var terms = Carmen.terms(text);
+            var idx = terms.indexOf(+term);
+            if (idx !== -1) {
+                maxes[i].unshift(query[idx]);
+            } else {
+                maxes[i].unshift(text);
+            }
+            termlookup(maxes, ++i, callback);
         });
     };
 
     function phraselookup(maxes, i, callback) {
         if (i >= maxes.length) return callback();
         var phrase = maxes[i][0];
-        var docid = maxes[i][2];
-        var shard = Carmen.shard(shardlevel, docid);
+        var shard = Carmen.shard(shardlevel, phrase);
         Carmen.get(s, 'docs', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[docid]) return callback(new Error('Doc ' + docid + ' not found'));
-            var text = data[docid].doc.search || data[docid].doc.name || '';
+            if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
+            var text = data[phrase][0].doc.search || data[phrase][0].doc.name || '';
             _(text.split(',')).each(function(syn) {
                 if (Carmen.phrase(syn) === +phrase) {
                     maxes[i].unshift(Carmen.tokenize(syn).join(' '));
                 }
             });
-            if (maxes[i].length === 3) maxes[i].unshift(text);
             phraselookup(maxes, ++i, callback);
         });
     };
@@ -122,7 +114,7 @@ carmen._open(function(err) {
         Carmen.get(s, type, i, function(err, data) {
             if (err) return callback(err);
             for (var id in data) {
-                list = type === 'term' ? data[id] : data[id].docs;
+                list = data[id];
                 rels = list.length;
 
                 // Verify that relations are unique.
@@ -143,7 +135,7 @@ carmen._open(function(err) {
 
     relstats('term', 0, function(err) {
         if (err) throw err;
-        relstats('phrase', 0, function(err) {
+        relstats('docs', 0, function(err) {
             if (err) throw err;
             console.log('term <=> phrase index');
             console.log('---------------------');
@@ -162,7 +154,7 @@ carmen._open(function(err) {
 
             console.log('phrase <=> doc index');
             console.log('--------------------');
-            _(stats.phrase).each(function(val, key) {
+            _(stats.docs).each(function(val, key) {
                 if (key === 'maxes') {
                     console.log('- %s:', key);
                     _(val).each(function(entry, i) {
