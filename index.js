@@ -476,10 +476,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
             while (shard === Carmen.shard(shardlevel, queue[0])) {
                 var id = queue.shift();
-                if (data[id]) {
-                    data[id].sort();
-                    result = result.concat(_(data[id]).uniq(true));
-                }
+                if (data[id]) result.push.apply(result, data[id]);
             }
             if (!approxdocs) {
                 approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
@@ -500,7 +497,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
             while (shard === Carmen.shard(shardlevel, queue[0])) {
                 var id = queue.shift();
-                if (data[id]) result = result.concat(data[id]);
+                if (data[id]) result.push.apply(result, data[id]);
             }
             getterms(queue, result, callback);
         });
