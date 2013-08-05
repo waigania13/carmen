@@ -280,7 +280,7 @@ Carmen.prototype.geocode = function(query, callback) {
                     var p = zooms[a];
                     var s = 1 << (z-p);
                     var pxy = (p * 1e14) + (Math.floor(x/s) * 1e7) + Math.floor(y/s);
-                    if (coalesced[pxy]) coalesced[zxy] = coalesced[zxy].concat(coalesced[pxy]);
+                    if (coalesced[pxy]) coalesced[zxy].push.apply(coalesced[zxy],coalesced[pxy]);
                     a++;
                 }
             }
