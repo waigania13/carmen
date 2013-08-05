@@ -42,7 +42,7 @@ carmen._open(function(err) {
         count:0,
         maxes:[]
     };
-    stats.docs = {
+    stats.grid = {
         min:Infinity,
         max:0,
         mean:0,
@@ -53,38 +53,44 @@ carmen._open(function(err) {
     function termlookup(maxes, i, callback) {
         if (i >= maxes.length) return callback();
         var term = maxes[i][0];
-        var phrase = maxes[i][2];
-        var shard = Carmen.shard(shardlevel, phrase);
-        Carmen.get(s, 'docs', shard, function(err, data) {
+        var grid = maxes[i][2];
+        var shard = Carmen.shard(shardlevel, grid);
+        Carmen.get(s, 'grid', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
-            var text = data[phrase][0].doc.search || data[phrase][0].doc.name || '';
-            var query = Carmen.tokenize(text);
-            var terms = Carmen.terms(text);
-            var idx = terms.indexOf(+term);
-            if (idx !== -1) {
-                maxes[i].unshift(query[idx]);
-            } else {
-                maxes[i].unshift(text);
-            }
-            termlookup(maxes, ++i, callback);
+            if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
+            s.getFeature(data[grid][0][0], function(err, doc) {
+                if (err) return callback(err);
+                var text = doc.search || doc.name || '';
+                var query = Carmen.tokenize(text);
+                var terms = Carmen.terms(text);
+                var idx = terms.indexOf(+term);
+                if (idx !== -1) {
+                    maxes[i].unshift(query[idx]);
+                } else {
+                    maxes[i].unshift(text);
+                }
+                termlookup(maxes, ++i, callback);
+            });
         });
     };
 
     function phraselookup(maxes, i, callback) {
         if (i >= maxes.length) return callback();
-        var phrase = maxes[i][0];
-        var shard = Carmen.shard(shardlevel, phrase);
-        Carmen.get(s, 'docs', shard, function(err, data) {
+        var grid = maxes[i][0];
+        var shard = Carmen.shard(shardlevel, grid);
+        Carmen.get(s, 'grid', shard, function(err, data) {
             if (err) return callback(err);
-            if (!data[phrase]) return callback(new Error('Phrase ' + phrase + ' not found'));
-            var text = data[phrase][0].doc.search || data[phrase][0].doc.name || '';
-            _(text.split(',')).each(function(syn) {
-                if (Carmen.phrase(syn) === +phrase) {
-                    maxes[i].unshift(Carmen.tokenize(syn).join(' '));
-                }
+            if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
+            s.getFeature(data[grid][0][0], function(err, doc) {
+                if (err) return callback(err);
+                var text = doc.search || doc.name || '';
+                _(text.split(',')).each(function(syn) {
+                    if (Carmen.phrase(syn) === +grid) {
+                        maxes[i].unshift(Carmen.tokenize(syn).join(' '));
+                    }
+                });
+                phraselookup(maxes, ++i, callback);
             });
-            phraselookup(maxes, ++i, callback);
         });
     };
 
@@ -135,7 +141,7 @@ carmen._open(function(err) {
 
     relstats('term', 0, function(err) {
         if (err) throw err;
-        relstats('docs', 0, function(err) {
+        relstats('grid', 0, function(err) {
             if (err) throw err;
             console.log('term <=> phrase index');
             console.log('---------------------');
@@ -152,9 +158,9 @@ carmen._open(function(err) {
 
             console.log('');
 
-            console.log('phrase <=> doc index');
+            console.log('phrase <=> grid index');
             console.log('--------------------');
-            _(stats.docs).each(function(val, key) {
+            _(stats.grid).each(function(val, key) {
                 if (key === 'maxes') {
                     console.log('- %s:', key);
                     _(val).each(function(entry, i) {
