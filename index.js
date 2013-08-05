@@ -576,6 +576,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         return _(result).uniq(true);
     };
 
+    var docscore = {};
     var getgrids = function(queue, result, callback) {
         if (!queue.length) return callback(null, result);
 
@@ -587,7 +588,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 var grids = data[id];
                 var score = scores[id];
                 if (grids) for (var i = 0; i < grids.length; i++) {
-                    result.push(new Scored(grids[i][0], grids[i].slice(1), score.score, score.reason));
+                    if (!docscore[grids[i][0]] || docscore[grids[i][0]] < score.score) {
+                        result.push(new Scored(grids[i][0], grids[i].slice(1), score.score, score.reason));
+                        docscore[grids[i][0]] = score.score;
+                    }
                 }
             }
             getgrids(queue, result, callback);
