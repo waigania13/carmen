@@ -476,7 +476,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
             while (shard === Carmen.shard(shardlevel, queue[0])) {
                 var id = queue.shift();
-                if (data[id]) result.push.apply(result, data[id]);
+                if (data[id]) Carmen.intload(result, data[id]); // result.push.apply(result, data[id]);
             }
             if (!approxdocs) {
                 approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
@@ -497,7 +497,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
             while (shard === Carmen.shard(shardlevel, queue[0])) {
                 var id = queue.shift();
-                if (data[id]) result.push.apply(result, data[id]);
+                if (data[id]) Carmen.intload(result, data[id]); // result.push.apply(result, data[id]);
             }
             getterms(queue, result, callback);
         });
@@ -526,6 +526,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             var shard = Carmen.shard(shardlevel, id);
             var data = source._carmen.phrase[shard][id];
             if (!data) throw new Error('Failed to get phrase');
+            data = Carmen.intload([], data);
 
             // Score each feature:
             // - across all feature synonyms, find the max score of the sum
@@ -585,9 +586,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 var grids = data[id];
                 var score = scores[id];
                 if (grids) for (var i = 0; i < grids.length; i++) {
-                    if (!docscore[grids[i][0]] || docscore[grids[i][0]] < score.score) {
-                        result.push(new Scored(grids[i][0], grids[i].slice(1), score.score, score.reason));
-                        docscore[grids[i][0]] = score.score;
+                    var grid = Carmen.intload([], grids[i]);
+                    if (!docscore[grid[0]] || docscore[grid[0]] < score.score) {
+                        result.push(new Scored(grid[0], grid.slice(1), score.score, score.reason));
+                        docscore[grid[0]] = score.score;
                     }
                 }
             }
@@ -685,10 +687,10 @@ Carmen.prototype.index = function(source, docs, callback) {
             phrases.forEach(function(id, x) {
                 var shard = Carmen.shard(shardlevel, id);
                 patch.phrase[shard] = patch.phrase[shard] || {};
-                patch.phrase[shard][id] = patch.phrase[shard][id] || termsets[x];
+                patch.phrase[shard][id] = patch.phrase[shard][id] || Carmen.intpack(termsets[x]);
                 patch.grid[shard] = patch.grid[shard] || {};
                 patch.grid[shard][id] = patch.grid[shard][id] || [];
-                patch.grid[shard][id].push([doc.id].concat(doc.zxy));
+                patch.grid[shard][id].push(Carmen.intpack([doc.id].concat(doc.zxy)));
             });
 
             termsets.forEach(function(terms, x) {
@@ -726,8 +728,8 @@ Carmen.prototype.index = function(source, docs, callback) {
                     var id = sigterms[i];
                     var shard = Carmen.shard(shardlevel, id);
                     patch.term[shard] = patch.term[shard] || {};
-                    patch.term[shard][id] = patch.term[shard][id] || [];
-                    patch.term[shard][id].push(name);
+                    patch.term[shard][id] = patch.term[shard][id] || '';
+                    patch.term[shard][id] += Carmen.intpack([name]);
                 }
             });
         });
@@ -760,6 +762,8 @@ Carmen.prototype.index = function(source, docs, callback) {
                     // This merges new entries on top of old ones.
                     switch (type) {
                     case 'term':
+                        for (var key in data) current[key] = (current[key] || '') + data[key];
+                        break;
                     case 'grid':
                         for (var key in data) current[key] = (current[key] || []).concat(data[key]);
                         break;
@@ -799,14 +803,16 @@ Carmen.prototype.store = function(source, callback) {
         switch (type) {
         case 'term':
             for (var key in data) {
+                data[key] = Carmen.intload([], data[key]);
                 data[key].sort();
-                data[key] = _(data[key]).uniq(true);
+                data[key] = Carmen.intpack(_(data[key]).uniq(true));
             }
             break;
         case 'grid':
             for (var key in data) {
                 data[key].sort();
-                data[key] = _(data[key]).uniq(true, function(a) { return a[0] });
+                data[key] = _(data[key]).uniq(true);
+//                data[key] = Carmen.intpack(_(data[key]).uniq(true, function(a) { return a[0] }));
             }
             break;
         }
@@ -888,6 +894,25 @@ Carmen.shardsort = function(level) {
 Carmen.zxy = function(zxy) {
     zxy = zxy.split('/');
     return ((zxy[0]|0) * 1e14) + ((zxy[1]|0) * 1e7) + (zxy[2]|0);
+};
+
+// Converts an array of integer IDs into a single base16 encoded string.
+Carmen.intpack = function(ints) {
+    var encoded = '';
+    for (var i = 0; i < ints.length; i++) {
+        var enc = ints[i].toString(36);
+        while (enc.length < 10) enc = '0' + enc;
+        encoded += enc;
+    }
+    return encoded;
+};
+
+// Pushes integers from a base36 encoded string into provied array.
+Carmen.intload = function(arr, pack) {
+    for (var i = 0; i < pack.length/10; i++) {
+        arr.push(parseInt(pack.substr(i*10,10), 36));
+    }
+    return arr;
 };
 
 // Get data from a carmen source.

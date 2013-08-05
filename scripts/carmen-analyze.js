@@ -58,7 +58,8 @@ carmen._open(function(err) {
         Carmen.get(s, 'grid', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
-            s.getFeature(data[grid][0][0], function(err, doc) {
+            var id = Carmen.intload([], data[grid][0])[0];
+            s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
                 var query = Carmen.tokenize(text);
@@ -81,7 +82,8 @@ carmen._open(function(err) {
         Carmen.get(s, 'grid', shard, function(err, data) {
             if (err) return callback(err);
             if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
-            s.getFeature(data[grid][0][0], function(err, doc) {
+            var id = Carmen.intload([], data[grid][0])[0];
+            s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
                 _(text.split(',')).each(function(syn) {
@@ -120,7 +122,9 @@ carmen._open(function(err) {
         Carmen.get(s, type, i, function(err, data) {
             if (err) return callback(err);
             for (var id in data) {
-                list = data[id];
+                list = type === 'term'
+                    ? Carmen.intload([], data[id])
+                    : data[id].map(function(intstring) { return Carmen.intload([], intstring) });
                 rels = list.length;
 
                 // Verify that relations are unique.
