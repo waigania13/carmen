@@ -288,48 +288,53 @@ Carmen.prototype.geocode = function(query, callback) {
             }
         }
 
-        var results = _(coalesced).chain()
-            .reduce(function(memo, rows) {
-                // Sort by db, score such that total score can be
-                // calculated without results for the same db being summed.
-                rows.sort(function(a, b) {
-                    var ai = types.indexOf(a.db);
-                    var bi = types.indexOf(b.db);
-                    if (ai < bi) return -1;
-                    if (ai > bi) return 1;
-                    if (a.score > b.score) return -1;
-                    if (a.score < b.score) return 1;
-                    if (a.reason > b.reason) return -1;
-                    if (a.reason < b.reason) return 1;
-                    return 0;
-                });
-                var score = Carmen.usagescore(data.query, rows);
+        var results = _(coalesced).chain().reduce(function(memo, rows) {
+            // Sort by db, score such that total score can be
+            // calculated without results for the same db being summed.
+            rows.sort(function(a, b) {
+                var ai = types.indexOf(a.db);
+                var bi = types.indexOf(b.db);
+                if (ai < bi) return -1;
+                if (ai > bi) return 1;
+                if (a.score > b.score) return -1;
+                if (a.score < b.score) return 1;
+                if (a.reason > b.reason) return -1;
+                if (a.reason < b.reason) return 1;
+                if (a.id < b.id) return -1;
+                if (a.id > b.id) return 1;
+                return 0;
+            });
+            var score = Carmen.usagescore(data.query, rows);
 
-                // A threshold here reduces results early.
-                // @TODO tune this.
-                if (score < 0.75) return memo;
+            // A threshold here reduces results early.
+            // @TODO tune this.
+            if (score < 0.75) return memo;
 
-                for (var i = 0, l = rows.length; i < l; i++) {
-                    var fullid = rows[i].db + '.' + rows[i].id;
-                    scored[fullid] = scored[fullid] || rows[i];
-                    memo[rows[i].tmpid] = memo[rows[i].tmpid] || {
-                        db: rows[i].db,
-                        id: rows[i].id,
-                        tmpid: rows[i].tmpid,
-                        score: score
-                    };
-                }
-                return memo;
-            }, {})
-            .sortBy(function(feature) { return -1 * feature.score })
-            .reduce(function(memo, feature) {
-                if (!memo.length || memo[0].score - feature.score < 0.5) {
-                    memo.push(feature);
-                }
-                return memo;
-            }, [])
-            .map(function(f) { return f.db + '.' + f.id; })
-            .value();
+            for (var i = 0, l = rows.length; i < l; i++) {
+                var fullid = rows[i].db + '.' + rows[i].id;
+                scored[fullid] = scored[fullid] || rows[i];
+                memo[rows[i].tmpid] = memo[rows[i].tmpid] || {
+                    db: rows[i].db,
+                    id: rows[i].id,
+                    tmpid: rows[i].tmpid,
+                    score: score
+                };
+            }
+            return memo;
+        }, {}).toArray().value();
+        results.sort(function(a, b) {
+            return a.score > b.score ? -1 :
+                a.score < b.score ? 1 :
+                a.tmpid < b.tmpid ? -1 :
+                a.tmpid > b.tmpid ? 1 : 0;
+        });
+        results = results.reduce(function(memo, feature) {
+            if (!memo.length || memo[0].score - feature.score < 0.5) {
+                memo.push(feature);
+            }
+            return memo;
+        }, []);
+        results = results.map(function(f) { return f.db + '.' + f.id; });
 
         data.stats.scoreTime = +new Date - data.stats.scoreTime;
         data.stats.scoreCount = results.length;
@@ -442,15 +447,14 @@ Carmen.usagescore = function(query, scored) {
         if (lastdb === scored[i].db) continue;
 
         var usage = 0;
-        var hasreason = true;
         var reason = scored[i].reason;
         for (var j = 0; j < query.length; j++) {
-            if (1<<j & reason) {
-                hasreason = hasreason && query[j] && ++usage;
+            if ((1<<j & reason) && query[j]) {
+                ++usage;
                 query[j] = false;
             }
         }
-        if (hasreason) {
+        if (usage) {
             score += scored[i].score * (usage/total);
             lastdb = scored[i].db;
         }
