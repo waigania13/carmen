@@ -244,7 +244,7 @@ Carmen.prototype.geocode = function(query, callback) {
                     }
                 }
                 result[pos] = rows;
-                data.stats['search.' + dbname] = stats;
+                if (DEBUG) data.stats['search.' + dbname] = stats;
                 if (!--remaining) {
                     zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1 });
                     result = result.concat.apply([], result);
