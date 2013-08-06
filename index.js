@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var fs = require('fs');
 var path = require('path');
 var basepath = path.resolve(__dirname + '/tiles');
 var sm = new (require('sphericalmercator'))();
@@ -981,6 +982,36 @@ Carmen.put = function(source, type, shard, data, callback) {
         shards[shard] = data;
         callback(null);
     });
+};
+
+// Generate a Carmen options hash automatically reading sources in a directory.
+Carmen.autoSync = function(dirname) {
+    var S3;
+    var MBTiles;
+    var dir = path.resolve(dirname);
+    var files = fs.readdirSync(dir).map(function(f) { return {
+        pathname: dir + '/' + f,
+        extname: path.extname(f),
+        prefix: f.split('.')[0],
+        dbname: f.split('.')[1] || f.split('.')[0]
+    }});
+    files.sort(function(a, b) {
+        return a.prefix < b.prefix ? -1 : a.prefix > b.prefix ? 1 : 0
+    });
+    return files.reduce(function(opts, f) {
+        switch (f.extname) {
+        case '.mbtiles':
+            MBTiles = MBTiles || Carmen.MBTiles();
+            opts[f.dbname] = opts[f.dbname] || new MBTiles(f.pathname, function(){});
+            break;
+        case '.s3':
+            S3 = S3 || Carmen.S3();
+            opts[f.dbname] = opts[f.dbname] || new MBTiles(f.pathname, function(){});
+            break;
+        }
+        return opts;
+    }, {});
+
 };
 
 // Locking event emitter for consolidating I/O for identical requests.
