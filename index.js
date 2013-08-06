@@ -335,6 +335,9 @@ Carmen.prototype.geocode = function(query, callback) {
 
         if (!results.length) return callback(null, results);
 
+        // Disallow more than 50 of the best results at this point.
+        if (results.length > 50) results = results.slice(0,50);
+
         var start = +new Date;
         var matches = [];
         var contexts = [];
