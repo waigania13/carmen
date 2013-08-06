@@ -562,6 +562,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             var term = 0;
             var score = 0;
             var total = 0;
+            var count = 0;
             var reason = 0;
             var termpos = -1;
             var lastpos = -1;
@@ -584,14 +585,18 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 } else if (score === 0 || termpos === lastpos + 1) {
                     score += freqs[term]/total;
                     reason += 1 << i;
+                    count++;
                     lastpos = termpos;
                 }
             }
-            if (score > 0.8) {
+            if (score > 0.6) {
                 result.push(id);
+                score = score > 0.99 ? 1 : score;
                 scores[id] = {
-                    score: score > 0.99 ? 1 : score,
-                    reason: reason
+                    score: score,
+                    reason: reason,
+                    // encode score, reason count together
+                    tmpscore: score * 1e6 + count
                 };
             }
         }
@@ -621,9 +626,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 var score = scores[id];
                 if (grids) for (var i = 0; i < grids.length; i++) {
                     var grid = Carmen.intload([], grids[i]);
-                    if (!docscore[grid[0]] || docscore[grid[0]] < score.score) {
+                    if (!docscore[grid[0]] || docscore[grid[0]] < score.tmpscore) {
                         result.push(new Scored(grid[0], grid.slice(1), score.score, score.reason));
-                        docscore[grid[0]] = score.score;
+                        docscore[grid[0]] = score.tmpscore;
                     }
                 }
             }
