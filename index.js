@@ -431,12 +431,13 @@ Carmen.usagescore = function(query, scored) {
     var query = query.slice(0);
 
     var score = 0;
-    var usage = 0;
+    var total = query.length;
     var lastdb = false;
 
     for (var i = 0; i < scored.length; i++) {
         if (lastdb === scored[i].db) continue;
 
+        var usage = 0;
         var hasreason = true;
         var reason = scored[i].reason;
         for (var j = 0; j < query.length; j++) {
@@ -446,11 +447,11 @@ Carmen.usagescore = function(query, scored) {
             }
         }
         if (hasreason) {
-            score += scored[i].score;
+            score += scored[i].score * (usage/total);
             lastdb = scored[i].db;
         }
     }
-    return score * Math.pow(usage / query.length, 2);
+    return score;
 };
 
 // Search a carmen source for features matching query.
