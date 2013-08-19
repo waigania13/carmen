@@ -464,7 +464,6 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
-    var shardlevel = source._carmen.shardlevel;
     var terms = Carmen.terms(query);
     var weights = {}; // @TODO shared cache for this?
     var relevs = {};
@@ -623,8 +622,6 @@ Carmen.prototype.index = function(source, docs, callback) {
         if (err) return callback(err);
         this.index(source, docs, callback);
     }.bind(this));
-
-    var shardlevel = source._carmen.shardlevel;
 
     indexFreqs(function(err, freq) {
         if (err) return callback(err);
