@@ -5,6 +5,20 @@ function Cache(id, shardlevel) {
     this.shardlevel = shardlevel;
 
     // Caches.
+    // Each cache contains an integer key => array of ints mapping *except*
+    // grid. Grid contains integer key => array of arrays of ints. e.g.
+    //
+    // term = {
+    //   1: [0,1,2,3],
+    //   2: [0,1]
+    //   ...
+    // }
+    //
+    // grid = {
+    //   1: [[0,1,2], [2,3,4]],
+    //   2: [[0,1,2], [2,3,4]],
+    //   ...
+    // }
     this.grid = {};
     this.freq = {};
     this.term = {};
@@ -12,6 +26,14 @@ function Cache(id, shardlevel) {
 };
 
 // For a given type retrieve all ids mapped to the passed set.
+// This method sorts the input set of ids by shardlevel making it possible to
+// make as few IO/function calls for the getter as possible.
+//
+// - getter, function passed in by caller that can do IO to retrieve the data
+//   in question. Examples: MBTiles.getCarmen, S3.getCarmen.
+// - type, one of grid/freq/term/phrase, maybe more in the future.
+// - ids, array of integer ids.
+// - callback, to be called on completion.
 Cache.prototype.getall = function(getter, type, ids, callback) {
     var shardlevel = this.shardlevel;
     var cache = this;
