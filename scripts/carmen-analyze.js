@@ -54,11 +54,11 @@ carmen._open(function(err) {
         if (i >= maxes.length) return callback();
         var term = maxes[i][0];
         var grid = maxes[i][2];
-        var shard = Carmen.shard(shardlevel, grid);
-        Carmen.get(s, 'grid', shard, function(err, data) {
+        var ids = [grid];
+        s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
             if (err) return callback(err);
-            if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
-            var id = Carmen.intload([], data[grid][0])[0];
+            if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
+            var id = result[0][0];
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
@@ -78,11 +78,10 @@ carmen._open(function(err) {
     function phraselookup(maxes, i, callback) {
         if (i >= maxes.length) return callback();
         var grid = maxes[i][0];
-        var shard = Carmen.shard(shardlevel, grid);
-        Carmen.get(s, 'grid', shard, function(err, data) {
-            if (err) return callback(err);
-            if (!data[grid]) return callback(new Error('Grid ' + grid + ' not found'));
-            var id = Carmen.intload([], data[grid][0])[0];
+        var ids = [grid];
+        s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
+            if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
+            var id = result[0][0];
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
@@ -119,12 +118,13 @@ carmen._open(function(err) {
                 : phraselookup(stat.maxes, 0, callback);
         }
 
-        Carmen.get(s, type, i, function(err, data) {
+        s.getCarmen(type, i, function(err, buffer) {
             if (err) return callback(err);
-            for (var id in data) {
-                list = type === 'term'
-                    ? Carmen.intload([], data[id])
-                    : data[id].map(function(intstring) { return Carmen.intload([], intstring) });
+            s._carmen.load(buffer, type, i);
+            var ids = s._carmen.list(type, i);
+            while (ids.length) {
+                var id = ids.shift();
+                list = s._carmen.get(type, id);
                 rels = list.length;
 
                 // Verify that relations are unique.

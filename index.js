@@ -7,6 +7,9 @@ var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var EventEmitter = require('events').EventEmitter;
 var DEBUG = process.env.DEBUG;
+var Cache = require('./cache');
+var lockingCache = {};
+var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
 
 // FNV-1a hash.
 // For 32-bit: offset = 2166136261, prime = 16777619.
@@ -69,20 +72,11 @@ function Carmen(options) {
         source = source.source ? source.source : source;
 
         memo[key] = source;
-        source._carmen = source._carmen || {
-            id: key,
-            grid:{},
-            freq:{},
-            term:{},
-            phrase:{},
-            logs:{},
-            cache:{}
-        };
         if (source.open) {
             source.getInfo(function(err, info) {
                 if (err) return done(err);
+                source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
                 source._carmen.zoom = info.maxzoom;
-                source._carmen.shardlevel = info.shardlevel || 0;
                 return done();
             });
         } else {
@@ -90,8 +84,8 @@ function Carmen(options) {
                 if (err) return done(err);
                 source.getInfo(function(err, info) {
                     if (err) return done(err);
+                    source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
                     source._carmen.zoom = info.maxzoom;
-                    source._carmen.shardlevel = info.shardlevel || 0;
                     return done();
                 });
             });
@@ -107,7 +101,6 @@ Carmen.MBTiles = function() { return require('./api-mbtiles') };
 Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
-
 // Returns a hierarchy of features ("context") for a given lon,lat pair.
 Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) return this._open(function(err) {
@@ -141,7 +134,9 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
         var zoom = source._carmen.zoom;
         var xyz = sm.xyz([lon,lat,lon,lat], zoom);
         var ckey = (zoom * 1e14) + (xyz.minX * 1e7) + xyz.minY;
-        var cache = source._carmen.cache;
+
+        lockingCache[source.id] = lockingCache[source.id] || {};
+        var cache = lockingCache[source.id];
 
         function done(err, grid) {
             if (err && err.message !== 'Grid does not exist') {
@@ -469,10 +464,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
-    var approxdocs = source._carmen.approxdocs;
     var shardlevel = source._carmen.shardlevel;
     var terms = Carmen.terms(query);
-    var freqs = source._carmen.logs;
+    var weights = {}; // @TODO shared cache for this?
     var relevs = {};
     var stats = {
         phrase:[0,0,0],
@@ -481,67 +475,39 @@ Carmen.prototype.search = function(source, query, id, callback) {
         grid:[0,0,0]
     };
 
-    var getphrases = function(queue, result, callback) {
-        if (!queue.length) {
-            result.sort(Carmen.shardsort(shardlevel));
-            result = _(result).uniq(true);
+    var getphrases = function(queue, callback) {
+        stats.phrase[0]++;
+        stats.phrase[2] = +new Date;
+        source._carmen.getall(source.getCarmen.bind(source), 'term', queue, function(err, result) {
+            if (err) return callback(err);
             stats.phrase[2] = stats.phrase[2] && (+new Date - stats.phrase[2]);
             stats.phrase[1] = result.length;
             return callback(null, result);
-        } else if (!result.length) {
-            stats.phrase[2] = +new Date;
-        }
-        stats.phrase[0]++;
-        var shard = Carmen.shard(shardlevel, queue[0]);
-        Carmen.get(source, 'term', shard, function(err, data) {
-            if (err) return callback(err);
-            while (shard === Carmen.shard(shardlevel, queue[0])) {
-                var id = queue.shift();
-                if (data[id]) Carmen.intload(result, data[id]);
-            }
-            if (!approxdocs) {
-                approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
-                source._carmen.approxdocs = approxdocs;
-            }
-            getphrases(queue, result, callback);
         });
     };
 
-    var getterms = function(queue, result, callback) {
-        if (!queue.length) {
-            result.sort(Carmen.shardsort(shardlevel));
-            result = _(result).uniq(true);
+    var getterms = function(queue, callback) {
+        stats.term[0]++;
+        stats.term[2] = +new Date;
+        source._carmen.getall(source.getCarmen.bind(source), 'phrase', queue, function(err, result) {
+            if (err) return callback(err);
             stats.term[2] = stats.term[2] && (+new Date - stats.term[2]);
             stats.term[1] = result.length;
             return callback(null, result);
-        } else if (!result.length) {
-            stats.term[2] = +new Date;
-        }
-        stats.term[0]++;
-        var shard = Carmen.shard(shardlevel, queue[0]);
-        Carmen.get(source, 'phrase', shard, function(err, data) {
-            if (err) return callback(err);
-            while (shard === Carmen.shard(shardlevel, queue[0])) {
-                var id = queue.shift();
-                if (data[id]) Carmen.intload(result, data[id]); // result.push.apply(result, data[id]);
-            }
-            getterms(queue, result, callback);
         });
     };
 
     var getfreqs = function(queue, callback) {
-        if (!queue.length) return callback(null, freqs);
-        var shard = Carmen.shard(shardlevel, queue[0]);
-        Carmen.get(source, 'freq', shard, function(err, data) {
+        queue.unshift(0);
+        var total;
+        source._carmen.getall(source.getCarmen.bind(source), 'freq', queue, function(err, result) {
             if (err) return callback(err);
-            while (shard === Carmen.shard(shardlevel, queue[0])) {
-                var id = queue.shift();
-                // @TODO error out if data[id] is missing?
-                // @TODO this 1+ is a hack to ensure log is not < 0.
-                // Fix this (?) by making approxdocs count accurate.
-                if (!freqs[id]) freqs[id] = Math.log(1 + approxdocs/data[id]);
+            total = source._carmen.get('freq', 0)[0];
+            for (var i = 0; i < queue.length; i++) {
+                var id = queue[i];
+                weights[id] = Math.log(1 + total/source._carmen.get('freq', id)[0]);
             }
-            getfreqs(queue, callback);
+            callback(null);
         });
     };
 
@@ -550,10 +516,8 @@ Carmen.prototype.search = function(source, query, id, callback) {
         var result = [];
         for (var a = 0; a < phrases.length; a++) {
             var id = phrases[a];
-            var shard = Carmen.shard(shardlevel, id);
-            var data = source._carmen.phrase[shard][id];
+            var data = source._carmen.get('phrase', id);
             if (!data) throw new Error('Failed to get phrase');
-            data = Carmen.intload([], data);
 
             // relev each feature:
             // - across all feature synonyms, find the max relev of the sum
@@ -570,7 +534,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             var lastpos = -1;
             var text = data;
             for (var i = 0; i < data.length; i++) {
-                total += freqs[data[i]];
+                total += weights[data[i]];
             }
 
             if (total < 0) throw new Error('Bad freq total ' + total);
@@ -585,7 +549,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
                         continue;
                     }
                 } else if (relev === 0 || termpos === lastpos + 1) {
-                    relev += freqs[term]/total;
+                    relev += weights[term]/total;
                     reason += 1 << i;
                     count++;
                     lastpos = termpos;
@@ -602,7 +566,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 };
             }
         }
-        result.sort(Carmen.shardsort(shardlevel));
+        result.sort();
         result = _(result).uniq(true);
         stats.relevd[2] = +new Date - stats.relevd[2];
         stats.relevd[1] = result.length;
@@ -610,44 +574,41 @@ Carmen.prototype.search = function(source, query, id, callback) {
     };
 
     var docrelev = {};
-    var getgrids = function(queue, result, callback) {
-        if (!queue.length) {
-            stats.grid[2] = stats.grid[2] && (+new Date - stats.grid[2]);
-            stats.grid[1] = result.length;
-            return callback(null, result);
-        } else if (!result.length) {
-            stats.grid[2] = +new Date;
-        }
+    var getgrids = function(queue, callback) {
         stats.grid[0]++;
-        var shard = Carmen.shard(shardlevel, queue[0]);
-        Carmen.get(source, 'grid', shard, function(err, data) {
+        stats.grid[2] = +new Date;
+
+        source._carmen.getall(source.getCarmen.bind(source), 'grid', queue, function(err) {
             if (err) return callback(err);
-            while (shard === Carmen.shard(shardlevel, queue[0])) {
-                var id = queue.shift();
-                var grids = data[id];
+
+            var result = [];
+            for (var a = 0; a < queue.length; a++) {
+                var id = queue[a];
                 var relev = relevs[id];
-                if (grids) for (var i = 0; i < grids.length; i++) {
-                    var grid = Carmen.intload([], grids[i]);
+                var grids = source._carmen.get('grid', id);
+                for (var i = 0; i < grids.length; i++) {
+                    var grid = grids[i];
                     if (!docrelev[grid[0]] || docrelev[grid[0]] < relev.tmprelev) {
                         result.push(new Relev(grid[0], grid.slice(1), relev.relev, relev.reason));
                         docrelev[grid[0]] = relev.tmprelev;
                     }
                 }
             }
-            getgrids(queue, result, callback);
+
+            stats.grid[2] = stats.grid[2] && (+new Date - stats.grid[2]);
+            stats.grid[1] = result.length;
+            return callback(null, result);
         });
     };
 
-    var termsqueue = terms.slice(0);
-    termsqueue.sort(Carmen.shardsort(shardlevel));
-    getphrases(termsqueue, [], function(err, phrases) {
+    getphrases(terms, function(err, phrases) {
         if (err) return callback(err);
-        getterms(phrases.slice(0), [], function(err, terms) {
+        getterms(phrases, function(err, terms) {
             if (err) return callback(err);
             getfreqs(terms, function(err) {
                 if (err) return callback(err);
                 var relevd = getrelevd(phrases);
-                getgrids(relevd, [], function(err, result) {
+                getgrids(relevd, function(err, result) {
                     if (err) return callback(err);
                     return callback(null, result, stats);
                 });
@@ -667,13 +628,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
     indexFreqs(function(err, freq) {
         if (err) return callback(err);
-        Carmen.get(source, 'freq', 0, function(err, data) {
-            if (err) return callback(err);
-            // @TODO fix this approxdoc calc.
-            var approxdocs = Object.keys(data).length * Math.pow(16, shardlevel);
-            approxdocs = approxdocs || Object.keys(freq).length;
-            indexDocs(approxdocs, freq, callback);
-        });
+        indexDocs(freq[0], freq, callback);
     });
 
     // First pass over docs.
@@ -685,6 +640,12 @@ Carmen.prototype.index = function(source, docs, callback) {
     function indexFreqs(callback) {
         var remaining = 0;
         var freq = {};
+
+        // Uses freq[0] as a convention for storing total # of docs.
+        // @TODO determine whether 0 can really ever be a relevant term
+        // when using fnv1a.
+        freq[0] = [0];
+
         for (var i = 0; i < docs.length; i++) {
             var doc = docs[i];
             var phrases = doc.text.split(',').map(Carmen.phrase);
@@ -693,21 +654,25 @@ Carmen.prototype.index = function(source, docs, callback) {
                 var terms = termsets[j];
                 for (var k = 0; k < terms.length; k++) {
                     var id = terms[k];
-                    var shard = Carmen.shard(shardlevel, id);
-                    freq[shard] = freq[shard] || {};
-                    freq[shard][id] = freq[shard][id] || 0;
-                    freq[shard][id]++;
+                    freq[id] = freq[id] || [0];
+                    freq[id][0]++;
+                    freq[0][0]++;
                 }
             }
             doc.phrases = phrases;
             doc.termsets = termsets;
         }
-        var remaining = Object.keys(freq).length;
-        _(freq).each(function(data, shard) {
-            Carmen.get(source, 'freq', shard, function(err, current) {
-                for (var key in data) current[key] = (current[key]||0) + data[key];
-                if (!--remaining) callback(null, source._carmen.freq);
-            });
+
+        // Ensures all shards are loaded.
+        var ids = Object.keys(freq).map(function(v) { return parseInt(v,10) });
+        source._carmen.getall(source.getCarmen.bind(source), 'freq', ids, function(err) {
+            if (err) return callback(err);
+            for (var i = 0; i < ids.length; i++) {
+                var id = ids[i];
+                freq[id][0] = (source._carmen.get('freq', id) || [0])[0] + freq[id][0];
+                source._carmen.set('freq', id, freq[id]);
+            }
+            callback(null, freq);
         });
     };
 
@@ -726,12 +691,9 @@ Carmen.prototype.index = function(source, docs, callback) {
             var termsets = doc.termsets;
 
             phrases.forEach(function(id, x) {
-                var shard = Carmen.shard(shardlevel, id);
-                patch.phrase[shard] = patch.phrase[shard] || {};
-                patch.phrase[shard][id] = patch.phrase[shard][id] || Carmen.intpack(termsets[x]);
-                patch.grid[shard] = patch.grid[shard] || {};
-                patch.grid[shard][id] = patch.grid[shard][id] || [];
-                patch.grid[shard][id].push(Carmen.intpack([doc.id].concat(doc.zxy)));
+                patch.phrase[id] = patch.phrase[id] || termsets[x];
+                patch.grid[id] = patch.grid[id] || [];
+                patch.grid[id].push([doc.id].concat(doc.zxy));
             });
 
             termsets.forEach(function(terms, x) {
@@ -741,8 +703,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
                 for (var i = 0; i < terms.length; i++) {
                     var id = terms[i];
-                    var shard = Carmen.shard(shardlevel, id);
-                    var weight = Math.log(approxdocs/freq[shard][id]);
+                    var weight = Math.log(1 + freq[0][0]/freq[id][0]);
                     weights.push([id, weight]);
                     total += weight;
                 }
@@ -767,21 +728,16 @@ Carmen.prototype.index = function(source, docs, callback) {
 
                 for (var i = 0; i < sigterms.length; i++) {
                     var id = sigterms[i];
-                    var shard = Carmen.shard(shardlevel, id);
-                    patch.term[shard] = patch.term[shard] || {};
-                    patch.term[shard][id] = patch.term[shard][id] || '';
-                    patch.term[shard][id] += Carmen.intpack([name]);
+                    patch.term[id] = patch.term[id] || [];
+                    patch.term[id].push(name);
                 }
             });
         });
 
         var remaining = docs.length;
-        // Number of term shards.
-        remaining += Object.keys(patch.term).length;
-        // Number of phrase shards.
-        remaining += Object.keys(patch.phrase).length;
-        // Number of grid shards.
-        remaining += Object.keys(patch.grid).length;
+        remaining++; // term
+        remaining++; // phrase
+        remaining++; // grid
 
         _(docs).each(function(doc) {
             source.putFeature(doc.id, doc.doc, function(err) {
@@ -793,27 +749,29 @@ Carmen.prototype.index = function(source, docs, callback) {
             });
         });
 
-        _(patch).each(function(shards, type) {
-            _(shards).each(function(data, shard) {
-                Carmen.get(source, type, shard, function(err, current) {
-                    if (err && remaining > 0) {
-                        remaining = -1;
-                        return callback(err);
-                    }
+        _(patch).each(function(data, type) {
+            var ids = Object.keys(data);
+            source._carmen.getall(source.getCarmen.bind(source), type, ids, function(err) {
+                if (err && remaining > 0) {
+                    remaining = -1;
+                    return callback(err);
+                }
+                for (var i = 0; i < ids.length; i++) {
+                    var id = ids[i];
                     // This merges new entries on top of old ones.
                     switch (type) {
                     case 'term':
-                        for (var key in data) current[key] = (current[key] || '') + data[key];
-                        break;
                     case 'grid':
-                        for (var key in data) current[key] = (current[key] || []).concat(data[key]);
+                        var current = source._carmen.get(type, id) || [];
+                        current.push.apply(current, data[id]);
+                        source._carmen.set(type, id, current);
                         break;
                     case 'phrase':
-                        for (var key in data) current[key] = data[key];
+                        source._carmen.set(type, id, data[id]);
                         break;
                     }
-                    if (!--remaining) callback(null);
-                });
+                }
+                if (!--remaining) callback(null);
             });
         });
     };
@@ -828,7 +786,19 @@ Carmen.prototype.store = function(source, callback) {
 
     var queue = [];
     ['freq','term','phrase','grid'].forEach(function(type) {
-        queue = queue.concat(Object.keys(source._carmen[type]).map(function(shard) {
+        queue = queue.concat(source._carmen.list(type).map(function(shard) {
+            var ids = source._carmen.list(type, shard);
+            for (var i = 0; i < ids.length; i++) {
+                var id = ids[i];
+                switch (type) {
+                case 'term':
+                case 'grid':
+                    var data = source._carmen.get(type, id);
+                    data.sort();
+                    source._carmen.set(type, id, _(data).uniq(true));
+                    break;
+                }
+            }
             return [type, shard];
         }));
     });
@@ -838,27 +808,7 @@ Carmen.prototype.store = function(source, callback) {
         var task = queue.shift();
         var type = task[0];
         var shard = task[1];
-        var data = source._carmen[type][shard];
-
-        // Remove duplicate references.
-        switch (type) {
-        case 'term':
-            for (var key in data) {
-                data[key] = Carmen.intload([], data[key]);
-                data[key].sort();
-                data[key] = Carmen.intpack(_(data[key]).uniq(true));
-            }
-            break;
-        case 'grid':
-            for (var key in data) {
-                data[key].sort();
-                data[key] = _(data[key]).uniq(true);
-//                data[key] = Carmen.intpack(_(data[key]).uniq(true, function(a) { return a[0] }));
-            }
-            break;
-        }
-
-        Carmen.put(source, type, shard, data, function(err) {
+        source.putCarmen(type, shard, source._carmen.pack(type, shard), function(err) {
             if (err) return callback(err);
             defer(function() { write(); });
         });
@@ -914,71 +864,10 @@ Carmen.termsDebug = function(text) {
     }, {});
 };
 
-// Assumes an integer space of Math.pow(16,8);
-Carmen.shard = function(level, id) {
-    if (id === undefined) return false;
-    if (level === 0) return 0;
-    return id % Math.pow(16, level);
-};
-
-// Generate a sort callback method that sorts by shard.
-Carmen.shardsort = function(level) {
-    var mod = Math.pow(16, level);
-    return function(a,b) {
-        var as = a % mod;
-        var bs = b % mod;
-        return as < bs ? -1 : as > bs ? 1 : a < b ? -1 : a > b ? 1 : 0;
-    };
-};
-
 // Converts zxy coordinates into an array of zxy IDs.
 Carmen.zxy = function(zxy) {
     zxy = zxy.split('/');
     return ((zxy[0]|0) * 1e14) + ((zxy[1]|0) * 1e7) + (zxy[2]|0);
-};
-
-// Converts an array of integer IDs into a single base16 encoded string.
-Carmen.intpack = function(ints) {
-    var encoded = '';
-    for (var i = 0; i < ints.length; i++) {
-        var enc = ints[i].toString(36);
-        while (enc.length < 10) enc = '0' + enc;
-        encoded += enc;
-    }
-    return encoded;
-};
-
-// Pushes integers from a base36 encoded string into provied array.
-Carmen.intload = function(arr, pack) {
-    for (var i = 0; i < pack.length/10; i++) {
-        arr.push(parseInt(pack.substr(i*10,10), 36));
-    }
-    return arr;
-};
-
-// Get data from a carmen source.
-var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
-Carmen.get = function(source, type, shard, callback) {
-    var shards = source._carmen[type];
-    if (shards[shard]) return defer(function() {
-        callback(null, shards[shard]);
-    });
-    source.getCarmen(type, shard, function(err, data) {
-        if (err) return callback(err);
-        shards[shard] = data ? JSON.parse(data) : {};
-        callback(null, shards[shard]);
-    });
-};
-
-// Put data to a carmen source.
-Carmen.put = function(source, type, shard, data, callback) {
-    var shards = source._carmen[type];
-    var json = JSON.stringify(data);
-    source.putCarmen(type, shard, json, function(err) {
-        if (err) return callback(err);
-        shards[shard] = data;
-        callback(null);
-    });
 };
 
 // Generate a Carmen options hash automatically reading sources in a directory.
