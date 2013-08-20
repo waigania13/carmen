@@ -38,7 +38,7 @@ Cache.prototype.getall = function(getter, type, ids, callback) {
     var shardlevel = this.shardlevel;
     var cache = this;
     var queue = ids.slice(0);
-    queue.sort(Cache.shardsort(shardlevel));
+    Cache.shardsort(shardlevel, queue);
 
     var result = [];
     (function lazyload() {
@@ -119,14 +119,14 @@ Cache.shard = function(level, id) {
     return id % Math.pow(16, level);
 };
 
-// Return a JS sort callback that sorts ids by their shard.
-Cache.shardsort = function(level) {
+// Sort a given array of IDs by their shards.
+Cache.shardsort = function(level, arr) {
     var mod = Math.pow(16, level);
-    return function(a,b) {
+    arr.sort(function(a,b) {
         var as = a % mod;
         var bs = b % mod;
         return as < bs ? -1 : as > bs ? 1 : a < b ? -1 : a > b ? 1 : 0;
-    };
+    });
 };
 
 
