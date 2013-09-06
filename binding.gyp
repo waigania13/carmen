@@ -1,4 +1,8 @@
 {
+  'variables': {
+      'std%':'c++11',
+      'lazy%':'true'
+  },
   'includes': [ 'common.gypi' ],
   'targets': [
     {
@@ -30,18 +34,39 @@
           "<!(node -p -e \"require('path').dirname(require.resolve('nan'))\")"
       ],
       'xcode_settings': {
-        'OTHER_CPLUSPLUSFLAGS':['-std=c++11'],
+        'OTHER_CPLUSPLUSFLAGS':[],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
       },
       'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
       'cflags_cc' : [
-          '-std=c++11',
           '<!@(pkg-config protobuf --cflags)'
       ],
       'libraries':[
           '<!@(pkg-config protobuf --libs-only-L)',
           '-lprotobuf-lite'
+      ],
+      'conditions': [
+        ['std == "c++11"', {
+            'cflags_cc' : [
+                '-std=c++11',
+            ],
+            'defines': [
+               'USE_CXX11'
+            ],
+            'xcode_settings': {
+              'OTHER_CPLUSPLUSFLAGS':['-std=c++11','-stdlib=libc++'],
+              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+              'MACOSX_DEPLOYMENT_TARGET':'10.7'
+            }
+        }
+        ],
+        ['lazy == "true"', {
+            'defines': [
+               'USE_LAZY_PROTO_CACHE'
+            ]
+        }
+        ]
       ],
     },
     {

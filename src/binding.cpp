@@ -18,7 +18,11 @@
 #include "pbf.hpp"
 #include "index.pb.h"
 
-#define USE_LAZY_PROTO_CACHE
+// now set (or not) in binding.gyp
+//#define USE_LAZY_PROTO_CACHE
+//#define USE_CXX11
+
+// TODO - drop
 #define LAZY_CACHE_ITEM
 
 // TODO
@@ -31,23 +35,26 @@ namespace binding {
 
 using namespace v8;
 
+typedef uint64_t int_type;
+
 // lazy ref item
 //#include <boost/utility/string_ref.hpp>
 //typedef boost::string_ref string_ref_type;
 typedef std::string string_ref_type;
 #ifdef LAZY_CACHE_ITEM
-typedef std::map<uint64_t,string_ref_type> larraycache;
+typedef std::map<int_type,string_ref_type> larraycache;
 #else
 typedef std::vector<string_ref_type> string_array_type; 
-typedef std::map<uint64_t,string_array_type> larraycache;
+typedef std::map<int_type,string_array_type> larraycache;
 #endif
 typedef larraycache::const_iterator larraycache_iterator;
 typedef std::map<std::string,larraycache> lazycache;
 typedef lazycache::const_iterator lazycache_iterator_type;
 
 // fully cached item
-typedef std::vector<std::vector<uint64_t> > varray;
-typedef std::map<uint64_t,varray> arraycache;
+typedef std::vector<int_type> intarray;
+typedef std::vector<intarray> varray;
+typedef std::map<int_type,varray> arraycache;
 typedef arraycache::const_iterator arraycache_iterator;
 typedef std::map<std::string,arraycache> memcache;
 typedef memcache::const_iterator mem_iterator_type;
@@ -145,7 +152,7 @@ NAN_METHOD(Cache::pack)
                 unsigned varr_size = varr.size();
                 for (unsigned i=0;i<varr_size;++i) {
                     ::carmen::proto::object_array * array = new_item->add_arrays();
-                    std::vector<uint64_t> const& vals = varr[i];
+                    intarray const& vals = varr[i];
                     for (unsigned j=0;j<vals.size();++j) {
                         array->add_val(vals[j]);
                     }
@@ -344,7 +351,7 @@ NAN_METHOD(Cache::set)
             c->cache_.insert(std::make_pair(key,arraycache()));    
         }
         arraycache & arrc = c->cache_[key];
-        uint64_t key_id = args[2]->NumberValue();
+        int_type key_id = args[2]->NumberValue();
         arraycache_iterator itr2 = arrc.find(key_id);
         if (itr2 == arrc.end()) {
             arrc.insert(std::make_pair(key_id,varray()));   
@@ -357,22 +364,38 @@ NAN_METHOD(Cache::set)
         if (type == "grid") {
             vv.reserve(array_size);
             for (unsigned i=0;i<array_size;++i) {
-                vv.emplace_back(std::vector<uint64_t>());
-                std::vector<uint64_t> & vvals = vv.back();
+                #ifdef USE_CXX11
+                vv.emplace_back(intarray());
+                #else
+                vv.push_back(intarray());
+                #endif
+                intarray & vvals = vv.back();
                 Local<Array> subarray = Local<Array>::Cast(data->Get(i));
                 unsigned vals_size = subarray->Length();
                 vvals.reserve(vals_size);
                 for (unsigned k=0;k<vals_size;++k) {
+                    #ifdef USE_CXX11
                     vvals.emplace_back(subarray->Get(k)->NumberValue());
+                    #else
+                    vvals.push_back(subarray->Get(k)->NumberValue());
+                    #endif
                 }
             }
         } else {
             vv.reserve(1);
-            vv.emplace_back(std::vector<uint64_t>());
-            std::vector<uint64_t> & vvals = vv.back();
+            #ifdef USE_CXX11
+            vv.emplace_back(intarray());
+            #else
+            vv.push_back(intarray());
+            #endif
+            intarray & vvals = vv.back();
             vvals.reserve(array_size);
             for (unsigned i=0;i<array_size;++i) {
+                #ifdef USE_CXX11
                 vvals.emplace_back(data->Get(i)->NumberValue());
+                #else
+                vvals.push_back(data->Get(i)->NumberValue());
+                #endif
             }
         }
     } catch (std::exception const& ex) {
@@ -417,7 +440,7 @@ NAN_METHOD(Cache::loadJSON)
             v8::Local<v8::Value> key = propertyNames->Get(i);
             v8::Local<v8::Value> prop = obj->Get(key);
             if (prop->IsArray()) {
-                uint64_t key_id = key->NumberValue();
+                int_type key_id = key->NumberValue();
                 arrc.insert(std::make_pair(key_id,varray()));
                 varray & vv = arrc[key_id];
                 v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
@@ -427,26 +450,42 @@ NAN_METHOD(Cache::loadJSON)
                     for (uint32_t j=0;j < arr_len;++j) {
                         v8::Local<v8::Value> val_array = arr->Get(j);
                         if (val_array->IsArray()) {
-                            vv.emplace_back(std::vector<uint64_t>());
-                            std::vector<uint64_t> & vvals = vv.back();
+                            #ifdef USE_CXX11
+                            vv.emplace_back(intarray());
+                            #else
+                            vv.push_back(intarray());
+                            #endif
+                            intarray & vvals = vv.back();
                             v8::Local<v8::Array> vals = v8::Local<v8::Array>::Cast(val_array);
                             uint32_t val_len = vals->Length();
                             vvals.reserve(val_len);
                             for (uint32_t k=0;k < val_len;++k) {
+                                #ifdef USE_CXX11
                                 vvals.emplace_back(vals->Get(k)->NumberValue());
+                                #else
+                                vvals.push_back(vals->Get(k)->NumberValue());
+                                #endif
                             }
                         }
                     }
                 } else {
                     uint32_t arr_len = arr->Length();
                     vv.reserve(1);
-                    vv.emplace_back(std::vector<uint64_t>());
-                    std::vector<uint64_t> & vvals = vv.back();
+                    #ifdef USE_CXX11
+                    vv.emplace_back(intarray());
+                    #else
+                    vv.push_back(intarray());
+                    #endif
+                    intarray & vvals = vv.back();
                     vvals.reserve(arr_len);
                     for (uint32_t j=0;j < arr_len;++j) {
                         v8::Local<v8::Value> val = arr->Get(j);
                         if (val->IsNumber()) {
+                            #ifdef USE_CXX11
                             vvals.emplace_back(val->NumberValue());
+                            #else
+                            vvals.push_back(val->NumberValue());
+                            #endif
                         }
                     }
                 }
@@ -504,7 +543,7 @@ NAN_METHOD(Cache::load)
         }
         protobuf::message message(cdata,size);
         #ifdef USE_LAZY_PROTO_CACHE
-        mem_iterator_type itr2 = mem.find(key);
+        memcache::iterator itr2 = mem.find(key);
         if (itr2 != mem.end()) {
             mem.erase(itr2);
         }
@@ -521,10 +560,14 @@ NAN_METHOD(Cache::load)
                     protobuf::message item(message.data, bytes);
                     while (item.next()) {
                         if (item.tag == 1) {
-                            uint64_t key_id = item.varint();
+                            int_type key_id = item.varint();
                             // NOTE: emplace is faster if using std::string
                             // if using boost::string_ref, std::move is faster
+                            #ifdef USE_CXX11
                             larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
+                            #else
+                            larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
+                            #endif
                         } else {
                             break;
                         }
@@ -540,7 +583,7 @@ NAN_METHOD(Cache::load)
                 if (message.tag == 1) {
                     uint32_t bytes = message.varint();
                     protobuf::message item(message.data, bytes);
-                    uint64_t key_id = 0;
+                    int_type key_id = 0;
                     while (item.next()) {
                         if (item.tag == 1) {
                             key_id = item.varint();
@@ -549,7 +592,11 @@ NAN_METHOD(Cache::load)
                             if (key_id == 0) throw std::runtime_error("key_id not initialized!");
                             uint32_t arrays_length = item.varint();
                             string_array_type & vv = larrc[key_id];
+                            #ifdef USE_CXX11
                             vv.emplace_back(string_ref_type((const char *)item.data,arrays_length));
+                            #else
+                            vv.push_back(string_ref_type((const char *)item.data,arrays_length));
+                            #endif
                             item.skipBytes(arrays_length);
                         } else {
                             throw std::runtime_error("hit unknown type");
@@ -563,11 +610,12 @@ NAN_METHOD(Cache::load)
             }
             #endif
         #else
+        arraycache & arrc = c->cache_[key];
         while (message.next()) {
             if (message.tag == 1) {
                 uint32_t bytes = message.varint();
                 protobuf::message item(message.data, bytes);
-                uint64_t key_id = 0;
+                int_type key_id = 0;
                 while (item.next()) {
                     if (item.tag == 1) {
                         key_id = item.varint();
@@ -579,12 +627,20 @@ NAN_METHOD(Cache::load)
                         protobuf::message array(item.data,arrays_length);
                         while (array.next()) {
                             if (array.tag == 1) {
-                                vv.emplace_back(std::vector<uint64_t>());
-                                std::vector<uint64_t> & vvals = vv.back();
+                                #ifdef USE_CXX11
+                                vv.emplace_back(intarray());
+                                #else
+                                vv.push_back(intarray());
+                                #endif
+                                intarray & vvals = vv.back();
                                 uint32_t vals_length = array.varint();
                                 protobuf::message val(array.data,vals_length);
                                 while (val.next()) {
+                                    #ifdef USE_CXX11
                                     vvals.emplace_back(val.value);
+                                    #else
+                                    vvals.push_back(val.value);
+                                    #endif
                                 }
                                 array.skipBytes(vals_length);
                             } else {
@@ -665,7 +721,7 @@ NAN_METHOD(Cache::search)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         std::string shard = *String::Utf8Value(args[1]->ToString());
-        uint64_t id = args[2]->NumberValue();
+        int_type id = args[2]->NumberValue();
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
         memcache & mem = c->cache_;
@@ -693,12 +749,20 @@ NAN_METHOD(Cache::search)
                         protobuf::message pbfarray(item.data,arrays_length);
                         while (pbfarray.next()) {
                             if (pbfarray.tag == 1) {
-                                array.emplace_back(std::vector<uint64_t>());
-                                std::vector<uint64_t> & vvals = array.back();
+                                #ifdef USE_CXX11
+                                array.emplace_back(intarray());
+                                #else
+                                array.push_back(intarray());
+                                #endif
+                                intarray & vvals = array.back();
                                 uint32_t vals_length = pbfarray.varint();
                                 protobuf::message val(pbfarray.data,vals_length);
                                 while (val.next()) {
+                                    #ifdef USE_CXX11
                                     vvals.emplace_back(val.value);
+                                    #else
+                                    vvals.push_back(val.value);
+                                    #endif
                                 }
                                 pbfarray.skipBytes(vals_length);
                             } else {
@@ -719,8 +783,8 @@ NAN_METHOD(Cache::search)
                     protobuf::message pbfarray(refs[i].data(),refs[i].size());
                     while (pbfarray.next()) {
                         if (pbfarray.tag == 1) {
-                            array.emplace_back(std::vector<uint64_t>());
-                            std::vector<uint64_t> & vvals = array.back();
+                            array.emplace_back(intarray());
+                            intarray & vvals = array.back();
                             uint32_t vals_length = pbfarray.varint();
                             protobuf::message val(pbfarray.data,vals_length);
                             while (val.next()) {
@@ -738,7 +802,7 @@ NAN_METHOD(Cache::search)
                     unsigned array_size = array.size();
                     Local<Array> arr_obj = Array::New(array_size);
                     for (unsigned j=0;j<array_size;++j) {
-                        auto arr = array[j];
+                        intarray arr = array[j];
                         unsigned vals_size = arr.size();
                         Local<Array> vals_obj = Array::New(vals_size);
                         for (unsigned k=0;k<vals_size;++k) {
@@ -748,7 +812,7 @@ NAN_METHOD(Cache::search)
                     }
                     NanReturnValue(arr_obj);
                 } else {
-                    auto arr = array[0];
+                    intarray arr = array[0];
                     unsigned vals_size = arr.size();
                     Local<Array> arr_obj = Array::New(vals_size);
                     for (unsigned k=0;k<vals_size;++k) {
@@ -765,12 +829,12 @@ NAN_METHOD(Cache::search)
             if (aitr == itr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                auto const& array = aitr->second;
+                varray const& array = aitr->second;
                 if (type == "grid") {
                     unsigned array_size = array.size();
                     Local<Array> arr_obj = Array::New(array_size);
                     for (unsigned j=0;j<array_size;++j) {
-                        auto arr = array[j];
+                        intarray arr = array[j];
                         unsigned vals_size = arr.size();
                         Local<Array> vals_obj = Array::New(vals_size);
                         for (unsigned k=0;k<vals_size;++k) {
@@ -780,7 +844,7 @@ NAN_METHOD(Cache::search)
                     }
                     NanReturnValue(arr_obj);
                 } else {
-                    auto arr = array[0];
+                    intarray arr = array[0];
                     unsigned vals_size = arr.size();
                     Local<Array> arr_obj = Array::New(vals_size);
                     for (unsigned k=0;k<vals_size;++k) {
