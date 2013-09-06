@@ -1,4 +1,4 @@
-var Cache = require('../cache');
+var Cache = require('../lib/cxxcache');
 var assert = require('assert');
 var fs = require('fs');
 
@@ -55,7 +55,7 @@ describe('cache unit', function() {
 describe('cache getall', function() {
     function getter(type, shard, callback) {
         stats[type]++;
-        fs.readFile(__dirname + '/fixtures/' + type + '.' + shard + '.json', callback);
+        fs.readFile(__dirname + '/fixtures/' + type + '.' + shard + '.pbf', callback);
     };
     var stats = { term:0, grid:0 };
     var cache = new Cache('a', 2);

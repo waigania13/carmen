@@ -7,7 +7,7 @@ var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var EventEmitter = require('events').EventEmitter;
 var DEBUG = process.env.DEBUG;
-var Cache = require('./cache');
+var Cache = require('./lib/cxxcache.js');
 var lockingCache = {};
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
 
