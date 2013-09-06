@@ -84,7 +84,7 @@ function Carmen(options) {
                 if (err) return done(err);
                 source.getInfo(function(err, info) {
                     if (err) return done(err);
-                    source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
+                    source._carmen = source._carmen || new Cache(key, +info.shardlevel || 0);
                     source._carmen.zoom = info.maxzoom;
                     return done();
                 });
