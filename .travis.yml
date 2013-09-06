@@ -10,7 +10,7 @@ before_install:
  - sudo apt-get install gcc-4.7 g++-4.7 libprotobuf7 libprotobuf-dev protobuf-compiler
 
 install:
- - npm install
+ - CXX=g++-4.7 npm install
 
 before_script:
   - npm install mocha
