@@ -120,7 +120,8 @@ carmen._open(function(err) {
 
         s.getCarmen(type, i, function(err, buffer) {
             if (err) return callback(err);
-            s._carmen.load(buffer, type, i);
+            // @TODO should getCarmen return a 0-length buffer in this case?
+            s._carmen.load(buffer || new Buffer(0), type, i);
             var ids = s._carmen.list(type, i);
             while (ids.length) {
                 var id = ids.shift();
