@@ -16,21 +16,22 @@
             './proto/index.proto'
           ],
           'outputs': [
-            "./src/index.pb.cc"
+            "<(SHARED_INTERMEDIATE_DIR)/index.pb.cc"
           ],
-          'action': ['protoc','-Iproto/','--cpp_out=./src/','./proto/index.proto']
+          'action': ['protoc','-Iproto/','--cpp_out=<(SHARED_INTERMEDIATE_DIR)/','./proto/index.proto']
         }
-      ],
+      ]
     },
     {
       'target_name': 'binding',
       'dependencies': [ 'action_before_build' ],
       'sources': [
-        "src/binding.cpp",
-        "src/index.pb.cc"
+        "./src/binding.cpp",
+        "<(SHARED_INTERMEDIATE_DIR)/index.pb.cc"
       ],
       "include_dirs" : [
           'src/',
+          '<(SHARED_INTERMEDIATE_DIR)/',
           "<!(node -p -e \"require('path').dirname(require.resolve('nan'))\")"
       ],
       'xcode_settings': {
@@ -67,7 +68,7 @@
             ]
         }
         ]
-      ],
+      ]
     },
     {
       'target_name': 'action_after_build',
