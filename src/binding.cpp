@@ -22,9 +22,6 @@
 //#define USE_LAZY_PROTO_CACHE
 //#define USE_CXX11
 
-// TODO - drop
-#define LAZY_CACHE_ITEM
-
 // TODO
 // - add ability to materialize lazy cache or just simplify and only use lazy cache
 // - does capnproto expose ability to get raw bytes of item?
@@ -41,12 +38,7 @@ typedef uint64_t int_type;
 //#include <boost/utility/string_ref.hpp>
 //typedef boost::string_ref string_ref_type;
 typedef std::string string_ref_type;
-#ifdef LAZY_CACHE_ITEM
 typedef std::map<int_type,string_ref_type> larraycache;
-#else
-typedef std::vector<string_ref_type> string_array_type; 
-typedef std::map<int_type,string_array_type> larraycache;
-#endif
 typedef larraycache::const_iterator larraycache_iterator;
 typedef std::map<std::string,larraycache> lazycache;
 typedef lazycache::const_iterator lazycache_iterator_type;
@@ -170,7 +162,6 @@ NAN_METHOD(Cache::pack)
                 while (laitr != laend) {
                     ::carmen::proto::object_item * new_item = msg.add_items();
                     new_item->set_key(laitr->first);
-                    #ifdef LAZY_CACHE_ITEM
                     string_ref_type const& ref = laitr->second;
                     protobuf::message item(ref.data(), ref.size());
                     while (item.next()) {
@@ -198,27 +189,6 @@ NAN_METHOD(Cache::pack)
                             throw std::runtime_error("hit unknown type");
                         }
                     }
-                    #else
-                    string_array_type const& refs = laitr->second;
-                    unsigned arrays_length = refs.size();
-                    for (unsigned i=0;i<arrays_length;++i) {
-                        protobuf::message pbfarray(refs[i].data(),refs[i].size());
-                        ::carmen::proto::object_array * new_array = new_item->add_arrays();
-                        while (pbfarray.next()) {
-                            if (pbfarray.tag == 1) {
-                                uint32_t vals_length = pbfarray.varint();
-                                protobuf::message val(pbfarray.data,vals_length);
-                                while (val.next()) {
-                                    new_array->add_val(val.value);
-                                }
-                                pbfarray.skipBytes(vals_length);
-                            } else {
-                                throw std::runtime_error("skipping when shouldnt");
-                                pbfarray.skip();
-                            }
-                        }
-                    }
-                    #endif
                     ++laitr;
                 }
                 ++litr;
@@ -553,62 +523,30 @@ NAN_METHOD(Cache::load)
             c->lazy_.insert(std::make_pair(key,larraycache()));    
         }
         larraycache & larrc = c->lazy_[key];
-            #ifdef LAZY_CACHE_ITEM
-            while (message.next()) {
-                if (message.tag == 1) {
-                    uint32_t bytes = message.varint();
-                    protobuf::message item(message.data, bytes);
-                    while (item.next()) {
-                        if (item.tag == 1) {
-                            int_type key_id = item.varint();
-                            // NOTE: emplace is faster if using std::string
-                            // if using boost::string_ref, std::move is faster
-                            #ifdef USE_CXX11
-                            larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
-                            #else
-                            larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
-                            #endif
-                        } else {
-                            break;
-                        }
+        while (message.next()) {
+            if (message.tag == 1) {
+                uint32_t bytes = message.varint();
+                protobuf::message item(message.data, bytes);
+                while (item.next()) {
+                    if (item.tag == 1) {
+                        int_type key_id = item.varint();
+                        // NOTE: emplace is faster if using std::string
+                        // if using boost::string_ref, std::move is faster
+                        #ifdef USE_CXX11
+                        larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
+                        #else
+                        larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
+                        #endif
+                    } else {
+                        break;
                     }
-                    message.skipBytes(bytes);
-                } else {
-                    throw std::runtime_error("skipping when shouldnt");
-                    message.skip();
                 }
+                message.skipBytes(bytes);
+            } else {
+                throw std::runtime_error("skipping when shouldnt");
+                message.skip();
             }
-            #else
-            while (message.next()) {
-                if (message.tag == 1) {
-                    uint32_t bytes = message.varint();
-                    protobuf::message item(message.data, bytes);
-                    int_type key_id = 0;
-                    while (item.next()) {
-                        if (item.tag == 1) {
-                            key_id = item.varint();
-                            larrc.insert(std::make_pair(key_id,string_array_type()));
-                        } else if (item.tag == 2) {
-                            if (key_id == 0) throw std::runtime_error("key_id not initialized!");
-                            uint32_t arrays_length = item.varint();
-                            string_array_type & vv = larrc[key_id];
-                            #ifdef USE_CXX11
-                            vv.emplace_back(string_ref_type((const char *)item.data,arrays_length));
-                            #else
-                            vv.push_back(string_ref_type((const char *)item.data,arrays_length));
-                            #endif
-                            item.skipBytes(arrays_length);
-                        } else {
-                            throw std::runtime_error("hit unknown type");
-                        }
-                    }
-                    message.skipBytes(bytes);
-                } else {
-                    throw std::runtime_error("skipping when shouldnt");
-                    message.skip();
-                }
-            }
-            #endif
+        }
         #else
         arraycache & arrc = c->cache_[key];
         while (message.next()) {
@@ -737,7 +675,6 @@ NAN_METHOD(Cache::search)
             if (laitr == litr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                #ifdef LAZY_CACHE_ITEM
                 varray array; // TODO - reserve
                 string_ref_type const& ref = laitr->second;
                 protobuf::message item(ref.data(), ref.size());
@@ -775,29 +712,6 @@ NAN_METHOD(Cache::search)
                         throw std::runtime_error("hit unknown type");
                     }
                 }
-                #else
-                string_array_type const& refs = laitr->second;
-                varray array; // TODO - reserve
-                unsigned arrays_length = refs.size();
-                for (unsigned i=0;i<arrays_length;++i) {
-                    protobuf::message pbfarray(refs[i].data(),refs[i].size());
-                    while (pbfarray.next()) {
-                        if (pbfarray.tag == 1) {
-                            array.emplace_back(intarray());
-                            intarray & vvals = array.back();
-                            uint32_t vals_length = pbfarray.varint();
-                            protobuf::message val(pbfarray.data,vals_length);
-                            while (val.next()) {
-                                vvals.emplace_back(val.value);
-                            }
-                            pbfarray.skipBytes(vals_length);
-                        } else {
-                            throw std::runtime_error("skipping when shouldnt");
-                            pbfarray.skip();
-                        }
-                    }
-                }
-                #endif
                 if (type == "grid") {
                     unsigned array_size = array.size();
                     Local<Array> arr_obj = Array::New(array_size);
