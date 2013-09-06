@@ -6,10 +6,19 @@ UTFGrid/MBTiles-based geocoder with support for swappable data sources.
 
  - Node v0.8.x or Node v0.10.x
  - sqlite3 command line program (`apt-get install sqlite3`)
+ - libprotobuf-lite and protoc compiler
+ - C++11 capable compiler (>= g++ 4.7 or >= clang 3.2)
 
 ## Install
 
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo apt-get update
+    sudo apt-get install gcc-4.7 g++-4.7 libprotobuf7 libprotobuf-dev protobuf-compiler
+    export CC=gcc-4.7
+    export CXX=g++-4.7
     npm install && ./scripts/install-dbs.sh
+
+Note: if running as `root` user you need to do `npm install --unsafe-perm` to avoid `cannot run in wd carmen@0.1.0` error that prevents the build.
 
 Installs dependencies and downloads the default tiles indexes (about 1GB of data).
 
