@@ -246,7 +246,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 if (!--remaining) {
                     zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1 });
                     data.stats.searchTime = +new Date - data.stats.searchTime;
-                    data.stats.searchCount = _(feats).reduce(function(sum, feat) { return sum + _(feat).size() }, 0);
+                    data.stats.searchCount = _(grids).reduce(function(sum, v) { return sum + v.length }, 0);
                     data.stats.relevTime = +new Date;
                     callback(null, feats, grids, zooms);
                 }
