@@ -58,7 +58,7 @@ carmen._open(function(err) {
         s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
             if (err) return callback(err);
             if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
-            var id = result[0][0];
+            var id = result[0] % Math.pow(2,25);
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
@@ -81,7 +81,7 @@ carmen._open(function(err) {
         var ids = [grid];
         s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
             if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
-            var id = result[0][0];
+            var id = result[0] % Math.pow(2,25);
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';

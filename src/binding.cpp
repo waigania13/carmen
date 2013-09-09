@@ -331,42 +331,20 @@ NAN_METHOD(Cache::set)
             vv.clear();
         }
         unsigned array_size = data->Length();
-        if (type == "grid") {
-            vv.reserve(array_size);
-            for (unsigned i=0;i<array_size;++i) {
-                #ifdef USE_CXX11
-                vv.emplace_back(intarray());
-                #else
-                vv.push_back(intarray());
-                #endif
-                intarray & vvals = vv.back();
-                Local<Array> subarray = Local<Array>::Cast(data->Get(i));
-                unsigned vals_size = subarray->Length();
-                vvals.reserve(vals_size);
-                for (unsigned k=0;k<vals_size;++k) {
-                    #ifdef USE_CXX11
-                    vvals.emplace_back(subarray->Get(k)->NumberValue());
-                    #else
-                    vvals.push_back(subarray->Get(k)->NumberValue());
-                    #endif
-                }
-            }
-        } else {
-            vv.reserve(1);
+        vv.reserve(1);
+        #ifdef USE_CXX11
+        vv.emplace_back(intarray());
+        #else
+        vv.push_back(intarray());
+        #endif
+        intarray & vvals = vv.back();
+        vvals.reserve(array_size);
+        for (unsigned i=0;i<array_size;++i) {
             #ifdef USE_CXX11
-            vv.emplace_back(intarray());
+            vvals.emplace_back(data->Get(i)->NumberValue());
             #else
-            vv.push_back(intarray());
+            vvals.push_back(data->Get(i)->NumberValue());
             #endif
-            intarray & vvals = vv.back();
-            vvals.reserve(array_size);
-            for (unsigned i=0;i<array_size;++i) {
-                #ifdef USE_CXX11
-                vvals.emplace_back(data->Get(i)->NumberValue());
-                #else
-                vvals.push_back(data->Get(i)->NumberValue());
-                #endif
-            }
         }
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
@@ -414,49 +392,23 @@ NAN_METHOD(Cache::loadJSON)
                 arrc.insert(std::make_pair(key_id,varray()));
                 varray & vv = arrc[key_id];
                 v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
-                if (type == "grid") {
-                    uint32_t arr_len = arr->Length();
-                    vv.reserve(arr_len);
-                    for (uint32_t j=0;j < arr_len;++j) {
-                        v8::Local<v8::Value> val_array = arr->Get(j);
-                        if (val_array->IsArray()) {
-                            #ifdef USE_CXX11
-                            vv.emplace_back(intarray());
-                            #else
-                            vv.push_back(intarray());
-                            #endif
-                            intarray & vvals = vv.back();
-                            v8::Local<v8::Array> vals = v8::Local<v8::Array>::Cast(val_array);
-                            uint32_t val_len = vals->Length();
-                            vvals.reserve(val_len);
-                            for (uint32_t k=0;k < val_len;++k) {
-                                #ifdef USE_CXX11
-                                vvals.emplace_back(vals->Get(k)->NumberValue());
-                                #else
-                                vvals.push_back(vals->Get(k)->NumberValue());
-                                #endif
-                            }
-                        }
-                    }
-                } else {
-                    uint32_t arr_len = arr->Length();
-                    vv.reserve(1);
-                    #ifdef USE_CXX11
-                    vv.emplace_back(intarray());
-                    #else
-                    vv.push_back(intarray());
-                    #endif
-                    intarray & vvals = vv.back();
-                    vvals.reserve(arr_len);
-                    for (uint32_t j=0;j < arr_len;++j) {
-                        v8::Local<v8::Value> val = arr->Get(j);
-                        if (val->IsNumber()) {
-                            #ifdef USE_CXX11
-                            vvals.emplace_back(val->NumberValue());
-                            #else
-                            vvals.push_back(val->NumberValue());
-                            #endif
-                        }
+                uint32_t arr_len = arr->Length();
+                vv.reserve(1);
+                #ifdef USE_CXX11
+                vv.emplace_back(intarray());
+                #else
+                vv.push_back(intarray());
+                #endif
+                intarray & vvals = vv.back();
+                vvals.reserve(arr_len);
+                for (uint32_t j=0;j < arr_len;++j) {
+                    v8::Local<v8::Value> val = arr->Get(j);
+                    if (val->IsNumber()) {
+                        #ifdef USE_CXX11
+                        vvals.emplace_back(val->NumberValue());
+                        #else
+                        vvals.push_back(val->NumberValue());
+                        #endif
                     }
                 }
             }
@@ -712,28 +664,13 @@ NAN_METHOD(Cache::search)
                         throw std::runtime_error("hit unknown type");
                     }
                 }
-                if (type == "grid") {
-                    unsigned array_size = array.size();
-                    Local<Array> arr_obj = Array::New(array_size);
-                    for (unsigned j=0;j<array_size;++j) {
-                        intarray arr = array[j];
-                        unsigned vals_size = arr.size();
-                        Local<Array> vals_obj = Array::New(vals_size);
-                        for (unsigned k=0;k<vals_size;++k) {
-                            vals_obj->Set(k,Number::New(arr[k]));
-                        }
-                        arr_obj->Set(j,vals_obj);
-                    }
-                    NanReturnValue(arr_obj);
-                } else {
-                    intarray arr = array[0];
-                    unsigned vals_size = arr.size();
-                    Local<Array> arr_obj = Array::New(vals_size);
-                    for (unsigned k=0;k<vals_size;++k) {
-                        arr_obj->Set(k,Number::New(arr[k]));
-                    }
-                    NanReturnValue(arr_obj);
+                intarray arr = array[0];
+                unsigned vals_size = arr.size();
+                Local<Array> arr_obj = Array::New(vals_size);
+                for (unsigned k=0;k<vals_size;++k) {
+                    arr_obj->Set(k,Number::New(arr[k]));
                 }
+                NanReturnValue(arr_obj);
             }
             #else
             NanReturnValue(Undefined());
@@ -744,28 +681,13 @@ NAN_METHOD(Cache::search)
                 NanReturnValue(Undefined());
             } else {
                 varray const& array = aitr->second;
-                if (type == "grid") {
-                    unsigned array_size = array.size();
-                    Local<Array> arr_obj = Array::New(array_size);
-                    for (unsigned j=0;j<array_size;++j) {
-                        intarray arr = array[j];
-                        unsigned vals_size = arr.size();
-                        Local<Array> vals_obj = Array::New(vals_size);
-                        for (unsigned k=0;k<vals_size;++k) {
-                            vals_obj->Set(k,Number::New(arr[k]));
-                        }
-                        arr_obj->Set(j,vals_obj);
-                    }
-                    NanReturnValue(arr_obj);
-                } else {
-                    intarray arr = array[0];
-                    unsigned vals_size = arr.size();
-                    Local<Array> arr_obj = Array::New(vals_size);
-                    for (unsigned k=0;k<vals_size;++k) {
-                        arr_obj->Set(k,Number::New(arr[k]));
-                    }
-                    NanReturnValue(arr_obj);
+                intarray arr = array[0];
+                unsigned vals_size = arr.size();
+                Local<Array> arr_obj = Array::New(vals_size);
+                for (unsigned k=0;k<vals_size;++k) {
+                    arr_obj->Set(k,Number::New(arr[k]));
                 }
+                NanReturnValue(arr_obj);
             }
         }
     } catch (std::exception const& ex) {

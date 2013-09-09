@@ -77,6 +77,8 @@ function Carmen(options) {
                 if (err) return done(err);
                 source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
                 source._carmen.zoom = info.maxzoom;
+                source._carmen.name = key;
+                source._carmen.idx = Object.keys(options).indexOf(key);
                 return done();
             });
         } else {
@@ -86,6 +88,8 @@ function Carmen(options) {
                     if (err) return done(err);
                     source._carmen = source._carmen || new Cache(key, +info.shardlevel || 0);
                     source._carmen.zoom = info.maxzoom;
+                    source._carmen.name = key;
+                    source._carmen.idx = Object.keys(options).indexOf(key);
                     return done();
                 });
             });
@@ -223,60 +227,62 @@ Carmen.prototype.geocode = function(query, callback) {
     data.stats.searchTime = +new Date;
 
     function search(callback) {
-        var result = [];
+        var feats = [];
+        var grids = [];
         var remaining = types.length;
         types.forEach(function(dbname, pos) {
-            carmen.search(indexes[dbname], data.query.join(' '), null, function(err, rows, stats) {
+            carmen.search(indexes[dbname], data.query.join(' '), null, function(err, feat, grid, stats) {
                 if (err) {
                     remaining = 0;
                     return callback(err);
                 }
-                if (rows.length) {
-                    var z = rows[0].zxy[0]/1e14|0;
+                if (grid.length) {
+                    var z = indexes[dbname]._carmen.zoom;
                     if (zooms.indexOf(z) === -1) zooms.push(z);
-                    for (var j = 0, l = rows.length; j < l; j++) {
-                        rows[j].db = dbname;
-                        rows[j].tmpid = (types.indexOf(dbname) * 1e14 + rows[j].id);
-                    }
                 }
-                result[pos] = rows;
+                feats[pos] = feat;
+                grids[pos] = grid;
                 if (DEBUG) data.stats['search.' + dbname] = stats;
                 if (!--remaining) {
                     zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1 });
-                    result = result.concat.apply([], result);
                     data.stats.searchTime = +new Date - data.stats.searchTime;
-                    data.stats.searchCount = result.length;
+                    data.stats.searchCount = feats.reduce(function(sum, feat) { return sum + feat.length }, 0);
                     data.stats.relevTime = +new Date;
-                    callback(null, result, zooms);
+                    callback(null, feats, grids, zooms);
                 }
             });
         });
     };
 
-    function relev(rows, zooms, callback) {
+    function relev(feats, grids, zooms, callback) {
         var relevd = {};
         var coalesced = {};
 
         // Coalesce relevs into higher zooms, e.g.
         // z5 inherits relev of overlapping tiles at z4.
         // @TODO assumes sources are in zoom ascending order.
-        for (var i = 0; i < rows.length; i++) {
-            var f = rows[i];
-            var z = Math.floor(f.zxy[0]/1e14);
-            for (var c = 0; c < f.zxy.length; c++) {
-                var zxy = f.zxy[c];
+        var xd = Math.pow(2,39);
+        var yd = Math.pow(2,25);
+        for (var h = 0; h < grids.length; h++) {
+            var grid = grids[h];
+            var feat = feats[h];
+            var z = indexes[types[h]]._carmen.zoom;
+            for (var i = 0; i < grid.length; i++) {
+                var f = feat[grid[i] % yd];
+                if (!f) continue;
+                var x = Math.floor(grid[i]/xd);
+                var y = Math.floor(grid[i]%xd/yd);
+                var zxy = (z * Math.pow(2,28)) + (x * Math.pow(2,14)) + y
                 if (coalesced[zxy]) {
                     coalesced[zxy].push(f);
                 } else {
                     coalesced[zxy] = [f];
                 }
                 var a = 0;
-                var x = Math.floor((zxy % 1e14) / 1e7);
-                var y = zxy % 1e7;
                 while (zooms[a] < z) {
                     var p = zooms[a];
                     var s = 1 << (z-p);
-                    var pxy = (p * 1e14) + (Math.floor(x/s) * 1e7) + Math.floor(y/s);
+                    var pxy = (p * Math.pow(2,28)) + (Math.floor(x/s) * Math.pow(2,14)) + Math.floor(y/s);
                     if (coalesced[pxy]) coalesced[zxy].push.apply(coalesced[zxy],coalesced[pxy]);
                     a++;
                 }
@@ -361,9 +367,9 @@ Carmen.prototype.geocode = function(query, callback) {
         });
     };
 
-    search(function(err, rows, zooms) {
+    search(function(err, feats, grids, zooms) {
         if (err) return callback(err);
-        relev(rows, zooms, function(err, contexts, relevd) {
+        relev(feats, grids, zooms, function(err, contexts, relevd) {
             if (err) return callback(err);
 
             // Confirm that the context contains the terms that contributed
@@ -464,6 +470,8 @@ Carmen.prototype.search = function(source, query, id, callback) {
         this.search(source, query, id, callback);
     }.bind(this));
 
+    var idx = source._carmen.idx;
+    var dbname = source._carmen.name;
     var terms = Carmen.terms(query);
     var weights = {}; // @TODO shared cache for this?
     var relevs = {};
@@ -581,22 +589,25 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
 
             var result = [];
+            var features = {};
             for (var a = 0; a < queue.length; a++) {
                 var id = queue[a];
                 var relev = relevs[id];
                 var grids = source._carmen.get('grid', id);
                 for (var i = 0; i < grids.length; i++) {
                     var grid = grids[i];
-                    if (!docrelev[grid[0]] || docrelev[grid[0]] < relev.tmprelev) {
-                        result.push(new Relev(grid[0], grid.slice(1), relev.relev, relev.reason));
-                        docrelev[grid[0]] = relev.tmprelev;
+                    var feat = grid % Math.pow(2,25);
+                    if (!features[feat] || docrelev[feat] < relev.tmprelev) {
+                        features[feat] = new Relev(feat, relev.relev, relev.reason, idx, dbname, idx * 1e14 + feat);
+                        docrelev[feat] = relev.tmprelev;
                     }
                 }
+                result.push.apply(result, grids);
             }
 
             stats.grid[2] = stats.grid[2] && (+new Date - stats.grid[2]);
             stats.grid[1] = result.length;
-            return callback(null, result);
+            return callback(null, features, result);
         });
     };
 
@@ -607,9 +618,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             getfreqs(terms, function(err) {
                 if (err) return callback(err);
                 var relevd = getrelevd(phrases);
-                getgrids(relevd, function(err, result) {
+                getgrids(relevd, function(err, features, result) {
                     if (err) return callback(err);
-                    return callback(null, result, stats);
+                    return callback(null, features, result, stats);
                 });
             });
         });
@@ -682,7 +693,9 @@ Carmen.prototype.index = function(source, docs, callback) {
 
         docs.forEach(function(doc) {
             doc.id = parseInt(doc.id,10);
-            doc.zxy = doc.zxy ? doc.zxy.map(Carmen.zxy) : [];
+            doc.zxy = doc.zxy ? doc.zxy.map(function(zxy) {
+                return Carmen.zxy(doc.id, zxy);
+            }) : [];
 
             var phrases = doc.phrases;
             var termsets = doc.termsets;
@@ -690,7 +703,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             phrases.forEach(function(id, x) {
                 patch.phrase[id] = patch.phrase[id] || termsets[x];
                 patch.grid[id] = patch.grid[id] || [];
-                patch.grid[id].push([doc.id].concat(doc.zxy));
+                patch.grid[id].push.apply(patch.grid[id], doc.zxy);
             });
 
             termsets.forEach(function(terms, x) {
@@ -861,10 +874,13 @@ Carmen.termsDebug = function(text) {
     }, {});
 };
 
-// Converts zxy coordinates into an array of zxy IDs.
-Carmen.zxy = function(zxy) {
+// Converts id + zxy coordinates into an array of zxy IDs.
+// z is omitted as it can be derived from source maxzoom metadata.
+// x and y are encoded as multiples of Math.pow(2,14) (making z14 the
+// maximum zoom level) leaving Math.pow(2,25) distinct values for IDs.
+Carmen.zxy = function(id, zxy) {
     zxy = zxy.split('/');
-    return ((zxy[0]|0) * 1e14) + ((zxy[1]|0) * 1e7) + (zxy[2]|0);
+    return ((zxy[1]|0) * Math.pow(2,39)) + ((zxy[2]|0) * Math.pow(2,25)) + id;
 };
 
 // Generate a Carmen options hash automatically reading sources in a directory.
@@ -914,11 +930,13 @@ Locking.prototype.loader = function(callback) {
 
 // Prototype for relevance relevd rows of Carmen.search.
 // Defined to take advantage of V8 class performance.
-function Relev(id, zxy, relev, reason) {
+function Relev(id, relev, reason, idx, db, tmpid) {
     this.id = id;
-    this.zxy = zxy;
     this.relev = relev;
     this.reason = reason;
+    this.idx = idx;
+    this.db = db;
+    this.tmpid = tmpid;
 };
 
 module.exports = Carmen;
