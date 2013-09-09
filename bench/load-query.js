@@ -3,7 +3,7 @@ var CXXCache = require('../lib/cxxcache');
 var fs = require('fs');
 var assert = require('assert');
 
-var times = 100;
+var times = 1000;
 var max_shard = 2;
 
 function getter(type, shard, file_ext) {
@@ -21,9 +21,9 @@ for (var i=0;i<times;++i) {
         }
     });
     console.time('  3 gets');
-    assert.deepEqual(cache.get('grid',52712469173248),[[104101,1100010900000591]]);
-    assert.deepEqual(cache.get('grid',98071753006080),[[10996,1100005350000776,1100005350000775]]);
-    assert.deepEqual(cache.get('grid',141956873251072),[[109619,1100010400000685]]);
+    assert.deepEqual(cache.get('grid',52712469173248),[104101,1100010900000591]);
+    assert.deepEqual(cache.get('grid',98071753006080),[10996,1100005350000776,1100005350000775]);
+    assert.deepEqual(cache.get('grid',141956873251072),[109619,1100010400000685]);
     if (i==0) console.timeEnd('  3 gets');
     console.time('  30 gets');
     for (var j=0;j<30;++j) {
