@@ -588,6 +588,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         source._carmen.getall(source.getCarmen.bind(source), 'grid', queue, function(err) {
             if (err) return callback(err);
 
+            var idmod = Math.pow(2,25);
             var result = [];
             var features = {};
             for (var a = 0; a < queue.length; a++) {
@@ -596,7 +597,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
                 var grids = source._carmen.get('grid', id);
                 for (var i = 0; i < grids.length; i++) {
                     var grid = grids[i];
-                    var feat = grid % Math.pow(2,25);
+                    var feat = grid % idmod;
                     if (!features[feat] || docrelev[feat] < relev.tmprelev) {
                         features[feat] = new Relev(feat, relev.relev, relev.reason, idx, dbname, idx * 1e14 + feat);
                         docrelev[feat] = relev.tmprelev;
