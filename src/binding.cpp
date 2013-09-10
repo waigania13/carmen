@@ -54,7 +54,10 @@ public:
     static void Initialize(Handle<Object> target);
     static NAN_METHOD(New);
     static NAN_METHOD(has);
+    static NAN_METHOD(loadSync);
     static NAN_METHOD(load);
+    static void AsyncLoad(uv_work_t* req);
+    static void AfterLoad(uv_work_t* req);
     static NAN_METHOD(loadJSON);
     static NAN_METHOD(search);
     static NAN_METHOD(pack);
@@ -65,12 +68,12 @@ public:
     Cache(std::string const& id, int shardlevel);
     void _ref() { Ref(); }
     void _unref() { Unref(); }
-private:
-    ~Cache();
     std::string id_;
     int shardlevel_;
     memcache cache_;
     lazycache lazy_;
+private:
+    ~Cache();
 };
 
 Persistent<FunctionTemplate> Cache::constructor;
@@ -82,6 +85,7 @@ void Cache::Initialize(Handle<Object> target) {
     t->SetClassName(String::NewSymbol("Cache"));
     NODE_SET_PROTOTYPE_METHOD(t, "has", has);
     NODE_SET_PROTOTYPE_METHOD(t, "load", load);
+    NODE_SET_PROTOTYPE_METHOD(t, "loadSync", loadSync);
     NODE_SET_PROTOTYPE_METHOD(t, "loadJSON", loadJSON);
     NODE_SET_PROTOTYPE_METHOD(t, "search", search);
     NODE_SET_PROTOTYPE_METHOD(t, "pack", pack);
@@ -300,7 +304,7 @@ NAN_METHOD(Cache::set)
         memcache & mem = c->cache_;
         mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));    
+            c->cache_.insert(std::make_pair(key,arraycache()));
         }
         arraycache & arrc = c->cache_[key];
         int_type key_id = args[2]->NumberValue();
@@ -354,7 +358,7 @@ NAN_METHOD(Cache::loadJSON)
         memcache & mem = c->cache_;
         mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));    
+            c->cache_.insert(std::make_pair(key,arraycache()));
         }
         arraycache & arrc = c->cache_[key];
         v8::Local<v8::Array> propertyNames = obj->GetPropertyNames();
@@ -387,11 +391,92 @@ NAN_METHOD(Cache::loadJSON)
     NanReturnValue(Undefined());
 }
 
-NAN_METHOD(Cache::load)
+void load_into_cache(Cache* c,
+                     std::string const& key,
+                     const char * data,
+                     size_t size) {
+    memcache & mem = c->cache_;
+    mem_iterator_type itr = mem.find(key);
+    if (itr == mem.end()) {
+        c->cache_.insert(std::make_pair(key,arraycache()));
+    }
+#ifdef USE_LAZY_PROTO_CACHE
+    memcache::iterator itr2 = mem.find(key);
+    if (itr2 != mem.end()) {
+        mem.erase(itr2);
+    }
+    lazycache & lazy = c->lazy_;
+    lazycache_iterator_type litr = lazy.find(key);
+    if (litr == lazy.end()) {
+        c->lazy_.insert(std::make_pair(key,larraycache()));
+    }
+    larraycache & larrc = c->lazy_[key];
+    protobuf::message message(data,size);
+    while (message.next()) {
+        if (message.tag == 1) {
+            uint32_t bytes = message.varint();
+            protobuf::message item(message.data, bytes);
+            while (item.next()) {
+                if (item.tag == 1) {
+                    int_type key_id = item.varint();
+                    // NOTE: emplace is faster with libcxx if using std::string
+                    // if using boost::string_ref, std::move is faster
+                    #ifdef USE_CXX11
+                    larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
+                    #else
+                    larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
+                    #endif
+                } else {
+                    break;
+                }
+            }
+            message.skipBytes(bytes);
+        } else {
+            throw std::runtime_error("a skipping when shouldnt");
+            message.skip();
+        }
+    }
+#else
+    arraycache & arrc = c->cache_[key];
+    while (message.next()) {
+        if (message.tag == 1) {
+            uint32_t bytes = message.varint();
+            protobuf::message item(message.data, bytes);
+            int_type key_id = 0;
+            while (item.next()) {
+                if (item.tag == 1) {
+                    key_id = item.varint();
+                    arrc.insert(std::make_pair(key_id,intarray()));
+                } else if (item.tag == 2) {
+                    intarray & vv = arrc[key_id];
+                    uint32_t arrays_length = item.varint();
+                    protobuf::message array(item.data,arrays_length);
+                    while (array.next()) {
+                        #ifdef USE_CXX11
+                        vv.emplace_back(array.value);
+                        #else
+                        vv.push_back(array.value);
+                        #endif
+                    }
+                    item.skipBytes(arrays_length);
+                } else {
+                    throw std::runtime_error("hit unknown type");
+                }
+            }
+            message.skipBytes(bytes);
+        } else {
+            throw std::runtime_error("c skipping when shouldnt");
+            message.skip();
+        }
+    }
+#endif
+}
+
+NAN_METHOD(Cache::loadSync)
 {
     NanScope();
-    if (args.Length() < 3) {
-        return NanThrowTypeError("expected four args: 'buffer','type','shard','encoding'");
+    if (args.Length() < 2) {
+        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -409,102 +494,125 @@ NAN_METHOD(Cache::load)
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
     }
-    try {
-        std::string encoding("protobuf");
-        if (args.Length() > 3) {
-            // ignore undefined/null
-            if (args[3]->IsString()) {
-                encoding = *String::Utf8Value(args[3]->ToString());
-                if (encoding != "protobuf") {
-                    return NanThrowTypeError((std::string("invalid encoding: ")+ encoding).c_str());
-                }
-            }
+    if (args.Length() > 3) {
+        if (!args[3]->IsObject()) {
+            return ThrowException(Exception::TypeError(
+                                      String::New("optional second arg must be an options object")));
         }
-        const char * cdata = node::Buffer::Data(obj);
-        size_t size = node::Buffer::Length(obj);
+        // TODO - handle options in the future
+        //Local<Object> options = args[3]->ToObject();
+    }
+    try {
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
-        if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));    
-        }
-        protobuf::message message(cdata,size);
-        #ifdef USE_LAZY_PROTO_CACHE
-        memcache::iterator itr2 = mem.find(key);
-        if (itr2 != mem.end()) {
-            mem.erase(itr2);
-        }
-        lazycache & lazy = c->lazy_;
-        lazycache_iterator_type litr = lazy.find(key);
-        if (litr == lazy.end()) {
-            c->lazy_.insert(std::make_pair(key,larraycache()));    
-        }
-        larraycache & larrc = c->lazy_[key];
-        while (message.next()) {
-            if (message.tag == 1) {
-                uint32_t bytes = message.varint();
-                protobuf::message item(message.data, bytes);
-                while (item.next()) {
-                    if (item.tag == 1) {
-                        int_type key_id = item.varint();
-                        // NOTE: emplace is faster if using std::string
-                        // if using boost::string_ref, std::move is faster
-                        #ifdef USE_CXX11
-                        larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
-                        #else
-                        larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
-                        #endif
-                    } else {
-                        break;
-                    }
-                }
-                message.skipBytes(bytes);
-            } else {
-                throw std::runtime_error("a skipping when shouldnt");
-                message.skip();
-            }
-        }
-        #else
-        arraycache & arrc = c->cache_[key];
-        while (message.next()) {
-            if (message.tag == 1) {
-                uint32_t bytes = message.varint();
-                protobuf::message item(message.data, bytes);
-                int_type key_id = 0;
-                while (item.next()) {
-                    if (item.tag == 1) {
-                        key_id = item.varint();
-                        arrc.insert(std::make_pair(key_id,intarray()));
-                    } else if (item.tag == 2) {
-                        intarray & vv = arrc[key_id];
-                        uint32_t arrays_length = item.varint();
-                        protobuf::message array(item.data,arrays_length);
-                        while (array.next()) {
-                            #ifdef USE_CXX11
-                            vv.emplace_back(array.value);
-                            #else
-                            vv.push_back(array.value);
-                            #endif
-                        }
-                        item.skipBytes(arrays_length);
-                    } else {
-                        throw std::runtime_error("hit unknown type");
-                    }
-                }
-                message.skipBytes(bytes);
-            } else {
-                throw std::runtime_error("c skipping when shouldnt");
-                message.skip();
-            }
-        }
-        #endif
+        load_into_cache(c,key,node::Buffer::Data(obj),node::Buffer::Length(obj));
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
     NanReturnValue(Undefined());
+}
+
+struct load_baton {
+    uv_work_t request;
+    Cache * c;
+    Persistent<Function> cb;
+    std::string key;
+    bool error;
+    std::string error_name;
+    const char * data;
+    size_t size;
+    load_baton(std::string const& _key) :
+      key(_key),
+      error(false),
+      error_name() {}
+};
+
+void Cache::AsyncLoad(uv_work_t* req) {
+    load_baton *closure = static_cast<load_baton *>(req->data);
+    try {
+        load_into_cache(closure->c,closure->key,closure->data,closure->size);
+    }
+    catch (std::exception const& ex)
+    {
+        closure->error = true;
+        closure->error_name = ex.what();
+    }
+}
+
+void Cache::AfterLoad(uv_work_t* req) {
+    NanScope();
+    load_baton *closure = static_cast<load_baton *>(req->data);
+    TryCatch try_catch;
+    if (closure->error) {
+        Local<Value> argv[1] = { Exception::Error(String::New(closure->error_name.c_str())) };
+        closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
+    } else {
+        Local<Value> argv[1] = { Local<Value>::New(Null()) };
+        closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
+    }
+    if (try_catch.HasCaught())
+    {
+        node::FatalException(try_catch);
+    }
+    closure->c->_unref();
+    closure->cb.Dispose();
+    delete closure;
+}
+
+NAN_METHOD(Cache::load)
+{
+    NanScope();
+    Local<Value> callback = args[args.Length()-1];
+    if (!args[args.Length()-1]->IsFunction()) {
+        return loadSync(args);
+    }
+    if (args.Length() < 2) {
+        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
+    }
+    if (!args[0]->IsObject()) {
+        return NanThrowTypeError("first argument must be a buffer");
+    }
+    Local<Object> obj = args[0]->ToObject();
+    if (obj->IsNull() || obj->IsUndefined()) {
+        return NanThrowTypeError("a buffer expected for first argument");
+    }
+    if (!node::Buffer::HasInstance(obj)) {
+        return NanThrowTypeError("first argument must be a buffer");
+    }
+    if (!args[1]->IsString()) {
+        return NanThrowTypeError("second arg 'type' must be a string");
+    }
+    if (!args[2]->IsNumber()) {
+        return NanThrowTypeError("third arg 'shard' must be an Integer");
+    }
+    if (args.Length() > 3) {
+        if (!args[3]->IsObject()) {
+            return ThrowException(Exception::TypeError(
+                                      String::New("optional second arg must be an options object")));
+        }
+        // TODO - handle options in the future
+        //Local<Object> options = args[3]->ToObject();
+    }
+
+    try {
+        std::string type = *String::Utf8Value(args[1]->ToString());
+        std::string shard = *String::Utf8Value(args[2]->ToString());
+        std::string key = type + "-" + shard;
+        load_baton *closure = new load_baton(key);
+        closure->request.data = closure;
+        closure->c = node::ObjectWrap::Unwrap<Cache>(args.This());
+        closure->data = node::Buffer::Data(obj);
+        closure->size = node::Buffer::Length(obj);
+        closure->cb = Persistent<Function>::New(Handle<Function>::Cast(callback));
+        uv_queue_work(uv_default_loop(), &closure->request, AsyncLoad, (uv_after_work_cb)AfterLoad);
+        closure->c->_ref();
+        return Undefined();
+    } catch (std::exception const& ex) {
+        return NanThrowTypeError(ex.what());
+    }
+
 }
 
 

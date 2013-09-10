@@ -25,7 +25,7 @@ describe('cache unit', function() {
     it('Cache.uniq', function() {
         assert.deepEqual([1,2,3,4,5], Cache.uniq([5,3,1,2,5,4,3,1,4,2]));
     });
-    it('cache sync', function() {
+    it('cache sync', function(done) {
         var cache = new Cache('a', 1);
         assert.equal('a', cache.id);
         assert.equal(1, cache.shardlevel);
@@ -49,6 +49,14 @@ describe('cache unit', function() {
         assert.deepEqual([5,6], loader.get('term', 21));
         assert.deepEqual([5], loader.list('term'), 'single shard');
         assert.deepEqual([5, 21], loader.list('term', 5), 'keys in shard');
+        // async load
+        var loader2 = new Cache('b', 1);
+        loader2.load(pack, 'term', 5,function(err) {
+            assert.deepEqual([5,6], loader2.get('term', 21));
+            assert.deepEqual([5], loader2.list('term'), 'single shard');
+            assert.deepEqual([5, 21], loader2.list('term', 5), 'keys in shard');
+            done();
+        });
     });
 });
 
