@@ -35,8 +35,6 @@ using namespace v8;
 typedef uint64_t int_type;
 
 // lazy ref item
-//#include <boost/utility/string_ref.hpp>
-//typedef boost::string_ref string_ref_type;
 typedef std::string string_ref_type;
 typedef std::map<int_type,string_ref_type> larraycache;
 typedef larraycache::const_iterator larraycache_iterator;
@@ -45,8 +43,7 @@ typedef lazycache::const_iterator lazycache_iterator_type;
 
 // fully cached item
 typedef std::vector<int_type> intarray;
-typedef std::vector<intarray> varray;
-typedef std::map<int_type,varray> arraycache;
+typedef std::map<int_type,intarray> arraycache;
 typedef arraycache::const_iterator arraycache_iterator;
 typedef std::map<std::string,arraycache> memcache;
 typedef memcache::const_iterator mem_iterator_type;
@@ -140,14 +137,10 @@ NAN_METHOD(Cache::pack)
             while (aitr != aend) {
                 ::carmen::proto::object_item * new_item = msg.add_items(); 
                 new_item->set_key(aitr->first);
-                varray const & varr = aitr->second;
+                intarray const & varr = aitr->second;
                 unsigned varr_size = varr.size();
                 for (unsigned i=0;i<varr_size;++i) {
-                    ::carmen::proto::object_array * array = new_item->add_arrays();
-                    intarray const& vals = varr[i];
-                    for (unsigned j=0;j<vals.size();++j) {
-                        array->add_val(vals[j]);
-                    }
+                    new_item->add_val(varr[i]);
                 }
                 ++aitr;
             }
@@ -170,19 +163,8 @@ NAN_METHOD(Cache::pack)
                         } else if (item.tag == 2) {
                             uint32_t arrays_length = item.varint();
                             protobuf::message pbfarray(item.data,arrays_length);
-                            ::carmen::proto::object_array * new_array = new_item->add_arrays();
                             while (pbfarray.next()) {
-                                if (pbfarray.tag == 1) {
-                                    uint32_t vals_length = pbfarray.varint();
-                                    protobuf::message val(pbfarray.data,vals_length);
-                                    while (val.next()) {
-                                        new_array->add_val(val.value);
-                                    }
-                                    pbfarray.skipBytes(vals_length);
-                                } else {
-                                    throw std::runtime_error("skipping when shouldnt");
-                                    pbfarray.skip();
-                                }
+                                new_item->add_val(pbfarray.value);
                             }
                             item.skipBytes(arrays_length);
                         } else {
@@ -324,26 +306,19 @@ NAN_METHOD(Cache::set)
         int_type key_id = args[2]->NumberValue();
         arraycache_iterator itr2 = arrc.find(key_id);
         if (itr2 == arrc.end()) {
-            arrc.insert(std::make_pair(key_id,varray()));   
+            arrc.insert(std::make_pair(key_id,intarray()));   
         }
-        varray & vv = arrc[key_id];
+        intarray & vv = arrc[key_id];
         if (itr2 != arrc.end()) {
             vv.clear();
         }
         unsigned array_size = data->Length();
-        vv.reserve(1);
-        #ifdef USE_CXX11
-        vv.emplace_back(intarray());
-        #else
-        vv.push_back(intarray());
-        #endif
-        intarray & vvals = vv.back();
-        vvals.reserve(array_size);
+        vv.reserve(array_size);
         for (unsigned i=0;i<array_size;++i) {
             #ifdef USE_CXX11
-            vvals.emplace_back(data->Get(i)->NumberValue());
+            vv.emplace_back(data->Get(i)->NumberValue());
             #else
-            vvals.push_back(data->Get(i)->NumberValue());
+            vv.push_back(data->Get(i)->NumberValue());
             #endif
         }
     } catch (std::exception const& ex) {
@@ -389,25 +364,18 @@ NAN_METHOD(Cache::loadJSON)
             v8::Local<v8::Value> prop = obj->Get(key);
             if (prop->IsArray()) {
                 int_type key_id = key->NumberValue();
-                arrc.insert(std::make_pair(key_id,varray()));
-                varray & vv = arrc[key_id];
+                arrc.insert(std::make_pair(key_id,intarray()));
+                intarray & vv = arrc[key_id];
                 v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
                 uint32_t arr_len = arr->Length();
-                vv.reserve(1);
-                #ifdef USE_CXX11
-                vv.emplace_back(intarray());
-                #else
-                vv.push_back(intarray());
-                #endif
-                intarray & vvals = vv.back();
-                vvals.reserve(arr_len);
+                vv.reserve(arr_len);
                 for (uint32_t j=0;j < arr_len;++j) {
                     v8::Local<v8::Value> val = arr->Get(j);
                     if (val->IsNumber()) {
                         #ifdef USE_CXX11
-                        vvals.emplace_back(val->NumberValue());
+                        vv.emplace_back(val->NumberValue());
                         #else
-                        vvals.push_back(val->NumberValue());
+                        vv.push_back(val->NumberValue());
                         #endif
                     }
                 }
@@ -495,7 +463,7 @@ NAN_METHOD(Cache::load)
                 }
                 message.skipBytes(bytes);
             } else {
-                throw std::runtime_error("skipping when shouldnt");
+                throw std::runtime_error("a skipping when shouldnt");
                 message.skip();
             }
         }
@@ -509,34 +477,17 @@ NAN_METHOD(Cache::load)
                 while (item.next()) {
                     if (item.tag == 1) {
                         key_id = item.varint();
-                        arrc.insert(std::make_pair(key_id,varray()));
+                        arrc.insert(std::make_pair(key_id,intarray()));
                     } else if (item.tag == 2) {
-                        if (key_id == 0) throw std::runtime_error("key_id not initialized!");
-                        varray & vv = arrc[key_id];
+                        intarray & vv = arrc[key_id];
                         uint32_t arrays_length = item.varint();
                         protobuf::message array(item.data,arrays_length);
                         while (array.next()) {
-                            if (array.tag == 1) {
-                                #ifdef USE_CXX11
-                                vv.emplace_back(intarray());
-                                #else
-                                vv.push_back(intarray());
-                                #endif
-                                intarray & vvals = vv.back();
-                                uint32_t vals_length = array.varint();
-                                protobuf::message val(array.data,vals_length);
-                                while (val.next()) {
-                                    #ifdef USE_CXX11
-                                    vvals.emplace_back(val.value);
-                                    #else
-                                    vvals.push_back(val.value);
-                                    #endif
-                                }
-                                array.skipBytes(vals_length);
-                            } else {
-                                throw std::runtime_error("skipping when shouldnt");
-                                array.skip();
-                            }
+                            #ifdef USE_CXX11
+                            vv.emplace_back(array.value);
+                            #else
+                            vv.push_back(array.value);
+                            #endif
                         }
                         item.skipBytes(arrays_length);
                     } else {
@@ -545,7 +496,7 @@ NAN_METHOD(Cache::load)
                 }
                 message.skipBytes(bytes);
             } else {
-                throw std::runtime_error("skipping when shouldnt");
+                throw std::runtime_error("c skipping when shouldnt");
                 message.skip();
             }
         }
@@ -627,7 +578,7 @@ NAN_METHOD(Cache::search)
             if (laitr == litr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                varray array; // TODO - reserve
+                intarray array; // TODO - reserve
                 string_ref_type const& ref = laitr->second;
                 protobuf::message item(ref.data(), ref.size());
                 while (item.next()) {
@@ -637,38 +588,21 @@ NAN_METHOD(Cache::search)
                         uint32_t arrays_length = item.varint();
                         protobuf::message pbfarray(item.data,arrays_length);
                         while (pbfarray.next()) {
-                            if (pbfarray.tag == 1) {
-                                #ifdef USE_CXX11
-                                array.emplace_back(intarray());
-                                #else
-                                array.push_back(intarray());
-                                #endif
-                                intarray & vvals = array.back();
-                                uint32_t vals_length = pbfarray.varint();
-                                protobuf::message val(pbfarray.data,vals_length);
-                                while (val.next()) {
-                                    #ifdef USE_CXX11
-                                    vvals.emplace_back(val.value);
-                                    #else
-                                    vvals.push_back(val.value);
-                                    #endif
-                                }
-                                pbfarray.skipBytes(vals_length);
-                            } else {
-                                throw std::runtime_error("skipping when shouldnt");
-                                pbfarray.skip();
-                            }
+                            #ifdef USE_CXX11
+                            array.emplace_back(pbfarray.value);
+                            #else
+                            array.push_back(pbfarray.value);
+                            #endif
                         }
                         item.skipBytes(arrays_length);
                     } else {
                         throw std::runtime_error("hit unknown type");
                     }
                 }
-                intarray arr = array[0];
-                unsigned vals_size = arr.size();
+                unsigned vals_size = array.size();
                 Local<Array> arr_obj = Array::New(vals_size);
                 for (unsigned k=0;k<vals_size;++k) {
-                    arr_obj->Set(k,Number::New(arr[k]));
+                    arr_obj->Set(k,Number::New(array[k]));
                 }
                 NanReturnValue(arr_obj);
             }
@@ -680,12 +614,11 @@ NAN_METHOD(Cache::search)
             if (aitr == itr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                varray const& array = aitr->second;
-                intarray arr = array[0];
-                unsigned vals_size = arr.size();
+                intarray const& array = aitr->second;
+                unsigned vals_size = array.size();
                 Local<Array> arr_obj = Array::New(vals_size);
                 for (unsigned k=0;k<vals_size;++k) {
-                    arr_obj->Set(k,Number::New(arr[k]));
+                    arr_obj->Set(k,Number::New(array[k]));
                 }
                 NanReturnValue(arr_obj);
             }

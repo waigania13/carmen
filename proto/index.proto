@@ -5,13 +5,9 @@ option optimize_for = LITE_RUNTIME;
 
 message object {
 
-    message array {
-        repeated int64 val = 1 [ packed = true ];
-    }
-    
     message item {
         required int64 key = 1;
-        repeated array arrays = 2;
+        repeated int64 val = 2 [ packed = true ];
     }
 
     repeated item items = 1;
