@@ -858,11 +858,12 @@ Carmen.terms = function(text) {
 
 // Converts text into a name ID.
 // Appends a suffix based on the first term to help cluster phrases in shards.
+// @TODO implement this as actual 24-bit FNV1a per http://www.isthe.com/chongo/tech/comp/fnv/
 Carmen.phrase = function(text) {
     var tokens = Carmen.tokenize(text);
     var a = fnv1a(tokens.join(' '));
-    var b = fnv1a(tokens.length ? tokens[0] : '') % 65536;
-    return (a * 65536) + b;
+    var b = fnv1a(tokens.length ? tokens[0] : '') % 4096;
+    return (Math.floor(a/4096) * 4096) + b;
 };
 
 // Create a debug hash for term IDs.
