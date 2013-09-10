@@ -391,26 +391,11 @@ NAN_METHOD(Cache::loadJSON)
     NanReturnValue(Undefined());
 }
 
-void load_into_cache(Cache* c,
-                     std::string const& key,
-                     const char * data,
-                     size_t size) {
-    memcache & mem = c->cache_;
-    mem_iterator_type itr = mem.find(key);
-    if (itr == mem.end()) {
-        c->cache_.insert(std::make_pair(key,arraycache()));
-    }
 #ifdef USE_LAZY_PROTO_CACHE
-    memcache::iterator itr2 = mem.find(key);
-    if (itr2 != mem.end()) {
-        mem.erase(itr2);
-    }
-    lazycache & lazy = c->lazy_;
-    lazycache_iterator_type litr = lazy.find(key);
-    if (litr == lazy.end()) {
-        c->lazy_.insert(std::make_pair(key,larraycache()));
-    }
-    larraycache & larrc = c->lazy_[key];
+void load_into_cache(larraycache & larrc,
+                            std::string const& key,
+                            const char * data,
+                            size_t size) {
     protobuf::message message(data,size);
     while (message.next()) {
         if (message.tag == 1) {
@@ -436,8 +421,13 @@ void load_into_cache(Cache* c,
             message.skip();
         }
     }
+}
 #else
-    arraycache & arrc = c->cache_[key];
+void load_into_cache(arraycache & arrc,
+                     std::string const& key,
+                     const char * data,
+                     size_t size) {
+    protobuf::message message(data,size);
     while (message.next()) {
         if (message.tag == 1) {
             uint32_t bytes = message.varint();
@@ -469,8 +459,8 @@ void load_into_cache(Cache* c,
             message.skip();
         }
     }
-#endif
 }
+#endif
 
 NAN_METHOD(Cache::loadSync)
 {
@@ -507,7 +497,25 @@ NAN_METHOD(Cache::loadSync)
         std::string shard = *String::Utf8Value(args[2]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        load_into_cache(c,key,node::Buffer::Data(obj),node::Buffer::Length(obj));
+        memcache & mem = c->cache_;
+        mem_iterator_type itr = mem.find(key);
+        if (itr != mem.end()) {
+            c->cache_.insert(std::make_pair(key,arraycache()));
+        }
+#ifdef USE_LAZY_PROTO_CACHE
+        memcache::iterator itr2 = mem.find(key);
+        if (itr2 != mem.end()) {
+            mem.erase(itr2);
+        }
+        lazycache & lazy = c->lazy_;
+        lazycache_iterator_type litr = lazy.find(key);
+        if (litr == lazy.end()) {
+            c->lazy_.insert(std::make_pair(key,larraycache()));
+        }
+        load_into_cache(c->lazy_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
+#else
+        load_into_cache(c->cache_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
+#endif
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
@@ -517,6 +525,11 @@ NAN_METHOD(Cache::loadSync)
 struct load_baton {
     uv_work_t request;
     Cache * c;
+#ifdef USE_LAZY_PROTO_CACHE
+    larraycache arrc;
+#else
+    arraycache arrc;
+#endif
     Persistent<Function> cb;
     std::string key;
     bool error;
@@ -532,7 +545,7 @@ struct load_baton {
 void Cache::AsyncLoad(uv_work_t* req) {
     load_baton *closure = static_cast<load_baton *>(req->data);
     try {
-        load_into_cache(closure->c,closure->key,closure->data,closure->size);
+        load_into_cache(closure->arrc,closure->key,closure->data,closure->size);
     }
     catch (std::exception const& ex)
     {
@@ -549,6 +562,23 @@ void Cache::AfterLoad(uv_work_t* req) {
         Local<Value> argv[1] = { Exception::Error(String::New(closure->error_name.c_str())) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     } else {
+#ifdef USE_LAZY_PROTO_CACHE
+        memcache::iterator itr2 = closure->c->cache_.find(closure->key);
+        if (itr2 != closure->c->cache_.end()) {
+            closure->c->cache_.erase(itr2);
+        }
+        #ifdef USE_CXX11
+        closure->c->lazy_[closure->key] = std::move(closure->arrc);
+        #else
+        closure->c->lazy_[closure->key] = closure->arrc;
+        #endif
+#else
+        #ifdef USE_CXX11
+        closure->c->cache_[closure->key] = std::move(closure->arrc);
+        #else
+        closure->c->cache_[closure->key] = closure->arrc;
+        #endif
+#endif
         Local<Value> argv[1] = { Local<Value>::New(Null()) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     }
@@ -612,7 +642,6 @@ NAN_METHOD(Cache::load)
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
-
 }
 
 

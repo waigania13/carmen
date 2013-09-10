@@ -54,7 +54,7 @@ describe('cache unit', function() {
     it('cache async load', function(done) {
         var cache = new Cache('a', 1);
         var array = [];
-        for (var i=0;i<1000000;++i) {
+        for (var i=0;i<10000;++i) {
             array.push(0);
         }
         cache.set('term', 5, array);
@@ -90,8 +90,6 @@ describe('cache unit', function() {
             assert.deepEqual([5], loader.list('term'), 'single shard');
             done();
         });
-
-
     });
 
 });
