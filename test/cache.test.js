@@ -124,23 +124,30 @@ describe('cache getall', function() {
             assert.ifError(err);
 
             // Returns ids mapped to input ids.
+            result.sort();
             assert.deepEqual([
-                [ 1089, 1100006250000742, 1100006260000742, 1100006260000741 ],
-                [ 5488, 1100004870000819 ],
-                [ 10229, 1100005020000756, 1100005100000758 ],
-                [ 10996, 1100005350000776, 1100005350000775 ],
-                [ 15680, 1100004870000740 ],
-                [ 19630, 1100005980000738 ],
-                [ 29670, 1100003400000707 ],
-                [ 104101, 1100010900000591 ],
-                [ 107471, 1100011070000617 ],
-                [ 109619, 1100010400000685 ]
+                186940699735014,
+                267755911658816,
+                267758562448752,
+                276002785732597,
+                280400899352565,
+                294145365125876,
+                294145398680308,
+                328778739895470,
+                343622281069633,
+                344172003329089,
+                344172036883521,
+                571769031339059,
+                599253667911333,
+                608600389166031
             ], result);
 
             // Has loaded shards into cache -- other ids in same shards
             // can be retrieved without additional IO.
-            assert.deepEqual([[102901,1100010800000596,1100010800000595]], cache.get('grid', 229811356881664), 'shard 0 in memory');
-            assert.deepEqual([[100453,1100011350000712]], cache.get('grid', 67003285138178), 'shard 2 in memory');
+            assert.equal(102901, cache.get('grid', 229811356881664)[0] % Math.pow(2,25), 'grid ID check');
+            assert.equal(100453, cache.get('grid', 67003285138178)[0] % Math.pow(2,25), 'grid ID check');
+            assert.deepEqual([ 593756243988981, 593756277543413 ], cache.get('grid', 229811356881664), 'shard 0 in memory');
+            assert.deepEqual([ 623996739618917 ], cache.get('grid', 67003285138178), 'shard 2 in memory');
 
             // Check IO counter.
             assert.equal(2, stats.grid);
