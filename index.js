@@ -273,11 +273,9 @@ Carmen.prototype.geocode = function(query, callback) {
                 var x = Math.floor(grid[i]/xd);
                 var y = Math.floor(grid[i]%xd/yd);
                 var zxy = (z * Math.pow(2,28)) + (x * Math.pow(2,14)) + y
-                if (coalesced[zxy]) {
-                    coalesced[zxy].push(f);
-                } else {
-                    coalesced[zxy] = [f];
-                }
+                // @TODO this is an optimization that  assumes multiple
+                // DBs do not use the same zoom level.
+                if (!coalesced[zxy]) coalesced[zxy] = [f];
                 var a = 0;
                 while (zooms[a] < z) {
                     var p = zooms[a];
