@@ -532,12 +532,14 @@ struct load_baton {
 #endif
     Persistent<Function> cb;
     std::string key;
+    std::string data;
     bool error;
     std::string error_name;
-    const char * data;
-    size_t size;
-    load_baton(std::string const& _key) :
+    load_baton(std::string const& _key,
+               const char * _data,
+               size_t size) :
       key(_key),
+      data(_data,size),
       error(false),
       error_name() {}
 };
@@ -545,7 +547,7 @@ struct load_baton {
 void Cache::AsyncLoad(uv_work_t* req) {
     load_baton *closure = static_cast<load_baton *>(req->data);
     try {
-        load_into_cache(closure->arrc,closure->key,closure->data,closure->size);
+        load_into_cache(closure->arrc,closure->key,closure->data.data(),closure->data.size());
     }
     catch (std::exception const& ex)
     {
@@ -630,11 +632,9 @@ NAN_METHOD(Cache::load)
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
         std::string key = type + "-" + shard;
-        load_baton *closure = new load_baton(key);
+        load_baton *closure = new load_baton(key,node::Buffer::Data(obj),node::Buffer::Length(obj));
         closure->request.data = closure;
         closure->c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        closure->data = node::Buffer::Data(obj);
-        closure->size = node::Buffer::Length(obj);
         closure->cb = Persistent<Function>::New(Handle<Function>::Cast(callback));
         uv_queue_work(uv_default_loop(), &closure->request, AsyncLoad, (uv_after_work_cb)AfterLoad);
         closure->c->_ref();
