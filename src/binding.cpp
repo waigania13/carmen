@@ -43,7 +43,7 @@ typedef lazycache::const_iterator lazycache_iterator_type;
 
 // fully cached item
 typedef std::vector<int_type> intarray;
-typedef std::map<int_type,intarray> arraycache;
+typedef std::map<uint32_t,intarray> arraycache;
 typedef arraycache::const_iterator arraycache_iterator;
 typedef std::map<std::string,arraycache> memcache;
 typedef memcache::const_iterator mem_iterator_type;
