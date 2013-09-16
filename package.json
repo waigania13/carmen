@@ -18,7 +18,7 @@
     },
     "devDependencies": {
         "mbtiles": "~0.3.2",
-        "tilelive-s3": "https://github.com/mapbox/tilelive-s3/tarball/node-v0.10.x"
+        "tilelive-s3": "https://github.com/mapbox/tilelive-s3/tarball/generic-put"
     },
     "main": "./index.js",
     "scripts": {

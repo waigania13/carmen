@@ -905,7 +905,7 @@ Carmen.autoSync = function(dirname) {
             break;
         case '.s3':
             S3 = S3 || Carmen.S3();
-            opts[f.dbname] = opts[f.dbname] || new MBTiles(f.pathname, function(){});
+            opts[f.dbname] = opts[f.dbname] || new S3(f.pathname, function(){});
             break;
         }
         return opts;

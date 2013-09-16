@@ -6,36 +6,6 @@ var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 module.exports = S3;
 
-var put = function(client, key, data, callback) {
-    var retry = function(err) {
-        console.error(err);
-        setTimeout(function() { put(client, key, data, callback) }, 500);
-    };
-    var req = client.put(key, {
-        'x-amz-acl': 'public-read',
-        'Connection': 'keep-alive',
-        'Content-Length': data ? Buffer.byteLength(data, 'utf8') : 0,
-        'Content-Type': 'application/json'
-    });
-    req.on('close', retry);
-    req.on('error', retry);
-    req.setTimeout(60e3, function() {
-        req.abort();
-        var err = new Error('ESOCKETTIMEDOUT');
-        err.code = 'ESOCKETTIMEDOUT';
-        req.emit('error', err);
-    });
-    req.on('response', function(res) {
-        res.on('error', retry);
-        if (res.statusCode === 200) {
-            return callback();
-        } else {
-            return callback(new Error('S3 put failed: ' + res.statusCode));
-        }
-    });
-    req.end(data);
-};
-
 // Implements carmen#getFeature method.
 S3.prototype.getFeature = function(id, callback, raw) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
@@ -45,12 +15,7 @@ S3.prototype.getFeature = function(id, callback, raw) {
     catch (err) { return callback(new Error('Carmen not supported')); }
 
     uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
-    new S3.get({
-        uri: url.format(uri),
-        headers: {Connection:'Keep-Alive'},
-        agent: S3.agent,
-        timeout: 5000
-    }).asBuffer(function(err, buffer) {
+    this.get(url.format(uri), function(err, buffer) {
         if (err) return callback(err);
         try { var data = JSON.parse(buffer.toString('utf8')); }
         catch (err) { return callback(err); }
@@ -67,8 +32,15 @@ S3.prototype.putFeature = function(id, data, callback) {
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
-    put(this.client, uri.pathname, JSON.stringify(data), callback);
+    var key = path.join(uri.pathname, 'data/' + id + '.json');
+    var buffer = new Buffer(JSON.stringify(data));
+    var headers = {
+        'x-amz-acl': 'public-read',
+        'Connection': 'keep-alive',
+        'Content-Length': buffer.length,
+        'Content-Type': 'application/json'
+    };
+    this.put(key, buffer, headers, callback);
 };
 
 // Implements carmen#getCarmen method.
@@ -79,13 +51,8 @@ S3.prototype.getCarmen = function(type, shard, callback) {
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.json');
-    new S3.get({
-        uri: url.format(uri),
-        headers: {Connection:'Keep-Alive'},
-        agent: S3.agent,
-        timeout: 5000
-    }).asBuffer(function(err, buffer) {
+    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.pbf');
+    this.get(url.format(uri), function(err, buffer) {
         callback(err && err.status > 499 ? err : null, buffer);
     });
 };
@@ -98,10 +65,17 @@ S3.prototype.putCarmen = function(type, shard, data, callback) {
     try { var uri = url.parse(this.data._carmen); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
-    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.json');
-    put(this.client, uri.pathname, data, callback);
+    var key = path.join(uri.pathname, type + '/' + shard + '.pbf');
+    var headers = {
+        'x-amz-acl': 'public-read',
+        'Connection': 'keep-alive',
+        'Content-Length': data.length,
+        'Content-Type': 'application/x-protobuf'
+    };
+    this.put(key, data, headers, callback);
 };
 
+// @TODO.
 // Implements carmen#indexable method.
 S3.prototype.indexable = function(pointer, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
