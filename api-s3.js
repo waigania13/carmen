@@ -2,6 +2,7 @@ var _ = require('underscore');
 var S3 = require('tilelive-s3');
 var url = require('url');
 var path = require('path');
+var retry = require('retry');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 module.exports = S3;
@@ -75,23 +76,38 @@ S3.prototype.search = function(query, id, callback) {
 
     // Query search.
     var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
-    this.client.getFile('?prefix=' + prefix, function(err, res){
-        if (err) return callback(err);
-        var xml = '';
-        res.on('data', function(chunk){ xml += chunk; });
-        res.on('end', function() {
-            var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
-            var docs = _(parsed).chain()
-                .reduce(toDocs, {})
-                .map(function(res) {
-                    res.zxy = _(res.zxy).uniq();
-                    res.text = _(res.text).uniq().join(',');
-                    return res;
-                })
-                .value();
-            return callback(null, docs);
-        });
-        res.on('error', callback);
+
+    // add retry here -- getFile is from knox.  I don't want to hack it.
+    var tilejson = this;
+    var operation = retry.operation({
+        retries: 1
+    });
+
+    operation.attempt(function(current) {
+        this.client.getFile('?prefix=' + prefix, function(err, res){
+            if (err) {
+                if (operation.retry(err)) return;
+            }
+            if (err) return callback(err);
+            var xml = '';
+            res.on('data', function(chunk){ xml += chunk; });
+            res.on('end', function() {
+                var parsed = xml.match(new RegExp('[^>]+(?=<\\/Key>)', 'g')) || [];
+                var docs = _(parsed).chain()
+                    .reduce(toDocs, {})
+                    .map(function(res) {
+                        res.zxy = _(res.zxy).uniq();
+                        res.text = _(res.text).uniq().join(',');
+                        return res;
+                    })
+                    .value();
+                return callback(null, docs);
+            });
+            res.on('error', function(err) {
+                if (operation.retry(err)) return;
+                callback(err);
+            });
+        }.bind(this));
     }.bind(this));
 };
 
