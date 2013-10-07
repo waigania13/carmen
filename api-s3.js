@@ -4,8 +4,22 @@ var url = require('url');
 var path = require('path');
 var retry = require('retry');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
+var retryCfg = {};
 
-module.exports = S3;
+// Wrap tilelive-s3.
+// Configure retry logic.
+module.exports = function(opts) {
+    setupRetry(opts);
+    return S3;
+}
+
+// Set up retry configuration.
+// Default to one retry.
+function setupRetry(opts) {
+    retryCfg = _(opts).defaults({
+        retries: 1
+    });
+}
 
 // Converts a doc into an array of search terms.
 // Terms that are part of a larger phrase are suffixed with an '-' indicating
@@ -76,12 +90,8 @@ S3.prototype.search = function(query, id, callback) {
 
     // Query search.
     var prefix = path.join(uri.pathname, 'term/' + S3.terms(query).pop()).substr(1);
-
-    // add retry here -- getFile is from knox.  I don't want to hack it.
     var tilejson = this;
-    var operation = retry.operation({
-        retries: 1
-    });
+    var operation = retry.operation(retryCfg);
 
     operation.attempt(function(current) {
         this.client.getFile('?prefix=' + prefix, function(err, res){
