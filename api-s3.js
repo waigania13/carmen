@@ -14,10 +14,10 @@ module.exports = function(opts) {
 }
 
 // Set up retry configuration.
-// Default to one retry.
+// Default to zero retries.
 function setupRetry(opts) {
     retryCfg = _(opts).defaults({
-        retries: 1
+        retries: 0
     });
 }
 
