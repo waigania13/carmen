@@ -7,18 +7,10 @@ var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var retryCfg = {};
 
 // Wrap tilelive-s3.
-// Configure retry logic.
+// Configure retry logic, default to 0 retries.
 module.exports = function(opts) {
-    setupRetry(opts);
+    retryCfg = _(opts).defaults({ retries: 0 });
     return S3;
-}
-
-// Set up retry configuration.
-// Default to zero retries.
-function setupRetry(opts) {
-    retryCfg = _(opts).defaults({
-        retries: 0
-    });
 }
 
 // Converts a doc into an array of search terms.
