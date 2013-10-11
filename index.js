@@ -23,6 +23,17 @@ function fnv1a(str) {
     return hash >>> 0;
 };
 
+// XOR fold a FNV-1a hash to n bits
+// http://www.isthe.com/chongo/tech/comp/fnv/#xor-fold
+function fnvfold(str, bits) {
+    var mask = (1<<bits >>> 0) - 1;
+    var hash = fnv1a(str);
+    return ((hash >>> bits) ^ (mask & hash)) >>> 0;
+};
+
+Carmen.fnv1a = fnv1a;
+Carmen.fnvfold = fnvfold;
+
 // Resolve the UTF-8 encoding stored in grids to simple number values.
 function resolveCode(key) {
     if (key >= 93) key--;
@@ -851,9 +862,27 @@ Carmen.tokenize = function(query, lonlat) {
         .filter(function(t) { return t.length });
 };
 
+// Generate degenerates from a given token.
+Carmen.degenerates = function(token) {
+    var degens = [];
+    var length = token.length;
+    for (var i = 0; i < length && length - i > 2; i++) {
+        degens.push([fnv1a(token.substr(0, length - i)), i]);
+    }
+    return degens;
+};
+
 // Converts text into an array of search term hash IDs.
 Carmen.terms = function(text) {
     return Carmen.tokenize(text).map(fnv1a);
+};
+
+// Converts text into a token ID.
+// This is a 28 bit FNV1a with room for 4 bits of room for bonus data.
+// This bonus data is currently used by degenerate token mappings to specify
+// the character distance of degenerates from original tokens.
+Carmen.token = function(text, bonus) {
+    var a = fnv1a(text);
 };
 
 // Converts text into a name ID.
@@ -861,9 +890,9 @@ Carmen.terms = function(text) {
 // @TODO implement this as actual 24-bit FNV1a per http://www.isthe.com/chongo/tech/comp/fnv/
 Carmen.phrase = function(text) {
     var tokens = Carmen.tokenize(text);
-    var a = fnv1a(tokens.join(' '));
-    var b = fnv1a(tokens.length ? tokens[0] : '') % 4096;
-    return (Math.floor(a/4096) * 4096) + b;
+    var a = fnvfold(tokens.join(' '), 20);
+    var b = fnvfold((tokens.length ? tokens[0] : ''), 12);
+    return a * 4096 + b;
 };
 
 // Create a debug hash for term IDs.
