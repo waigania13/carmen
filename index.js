@@ -318,7 +318,7 @@ Carmen.prototype.geocode = function(query, callback) {
 
             // A threshold here reduces results early.
             // @TODO tune this.
-            if (relev < 0.75) return memo;
+            // if (relev < 0.75) return memo;
 
             for (var i = 0, l = rows.length; i < l; i++) {
                 var fullid = rows[i].db + '.' + rows[i].id;
@@ -381,36 +381,25 @@ Carmen.prototype.geocode = function(query, callback) {
         relev(feats, grids, zooms, function(err, contexts, relevd) {
             if (err) return callback(err);
 
-            // Confirm that the context contains the terms that contributed
-            // to the match's relev. All other contexts are false positives
-            // and should be discarded. Example:
-            //
-            //     "Chester, NJ" => "Chester, PA"
-            //
-            // This context will be returned because Chester, PA is in
-            // close enough proximity to overlap with NJ.
             var maxrelev = 0;
-            var results = contexts.reduce(function(memo, c) {
-                var context = [];
-                for (var i = 0; i < c.length; i++) {
-                    if (relevd[c[i].id]) {
-                        context.push(relevd[c[i].id]);
-                        c[i].relev = relevd[c[i].id].relev;
-                    }
+            contexts.sort(function(a, b) {
+                // sort by usagerelev score.
+                var ac = [];
+                var bc = [];
+                for (var i = 0; i < a.length; i++) if (relevd[a[i].id]) {
+                    ac.push(relevd[a[i].id]);
+                    a[i].relev = relevd[a[i].id].relev;
                 }
-                var relev = Carmen.usagerelev(data.query, context);
-                if (!memo.length || relev === maxrelev) {
-                    memo.push(c);
-                    maxrelev = relev;
-                    return memo;
-                } else if (relev > maxrelev) {
-                    maxrelev = relev;
-                    return [c];
-                } else {
-                    return memo;
+                for (var i = 0; i < b.length; i++) if (relevd[b[i].id]) {
+                    bc.push(relevd[b[i].id]);
+                    b[i].relev = relevd[b[i].id].relev;
                 }
-            }, []);
-            results.sort(function(a, b) {
+                var arelev = Carmen.usagerelev(data.query, ac);
+                var brelev = Carmen.usagerelev(data.query, bc);
+                if (arelev > brelev) return -1;
+                if (arelev < brelev) return 1;
+
+                // within results of equal relevance.
                 a = a[0], b = b[0];
 
                 // primary sort by result's index.
@@ -432,7 +421,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 if (a.id < b.id) return 1;
                 return 0;
             });
-            data.results = results;
+            data.results = contexts;
 
             data.stats.relev = maxrelev;
             return callback(null, data);
@@ -485,10 +474,47 @@ Carmen.prototype.search = function(source, query, id, callback) {
     var weights = {}; // @TODO shared cache for this?
     var relevs = {};
     var stats = {
+        degen:[0,0,0],
         phrase:[0,0,0],
         term:[0,0,0],
         relevd:[0,0,0],
         grid:[0,0,0]
+    };
+
+    var querymap = {};
+
+    var getdegen = function(queue, result, idx, callback) {
+        if (!queue[idx]) {
+            stats.degen[2] = stats.degen[2] && (+new Date - stats.degen[2]);
+            stats.degen[1] = result.length;
+            return callback(null, result);
+        }
+
+        stats.degen[0]++;
+        stats.degen[2] = +new Date;
+
+        var sorter = function(a, b) {
+            var ad = a % 4;
+            var bd = b % 4;
+            if (ad < bd) return -1;
+            if (ad > bd) return 1;
+            return a < b ? -1 : a > b ? 1 : 0;
+        };
+
+        source._carmen.getall(source.getCarmen.bind(source), 'degen', [queue[idx]], function(err, termdist) {
+            if (err) return callback(err);
+
+            termdist.sort(sorter);
+            var closest = [];
+            var distance = termdist[0] % 4;
+            for (var i = 0; i < termdist.length && i < 10; i++) {
+                var term = Math.floor(termdist[i]/4);
+                querymap[term] = [idx, termdist[i]%4];
+                result.push(term);
+            }
+
+            return getdegen(queue, result, idx+1, callback);
+        });
     };
 
     var getphrases = function(queue, callback) {
@@ -548,6 +574,8 @@ Carmen.prototype.search = function(source, query, id, callback) {
             var reason = 0;
             var termpos = -1;
             var lastpos = -1;
+            var termdist = 0;
+            var chardist = 0;
             var text = data;
             for (var i = 0; i < data.length; i++) {
                 total += weights[data[i]];
@@ -555,25 +583,32 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
             if (total < 0) throw new Error('Bad freq total ' + total);
 
-            for (var i = 0; i < terms.length; i++) {
-                term = terms[i];
-                termpos = text.indexOf(term);
-                if (termpos === -1) {
+            for (var i = 0; i < text.length; i++) {
+                term = text[i];
+                if (!querymap[term]) {
                     if (relev !== 0) {
                         break;
                     } else {
                         continue;
                     }
-                } else if (relev === 0 || termpos === lastpos + 1) {
+                }
+                termpos = querymap[term][0];
+                termdist = querymap[term][1];
+                if (relev === 0 || termpos === lastpos + 1) {
                     relev += weights[term]/total;
-                    reason += 1 << i;
+                    reason += 1 << termpos;
+                    chardist += termdist;
                     count++;
                     lastpos = termpos;
                 }
             }
+            // relev represents a score based on comparative term weight
+            // significance alone. If it passes this threshold check it is
+            // adjusted based on degenerate term character distance (e.g.
+            // degens of higher distance reduce relev score).
             if (relev > 0.6) {
                 result.push(id);
-                relev = relev > 0.99 ? 1 : relev;
+                relev = (relev > 0.99 ? 1 : relev) - (chardist * 0.01);
                 relevs[id] = {
                     relev: relev,
                     reason: reason,
@@ -621,16 +656,19 @@ Carmen.prototype.search = function(source, query, id, callback) {
         });
     };
 
-    getphrases(terms, function(err, phrases) {
+    getdegen(terms, [], 0, function(err, terms) {
         if (err) return callback(err);
-        getterms(phrases, function(err, terms) {
+        getphrases(terms, function(err, phrases) {
             if (err) return callback(err);
-            getfreqs(terms, function(err) {
+            getterms(phrases, function(err, terms) {
                 if (err) return callback(err);
-                var relevd = getrelevd(phrases);
-                getgrids(relevd, function(err, features, result) {
+                getfreqs(terms, function(err) {
                     if (err) return callback(err);
-                    return callback(null, features, result, stats);
+                    var relevd = getrelevd(phrases);
+                    getgrids(relevd, function(err, features, result) {
+                        if (err) return callback(err);
+                        return callback(null, features, result, stats);
+                    });
                 });
             });
         });
@@ -668,6 +706,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             var doc = docs[i];
             var phrases = doc.text.split(',').map(Carmen.phrase);
             var termsets = doc.text.split(',').map(Carmen.terms);
+            var termsmaps = doc.text.split(',').map(Carmen.termsMap);
             for (var j = 0; j < termsets.length; j++) {
                 var terms = termsets[j];
                 for (var k = 0; k < terms.length; k++) {
@@ -679,6 +718,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             }
             doc.phrases = phrases;
             doc.termsets = termsets;
+            doc.termsmaps = termsmaps;
         }
 
         // Ensures all shards are loaded.
@@ -699,7 +739,7 @@ Carmen.prototype.index = function(source, docs, callback) {
     //   significant terms for each document.
     // - Create id => grid zxy index.
     function indexDocs(approxdocs, freq, callback) {
-        var patch = { grid:{}, term: {}, phrase:{} };
+        var patch = { grid:{}, term: {}, phrase:{}, degen:{} };
 
         docs.forEach(function(doc) {
             doc.id = parseInt(doc.id,10);
@@ -709,6 +749,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
             var phrases = doc.phrases;
             var termsets = doc.termsets;
+            var termsmaps = doc.termsmaps;
 
             phrases.forEach(function(id, x) {
                 patch.phrase[id] = patch.phrase[id] || termsets[x];
@@ -717,6 +758,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             });
 
             termsets.forEach(function(terms, x) {
+                var termsmap = termsmaps[x];
                 var name = phrases[x];
                 var weights = [];
                 var total = 0;
@@ -726,6 +768,16 @@ Carmen.prototype.index = function(source, docs, callback) {
                     var weight = Math.log(1 + freq[0][0]/freq[id][0]);
                     weights.push([id, weight]);
                     total += weight;
+
+                    // Degenerate terms are indexed for all terms
+                    // (not just significant ones).
+                    var degens = Carmen.degens(termsmap[id]);
+                    var keys = Object.keys(degens);
+                    for (var j = 0; j < keys.length; j++) {
+                        var d = keys[j];
+                        patch.degen[d] = patch.degen[d] || [];
+                        patch.degen[d].push(degens[d]);
+                    }
                 }
 
                 // Limit indexing to the *most* significant terms for a
@@ -740,7 +792,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 
                 // Debug significant term selection.
                 if (DEBUG) {
-                    var debug = Carmen.termsDebug(doc.text.split(',')[x]);
+                    var debug = termsmap;
                     var oldtext = terms.map(function(id) { return debug[id]; }).join(' ');
                     var sigtext = sigterms.map(function(id) { return debug[id]; }).join(' ');
                     if (oldtext !== sigtext)  console.log('%s => %s', oldtext, sigtext);
@@ -782,6 +834,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                     switch (type) {
                     case 'term':
                     case 'grid':
+                    case 'degen':
                         var current = source._carmen.get(type, id) || [];
                         current.push.apply(current, data[id]);
                         source._carmen.set(type, id, current);
@@ -805,7 +858,7 @@ Carmen.prototype.store = function(source, callback) {
     }.bind(this));
 
     var queue = [];
-    ['freq','term','phrase','grid'].forEach(function(type) {
+    ['freq','term','phrase','grid','degen'].forEach(function(type) {
         queue = queue.concat(source._carmen.list(type).map(function(shard) {
             var ids = source._carmen.list(type, shard);
             for (var i = 0; i < ids.length; i++) {
@@ -813,6 +866,7 @@ Carmen.prototype.store = function(source, callback) {
                 switch (type) {
                 case 'term':
                 case 'grid':
+                case 'degen':
                     var data = source._carmen.get(type, id);
                     data.sort();
                     source._carmen.set(type, id, _(data).uniq(true));
@@ -863,18 +917,27 @@ Carmen.tokenize = function(query, lonlat) {
 };
 
 // Generate degenerates from a given token.
-Carmen.degenerates = function(token) {
-    var degens = [];
+Carmen.degens = function(token) {
     var length = token.length;
-    for (var i = 0; i < length && length - i > 2; i++) {
-        degens.push([fnv1a(token.substr(0, length - i)), i]);
+    var degens = {};
+    for (var i = 0; !i || (i < length && length - i > 2); i++) {
+        var degen = fnvfold(token.substr(0, length - i), 30);
+        degens[degen] = (fnvfold(token, 30) * 4) + Math.min(i,3);
     }
     return degens;
 };
 
 // Converts text into an array of search term hash IDs.
 Carmen.terms = function(text) {
-    return Carmen.tokenize(text).map(fnv1a);
+    return Carmen.tokenize(text).map(function(t) { return fnvfold(t,30) });
+};
+
+// Map terms to their original token.
+Carmen.termsMap = function(text) {
+    return Carmen.tokenize(text).reduce(function(memo, t) {
+        memo[fnvfold(t,30)] = t;
+        return memo;
+    }, {});
 };
 
 // Converts text into a token ID.
@@ -893,14 +956,6 @@ Carmen.phrase = function(text) {
     var a = fnvfold(tokens.join(' '), 20);
     var b = fnvfold((tokens.length ? tokens[0] : ''), 12);
     return a * 4096 + b;
-};
-
-// Create a debug hash for term IDs.
-Carmen.termsDebug = function(text) {
-    return Carmen.tokenize(text).reduce(function(memo, w) {
-        memo[fnv1a(w)] = w;
-        return memo;
-    }, {});
 };
 
 // Converts id + zxy coordinates into an array of zxy IDs.
