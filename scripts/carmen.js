@@ -15,13 +15,14 @@ var MBTiles = require('../api-mbtiles');
 var S3 = require('../api-s3');
 var opts = Carmen.autoSync(path.resolve(dirname));
 var carmen = new Carmen(opts);
+var query = process.argv.slice(2).join(' ');
 
 var load = +new Date;
-carmen.geocode(process.argv[2], function(err, data) {
+carmen.geocode(query, function(err, data) {
     if (err) throw err;
     load = +new Date - load;
     var time = +new Date;
-    carmen.geocode(process.argv[2], function(err, data) {
+    carmen.geocode(query, function(err, data) {
         time = +new Date - time;
         if (err) throw err;
         var texts = data.results.reduce(function(memo, r) {
