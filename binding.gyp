@@ -35,7 +35,9 @@
           "<!(node -p -e \"require('path').dirname(require.resolve('nan'))\")"
       ],
       'xcode_settings': {
-        'OTHER_CPLUSPLUSFLAGS':[],
+        'OTHER_CPLUSPLUSFLAGS':[
+           '<!@(pkg-config protobuf --cflags)'
+        ],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
       },
