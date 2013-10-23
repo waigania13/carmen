@@ -9,6 +9,7 @@ var EventEmitter = require('events').EventEmitter;
 var DEBUG = process.env.DEBUG;
 var Cache = require('./lib/cxxcache.js');
 var lockingCache = {};
+var Locking = require('./lib/locking');
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
 
 // FNV-1a hash.
@@ -1024,20 +1025,7 @@ Carmen.autoSync = function(dirname) {
 
 };
 
-// Locking event emitter for consolidating I/O for identical requests.
-require('util').inherits(Locking, EventEmitter);
-
-function Locking() { this.setMaxListeners(0); }
-
-Locking.prototype.loader = function(callback) {
-    var locking = this;
-    return function(err, data) {
-        locking.open = true;
-        locking.data = data;
-        locking.emit('open', err, data);
-        callback(err, data);
-    };
-};
+module.exports = Carmen;
 
 // Prototype for relevance relevd rows of Carmen.search.
 // Defined to take advantage of V8 class performance.
@@ -1049,5 +1037,3 @@ function Relev(id, relev, reason, idx, db, tmpid) {
     this.db = db;
     this.tmpid = tmpid;
 }
-
-module.exports = Carmen;
