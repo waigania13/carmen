@@ -959,7 +959,7 @@ Carmen.token = function(text, bonus) {
 Carmen.phrase = function(text) {
     var tokens = Carmen.tokenize(text);
     var a = fnvfold(tokens.join(' '), 20);
-    var b = fnvfold((tokens.length ? tokens[0] : ''), 12);
+    var b = fnvfold((tokens.length ? tokens[0] : ''), 30) % 4096;
     return a * 4096 + b;
 };
 
