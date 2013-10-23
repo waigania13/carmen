@@ -18,37 +18,8 @@ var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediat
 
 Carmen.fnv1a = fnv1a;
 Carmen.fnvfold = fnvfold;
-
-// Resolve the UTF-8 encoding stored in grids to simple number values.
-function resolveCode(key) {
-    if (key >= 93) key--;
-    if (key >= 35) key--;
-    key -= 32;
-    return key;
-}
-
-// Convert character code to UTF grid key.
-function toChar(key) {
-    key += 32;
-    if (key >= 34) key++;
-    if (key >= 92) key++;
-    return String.fromCharCode(key);
-}
-
-// Clean up internal fields/prep a feature entry for external consumption.
-function feature(id, type, data) {
-    data.id = type + '.' + id;
-    data.type = data.type || type;
-    if ('string' === typeof data.bounds)
-        data.bounds = data.bounds.split(',').map(parseFloat);
-    if ('search' in data)
-        delete data.search;
-    if ('rank' in data)
-        delete data.rank;
-    return data;
-}
-
 require('util').inherits(Carmen, EventEmitter);
+module.exports = Carmen;
 
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
@@ -107,6 +78,9 @@ Carmen.prototype._open = function(callback) {
 
 // Main geocoding API entry point.
 // Returns results across all indexes for a given query.
+//
+// Actual searches are delegated to `Carmen.prototype.search` over each
+// enabled backend.
 Carmen.prototype.geocode = function(query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
@@ -141,7 +115,9 @@ Carmen.prototype.geocode = function(query, callback) {
         var grids = [];
         var remaining = types.length;
         types.forEach(function(dbname, pos) {
-            carmen.search(indexes[dbname], data.query.join(' '), null, function(err, feat, grid, stats) {
+            carmen.search(indexes[dbname], data.query.join(' '), null, searched);
+
+            function searched(err, feat, grid, stats) {
                 if (err) {
                     remaining = 0;
                     return callback(err);
@@ -162,10 +138,14 @@ Carmen.prototype.geocode = function(query, callback) {
                     data.stats.relevTime = +new Date();
                     callback(null, feats, grids, zooms);
                 }
-            });
+            }
         });
     }
 
+    // Given that we've geocoded potential results in multiple sources, given
+    // arrays of `feats` and `grids` of the same length, combine matches that
+    // are over the same point, factoring in the zoom levels on which they
+    // occur.
     function relev(feats, grids, zooms, callback) {
         var relevd = {};
         var coalesced = {};
@@ -367,6 +347,8 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     function loadType(type, pos) {
         var source = indexes[type];
         var zoom = source._carmen.zoom;
+        // Find the potential tile in which a match would occur, and look
+        // it up in the cache.
         var xyz = sm.xyz([lon,lat,lon,lat], zoom);
         var ckey = (zoom * 1e14) + (xyz.minX * 1e7) + xyz.minY;
 
@@ -380,12 +362,15 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
             }
             if (grid) {
                 var resolution = 4;
+                // calculate the pixel within the tile that we're looking for,
+                // as an index into UTFGrid data.
                 var px = sm.px([lon,lat], zoom);
                 var y = Math.round((px[1] % 256) / resolution);
                 var x = Math.round((px[0] % 256) / resolution);
                 x = x > 63 ? 63 : x;
                 y = y > 63 ? 63 : y;
                 var key, sx, sy;
+                // Check both the pixel itself and the 8 surrounding directions
                 for (var i = 0; i < Carmen._scanDirections.length; i++) {
                     sx = x + Carmen._scanDirections[i][0];
                     sy = y + Carmen._scanDirections[i][1];
@@ -393,14 +378,14 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
                     sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
                     key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
                     if (key) {
-                        context[pos] = key && feature(key, type, grid.data[key]);
+                        context[pos] = feature(key, type, grid.data[key]);
                         break;
                     }
                 }
             }
             if (!--remaining) {
                 context.reverse();
-                return callback(null, context.filter(function(v) { return v; }));
+                return callback(null, context.filter(identity));
             }
         }
         if (cache[ckey] && cache[ckey].open) {
@@ -414,11 +399,12 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     }
 };
 
+function identity(v) { return v; }
+
 // Retrieve the context for a feature (document).
 Carmen.prototype.contextByFeature = function(data, callback) {
     if (!('lon' in data)) return callback(new Error('No lon field in data'));
     if (!('lat' in data)) return callback(new Error('No lat field in data'));
-    var carmen = this;
     this.context(data.lon, data.lat, data.id.split('.')[0], function(err, context) {
         if (err) return callback(err);
 
@@ -752,10 +738,12 @@ Carmen.prototype.index = function(source, docs, callback) {
     //   significant terms for each document.
     // - Create id => grid zxy index.
     function indexDocs(approxdocs, freq, callback) {
-        var patch = { grid:{}, term: {}, phrase:{}, degen:{} };
+        var patch = { grid: {}, term: {}, phrase: {}, degen: {} };
         var degenerated = {};
 
-        docs.forEach(function(doc) {
+        docs.forEach(loadDoc);
+
+        function loadDoc(doc) {
             doc.id = parseInt(doc.id,10);
             doc.zxy = doc.zxy ? doc.zxy.map(function(zxy) {
                 return Carmen.zxy(doc.id, zxy);
@@ -771,7 +759,9 @@ Carmen.prototype.index = function(source, docs, callback) {
                 patch.grid[id].push.apply(patch.grid[id], doc.zxy);
             });
 
-            termsets.forEach(function(terms, x) {
+            termsets.forEach(loadType);
+
+            function loadTerm(terms, x) {
                 var id;
                 var termsmap = termsmaps[x];
                 var name = phrases[x];
@@ -820,8 +810,8 @@ Carmen.prototype.index = function(source, docs, callback) {
                     patch.term[id] = patch.term[id] || [];
                     patch.term[id].push(name);
                 }
-            });
-        });
+            }
+        }
 
         var remaining = docs.length;
         remaining++; // term
@@ -983,10 +973,7 @@ Carmen.autoSync = function(dirname) {
         }
         return opts;
     }, {});
-
 };
-
-module.exports = Carmen;
 
 // Prototype for relevance relevd rows of Carmen.search.
 // Defined to take advantage of V8 class performance.
@@ -997,4 +984,25 @@ function Relev(id, relev, reason, idx, db, tmpid) {
     this.idx = idx;
     this.db = db;
     this.tmpid = tmpid;
+}
+
+// Resolve the UTF-8 encoding stored in grids to simple number values.
+function resolveCode(key) {
+    if (key >= 93) key--;
+    if (key >= 35) key--;
+    key -= 32;
+    return key;
+}
+
+// Clean up internal fields/prep a feature entry for external consumption.
+function feature(id, type, data) {
+    data.id = type + '.' + id;
+    data.type = data.type || type;
+    if ('string' === typeof data.bounds)
+        data.bounds = data.bounds.split(',').map(parseFloat);
+    if ('search' in data)
+        delete data.search;
+    if ('rank' in data)
+        delete data.rank;
+    return data;
 }
