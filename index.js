@@ -740,6 +740,7 @@ Carmen.prototype.index = function(source, docs, callback) {
     // - Create id => grid zxy index.
     function indexDocs(approxdocs, freq, callback) {
         var patch = { grid:{}, term: {}, phrase:{}, degen:{} };
+        var degenerated = {};
 
         docs.forEach(function(doc) {
             doc.id = parseInt(doc.id,10);
@@ -771,6 +772,8 @@ Carmen.prototype.index = function(source, docs, callback) {
 
                     // Degenerate terms are indexed for all terms
                     // (not just significant ones).
+                    if (degenerated[id]) continue;
+                    degenerated[id] = true;
                     var degens = Carmen.degens(termsmap[id]);
                     var keys = Object.keys(degens);
                     for (var j = 0; j < keys.length; j++) {
@@ -929,15 +932,17 @@ Carmen.degens = function(token) {
 
 // Converts text into an array of search term hash IDs.
 Carmen.terms = function(text) {
-    return Carmen.tokenize(text).map(function(t) { return fnvfold(t,30) });
+    var tokens = Carmen.tokenize(text);
+    for (var i = 0; i < tokens.length; i++) tokens[i] = fnvfold(tokens[i], 30);
+    return tokens;
 };
 
 // Map terms to their original token.
 Carmen.termsMap = function(text) {
-    return Carmen.tokenize(text).reduce(function(memo, t) {
-        memo[fnvfold(t,30)] = t;
-        return memo;
-    }, {});
+    var tokens = Carmen.tokenize(text);
+    var mapped = {};
+    for (var i = 0; i < tokens.length; i++) mapped[fnvfold(tokens[i], 30)] = tokens[i];
+    return mapped;
 };
 
 // Converts text into a token ID.
