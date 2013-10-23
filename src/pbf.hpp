@@ -91,11 +91,11 @@ static const int8_t kMaxVarintLength64 = 10;
 
 uint64_t message::varint2() {
   const int8_t* begin = reinterpret_cast<const int8_t*>(data);
-  const int8_t* end = reinterpret_cast<const int8_t*>(end);
+  const int8_t* iend = reinterpret_cast<const int8_t*>(end);
   const int8_t* p = begin;
   uint64_t val = 0;
 
-  if (LIKELY(end - begin >= kMaxVarintLength64)) {  // fast path
+  if (LIKELY(iend - begin >= kMaxVarintLength64)) {  // fast path
     int64_t b;
     do {
       b = *p++; val  = (b & 0x7f)      ; if (b >= 0) break;
@@ -112,14 +112,13 @@ uint64_t message::varint2() {
     } while (false);
   } else {
     int shift = 0;
-    while (p != end && *p < 0) {
+    while (p != iend && *p < 0) {
       val |= static_cast<uint64_t>(*p++ & 0x7f) << shift;
       shift += 7;
     }
-    if (p == end) throw std::invalid_argument("Invalid varint value");
+    if (p == iend) throw std::invalid_argument("Invalid varint value");
     val |= static_cast<uint64_t>(*p++) << shift;
   }
-
   data = reinterpret_cast<const char *>(p);
   return val;
 }
