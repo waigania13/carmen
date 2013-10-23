@@ -704,9 +704,16 @@ Carmen.prototype.index = function(source, docs, callback) {
 
         for (var i = 0; i < docs.length; i++) {
             var doc = docs[i];
-            var phrases = doc.text.split(',').map(Carmen.phrase);
-            var termsets = doc.text.split(',').map(Carmen.terms);
-            var termsmaps = doc.text.split(',').map(Carmen.termsMap);
+            var phrases = [];
+            var termsets = [];
+            var termsmaps = [];
+            var texts = doc.text.split(',');
+            for (var x = 0; x < texts.length; x++) {
+                if (!Carmen.tokenize(texts[x]).length) continue;
+                phrases.push(Carmen.phrase(texts[x]));
+                termsets.push(Carmen.terms(texts[x]));
+                termsmaps.push(Carmen.termsMap(texts[x]));
+            }
             for (var j = 0; j < termsets.length; j++) {
                 var terms = termsets[j];
                 for (var k = 0; k < terms.length; k++) {
