@@ -9,28 +9,11 @@ var EventEmitter = require('events').EventEmitter;
 var DEBUG = process.env.DEBUG;
 var Cache = require('./lib/cxxcache.js');
 var lockingCache = {};
+var fnv = require('./lib/fnv'),
+    fnv1a = fnv.fnv1a,
+    fnvfold = fnv.fnvfold;
 var Locking = require('./lib/locking');
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
-
-// FNV-1a hash.
-// For 32-bit: offset = 2166136261, prime = 16777619.
-function fnv1a(str) {
-    var hash = 0x811C9DC5;
-    if (str.length) for (var i = 0; i < str.length; i++) {
-        hash = hash ^ str.charCodeAt(i);
-        // 2**24 + 2**8 + 0x93 = 16777619
-        hash += (hash << 24) + (hash << 8) + (hash << 7) + (hash << 4) + (hash << 1);
-    }
-    return hash >>> 0;
-}
-
-// XOR fold a FNV-1a hash to n bits
-// http://www.isthe.com/chongo/tech/comp/fnv/#xor-fold
-function fnvfold(str, bits) {
-    var mask = (1<<bits >>> 0) - 1;
-    var hash = fnv1a(str);
-    return ((hash >>> bits) ^ (mask & hash)) >>> 0;
-}
 
 Carmen.fnv1a = fnv1a;
 Carmen.fnvfold = fnvfold;
@@ -79,7 +62,9 @@ function Carmen(options) {
         }
     }.bind(this);
 
-    this.indexes = _(options).reduce(function(memo, source, key) {
+    this.indexes = _(options).reduce(loadIndex, {});
+
+    function loadIndex(memo, source, key) {
         // Legacy support.
         source = source.source ? source.source : source;
 
@@ -107,7 +92,7 @@ function Carmen(options) {
             });
         }
         return memo;
-    }, {});
+    }
 }
 
 Carmen.S3 = function() { return require('./api-s3'); };
@@ -117,99 +102,7 @@ Carmen.MBTiles = function() { return require('./api-mbtiles'); };
 Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
-// Returns a hierarchy of features ("context") for a given lon,lat pair.
-Carmen.prototype.context = function(lon, lat, maxtype, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            this.context(lon, lat, maxtype, callback);
-        }.bind(this));
-    }
 
-    var context = [];
-    var indexes = this.indexes;
-    var types = Object.keys(indexes);
-    types = types.slice(0, maxtype ? types.indexOf(maxtype) : types.length);
-    var remaining = types.length;
-
-    // No-op context.
-    if (!remaining) return callback(null, context);
-
-    var scan = [
-        [0,0],
-        [0,1],
-        [0,-1],
-        [1,0],
-        [1,1],
-        [1,-1],
-        [-1,0],
-        [-1,1],
-        [-1,-1]
-    ];
-
-    types.forEach(function(type, pos) {
-        var source = indexes[type];
-        var zoom = source._carmen.zoom;
-        var xyz = sm.xyz([lon,lat,lon,lat], zoom);
-        var ckey = (zoom * 1e14) + (xyz.minX * 1e7) + xyz.minY;
-
-        lockingCache[source.id] = lockingCache[source.id] || {};
-        var cache = lockingCache[source.id];
-
-        function done(err, grid) {
-            if (err && err.message !== 'Grid does not exist') {
-                remaining = 0;
-                return callback(err);
-            }
-            if (grid) {
-                var resolution = 4;
-                var px = sm.px([lon,lat], zoom);
-                var y = Math.round((px[1] % 256) / resolution);
-                var x = Math.round((px[0] % 256) / resolution);
-                x = x > 63 ? 63 : x;
-                y = y > 63 ? 63 : y;
-                var key, sx, sy;
-                for (var i = 0; i < scan.length; i++) {
-                    sx = x + scan[i][0];
-                    sy = y + scan[i][1];
-                    sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
-                    sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
-                    key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
-                    if (key) {
-                        context[pos] = key && feature(key, type, grid.data[key]);
-                        break;
-                    }
-                }
-            }
-            if (!--remaining) {
-                context.reverse();
-                return callback(null, context.filter(function(v) { return v; }));
-            }
-        }
-        if (cache[ckey] && cache[ckey].open) {
-            done(null, cache[ckey].data);
-        } else if (cache[ckey]) {
-            cache[ckey].once('open', done);
-        } else {
-            cache[ckey] = new Locking();
-            source.getGrid(zoom, xyz.minX, xyz.minY, cache[ckey].loader(done));
-        }
-    });
-};
-
-// Retrieve the context for a feature (document).
-Carmen.prototype.contextByFeature = function(data, callback) {
-    if (!('lon' in data)) return callback(new Error('No lon field in data'));
-    if (!('lat' in data)) return callback(new Error('No lat field in data'));
-    var carmen = this;
-    this.context(data.lon, data.lat, data.id.split('.')[0], function(err, context) {
-        if (err) return callback(err);
-
-        // Push feature onto the top level.
-        context.unshift(data);
-        return callback(null, context);
-    });
-};
 
 // Main geocoding API entry point.
 // Returns results across all indexes for a given query.
@@ -436,6 +329,102 @@ Carmen.prototype.geocode = function(query, callback) {
     });
 };
 
+// Returns a hierarchy of features ("context") for a given lon,lat pair.
+Carmen.prototype.context = function(lon, lat, maxtype, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            this.context(lon, lat, maxtype, callback);
+        }.bind(this));
+    }
+
+    var context = [];
+    var indexes = this.indexes;
+    var types = Object.keys(indexes);
+    types = types.slice(0, maxtype ? types.indexOf(maxtype) : types.length);
+    var remaining = types.length;
+
+    // No-op context.
+    if (!remaining) return callback(null, context);
+
+    var scan = [
+        [0,0],
+        [0,1],
+        [0,-1],
+        [1,0],
+        [1,1],
+        [1,-1],
+        [-1,0],
+        [-1,1],
+        [-1,-1]
+    ];
+
+    types.forEach(loadType);
+
+    function loadType(type, pos) {
+        var source = indexes[type];
+        var zoom = source._carmen.zoom;
+        var xyz = sm.xyz([lon,lat,lon,lat], zoom);
+        var ckey = (zoom * 1e14) + (xyz.minX * 1e7) + xyz.minY;
+
+        lockingCache[source.id] = lockingCache[source.id] || {};
+        var cache = lockingCache[source.id];
+
+        function done(err, grid) {
+            if (err && err.message !== 'Grid does not exist') {
+                remaining = 0;
+                return callback(err);
+            }
+            if (grid) {
+                var resolution = 4;
+                var px = sm.px([lon,lat], zoom);
+                var y = Math.round((px[1] % 256) / resolution);
+                var x = Math.round((px[0] % 256) / resolution);
+                x = x > 63 ? 63 : x;
+                y = y > 63 ? 63 : y;
+                var key, sx, sy;
+                for (var i = 0; i < scan.length; i++) {
+                    sx = x + scan[i][0];
+                    sy = y + scan[i][1];
+                    sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
+                    sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
+                    key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
+                    if (key) {
+                        context[pos] = key && feature(key, type, grid.data[key]);
+                        break;
+                    }
+                }
+            }
+            if (!--remaining) {
+                context.reverse();
+                return callback(null, context.filter(function(v) { return v; }));
+            }
+        }
+        if (cache[ckey] && cache[ckey].open) {
+            done(null, cache[ckey].data);
+        } else if (cache[ckey]) {
+            cache[ckey].once('open', done);
+        } else {
+            cache[ckey] = new Locking();
+            source.getGrid(zoom, xyz.minX, xyz.minY, cache[ckey].loader(done));
+        }
+    }
+};
+
+// Retrieve the context for a feature (document).
+Carmen.prototype.contextByFeature = function(data, callback) {
+    if (!('lon' in data)) return callback(new Error('No lon field in data'));
+    if (!('lat' in data)) return callback(new Error('No lat field in data'));
+    var carmen = this;
+    this.context(data.lon, data.lat, data.id.split('.')[0], function(err, context) {
+        if (err) return callback(err);
+
+        // Push feature onto the top level.
+        context.unshift(data);
+        return callback(null, context);
+    });
+};
+
 // Return a "usage" relev by comparing a set of relevd elements against the
 // input query. Each relevd element must include the following keys: relev,
 // reason, db.
@@ -634,7 +623,8 @@ Carmen.prototype.search = function(source, query, id, callback) {
     };
 
     var docrelev = {};
-    var getgrids = function(queue, callback) {
+
+    function getgrids(queue, callback) {
         stats.grid[0]++;
         stats.grid[2] = +new Date();
 
@@ -663,7 +653,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             stats.grid[1] = result.length;
             return callback(null, features, result);
         });
-    };
+    }
 
     getdegen(terms, [], 0, function(err, terms) {
         if (err) return callback(err);
@@ -964,14 +954,6 @@ Carmen.termsMap = function(text) {
     var mapped = {};
     for (var i = 0; i < tokens.length; i++) mapped[fnvfold(tokens[i], 30)] = tokens[i];
     return mapped;
-};
-
-// Converts text into a token ID.
-// This is a 28 bit FNV1a with room for 4 bits of room for bonus data.
-// This bonus data is currently used by degenerate token mappings to specify
-// the character distance of degenerates from original tokens.
-Carmen.token = function(text, bonus) {
-    var a = fnv1a(text);
 };
 
 // Converts text into a name ID.
