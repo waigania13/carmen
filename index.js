@@ -7,6 +7,7 @@ var crypto = require('crypto');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 var EventEmitter = require('events').EventEmitter;
 var DEBUG = process.env.DEBUG;
+var tokenize = require('./lib/tokenize.js');
 var Cache = require('./lib/cxxcache.js');
 var lockingCache = {};
 var fnv = require('./lib/fnv'),
@@ -118,7 +119,7 @@ Carmen.prototype.geocode = function(query, callback) {
     var types = Object.keys(indexes);
     var zooms = [];
     var data = {
-        query: Carmen.tokenize(query, true),
+        query: tokenize(query, true),
         stats: {}
     };
     var carmen = this;
@@ -329,6 +330,20 @@ Carmen.prototype.geocode = function(query, callback) {
     });
 };
 
+// Not only do we scan the exact point matched by a latitude, longitude
+// pair, we also hit the 8 points that surround it as a rectangle.
+Carmen._scanDirections = [
+    [0,0],
+    [0,1],
+    [0,-1],
+    [1,0],
+    [1,1],
+    [1,-1],
+    [-1,0],
+    [-1,1],
+    [-1,-1]
+];
+
 // Returns a hierarchy of features ("context") for a given lon,lat pair.
 Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) {
@@ -346,18 +361,6 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
 
     // No-op context.
     if (!remaining) return callback(null, context);
-
-    var scan = [
-        [0,0],
-        [0,1],
-        [0,-1],
-        [1,0],
-        [1,1],
-        [1,-1],
-        [-1,0],
-        [-1,1],
-        [-1,-1]
-    ];
 
     types.forEach(loadType);
 
@@ -383,9 +386,9 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
                 x = x > 63 ? 63 : x;
                 y = y > 63 ? 63 : y;
                 var key, sx, sy;
-                for (var i = 0; i < scan.length; i++) {
-                    sx = x + scan[i][0];
-                    sy = y + scan[i][1];
+                for (var i = 0; i < Carmen._scanDirections.length; i++) {
+                    sx = x + Carmen._scanDirections[i][0];
+                    sy = y + Carmen._scanDirections[i][1];
                     sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
                     sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
                     key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
@@ -481,7 +484,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
     var querymap = {};
 
-    var getdegen = function(queue, result, idx, callback) {
+    function getdegen(queue, result, idx, callback) {
         if (!queue[idx]) {
             stats.degen[2] = stats.degen[2] && (+new Date() - stats.degen[2]);
             stats.degen[1] = result.length;
@@ -499,7 +502,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             return a < b ? -1 : a > b ? 1 : 0;
         };
 
-        source._carmen.getall(source.getCarmen.bind(source), 'degen', [queue[idx]], function(err, termdist) {
+        source._carmen.getall(source.getCarmen.bind(source), 'degen', [queue[idx]], mapTerms);
+
+        function mapTerms(err, termdist) {
             if (err) return callback(err);
 
             termdist.sort(sorter);
@@ -512,10 +517,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
             }
 
             return getdegen(queue, result, idx+1, callback);
-        });
-    };
+        }
+    }
 
-    var getphrases = function(queue, callback) {
+    function getphrases(queue, callback) {
         stats.phrase[0]++;
         stats.phrase[2] = +new Date();
         source._carmen.getall(source.getCarmen.bind(source), 'term', queue, function(err, result) {
@@ -524,9 +529,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             stats.phrase[1] = result.length;
             return callback(null, result);
         });
-    };
+    }
 
-    var getterms = function(queue, callback) {
+    function getterms(queue, callback) {
         stats.term[0]++;
         stats.term[2] = +new Date();
         source._carmen.getall(source.getCarmen.bind(source), 'phrase', queue, function(err, result) {
@@ -535,9 +540,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             stats.term[1] = result.length;
             return callback(null, result);
         });
-    };
+    }
 
-    var getfreqs = function(queue, callback) {
+    function getfreqs(queue, callback) {
         queue.unshift(0);
         var total;
         source._carmen.getall(source.getCarmen.bind(source), 'freq', queue, function(err, result) {
@@ -549,9 +554,9 @@ Carmen.prototype.search = function(source, query, id, callback) {
             }
             callback(null);
         });
-    };
+    }
 
-    var getrelevd = function(phrases, callback) {
+    function getrelevd(phrases, callback) {
         stats.relevd[2] = +new Date();
         var result = [];
         for (var a = 0; a < phrases.length; a++) {
@@ -620,7 +625,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         stats.relevd[2] = +new Date() - stats.relevd[2];
         stats.relevd[1] = result.length;
         return result;
-    };
+    }
 
     var docrelev = {};
 
@@ -710,7 +715,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             var termsmaps = [];
             var texts = doc.text.split(',');
             for (var x = 0; x < texts.length; x++) {
-                if (!Carmen.tokenize(texts[x]).length) continue;
+                if (!tokenize(texts[x]).length) continue;
                 phrases.push(Carmen.phrase(texts[x]));
                 termsets.push(Carmen.terms(texts[x]));
                 termsmaps.push(Carmen.termsMap(texts[x]));
@@ -904,32 +909,6 @@ Carmen.prototype.store = function(source, callback) {
     write();
 };
 
-// Normalize input text into lowercase, asciified tokens.
-Carmen.tokenize = function(query, lonlat) {
-    if (lonlat) {
-        var numeric = query.
-            split(/[^\.\-\d+]+/i)
-            .filter(function(t) { return t.length; })
-            .map(function(t) { return parseFloat(t); })
-            .filter(function(t) { return !isNaN(t); });
-        if (numeric.length === 2) return numeric;
-    }
-
-    try {
-        var converted = iconv.convert(query).toString();
-        query = converted;
-    } catch(err) {}
-
-    return query
-        .toLowerCase()
-        .replace(/[\^]+/g, '')
-        .replace(/[-,]+/g, ' ')
-        .split(/[^\w+^\s+]/gi)
-        .join('')
-        .split(/[\s+]+/gi)
-        .filter(function(t) { return t.length; });
-};
-
 // Generate degenerates from a given token.
 Carmen.degens = function(token) {
     var length = token.length;
@@ -943,14 +922,14 @@ Carmen.degens = function(token) {
 
 // Converts text into an array of search term hash IDs.
 Carmen.terms = function(text) {
-    var tokens = Carmen.tokenize(text);
+    var tokens = tokenize(text);
     for (var i = 0; i < tokens.length; i++) tokens[i] = fnvfold(tokens[i], 30);
     return tokens;
 };
 
 // Map terms to their original token.
 Carmen.termsMap = function(text) {
-    var tokens = Carmen.tokenize(text);
+    var tokens = tokenize(text);
     var mapped = {};
     for (var i = 0; i < tokens.length; i++) mapped[fnvfold(tokens[i], 30)] = tokens[i];
     return mapped;
@@ -960,7 +939,7 @@ Carmen.termsMap = function(text) {
 // Appends a suffix based on the first term to help cluster phrases in shards.
 // @TODO implement this as actual 24-bit FNV1a per http://www.isthe.com/chongo/tech/comp/fnv/
 Carmen.phrase = function(text) {
-    var tokens = Carmen.tokenize(text);
+    var tokens = tokenize(text);
     var a = fnvfold(tokens.join(' '), 20);
     var b = fnvfold((tokens.length ? tokens[0] : ''), 30) % 4096;
     return a * 4096 + b;
