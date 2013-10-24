@@ -18,12 +18,14 @@
     "express": "~2.5.x",
     "iconv": "2.0.x",
     "sphericalmercator": "~1.0.1",
-    "nan": "~0.4.0"
+    "nan": "~0.4.0",
+    "minimist": "0.0.5"
   },
   "devDependencies": {
     "mbtiles": "~0.3.2",
     "tilelive-s3": "0.8.x",
-    "mocha": "~1.13.0"
+    "mocha": "~1.13.0",
+    "queue-async": "~1.0.4"
   },
   "main": "./index.js",
   "scripts": {

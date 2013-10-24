@@ -139,124 +139,10 @@ Carmen.prototype.geocode = function(query, callback) {
         });
     }
 
-    // Given that we've geocoded potential results in multiple sources, given
-    // arrays of `feats` and `grids` of the same length, combine matches that
-    // are over the same point, factoring in the zoom levels on which they
-    // occur.
-    function relev(feats, grids, zooms, callback) {
-        var relevd = {};
-        var coalesced = {};
-
-        // Coalesce relevs into higher zooms, e.g.
-        // z5 inherits relev of overlapping tiles at z4.
-        // @TODO assumes sources are in zoom ascending order.
-        var xd = Math.pow(2,39);
-        var yd = Math.pow(2,25);
-        for (var h = 0; h < grids.length; h++) {
-            var grid = grids[h];
-            var feat = feats[h];
-            var z = indexes[types[h]]._carmen.zoom;
-            for (var i = 0; i < grid.length; i++) {
-                var f = feat[grid[i] % yd];
-                if (!f) continue;
-                var x = Math.floor(grid[i]/xd);
-                var y = Math.floor(grid[i]%xd/yd);
-                var zxy = (z * Math.pow(2,28)) + (x * Math.pow(2,14)) + y;
-                // @TODO this is an optimization that  assumes multiple
-                // DBs do not use the same zoom level.
-                if (!coalesced[zxy]) coalesced[zxy] = [f];
-                var a = 0;
-                while (zooms[a] < z) {
-                    var p = zooms[a];
-                    var s = 1 << (z-p);
-                    var pxy = (p * Math.pow(2,28)) + (Math.floor(x/s) * Math.pow(2,14)) + Math.floor(y/s);
-                    if (coalesced[pxy]) coalesced[zxy].push.apply(coalesced[zxy],coalesced[pxy]);
-                    a++;
-                }
-            }
-        }
-
-        var results = _(coalesced).chain().reduce(function(memo, rows) {
-            // Sort by db, relev such that total relev can be
-            // calculated without results for the same db being summed.
-            rows.sort(function(a, b) {
-                var ai = types.indexOf(a.db);
-                var bi = types.indexOf(b.db);
-                if (ai < bi) return -1;
-                if (ai > bi) return 1;
-                if (a.relev > b.relev) return -1;
-                if (a.relev < b.relev) return 1;
-                if (a.reason > b.reason) return -1;
-                if (a.reason < b.reason) return 1;
-                if (a.id < b.id) return -1;
-                if (a.id > b.id) return 1;
-                return 0;
-            });
-            var relev = usagerelev(data.query, rows);
-
-            // A threshold here reduces results early.
-            // @TODO tune this.
-            // if (relev < 0.75) return memo;
-
-            for (var i = 0, l = rows.length; i < l; i++) {
-                var fullid = rows[i].db + '.' + rows[i].id;
-                relevd[fullid] = relevd[fullid] || rows[i];
-                memo[rows[i].tmpid] = memo[rows[i].tmpid] || {
-                    db: rows[i].db,
-                    id: rows[i].id,
-                    tmpid: rows[i].tmpid,
-                    relev: relev
-                };
-            }
-            return memo;
-        }, {}).toArray().value();
-        results.sort(function(a, b) {
-            return a.relev > b.relev ? -1 :
-                a.relev < b.relev ? 1 :
-                a.tmpid < b.tmpid ? -1 :
-                a.tmpid > b.tmpid ? 1 : 0;
-        });
-        results = results.reduce(function(memo, feature) {
-            if (!memo.length || memo[0].relev - feature.relev < 0.5) {
-                memo.push(feature);
-            }
-            return memo;
-        }, []);
-        results = results.map(function(f) { return f.db + '.' + f.id; });
-
-        data.stats.relevTime = +new Date() - data.stats.relevTime;
-        data.stats.relevCount = results.length;
-
-        if (!results.length) return callback(null, results);
-
-        // Disallow more than 50 of the best results at this point.
-        if (results.length > 50) results = results.slice(0,50);
-
-        var start = +new Date();
-        var matches = [];
-        var contexts = [];
-        var remaining = results.length;
-        results.forEach(function(term) {
-            var termid = parseInt(term.split('.')[1], 10);
-            var dbname = term.split('.')[0];
-            carmen.indexes[dbname].getFeature(termid, function(err, feat) {
-                if (err) return (remaining = 0) && callback(err);
-                carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
-                    if (err) return (remaining = 0) && callback(err);
-                    contexts.push(context);
-                    if (!--remaining) {
-                        data.stats.contextTime = +new Date() - start;
-                        data.stats.contextCount = contexts.length;
-                        return callback(null, contexts, relevd);
-                    }
-                });
-            });
-        });
-    }
 
     search(function(err, feats, grids, zooms) {
         if (err) return callback(err);
-        relev(feats, grids, zooms, function(err, contexts, relevd) {
+        relev(indexes, types, data, carmen, feats, grids, zooms, function(err, contexts, relevd) {
             if (err) return callback(err);
 
             var maxrelev = 0;
@@ -934,4 +820,134 @@ function feature(id, type, data) {
     if ('rank' in data)
         delete data.rank;
     return data;
+}
+
+// Given that we've geocoded potential results in multiple sources, given
+// arrays of `feats` and `grids` of the same length, combine matches that
+// are over the same point, factoring in the zoom levels on which they
+// occur.
+function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
+    var relevd = {};
+    var coalesced = {};
+    var i, j, c;
+
+    // Coalesce relevs into higher zooms, e.g.
+    // z5 inherits relev of overlapping tiles at z4.
+    // @TODO assumes sources are in zoom ascending order.
+    var xd = Math.pow(2,39);
+    var yd = Math.pow(2,25);
+    var mp2_14 = Math.pow(2,14);
+    var mp2_28 = Math.pow(2,28);
+    for (var h = 0; h < grids.length; h++) {
+        var grid = grids[h];
+        var feat = feats[h];
+        var z = indexes[types[h]]._carmen.zoom;
+        for (i = 0; i < grid.length; i++) {
+            var f = feat[grid[i] % yd];
+            if (!f) continue;
+            var x = Math.floor(grid[i]/xd);
+            var y = Math.floor(grid[i]%xd/yd);
+            var zxy = (z * mp2_28) + (x * mp2_14) + y;
+            // @TODO this is an optimization that  assumes multiple
+            // DBs do not use the same zoom level.
+            if (!coalesced[zxy]) coalesced[zxy] = [f];
+            var a = 0;
+            while (zooms[a] < z) {
+                var p = zooms[a];
+                var s = 1 << (z-p);
+                var pxy = (p * mp2_28) + (Math.floor(x/s) * mp2_14) + Math.floor(y/s);
+                if (coalesced[pxy]) coalesced[zxy].push.apply(coalesced[zxy],coalesced[pxy]);
+                a++;
+            }
+        }
+    }
+
+    var rowMemo = {};
+    for (c in coalesced) {
+        var rows = coalesced[c];
+        // Sort by db, relev such that total relev can be
+        // calculated without results for the same db being summed.
+        rows.sort(function(a, b) {
+            var ai = types.indexOf(a.db);
+            var bi = types.indexOf(b.db);
+            if (ai < bi) return -1;
+            if (ai > bi) return 1;
+            if (a.relev > b.relev) return -1;
+            if (a.relev < b.relev) return 1;
+            if (a.reason > b.reason) return -1;
+            if (a.reason < b.reason) return 1;
+            if (a.id < b.id) return -1;
+            if (a.id > b.id) return 1;
+            return 0;
+        });
+        var relev = usagerelev(data.query, rows);
+
+        // A threshold here reduces results early.
+        // @TODO tune this.
+        // if (relev < 0.75) return memo;
+
+        for (i = 0, l = rows.length; i < l; i++) {
+            var fullid = rows[i].db + '.' + rows[i].id;
+            relevd[fullid] = relevd[fullid] || rows[i];
+            rowMemo[rows[i].tmpid] = rowMemo[rows[i].tmpid] || {
+                db: rows[i].db,
+                id: rows[i].id,
+                tmpid: rows[i].tmpid,
+                relev: relev
+            };
+        }
+    }
+
+    var results = [];
+    for (j in rowMemo) {
+        results.push(rowMemo[j]);
+    }
+
+    results.sort(function(a, b) {
+        return a.relev > b.relev ? -1 :
+            a.relev < b.relev ? 1 :
+            a.tmpid < b.tmpid ? -1 :
+            a.tmpid > b.tmpid ? 1 : 0;
+    });
+
+    var formatted = [];
+    results = results.reduce(function(memo, feature) {
+        if (!memo.length || memo[0].relev - feature.relev < 0.5) {
+            memo.push(feature);
+            formatted.push(feature.db + '.' + feature.id);
+        }
+        return memo;
+    }, []);
+    results = formatted;
+
+    data.stats.relevTime = +new Date() - data.stats.relevTime;
+    data.stats.relevCount = results.length;
+
+    if (!results.length) return callback(null, results);
+
+    // Disallow more than 50 of the best results at this point.
+    if (results.length > 50) results = results.slice(0,50);
+
+    var start = +new Date();
+    var matches = [];
+    var contexts = [];
+    var remaining = results.length;
+    // This function should be optimized away from `forEach`, but relies
+    // on scope to deal with possibly async callbacks in `getFeature`
+    results.forEach(function(term) {
+        var termid = parseInt(term.split('.')[1], 10);
+        var dbname = term.split('.')[0];
+        carmen.indexes[dbname].getFeature(termid, function(err, feat) {
+            if (err) return (remaining = 0) && callback(err);
+            carmen.contextByFeature(feature(termid, dbname, feat), function(err, context) {
+                if (err) return (remaining = 0) && callback(err);
+                contexts.push(context);
+                if (!--remaining) {
+                    data.stats.contextTime = +new Date() - start;
+                    data.stats.contextCount = contexts.length;
+                    return callback(null, contexts, relevd);
+                }
+            });
+        });
+    });
 }
