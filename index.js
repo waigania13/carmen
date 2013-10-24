@@ -759,7 +759,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                 patch.grid[id].push.apply(patch.grid[id], doc.zxy);
             });
 
-            termsets.forEach(loadType);
+            termsets.forEach(loadTerm);
 
             function loadTerm(terms, x) {
                 var id;
