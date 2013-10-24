@@ -22,7 +22,7 @@
     },
     "main": "./index.js",
     "scripts": {
-        "pretest": "./scripts/ensure-fixtures.sh && ./scripts/install-dbs.sh",
+        "pretest": "./scripts/install-dbs.sh",
         "test": "mocha"
     },
     "engines": { "node": "0.6.x || 0.8.x || 0.10.x" }
