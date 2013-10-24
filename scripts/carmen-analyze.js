@@ -8,6 +8,7 @@ var api = {
     '.mbtiles': require('../api-mbtiles')
 };
 var Carmen = require('../index.js');
+var tokenize = require('../lib/tokenize');
 var Queue = require('../queue');
 var _ = require('underscore');
 var f = argv[2];
@@ -62,7 +63,7 @@ carmen._open(function(err) {
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
-                var query = Carmen.tokenize(text);
+                var query = tokenize(text);
                 var terms = Carmen.terms(text);
                 var idx = terms.indexOf(+term);
                 if (idx !== -1) {
@@ -87,7 +88,7 @@ carmen._open(function(err) {
                 var text = doc.search || doc.name || '';
                 _(text.split(',')).each(function(syn) {
                     if (Carmen.phrase(syn) === +grid) {
-                        maxes[i].unshift(Carmen.tokenize(syn).join(' '));
+                        maxes[i].unshift(tokenize(syn).join(' '));
                     }
                 });
                 phraselookup(maxes, ++i, callback);
