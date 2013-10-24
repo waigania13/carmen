@@ -284,7 +284,6 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     }
 };
 
-
 // Retrieve the context for a feature (document).
 Carmen.prototype.contextByFeature = function(data, callback) {
     if (!('lon' in data)) return callback(new Error('No lon field in data'));
@@ -338,8 +337,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
             if (err) return callback(err);
 
             termdist.sort(ops.sortMod4);
-            var closest = [];
-            var distance = termdist[0] % 4;
+
             for (var i = 0; i < termdist.length && i < 10; i++) {
                 var term = Math.floor(termdist[i]/4);
                 querymap[term] = [idx, termdist[i]%4];
@@ -375,7 +373,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     function getfreqs(queue, callback) {
         queue.unshift(0);
         var total;
-        source._carmen.getall(source.getCarmen.bind(source), 'freq', queue, function(err, result) {
+        source._carmen.getall(source.getCarmen.bind(source), 'freq', queue, function(err) {
             if (err) return callback(err);
             total = source._carmen.get('freq', 0)[0];
             for (var i = 0; i < queue.length; i++) {
@@ -386,7 +384,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
         });
     }
 
-    function getrelevd(phrases, callback) {
+    function getrelevd(phrases) {
         stats.relevd[2] = +new Date();
         var result = [];
         for (var a = 0; a < phrases.length; a++) {
@@ -531,7 +529,6 @@ Carmen.prototype.index = function(source, docs, callback) {
     //   documents to be indexed.
     // - Stores new frequencies.
     function indexFreqs(callback) {
-        var remaining = 0;
         var freq = {};
 
         // Uses freq[0] as a convention for storing total # of docs.
@@ -893,7 +890,6 @@ function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
     if (results.length > 50) results = results.slice(0,50);
 
     var start = +new Date();
-    var matches = [];
     var contexts = [];
     var remaining = results.length;
     // This function should be optimized away from `forEach`, but relies
