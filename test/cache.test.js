@@ -115,6 +115,7 @@ describe('cache getall', function() {
             assert.ifError(err);
 
             // Returns ids mapped to input ids.
+            result.sort();
             assert.deepEqual([
                 126117647032898,
                 18578132799233,
