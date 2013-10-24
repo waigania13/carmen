@@ -3,6 +3,9 @@
 [UTFGrid](https://www.mapbox.com/developers/utfgrid/)/[MBTiles](https://www.mapbox.com/mbtiles-spec/)-based
 geocoder with support for swappable data sources.
 
+This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306)
+by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
+
 ## Depends
 
  - Node v0.8.x or Node v0.10.x
@@ -115,9 +118,12 @@ Geocode a string query. The result is passed to `callback(err, data)` in the fol
 }
 ```
 
-Each array in `results` contains a match for the query, where the first feature in each match contains the matching element and subsequent elements describe other geographic features containing the first element.
+Each array in `results` contains a match for the query, where the first feature
+in each match contains the matching element and subsequent elements describe
+other geographic features containing the first element.
 
-`carmen.geocode()` can also be called with a pair of coordinates in the form `lon,lat` to do "reverse" geocoding. The result data is identical for a reverse geocoding query.
+`carmen.geocode()` can also be called with a pair of coordinates in the form
+`lon,lat` to do "reverse" geocoding. The result data is identical for a reverse geocoding query.
 
 ## Indexes
 
@@ -125,7 +131,10 @@ Each carmen index is an MBTiles file with an additional SQLite fulltext search t
 
     ./scripts/carmen-index.js MBTILES
 
-The only requirement for a carmen MBTiles file is that it contains grids and features with a field suitable for use as search terms. Any additional keys included with features will be automatically passed through to the results. The following fields have special meaning to carmen if present:
+The only requirement for a carmen MBTiles file is that it contains grids and
+features with a field suitable for use as search terms. Any additional keys
+included with features will be automatically passed through to the results.
+The following fields have special meaning to carmen if present:
 
 - `search` - text to be indexed for forward geocoding.
 - `lon` - longitude of the feature. If omitted, `lon` is calculated from the UTFGrid.
@@ -134,7 +143,9 @@ The only requirement for a carmen MBTiles file is that it contains grids and fea
 - `score` - numeric score. If present, used by the default `sortBy` function to sort results.
 - `bounds` - comma-separated coordinates that bound the feature in order: w,s,e,n. If present, carmen will split and format this field into an array of values.
 
-Note that the UTFGrid-based centroid calculation for polygon features is currently very rough. Providing a more accurate lon/lat pair for these features is more performant and recommended.
+Note that the UTFGrid-based centroid calculation for polygon features is
+currently very rough. Providing a more accurate lon/lat pair for these
+features is more performant and recommended.
 
 ### Designing for carmen in TileMill
 

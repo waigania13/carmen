@@ -1,23 +1,21 @@
-var _ = require('underscore');
-var fs = require('fs');
-var path = require('path');
-var basepath = path.resolve(__dirname + '/tiles');
-var sm = new (require('sphericalmercator'))();
-var crypto = require('crypto');
-var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-var EventEmitter = require('events').EventEmitter;
-var DEBUG = process.env.DEBUG;
-var tokenize = require('./lib/tokenize.js');
-var Cache = require('./lib/cxxcache.js');
-var lockingCache = {};
-var fnv = require('./lib/fnv'),
-    fnv1a = fnv.fnv1a,
-    fnvfold = fnv.fnvfold;
-var Locking = require('./lib/locking');
-var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate;
+var _ = require('underscore'),
+    fs = require('fs'),
+    path = require('path'),
+    sm = new (require('sphericalmercator'))(),
+    crypto = require('crypto'),
+    iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE'),
+    EventEmitter = require('events').EventEmitter;
 
-Carmen.fnv1a = fnv1a;
-Carmen.fnvfold = fnvfold;
+var Cache = require('./lib/cxxcache'),
+    usagerelev = require('./lib/usagerelev'),
+    fnv = require('./lib/fnv'),
+    Locking = require('./lib/locking'),
+    termops = require('./lib/termops');
+
+var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate,
+    lockingCache = {},
+    DEBUG = process.env.DEBUG;
+
 require('util').inherits(Carmen, EventEmitter);
 module.exports = Carmen;
 
@@ -75,7 +73,6 @@ Carmen.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
-
 // Main geocoding API entry point.
 // Returns results across all indexes for a given query.
 //
@@ -93,7 +90,7 @@ Carmen.prototype.geocode = function(query, callback) {
     var types = Object.keys(indexes);
     var zooms = [];
     var data = {
-        query: tokenize(query, true),
+        query: termops.tokenize(query, true),
         stats: {}
     };
     var carmen = this;
@@ -195,7 +192,7 @@ Carmen.prototype.geocode = function(query, callback) {
                 if (a.id > b.id) return 1;
                 return 0;
             });
-            var relev = Carmen.usagerelev(data.query, rows);
+            var relev = usagerelev(data.query, rows);
 
             // A threshold here reduces results early.
             // @TODO tune this.
@@ -275,8 +272,8 @@ Carmen.prototype.geocode = function(query, callback) {
                     bc.push(relevd[b[i].id]);
                     b[i].relev = relevd[b[i].id].relev;
                 }
-                var arelev = Carmen.usagerelev(data.query, ac);
-                var brelev = Carmen.usagerelev(data.query, bc);
+                var arelev = usagerelev(data.query, ac);
+                var brelev = usagerelev(data.query, bc);
                 if (arelev > brelev) return -1;
                 if (arelev < brelev) return 1;
 
@@ -414,38 +411,6 @@ Carmen.prototype.contextByFeature = function(data, callback) {
     });
 };
 
-// Return a "usage" relev by comparing a set of relevd elements against the
-// input query. Each relevd element must include the following keys: relev,
-// reason, db.
-Carmen.usagerelev = function(query, relevd) {
-    // Clone original query tokens. These will be crossed off one
-    // by one to ensure each query token only counts once towards
-    // the final relev.
-    query = query.slice(0);
-
-    var relev = 0;
-    var total = query.length;
-    var lastdb = false;
-
-    for (var i = 0; i < relevd.length; i++) {
-        if (lastdb === relevd[i].db) continue;
-
-        var usage = 0;
-        var reason = relevd[i].reason;
-        for (var j = 0; j < query.length; j++) {
-            if ((1<<j & reason) && query[j]) {
-                ++usage;
-                query[j] = false;
-            }
-        }
-        if (usage) {
-            relev += relevd[i].relev * (usage/total);
-            lastdb = relevd[i].db;
-        }
-    }
-    return relev;
-};
-
 // Search a carmen source for features matching query.
 Carmen.prototype.search = function(source, query, id, callback) {
     if (!this._opened) {
@@ -457,7 +422,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
 
     var idx = source._carmen.idx;
     var dbname = source._carmen.name;
-    var terms = Carmen.terms(query);
+    var terms = termops.terms(query);
     var weights = {}; // @TODO shared cache for this?
     var relevs = {};
     var stats = {
@@ -701,10 +666,10 @@ Carmen.prototype.index = function(source, docs, callback) {
             var termsmaps = [];
             var texts = doc.text.split(',');
             for (var x = 0; x < texts.length; x++) {
-                if (!tokenize(texts[x]).length) continue;
-                phrases.push(Carmen.phrase(texts[x]));
-                termsets.push(Carmen.terms(texts[x]));
-                termsmaps.push(Carmen.termsMap(texts[x]));
+                if (!termops.tokenize(texts[x]).length) continue;
+                phrases.push(termops.phrase(texts[x]));
+                termsets.push(termops.terms(texts[x]));
+                termsmaps.push(termops.termsMap(texts[x]));
             }
             for (var j = 0; j < termsets.length; j++) {
                 var terms = termsets[j];
@@ -778,7 +743,7 @@ Carmen.prototype.index = function(source, docs, callback) {
                     // (not just significant ones).
                     if (degenerated[id]) continue;
                     degenerated[id] = true;
-                    var degens = Carmen.degens(termsmap[id]);
+                    var degens = termops.degens(termsmap[id]);
                     var keys = Object.keys(degens);
                     for (var j = 0; j < keys.length; j++) {
                         var d = keys[j];
@@ -897,42 +862,6 @@ Carmen.prototype.store = function(source, callback) {
         });
     };
     write();
-};
-
-// Generate degenerates from a given token.
-Carmen.degens = function(token) {
-    var length = token.length;
-    var degens = {};
-    for (var i = 0; !i || (i < length && length - i > 2); i++) {
-        var degen = fnvfold(token.substr(0, length - i), 30);
-        degens[degen] = (fnvfold(token, 30) * 4) + Math.min(i,3);
-    }
-    return degens;
-};
-
-// Converts text into an array of search term hash IDs.
-Carmen.terms = function(text) {
-    var tokens = tokenize(text);
-    for (var i = 0; i < tokens.length; i++) tokens[i] = fnvfold(tokens[i], 30);
-    return tokens;
-};
-
-// Map terms to their original token.
-Carmen.termsMap = function(text) {
-    var tokens = tokenize(text);
-    var mapped = {};
-    for (var i = 0; i < tokens.length; i++) mapped[fnvfold(tokens[i], 30)] = tokens[i];
-    return mapped;
-};
-
-// Converts text into a name ID.
-// Appends a suffix based on the first term to help cluster phrases in shards.
-// @TODO implement this as actual 24-bit FNV1a per http://www.isthe.com/chongo/tech/comp/fnv/
-Carmen.phrase = function(text) {
-    var tokens = tokenize(text);
-    var a = fnvfold(tokens.join(' '), 20);
-    var b = fnvfold((tokens.length ? tokens[0] : ''), 30) % 4096;
-    return a * 4096 + b;
 };
 
 // Converts id + zxy coordinates into an array of zxy IDs.
