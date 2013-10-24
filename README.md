@@ -58,7 +58,7 @@ carmen.geocode('Washington, DC', function(err, data) {
 
 Create a new Carmen object. Takes a hash of index objects to use, keyed by each `id`. Each index object should resemble the following:
 
-```json
+```js
 {
   // Required. MBTiles instance to be used.
   source: new MBTiles('./myindex.mbtiles'),
@@ -87,7 +87,7 @@ Create a new Carmen object. Takes a hash of index objects to use, keyed by each 
 
 Geocode a string query. The result is passed to `callback(err, data)` in the following form:
 
-```json
+```js
 {
   query: ['washington', 'dc'],
   results: [
