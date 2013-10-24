@@ -1,6 +1,7 @@
-carmen
-------
-UTFGrid/MBTiles-based geocoder with support for swappable data sources.
+# carmen
+
+[UTFGrid](https://www.mapbox.com/developers/utfgrid/)/[MBTiles](https://www.mapbox.com/mbtiles-spec/)-based
+geocoder with support for swappable data sources.
 
 ## Depends
 
@@ -11,11 +12,20 @@ UTFGrid/MBTiles-based geocoder with support for swappable data sources.
 
 ## Install
 
+Linux / apt:
+
     sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     sudo apt-get update
     sudo apt-get install gcc-4.7 g++-4.7 libprotobuf7 libprotobuf-dev protobuf-compiler
     export CC=gcc-4.7
     export CXX=g++-4.7
+
+OSX / homebrew:
+
+    brew install protobuf
+
+All:
+
     npm install && ./scripts/install-dbs.sh
 
 Note: if running as `root` user you need to do `npm install --unsafe-perm` to avoid `cannot run in wd carmen@0.1.0` error that prevents the build.
@@ -30,74 +40,80 @@ Runs an example geocoding server at `http://localhost:3000`.
 
 ## Tests
 
-    npm test
+Install, and then
 
-Requires [mocha](http://visionmedia.github.com/mocha/). Run `npm install -g mocha` to install it globally.
+    npm test
 
 ## API
 
-    var Carmen = require('carmen');
-    var carmen = new Carmen(options /*see below for details on options*/);
-    carmen.geocode('Washington, DC', function(err, data) {
-        console.log(data);
-    });
+```js
+var Carmen = require('carmen');
+var carmen = new Carmen(options /*see below for details on options*/);
+carmen.geocode('Washington, DC', function(err, data) {
+    console.log(data);
+});
+```
 
 ### new Carmen(options)
 
 Create a new Carmen object. Takes a hash of index objects to use, keyed by each `id`. Each index object should resemble the following:
 
-    myindex: {
-      // Required. MBTiles instance to be used.
-      source: new MBTiles('./myindex.mbtiles'),
+```json
+{
+  // Required. MBTiles instance to be used.
+  source: new MBTiles('./myindex.mbtiles'),
 
-      // Optional. Set to `false` to skip this index for token queries.
-      query: true,
+  // Optional. Set to `false` to skip this index for token queries.
+  query: true,
 
-      // Optional. Set to `false` to exclude this index from contexts.
-      context: true,
+  // Optional. Set to `false` to exclude this index from contexts.
+  context: true,
 
-      // Optional. Search weight. Higher = greater priority.
-      weight: 2,
+  // Optional. Search weight. Higher = greater priority.
+  weight: 2,
 
-      // Optional. Return a value to break ties between results. Higher values beat lower.
-      sortBy: function(data) { return data.myKey; },
+  // Optional. Return a value to break ties between results. Higher values beat lower.
+  sortBy: function(data) { return data.myKey; },
 
-      // Optional. Token filter. Return false to skip querying this index.
-      filter: function(token) { return true; },
+  // Optional. Token filter. Return false to skip querying this index.
+  filter: function(token) { return true; },
 
-      // Optional. Map the feature data to a different output format.
-      map: function(data) { return data; }
-    }
+  // Optional. Map the feature data to a different output format.
+  map: function(data) { return data; }
+}
+```
 
 ### carmen.geocode([string], callback)
 
 Geocode a string query. The result is passed to `callback(err, data)` in the following form:
 
-    {
-      query: ['washington', 'dc'],
-      results: [
-        [
-          {
-            lat: 38.8951148,
-            lon: -77.0363716000006,
-            name: 'Washington',
-            type: 'city'
-          },
-          {
-            lat: 38.9108045088125,
-            lon: -77.0096131357235,
-            name: 'District of Columbia',
-            type: 'province'
-          },
-          {
-            lat: 51.1974842447091,
-            lon: -119.265098284354,
-            name: 'United States of America',
-            type: 'country'
-          }
-        ]
-      ]
-    }
+```json
+{
+  query: ['washington', 'dc'],
+  results: [
+    [
+      {
+        lat: 38.8951148,
+        lon: -77.0363716000006,
+        name: 'Washington',
+        type: 'city'
+      },
+      {
+        lat: 38.9108045088125,
+        lon: -77.0096131357235,
+        name: 'District of Columbia',
+        type: 'province'
+      },
+      {
+        lat: 51.1974842447091,
+        lon: -119.265098284354,
+        name: 'United States of America',
+        type: 'country'
+      }
+    ]
+  ]
+}
+```
 
 Each array in `results` contains a match for the query, where the first feature in each match contains the matching element and subsequent elements describe other geographic features containing the first element.
 
