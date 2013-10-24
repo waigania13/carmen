@@ -7,10 +7,12 @@ var _ = require('underscore'),
     EventEmitter = require('events').EventEmitter;
 
 var Cache = require('./lib/cxxcache'),
+    Relev = require('./lib/relev'),
     usagerelev = require('./lib/usagerelev'),
     fnv = require('./lib/fnv'),
     Locking = require('./lib/locking'),
-    termops = require('./lib/termops');
+    termops = require('./lib/termops'),
+    ops = require('./lib/ops');
 
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate,
     lockingCache = {},
@@ -40,27 +42,32 @@ function Carmen(options) {
 
         memo[key] = source;
         if (source.open) {
+            source.getInfo(loadedinfo);
+        } else {
+            source.once('open', opened);
+        }
+
+        function loadedinfo(err, info) {
+            if (err) return done(err);
+            source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
+            source._carmen.zoom = info.maxzoom;
+            source._carmen.name = key;
+            source._carmen.idx = Object.keys(options).indexOf(key);
+            return done();
+        }
+
+        function opened(err) {
+            if (err) return done(err);
             source.getInfo(function(err, info) {
                 if (err) return done(err);
-                source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
+                source._carmen = source._carmen || new Cache(key, +info.shardlevel || 0);
                 source._carmen.zoom = info.maxzoom;
                 source._carmen.name = key;
                 source._carmen.idx = Object.keys(options).indexOf(key);
                 return done();
             });
-        } else {
-            source.once('open', function(err) {
-                if (err) return done(err);
-                source.getInfo(function(err, info) {
-                    if (err) return done(err);
-                    source._carmen = source._carmen || new Cache(key, +info.shardlevel || 0);
-                    source._carmen.zoom = info.maxzoom;
-                    source._carmen.name = key;
-                    source._carmen.idx = Object.keys(options).indexOf(key);
-                    return done();
-                });
-            });
         }
+
         return memo;
     }
 }
@@ -146,6 +153,7 @@ Carmen.prototype.geocode = function(query, callback) {
             if (err) return callback(err);
 
             var maxrelev = 0;
+            // relies on relevd
             contexts.sort(function(a, b) {
                 // sort by usagerelev score.
                 var ac = [];
@@ -195,16 +203,10 @@ Carmen.prototype.geocode = function(query, callback) {
 
 // Not only do we scan the exact point matched by a latitude, longitude
 // pair, we also hit the 8 points that surround it as a rectangle.
-Carmen._scanDirections = [
-    [0,0],
-    [0,1],
-    [0,-1],
-    [1,0],
-    [1,1],
-    [1,-1],
-    [-1,0],
-    [-1,1],
-    [-1,-1]
+var scanDirections = [
+    [-1,1], [-1,0], [-1,-1],
+    [0,-1], [0, 0], [0, 1],
+    [1,-1], [1, 0], [1, 1]
 ];
 
 // Returns a hierarchy of features ("context") for a given lon,lat pair.
@@ -254,12 +256,12 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
                 y = y > 63 ? 63 : y;
                 var key, sx, sy;
                 // Check both the pixel itself and the 8 surrounding directions
-                for (var i = 0; i < Carmen._scanDirections.length; i++) {
-                    sx = x + Carmen._scanDirections[i][0];
-                    sy = y + Carmen._scanDirections[i][1];
+                for (var i = 0; i < scanDirections.length; i++) {
+                    sx = x + scanDirections[i][0];
+                    sy = y + scanDirections[i][1];
                     sx = sx > 63 ? 63 : sx < 0 ? 0 : sx;
                     sy = sy > 63 ? 63 : sy < 0 ? 0 : sy;
-                    key = grid.keys[resolveCode(grid.grid[sy].charCodeAt(sx))];
+                    key = grid.keys[ops.resolveCode(grid.grid[sy].charCodeAt(sx))];
                     if (key) {
                         context[pos] = feature(key, type, grid.data[key]);
                         break;
@@ -282,7 +284,6 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     }
 };
 
-function identity(v) { return v; }
 
 // Retrieve the context for a feature (document).
 Carmen.prototype.contextByFeature = function(data, callback) {
@@ -331,20 +332,12 @@ Carmen.prototype.search = function(source, query, id, callback) {
         stats.degen[0]++;
         stats.degen[2] = +new Date();
 
-        var sorter = function(a, b) {
-            var ad = a % 4;
-            var bd = b % 4;
-            if (ad < bd) return -1;
-            if (ad > bd) return 1;
-            return a < b ? -1 : a > b ? 1 : 0;
-        };
-
         source._carmen.getall(source.getCarmen.bind(source), 'degen', [queue[idx]], mapTerms);
 
         function mapTerms(err, termdist) {
             if (err) return callback(err);
 
-            termdist.sort(sorter);
+            termdist.sort(ops.sortMod4);
             var closest = [];
             var distance = termdist[0] % 4;
             for (var i = 0; i < termdist.length && i < 10; i++) {
@@ -516,6 +509,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     });
 };
 
+
 // Add docs to a source's index.
 Carmen.prototype.index = function(source, docs, callback) {
     if (!this._opened) {
@@ -597,7 +591,7 @@ Carmen.prototype.index = function(source, docs, callback) {
         function loadDoc(doc) {
             doc.id = parseInt(doc.id,10);
             doc.zxy = doc.zxy ? doc.zxy.map(function(zxy) {
-                return Carmen.zxy(doc.id, zxy);
+                return op.zxy(doc.id, zxy);
             }) : [];
 
             var phrases = doc.phrases;
@@ -737,7 +731,9 @@ Carmen.prototype.store = function(source, callback) {
         }));
     });
 
-    var write = function() {
+    write();
+
+    function write() {
         if (!queue.length) return callback();
         var task = queue.shift();
         var type = task[0];
@@ -746,17 +742,7 @@ Carmen.prototype.store = function(source, callback) {
             if (err) return callback(err);
             defer(function() { write(); });
         });
-    };
-    write();
-};
-
-// Converts id + zxy coordinates into an array of zxy IDs.
-// z is omitted as it can be derived from source maxzoom metadata.
-// x and y are encoded as multiples of Math.pow(2,14) (making z14 the
-// maximum zoom level) leaving Math.pow(2,25) distinct values for IDs.
-Carmen.zxy = function(id, zxy) {
-    zxy = zxy.split('/');
-    return ((zxy[1]|0) * Math.pow(2,39)) + ((zxy[2]|0) * Math.pow(2,25)) + id;
+    }
 };
 
 // Generate a Carmen options hash automatically reading sources in a directory.
@@ -772,9 +758,7 @@ Carmen.autoSync = function(dirname) {
             dbname: f.split('.')[1] || f.split('.')[0]
         };
     });
-    files.sort(function(a, b) {
-        return a.prefix < b.prefix ? -1 : a.prefix > b.prefix ? 1 : 0;
-    });
+    files.sort(sortByPrefix);
     return files.reduce(function(opts, f) {
         switch (f.extname) {
         case '.mbtiles':
@@ -790,23 +774,8 @@ Carmen.autoSync = function(dirname) {
     }, {});
 };
 
-// Prototype for relevance relevd rows of Carmen.search.
-// Defined to take advantage of V8 class performance.
-function Relev(id, relev, reason, idx, db, tmpid) {
-    this.id = id;
-    this.relev = relev;
-    this.reason = reason;
-    this.idx = idx;
-    this.db = db;
-    this.tmpid = tmpid;
-}
-
-// Resolve the UTF-8 encoding stored in grids to simple number values.
-function resolveCode(key) {
-    if (key >= 93) key--;
-    if (key >= 35) key--;
-    key -= 32;
-    return key;
+function sortByPrefix(a, b) {
+    return a.prefix < b.prefix ? -1 : a.prefix > b.prefix ? 1 : 0;
 }
 
 // Clean up internal fields/prep a feature entry for external consumption.
@@ -903,12 +872,7 @@ function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
         results.push(rowMemo[j]);
     }
 
-    results.sort(function(a, b) {
-        return a.relev > b.relev ? -1 :
-            a.relev < b.relev ? 1 :
-            a.tmpid < b.tmpid ? -1 :
-            a.tmpid > b.tmpid ? 1 : 0;
-    });
+    results.sort(sortByRelev);
 
     var formatted = [];
     results = results.reduce(function(memo, feature) {
@@ -951,3 +915,12 @@ function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
         });
     });
 }
+
+function sortByRelev(a, b) {
+    return a.relev > b.relev ? -1 :
+        a.relev < b.relev ? 1 :
+        a.tmpid < b.tmpid ? -1 :
+        a.tmpid > b.tmpid ? 1 : 0;
+}
+
+function identity(v) { return v; }
