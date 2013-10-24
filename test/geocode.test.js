@@ -3,6 +3,7 @@ var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
+var tokenize = require('../lib/tokenize');
 var S3 = Carmen.S3();
 var MBTiles = Carmen.MBTiles();
 
@@ -92,7 +93,7 @@ _(carmen.indexes).each(function(source, type) {
             if (!('search' in doc)) return done();
 
             // @TODO some languages do not get tokenized/converted by iconv.
-            if (!Carmen.tokenize(doc.name).length) return done();
+            if (!tokenize(doc.name).length) return done();
 
             carmen.geocode(doc.name || '', function(err, res) {
                 assert.ifError(err);
