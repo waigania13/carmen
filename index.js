@@ -21,6 +21,7 @@ var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediat
 require('util').inherits(Carmen, EventEmitter);
 module.exports = Carmen;
 
+// Initialize and load Carmen, with a selection of indexes.
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
 
@@ -85,6 +86,9 @@ Carmen.prototype._open = function(callback) {
 //
 // Actual searches are delegated to `Carmen.prototype.search` over each
 // enabled backend.
+//
+// `query` is a string of text, like "Chester, NJ"
+// `callback` is called with (error, results)
 Carmen.prototype.geocode = function(query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
@@ -114,40 +118,9 @@ Carmen.prototype.geocode = function(query, callback) {
     // keyword search. Find matching features.
     data.stats.searchTime = +new Date();
 
-    function search(callback) {
-        var feats = [];
-        var grids = [];
-        var remaining = types.length;
-        types.forEach(function(dbname, pos) {
-            carmen.search(indexes[dbname], data.query.join(' '), null, searched);
-
-            function searched(err, feat, grid, stats) {
-                if (err) {
-                    remaining = 0;
-                    return callback(err);
-                }
-                if (grid.length) {
-                    var z = indexes[dbname]._carmen.zoom;
-                    if (zooms.indexOf(z) === -1) zooms.push(z);
-                }
-                feats[pos] = feat;
-                grids[pos] = grid;
-                if (DEBUG) data.stats['search.' + dbname] = stats;
-                if (!--remaining) {
-                    zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1; });
-                    data.stats.searchTime = +new Date() - data.stats.searchTime;
-                    data.stats.searchCount = _(grids).reduce(function(sum, v) {
-                        return sum + v.length;
-                    }, 0);
-                    data.stats.relevTime = +new Date();
-                    callback(null, feats, grids, zooms);
-                }
-            }
-        });
-    }
-
-
-    search(function(err, feats, grids, zooms) {
+    // search runs `carmen.search` over each backend with `data.query`,
+    // condenses all of the results, and sorts them by potential usefulness.
+    search(types, data, function(err, feats, grids, zooms) {
         if (err) return callback(err);
         relev(indexes, types, data, carmen, feats, grids, zooms, function(err, contexts, relevd) {
             if (err) return callback(err);
@@ -199,6 +172,39 @@ Carmen.prototype.geocode = function(query, callback) {
             return callback(null, data);
         });
     });
+
+    function search(types, data, callback) {
+        var feats = [],
+            grids = [],
+            remaining = types.length;
+
+        types.forEach(function(dbname, pos) {
+            carmen.search(indexes[dbname], data.query.join(' '), null, searched);
+
+            function searched(err, feat, grid, stats) {
+                if (err) {
+                    remaining = 0;
+                    return callback(err);
+                }
+                if (grid.length) {
+                    var z = indexes[dbname]._carmen.zoom;
+                    if (zooms.indexOf(z) === -1) zooms.push(z);
+                }
+                feats[pos] = feat;
+                grids[pos] = grid;
+                if (DEBUG) data.stats['search.' + dbname] = stats;
+                if (!--remaining) {
+                    zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1; });
+                    data.stats.searchTime = +new Date() - data.stats.searchTime;
+                    data.stats.searchCount = _(grids).reduce(function(sum, v) {
+                        return sum + v.length;
+                    }, 0);
+                    data.stats.relevTime = +new Date();
+                    callback(null, feats, grids, zooms);
+                }
+            }
+        });
+    }
 };
 
 // Not only do we scan the exact point matched by a latitude, longitude
