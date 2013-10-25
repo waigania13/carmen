@@ -7,7 +7,6 @@ var _ = require('underscore'),
     EventEmitter = require('events').EventEmitter;
 
 var Cache = require('./lib/cxxcache'),
-    Relev = require('./lib/relev'),
     usagerelev = require('./lib/usagerelev'),
     relev = require('./lib/relevsort'),
     fnv = require('./lib/fnv'),

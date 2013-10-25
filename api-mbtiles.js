@@ -122,4 +122,3 @@ MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function
         });
     }.bind(this));
 });
-
