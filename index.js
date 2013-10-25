@@ -12,11 +12,20 @@ var Cache = require('./lib/cxxcache'),
     fnv = require('./lib/fnv'),
     Locking = require('./lib/locking'),
     termops = require('./lib/termops'),
+    write = require('./lib/write'),
     ops = require('./lib/ops');
 
 var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate,
     lockingCache = {},
     DEBUG = process.env.DEBUG;
+
+// Not only do we scan the exact point matched by a latitude, longitude
+// pair, we also hit the 8 points that surround it as a rectangle.
+var scanDirections = [
+    [-1,1], [-1,0], [-1,-1],
+    [0,-1], [0, 0], [0, 1],
+    [1,-1], [1, 0], [1, 1]
+];
 
 require('util').inherits(Carmen, EventEmitter);
 module.exports = Carmen;
@@ -47,6 +56,7 @@ function Carmen(options) {
         } else {
             source.once('open', opened);
         }
+        return memo;
 
         function loadedinfo(err, info) {
             if (err) return done(err);
@@ -68,8 +78,6 @@ function Carmen(options) {
                 return done();
             });
         }
-
-        return memo;
     }
 }
 
@@ -100,34 +108,73 @@ Carmen.prototype.geocode = function(query, callback) {
     var indexes = this.indexes;
     var types = Object.keys(indexes);
     var zooms = [];
-    var data = {
+    var queryData = {
         query: termops.tokenize(query, true),
         stats: {}
     };
     var carmen = this;
 
     // lon,lat pair. Provide the context for this location.
-    if (data.query.length === 2 && _(data.query).all(_.isNumber)) {
-        return this.context(data.query[0], data.query[1], null, function(err, context) {
+    if (queryData.query.length === 2 && _(queryData.query).all(_.isNumber)) {
+        return this.context(queryData.query[0], queryData.query[1], null, function(err, context) {
             if (err) return callback(err);
-            data.results = context.length ? [context] : [];
-            return callback(null, data);
+            queryData.results = context.length ? [context] : [];
+            return callback(null, queryData);
         });
     }
 
     // keyword search. Find matching features.
-    data.stats.searchTime = +new Date();
+    queryData.stats.searchTime = +new Date();
 
     // search runs `carmen.search` over each backend with `data.query`,
     // condenses all of the results, and sorts them by potential usefulness.
-    search(types, data, function(err, feats, grids, zooms) {
+    search(types, queryData, searchComplete);
+
+    function search(types, data, callback) {
+        var feats = [],
+            grids = [],
+            remaining = types.length;
+
+        types.forEach(function(dbname, pos) {
+            carmen.search(indexes[dbname], data.query.join(' '), null, searchLoaded);
+
+            function searchLoaded(err, feat, grid, stats) {
+                if (err) {
+                    remaining = 0;
+                    return callback(err);
+                }
+                if (grid.length) {
+                    var z = indexes[dbname]._carmen.zoom;
+                    if (zooms.indexOf(z) === -1) zooms.push(z);
+                }
+                feats[pos] = feat;
+                grids[pos] = grid;
+                if (DEBUG) data.stats['search.' + dbname] = stats;
+                if (!--remaining) {
+                    zooms = zooms.sort(sortNumeric);
+                    data.stats.searchTime = +new Date() - data.stats.searchTime;
+                    data.stats.searchCount = _(grids).reduce(function(sum, v) {
+                        return sum + v.length;
+                    }, 0);
+                    data.stats.relevTime = +new Date();
+                    callback(null, feats, grids, zooms);
+                }
+            }
+        });
+    }
+
+    function searchComplete(err, feats, grids, zooms) {
         if (err) return callback(err);
-        relev(indexes, types, data, carmen, feats, grids, zooms, function(err, contexts, relevd) {
+        relev(indexes, types, queryData, carmen, feats, grids, zooms, function(err, contexts, relevd) {
             if (err) return callback(err);
 
             var maxrelev = 0;
-            // relies on relevd
-            contexts.sort(function(a, b) {
+            contexts.sort(sortRelev);
+            queryData.results = contexts;
+            queryData.stats.relev = maxrelev;
+            return callback(null, queryData);
+
+            function sortRelev(a, b) {
                 // sort by usagerelev score.
                 var ac = [];
                 var bc = [];
@@ -139,8 +186,8 @@ Carmen.prototype.geocode = function(query, callback) {
                     bc.push(relevd[b[i].id]);
                     b[i].relev = relevd[b[i].id].relev;
                 }
-                var arelev = usagerelev(data.query, ac);
-                var brelev = usagerelev(data.query, bc);
+                var arelev = usagerelev(queryData.query, ac);
+                var brelev = usagerelev(queryData.query, bc);
                 if (arelev > brelev) return -1;
                 if (arelev < brelev) return 1;
 
@@ -165,55 +212,10 @@ Carmen.prototype.geocode = function(query, callback) {
                 if (a.id > b.id) return -1;
                 if (a.id < b.id) return 1;
                 return 0;
-            });
-            data.results = contexts;
-
-            data.stats.relev = maxrelev;
-            return callback(null, data);
-        });
-    });
-
-    function search(types, data, callback) {
-        var feats = [],
-            grids = [],
-            remaining = types.length;
-
-        types.forEach(function(dbname, pos) {
-            carmen.search(indexes[dbname], data.query.join(' '), null, searched);
-
-            function searched(err, feat, grid, stats) {
-                if (err) {
-                    remaining = 0;
-                    return callback(err);
-                }
-                if (grid.length) {
-                    var z = indexes[dbname]._carmen.zoom;
-                    if (zooms.indexOf(z) === -1) zooms.push(z);
-                }
-                feats[pos] = feat;
-                grids[pos] = grid;
-                if (DEBUG) data.stats['search.' + dbname] = stats;
-                if (!--remaining) {
-                    zooms = zooms.sort(function(a,b) { return a < b ? -1 : 1; });
-                    data.stats.searchTime = +new Date() - data.stats.searchTime;
-                    data.stats.searchCount = _(grids).reduce(function(sum, v) {
-                        return sum + v.length;
-                    }, 0);
-                    data.stats.relevTime = +new Date();
-                    callback(null, feats, grids, zooms);
-                }
             }
         });
     }
 };
-
-// Not only do we scan the exact point matched by a latitude, longitude
-// pair, we also hit the 8 points that surround it as a rectangle.
-var scanDirections = [
-    [-1,1], [-1,0], [-1,-1],
-    [0,-1], [0, 0], [0, 1],
-    [1,-1], [1, 0], [1, 1]
-];
 
 // Returns a hierarchy of features ("context") for a given lon,lat pair.
 Carmen.prototype.context = function(lon, lat, maxtype, callback) {
@@ -522,187 +524,7 @@ Carmen.prototype.index = function(source, docs, callback) {
             this.index(source, docs, callback);
         }.bind(this));
     }
-
-    indexFreqs(function(err, freq) {
-        if (err) return callback(err);
-        indexDocs(freq[0], freq, callback);
-    });
-
-    // First pass over docs.
-    // - Creates termsets (one or more arrays of termids) from document text.
-    // - Tallies frequency of termids against current frequencies compiling a
-    //   final in-memory frequency count of all terms involved with this set of
-    //   documents to be indexed.
-    // - Stores new frequencies.
-    function indexFreqs(callback) {
-        var freq = {};
-
-        // Uses freq[0] as a convention for storing total # of docs.
-        // @TODO determine whether 0 can really ever be a relevant term
-        // when using fnv1a.
-        freq[0] = [0];
-
-        for (var i = 0; i < docs.length; i++) {
-            var doc = docs[i];
-            var phrases = [];
-            var termsets = [];
-            var termsmaps = [];
-            var texts = doc.text.split(',');
-            for (var x = 0; x < texts.length; x++) {
-                if (!termops.tokenize(texts[x]).length) continue;
-                phrases.push(termops.phrase(texts[x]));
-                termsets.push(termops.terms(texts[x]));
-                termsmaps.push(termops.termsMap(texts[x]));
-            }
-            for (var j = 0; j < termsets.length; j++) {
-                var terms = termsets[j];
-                for (var k = 0; k < terms.length; k++) {
-                    var id = terms[k];
-                    freq[id] = freq[id] || [0];
-                    freq[id][0]++;
-                    freq[0][0]++;
-                }
-            }
-            doc.phrases = phrases;
-            doc.termsets = termsets;
-            doc.termsmaps = termsmaps;
-        }
-
-        // Ensures all shards are loaded.
-        var ids = Object.keys(freq).map(function(v) { return parseInt(v,10); });
-        source._carmen.getall(source.getCarmen.bind(source), 'freq', ids, function(err) {
-            if (err) return callback(err);
-            for (var i = 0; i < ids.length; i++) {
-                var id = ids[i];
-                freq[id][0] = (source._carmen.get('freq', id) || [0])[0] + freq[id][0];
-                source._carmen.set('freq', id, freq[id]);
-            }
-            callback(null, freq);
-        });
-    }
-
-    // Second pass over docs.
-    // - Create term => docid index. Uses calculated frequencies to index only
-    //   significant terms for each document.
-    // - Create id => grid zxy index.
-    function indexDocs(approxdocs, freq, callback) {
-        var patch = { grid: {}, term: {}, phrase: {}, degen: {} };
-        var degenerated = {};
-
-        docs.forEach(loadDoc);
-
-        function loadDoc(doc) {
-            doc.id = parseInt(doc.id,10);
-            doc.zxy = doc.zxy ? doc.zxy.map(function(zxy) {
-                return op.zxy(doc.id, zxy);
-            }) : [];
-
-            var phrases = doc.phrases;
-            var termsets = doc.termsets;
-            var termsmaps = doc.termsmaps;
-
-            phrases.forEach(function(id, x) {
-                patch.phrase[id] = patch.phrase[id] || termsets[x];
-                patch.grid[id] = patch.grid[id] || [];
-                patch.grid[id].push.apply(patch.grid[id], doc.zxy);
-            });
-
-            termsets.forEach(loadTerm);
-
-            function loadTerm(terms, x) {
-                var id;
-                var termsmap = termsmaps[x];
-                var name = phrases[x];
-                var weights = [];
-                var total = 0;
-
-                for (var i = 0; i < terms.length; i++) {
-                    id = terms[i];
-                    var weight = Math.log(1 + freq[0][0]/freq[id][0]);
-                    weights.push([id, weight]);
-                    total += weight;
-
-                    // Degenerate terms are indexed for all terms
-                    // (not just significant ones).
-                    if (degenerated[id]) continue;
-                    degenerated[id] = true;
-                    var degens = termops.degens(termsmap[id]);
-                    var keys = Object.keys(degens);
-                    for (var j = 0; j < keys.length; j++) {
-                        var d = keys[j];
-                        patch.degen[d] = patch.degen[d] || [];
-                        patch.degen[d].push(degens[d]);
-                    }
-                }
-
-                // Limit indexing to the *most* significant terms for a
-                // document. Currently uses rough heuristic (floor+sqrt) to
-                // determine how many of the top words to grab.
-                weights.sort(function(a,b) {
-                    return a[1] > b[1] ? -1 : a[1] < b[1] ? 1 : 0;
-                });
-                var sigterms = [];
-                var limit = Math.floor(Math.sqrt(weights.length));
-                for (i = 0; i < limit; i++) sigterms.push(weights[i][0]);
-
-                // Debug significant term selection.
-                if (DEBUG) {
-                    var debug = termsmap;
-                    var oldtext = terms.map(function(id) { return debug[id]; }).join(' ');
-                    var sigtext = sigterms.map(function(id) { return debug[id]; }).join(' ');
-                    if (oldtext !== sigtext)  console.log('%s => %s', oldtext, sigtext);
-                }
-
-                for (i = 0; i < sigterms.length; i++) {
-                    id = sigterms[i];
-                    patch.term[id] = patch.term[id] || [];
-                    patch.term[id].push(name);
-                }
-            }
-        }
-
-        var remaining = docs.length;
-        remaining++; // term
-        remaining++; // phrase
-        remaining++; // grid
-
-        _(docs).each(function(doc) {
-            source.putFeature(doc.id, doc.doc, function(err) {
-                if (err && remaining > 0) {
-                    remaining = -1;
-                    return callback(err);
-                }
-                if (!--remaining) callback(null);
-            });
-        });
-
-        _(patch).each(function(data, type) {
-            var ids = Object.keys(data);
-            source._carmen.getall(source.getCarmen.bind(source), type, ids, function(err) {
-                if (err && remaining > 0) {
-                    remaining = -1;
-                    return callback(err);
-                }
-                for (var i = 0; i < ids.length; i++) {
-                    var id = ids[i];
-                    // This merges new entries on top of old ones.
-                    switch (type) {
-                    case 'term':
-                    case 'grid':
-                    case 'degen':
-                        var current = source._carmen.get(type, id) || [];
-                        current.push.apply(current, data[id]);
-                        source._carmen.set(type, id, current);
-                        break;
-                    case 'phrase':
-                        source._carmen.set(type, id, data[id]);
-                        break;
-                    }
-                }
-                if (!--remaining) callback(null);
-            });
-        });
-    }
+    return write.index(source, docs, callback);
 };
 
 // Serialize and make permanent the index currently in memory for a source.
@@ -713,39 +535,7 @@ Carmen.prototype.store = function(source, callback) {
             this.store(source, callback);
         }.bind(this));
     }
-
-    var queue = [];
-    ['freq','term','phrase','grid','degen'].forEach(function(type) {
-        queue = queue.concat(source._carmen.list(type).map(function(shard) {
-            var ids = source._carmen.list(type, shard);
-            for (var i = 0; i < ids.length; i++) {
-                var id = ids[i];
-                switch (type) {
-                case 'term':
-                case 'grid':
-                case 'degen':
-                    var data = source._carmen.get(type, id);
-                    data.sort();
-                    source._carmen.set(type, id, _(data).uniq(true));
-                    break;
-                }
-            }
-            return [type, shard];
-        }));
-    });
-
-    write();
-
-    function write() {
-        if (!queue.length) return callback();
-        var task = queue.shift();
-        var type = task[0];
-        var shard = task[1];
-        source.putCarmen(type, shard, source._carmen.pack(type, shard), function(err) {
-            if (err) return callback(err);
-            defer(function() { write(); });
-        });
-    }
+    return write.store(source, callback);
 };
 
 // Generate a Carmen options hash automatically reading sources in a directory.
@@ -798,7 +588,12 @@ function feature(id, type, data) {
 // arrays of `feats` and `grids` of the same length, combine matches that
 // are over the same point, factoring in the zoom levels on which they
 // occur.
+// Calls `callback` with `(err, contexts, relevd)` in which
+//
+// `contexts` is an array of bboxes which are assigned scores
+// `relevd` which is an object mapping place ids to places
 function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
+
     var relevd = {};
     var coalesced = {};
     var i, j, c;
@@ -806,60 +601,45 @@ function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
     // Coalesce relevs into higher zooms, e.g.
     // z5 inherits relev of overlapping tiles at z4.
     // @TODO assumes sources are in zoom ascending order.
-    var xd = Math.pow(2,39);
-    var yd = Math.pow(2,25);
-    var mp2_14 = Math.pow(2,14);
-    var mp2_28 = Math.pow(2,28);
-    for (var h = 0; h < grids.length; h++) {
-        var grid = grids[h];
-        var feat = feats[h];
-        var z = indexes[types[h]]._carmen.zoom;
+    var xd = Math.pow(2, 39),
+        yd = Math.pow(2, 25),
+        mp2_14 = Math.pow(2, 14),
+        mp2_28 = Math.pow(2, 28);
+
+    var h, grid, feat, x, y, p, s, pxy, a, zxy, f, z;
+    for (h = 0; h < grids.length; h++) {
+        grid = grids[h];
+        feat = feats[h];
+        z = indexes[types[h]]._carmen.zoom;
         for (i = 0; i < grid.length; i++) {
-            var f = feat[grid[i] % yd];
+            f = feat[grid[i] % yd];
             if (!f) continue;
-            var x = Math.floor(grid[i]/xd);
-            var y = Math.floor(grid[i]%xd/yd);
-            var zxy = (z * mp2_28) + (x * mp2_14) + y;
+            x = Math.floor(grid[i]/xd);
+            y = Math.floor(grid[i]%xd/yd);
+            zxy = (z * mp2_28) + (x * mp2_14) + y;
             // @TODO this is an optimization that  assumes multiple
             // DBs do not use the same zoom level.
             if (!coalesced[zxy]) coalesced[zxy] = [f];
-            var a = 0;
+            a = 0;
             while (zooms[a] < z) {
-                var p = zooms[a];
-                var s = 1 << (z-p);
-                var pxy = (p * mp2_28) + (Math.floor(x/s) * mp2_14) + Math.floor(y/s);
+                p = zooms[a];
+                s = 1 << (z-p);
+                pxy = (p * mp2_28) + (Math.floor(x/s) * mp2_14) + Math.floor(y/s);
                 if (coalesced[pxy]) coalesced[zxy].push.apply(coalesced[zxy],coalesced[pxy]);
                 a++;
             }
         }
     }
 
-    var rowMemo = {};
+    var rowMemo = {}, rows, relev, fullid;
     for (c in coalesced) {
-        var rows = coalesced[c];
+        rows = coalesced[c];
         // Sort by db, relev such that total relev can be
         // calculated without results for the same db being summed.
-        rows.sort(function(a, b) {
-            var ai = types.indexOf(a.db);
-            var bi = types.indexOf(b.db);
-            if (ai < bi) return -1;
-            if (ai > bi) return 1;
-            if (a.relev > b.relev) return -1;
-            if (a.relev < b.relev) return 1;
-            if (a.reason > b.reason) return -1;
-            if (a.reason < b.reason) return 1;
-            if (a.id < b.id) return -1;
-            if (a.id > b.id) return 1;
-            return 0;
-        });
-        var relev = usagerelev(data.query, rows);
-
-        // A threshold here reduces results early.
-        // @TODO tune this.
-        // if (relev < 0.75) return memo;
-
+        rows.sort(sortRelevReason);
+        relev = usagerelev(data.query, rows);
         for (i = 0, l = rows.length; i < l; i++) {
-            var fullid = rows[i].db + '.' + rows[i].id;
+            fullid = rows[i].db + '.' + rows[i].id;
             relevd[fullid] = relevd[fullid] || rows[i];
             rowMemo[rows[i].tmpid] = rowMemo[rows[i].tmpid] || {
                 db: rows[i].db,
@@ -868,6 +648,23 @@ function relev(indexes, types, data, carmen, feats, grids, zooms, callback) {
                 relev: relev
             };
         }
+    }
+
+    // A threshold here reduces results early.
+    // @TODO tune this.
+    // if (relev < 0.75) return memo;
+    function sortRelevReason(a, b) {
+        var ai = types.indexOf(a.db);
+        var bi = types.indexOf(b.db);
+        if (ai < bi) return -1;
+        if (ai > bi) return 1;
+        if (a.relev > b.relev) return -1;
+        if (a.relev < b.relev) return 1;
+        if (a.reason > b.reason) return -1;
+        if (a.reason < b.reason) return 1;
+        if (a.id < b.id) return -1;
+        if (a.id > b.id) return 1;
+        return 0;
     }
 
     var results = [];
@@ -926,3 +723,4 @@ function sortByRelev(a, b) {
 }
 
 function identity(v) { return v; }
+function sortNumeric(a,b) { return a < b ? -1 : 1; }
