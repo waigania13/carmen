@@ -47,9 +47,11 @@ function Carmen(options) {
         }
     }.bind(this);
 
-    this.indexes = _(options).reduce(loadIndex, {});
+    this.indexes = pairs(options).reduce(loadIndex, {});
 
-    function loadIndex(memo, source, key) {
+    function loadIndex(memo, sourcekey) {
+        var source = sourcekey[1],
+            key = sourcekey[0];
         // Legacy support.
         source = source.source ? source.source : source;
 
@@ -82,6 +84,12 @@ function Carmen(options) {
             });
         }
     }
+}
+
+function pairs(o) {
+    var a = [];
+    for (var k in o) a.push([k, o[k]]);
+    return a;
 }
 
 Carmen.S3 = function() { return require('./api-s3'); };

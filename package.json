@@ -25,7 +25,8 @@
     "mbtiles": "~0.3.2",
     "tilelive-s3": "0.8.x",
     "mocha": "~1.13.0",
-    "queue-async": "~1.0.4"
+    "queue-async": "~1.0.4",
+    "benchmark": "~1.0.0"
   },
   "main": "./index.js",
   "scripts": {
