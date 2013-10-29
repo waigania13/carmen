@@ -47,7 +47,7 @@ Install, and then
 
     npm test
 
-## API
+## Example
 
 ```js
 var Carmen = require('carmen');
@@ -57,9 +57,12 @@ carmen.geocode('Washington, DC', function(err, data) {
 });
 ```
 
+## API
+
 ### new Carmen(options)
 
-Create a new Carmen object. Takes a hash of index objects to use, keyed by each `id`. Each index object should resemble the following:
+Create a new Carmen object. Takes a hash of index objects to use, keyed by
+each `id`. Each index object should resemble the following:
 
 ```js
 {
@@ -124,6 +127,16 @@ other geographic features containing the first element.
 
 `carmen.geocode()` can also be called with a pair of coordinates in the form
 `lon,lat` to do "reverse" geocoding. The result data is identical for a reverse geocoding query.
+
+### carmen.context(longitude: number, latitude: number, maxtype, callback: function)
+
+Reverse-geocode a point on the earth, calling `callback` with `(err, results)`
+
+### carmen.index(source: tilelive source, docs: array, callback: function)
+
+Given `source` as a tilelive source, `docs` as an array of documents to index,
+and `callback` being called with `(err)` argument indicating any errors,
+use Carmen to write a new geocodable index to the source.
 
 ## Indexes
 

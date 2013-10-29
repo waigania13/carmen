@@ -112,18 +112,21 @@ Carmen.prototype.geocode = function(query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            this.geocode(query, callback);
+            geocode(this, query, callback);
         }.bind(this));
     }
     return geocode(this, query, callback);
 };
 
-// Returns a hierarchy of features ("context") for a given lon,lat pair.
+// Returns a hierarchy of features ("context") for a given lon, lat pair.
+//
+// This is used for reverse geocoding: given a point, it returns possible
+// regions that contain it.
 Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            this.context(lon, lat, maxtype, callback);
+            read.context(this, lon, lat, maxtype, callback);
         }.bind(this));
     }
 
@@ -148,7 +151,7 @@ Carmen.prototype.search = function(source, query, id, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            this.search(source, query, id, callback);
+            read.search(source, query, id, callback);
         }.bind(this));
     }
     return read.search(source, query, id, callback);
@@ -160,7 +163,7 @@ Carmen.prototype.index = function(source, docs, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            this.index(source, docs, callback);
+            write.index(source, docs, callback);
         }.bind(this));
     }
     return write.index(source, docs, callback);

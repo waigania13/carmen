@@ -26,7 +26,7 @@ carmen.geocode(query, function(err, data) {
         time = +new Date - time;
         if (err) throw err;
         var texts = data.results.reduce(function(memo, r) {
-            var text = _(r).pluck('name').join(', ');
+            var text = r.map(function(_) { return _.name; }).join(', ');
             if (!memo[text]) memo[text] = 0;
             memo[text]++;
             return memo;
