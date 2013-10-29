@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    Locking = require('../lib/locking');
+    Locking = require('../lib/util/locking');
 
 describe('Locking', function() {
     describe('#loader', function() {
