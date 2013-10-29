@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    ops = require('../lib/ops');
+    ops = require('../lib/util/ops');
 
 describe('ops', function() {
     describe('resolveCode', function() {

@@ -11,7 +11,7 @@ function MBTiles(uri, callback) {
         source.emit('open', err);
         callback(err, source);
     });
-};
+}
 
 // Implements carmen#getFeature method.
 MBTiles.prototype.getFeature = function(id, callback) {
@@ -52,39 +52,42 @@ MBTiles.prototype.indexable = function(pointer, callback) {
     // Converts MBTiles native TMS coords to ZXY.
     function tms2zxy(zxys) {
         return zxys.split(',').map(function(tms) {
-            var zxy = tms.split('/').map(function(v) { return parseInt(v,10) });
+            var zxy = tms.split('/').map(function(v) { return parseInt(v, 10); });
             zxy[2] = (1 << zxy[0]) - 1 - zxy[2];
             return zxy.join('/');
         });
-    };
+    }
 
     // If 'carmen' option is passed in initial pointer, retrieve indexables from
     // carmen table. This option can be used to access the previously indexed
     // documents from an MBTiles database without having to know what search
     // field was used in the past (see comment below).
-    if (pointer.table === 'carmen') return this._db.all("SELECT c.id, c.text, c.zxy, k.key_json FROM carmen c JOIN keymap k ON c.id = k.key_name LIMIT ? OFFSET ?", pointer.limit, pointer.offset, function(err, rows) {
-        if (err) return callback(err);
-        var docs = rows.map(function(row) {
-            var doc = {};
-            doc.id = row.id;
-            doc.doc = JSON.parse(row.key_json);
-            doc.text = row.text;
-            if (row.zxy) doc.zxy = tms2zxy(row.zxy);
-            return doc;
-        });
-        pointer.offset += pointer.limit;
-        return callback(null, docs, pointer);
-    }.bind(this));
+    if (pointer.table === 'carmen') {
+        return this._db.all("SELECT c.id, c.text, c.zxy, k.key_json FROM carmen c JOIN keymap k ON c.id = k.key_name LIMIT ? OFFSET ?", pointer.limit, pointer.offset, function(err, rows) {
+            if (err) return callback(err);
+            var docs = rows.map(function(row) {
+                var doc = {};
+                doc.id = row.id;
+                doc.doc = JSON.parse(row.key_json);
+                doc.text = row.text;
+                if (row.zxy) doc.zxy = tms2zxy(row.zxy);
+                return doc;
+            });
+            pointer.offset += pointer.limit;
+            return callback(null, docs, pointer);
+        }.bind(this));
+    }
 
     // By default the keymap table contains all indexable documents.
     this.getInfo(function(err, info) {
         if (err) return callback(err);
+        var sql, args;
         if (pointer.nogrids) {
-            var sql = "SELECT key_name, key_json FROM keymap LIMIT ? OFFSET ?;";
-            var args = [pointer.limit, pointer.offset];
+            sql = "SELECT key_name, key_json FROM keymap LIMIT ? OFFSET ?;";
+            args = [pointer.limit, pointer.offset];
         } else {
-            var sql = "SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT ? OFFSET ?;"
-            var args = [info.maxzoom, pointer.limit, pointer.offset];
+            sql = "SELECT k.key_name, k.key_json, GROUP_CONCAT(zoom_level||'/'||tile_column ||'/'||tile_row,',') AS zxy FROM keymap k JOIN grid_key g ON k.key_name = g.key_name JOIN map m ON g.grid_id = m.grid_id WHERE m.zoom_level=? GROUP BY k.key_name LIMIT ? OFFSET ?;";
+            args = [info.maxzoom, pointer.limit, pointer.offset];
         }
         this._db.all(sql, args, function(err, rows) {
             if (err) return callback(err);

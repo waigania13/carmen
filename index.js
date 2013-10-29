@@ -2,19 +2,13 @@ var _ = require('underscore'),
     path = require('path'),
     EventEmitter = require('events').EventEmitter;
 
-var Cache = require('./lib/cxxcache'),
-    usagerelev = require('./lib/usagerelev'),
-    relev = require('./lib/relevsort'),
-    fnv = require('./lib/fnv'),
+var Cache = require('./lib/util/cxxcache'),
     getSearch = require('./lib/search'),
     getContext = require('./lib/context'),
     autoSync = require('./lib/autosync'),
     geocode = require('./lib/geocode'),
-    Locking = require('./lib/locking'),
-    termops = require('./lib/termops'),
     store = require('./lib/store'),
-    index = require('./lib/index'),
-    ops = require('./lib/ops');
+    index = require('./lib/index');
 
 require('util').inherits(Carmen, EventEmitter);
 module.exports = Carmen;

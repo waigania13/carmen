@@ -3,7 +3,7 @@ var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
-var tokenize = require('../lib/termops').tokenize;
+var tokenize = require('../lib/util/termops').tokenize;
 var S3 = Carmen.S3();
 var MBTiles = Carmen.MBTiles();
 

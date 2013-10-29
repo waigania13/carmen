@@ -11,17 +11,19 @@ S3.prototype.getFeature = function(id, callback, raw) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
-    catch (err) { return callback(new Error('Carmen not supported')); }
-
-    uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
-    this.get(url.format(uri), function(err, buffer) {
-        if (err) return callback(err);
-        try { var data = JSON.parse(buffer.toString('utf8')); }
-        catch (err) { return callback(err); }
-        if (!raw) delete data._terms;
-        return callback(null, data);
-    });
+    try {
+        var uri = url.parse(this.data._carmen);
+        uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
+        this.get(url.format(uri), function(err, buffer) {
+            if (err) return callback(err);
+            try { var data = JSON.parse(buffer.toString('utf8')); }
+            catch (err) { return callback(err); }
+            if (!raw) delete data._terms;
+            return callback(null, data);
+        });
+    } catch (err) {
+        return callback(new Error('Carmen not supported'));
+    }
 };
 
 // Implements carmen#putFeature method.
@@ -29,18 +31,20 @@ S3.prototype.putFeature = function(id, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
-    catch (err) { return callback(new Error('Carmen not supported')); }
-
-    var key = path.join(uri.pathname, 'data/' + id + '.json');
-    var buffer = new Buffer(JSON.stringify(data));
-    var headers = {
-        'x-amz-acl': 'public-read',
-        'Connection': 'keep-alive',
-        'Content-Length': buffer.length,
-        'Content-Type': 'application/json'
-    };
-    this.put(key, buffer, headers, callback);
+    try {
+        var uri = url.parse(this.data._carmen);
+        var key = path.join(uri.pathname, 'data/' + id + '.json');
+        var buffer = new Buffer(JSON.stringify(data));
+        var headers = {
+            'x-amz-acl': 'public-read',
+            'Connection': 'keep-alive',
+            'Content-Length': buffer.length,
+            'Content-Type': 'application/json'
+        };
+        this.put(key, buffer, headers, callback);
+    } catch (err) {
+        return callback(new Error('Carmen not supported'));
+    }
 };
 
 // Implements carmen#getCarmen method.
@@ -48,13 +52,15 @@ S3.prototype.getCarmen = function(type, shard, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
-    catch (err) { return callback(new Error('Carmen not supported')); }
-
-    uri.pathname = path.join(uri.pathname, type + '/' + shard + '.pbf');
-    this.get(url.format(uri), function(err, buffer) {
-        callback(err && err.status > 499 ? err : null, buffer);
-    });
+    try {
+        var uri = url.parse(this.data._carmen);
+        uri.pathname = path.join(uri.pathname, type + '/' + shard + '.pbf');
+        this.get(url.format(uri), function(err, buffer) {
+            callback(err && err.status > 499 ? err : null, buffer);
+        });
+    } catch (err) {
+        return callback(new Error('Carmen not supported'));
+    }
 };
 
 // Implements carmen#putCarmen method.
@@ -62,17 +68,19 @@ S3.prototype.putCarmen = function(type, shard, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
-    catch (err) { return callback(new Error('Carmen not supported')); }
-
-    var key = path.join(uri.pathname, type + '/' + shard + '.pbf');
-    var headers = {
-        'x-amz-acl': 'public-read',
-        'Connection': 'keep-alive',
-        'Content-Length': data.length,
-        'Content-Type': 'application/x-protobuf'
-    };
-    this.put(key, data, headers, callback);
+    try {
+        var uri = url.parse(this.data._carmen),
+            key = path.join(uri.pathname, type + '/' + shard + '.pbf'),
+            headers = {
+                'x-amz-acl': 'public-read',
+                'Connection': 'keep-alive',
+                'Content-Length': data.length,
+                'Content-Type': 'application/x-protobuf'
+            };
+        this.put(key, data, headers, callback);
+    } catch (err) {
+        return callback(new Error('Carmen not supported'));
+    }
 };
 
 // @TODO.
@@ -134,12 +142,13 @@ S3.prototype.indexable = function(pointer, callback) {
                 // @TODO consider retry here.
                 if (err) return callback(err);
 
-                try { var data = JSON.parse(buffer.toString('utf8')); }
+                var data;
+                try { data = JSON.parse(buffer.toString('utf8')); }
                 catch(err) { return callback(err); }
 
                 var zxy = data._terms && data._terms.length &&
                     data._terms[0].split('/').pop().split('.').slice(2)
-                    .map(function(zxy) { return zxy.replace(/,/g,'/') });
+                    .map(function(zxy) { return zxy.replace(/,/g,'/'); });
                 var doc = {};
                 doc.id = path.basename(key, path.extname(key));
                 doc.doc = data;

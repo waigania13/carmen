@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    termops = require('../lib/termops');
+    termops = require('../lib/util/termops');
 
 describe('termops', function() {
     describe('tokenize', function() {

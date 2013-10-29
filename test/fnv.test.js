@@ -1,5 +1,5 @@
 var assert = require('assert'),
-    fnv = require('../lib/fnv');
+    fnv = require('../lib/util/fnv');
 
 describe('fnv', function() {
     describe('.fnv1a', function() {

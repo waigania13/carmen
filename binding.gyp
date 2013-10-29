@@ -79,7 +79,7 @@
       'copies': [
           {
             'files': [ '<(PRODUCT_DIR)/binding.node' ],
-            'destination': './lib/'
+            'destination': './lib/util/'
           }
       ]
     }
