@@ -3,6 +3,7 @@ module.exports = Cache;
 function Cache(id, shardlevel) {
     this.id = id;
     this.shardlevel = shardlevel;
+    this.shardlevel16 = Math.pow(16, shardlevel);
 
     // Caches.
     // Each cache contains an integer key => array of ints mapping *except*
@@ -23,7 +24,7 @@ function Cache(id, shardlevel) {
     this.freq = {};
     this.term = {};
     this.phrase = {};
-};
+}
 
 // For a given type retrieve all ids mapped to the passed set.
 // This method sorts the input set of ids by shardlevel making it possible to
@@ -38,7 +39,7 @@ Cache.prototype.getall = function(getter, type, ids, callback) {
     var shardlevel = this.shardlevel;
     var cache = this;
     var queue = ids.slice(0);
-    Cache.shardsort(shardlevel, queue);
+    Cache.shardsort(shardlevel, this.shardlevel16, queue);
 
     var result = [];
     (function lazyload() {
@@ -80,20 +81,20 @@ Cache.prototype.pack = function(type, shard) {
 // If only type is specified, lists shards.
 // If type and shard are specified, lists keys in shard.
 Cache.prototype.list = function(type, shard) {
-    return shard === undefined
-        ? Object.keys(this[type])
-        : Object.keys(this[type][shard]);
+    return shard === undefined ?
+        Object.keys(this[type]) :
+        Object.keys(this[type][shard]);
 };
 
 // Get cache value for a given type/id pair.
 Cache.prototype.get = function(type, id) {
-    var shard = Cache.shard(this.shardlevel, id);
-    return this[type][shard] && this[type][shard][id];
+    var shard = Cache.shard(this.shardlevel, this.shardlevel16, id);
+    if (this[type][shard] !== undefined) return this[type][shard][id];
 };
 
 // Set cache value for a given type/id pair.
 Cache.prototype.set = function(type, id, data) {
-    var shard = Cache.shard(this.shardlevel, id);
+    var shard = Cache.shard(this.shardlevel, this.shardlevel16, id);
     this[type][shard] = this[type][shard] || {};
     this[type][shard][id] = data;
 };
@@ -113,20 +114,18 @@ Cache.uniq = function(ids) {
 };
 
 // Return the shard for a given shardlevel + id.
-Cache.shard = function(level, id) {
+Cache.shard = function(level, level16, id) {
     if (id === undefined) return false;
     if (level === 0) return 0;
-    return id % Math.pow(16, level);
+    return id % level16;
 };
 
 // Sort a given array of IDs by their shards.
-Cache.shardsort = function(level, arr) {
-    var mod = Math.pow(16, level);
+Cache.shardsort = function(level, level16, arr) {
+    var mod = level16;
     arr.sort(function(a,b) {
         var as = a % mod;
         var bs = b % mod;
         return as < bs ? -1 : as > bs ? 1 : a < b ? -1 : a > b ? 1 : 0;
     });
 };
-
-
