@@ -132,6 +132,27 @@ other geographic features containing the first element.
 
 Reverse-geocode a point on the earth, calling `callback` with `(err, results)`
 
+Results are a list of places in the form:
+
+```json
+[
+  {
+    "bounds": [
+      -80.0100559999999,
+      37.978863,
+      -79.9505769999999,
+      38.0010829999999
+    ],
+    "lat": 37.9864357468642,
+    "lon": -79.9800636337067,
+    "name": "Bolar",
+    "score": 2112180.24540208,
+    "type": "place",
+    "id": "place.154513"
+  }
+]
+```
+
 ### carmen.index(source: tilelive source, docs: array, callback: function)
 
 Given `source` as a tilelive source, `docs` as an array of documents to index,

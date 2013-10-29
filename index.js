@@ -10,7 +10,8 @@ var Cache = require('./lib/cxxcache'),
     usagerelev = require('./lib/usagerelev'),
     relev = require('./lib/relevsort'),
     fnv = require('./lib/fnv'),
-    read = require('./lib/read'),
+    getSearch = require('./lib/search'),
+    getContext = require('./lib/context'),
     autoSync = require('./lib/autosync'),
     geocode = require('./lib/geocode'),
     Locking = require('./lib/locking'),
@@ -126,18 +127,18 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            read.context(this, lon, lat, maxtype, callback);
+            getContext(this, lon, lat, maxtype, callback);
         }.bind(this));
     }
 
-    return read.context(this, lon, lat, maxtype, callback);
+    return getContext(this, lon, lat, maxtype, callback);
 };
 
 // Retrieve the context for a feature (document).
 Carmen.prototype.contextByFeature = function(data, callback) {
     if (!('lon' in data)) return callback(new Error('No lon field in data'));
     if (!('lat' in data)) return callback(new Error('No lat field in data'));
-    this.context(data.lon, data.lat, data.id.split('.')[0], function(err, context) {
+    getContext(this, data.lon, data.lat, data.id.split('.')[0], function(err, context) {
         if (err) return callback(err);
 
         // Push feature onto the top level.
@@ -151,10 +152,10 @@ Carmen.prototype.search = function(source, query, id, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            read.search(source, query, id, callback);
+            getSearch(source, query, id, callback);
         }.bind(this));
     }
-    return read.search(source, query, id, callback);
+    return getSearch(source, query, id, callback);
 };
 
 
