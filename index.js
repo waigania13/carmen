@@ -1,9 +1,5 @@
 var _ = require('underscore'),
-    fs = require('fs'),
     path = require('path'),
-    sm = new (require('sphericalmercator'))(),
-    crypto = require('crypto'),
-    iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE'),
     EventEmitter = require('events').EventEmitter;
 
 var Cache = require('./lib/cxxcache'),
@@ -16,20 +12,9 @@ var Cache = require('./lib/cxxcache'),
     geocode = require('./lib/geocode'),
     Locking = require('./lib/locking'),
     termops = require('./lib/termops'),
-    write = require('./lib/write'),
+    store = require('./lib/store'),
+    index = require('./lib/index'),
     ops = require('./lib/ops');
-
-var defer = typeof setImmediate === 'undefined' ? process.nextTick : setImmediate,
-    lockingCache = {},
-    DEBUG = process.env.DEBUG;
-
-// Not only do we scan the exact point matched by a latitude, longitude
-// pair, we also hit the 8 points that surround it as a rectangle.
-var scanDirections = [
-    [-1,1], [-1,0], [-1,-1],
-    [0,-1], [0, 0], [0, 1],
-    [1,-1], [1, 0], [1, 1]
-];
 
 require('util').inherits(Carmen, EventEmitter);
 module.exports = Carmen;
@@ -164,10 +149,10 @@ Carmen.prototype.index = function(source, docs, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            write.index(source, docs, callback);
+            index(source, docs, callback);
         }.bind(this));
     }
-    return write.index(source, docs, callback);
+    return index(source, docs, callback);
 };
 
 // Serialize and make permanent the index currently in memory for a source.
@@ -175,10 +160,10 @@ Carmen.prototype.store = function(source, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            this.store(source, callback);
+            store(source, callback);
         }.bind(this));
     }
-    return write.store(source, callback);
+    return store(source, callback);
 };
 
 Carmen.autoSync = autoSync(Carmen);
