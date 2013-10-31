@@ -8,5 +8,5 @@
 npm-debug.log
 src/index.pb.cc
 src/index.pb.h
-lib/binding.node
+lib/util/binding.node
 build

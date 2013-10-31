@@ -364,10 +364,10 @@ NAN_METHOD(Cache::loadJSON)
         v8::Local<v8::Array> propertyNames = obj->GetPropertyNames();
         uint32_t prop_len = propertyNames->Length();
         for (uint32_t i=0;i < prop_len;++i) {
-            v8::Local<v8::Value> key = propertyNames->Get(i);
-            v8::Local<v8::Value> prop = obj->Get(key);
+            v8::Local<v8::Value> key_name = propertyNames->Get(i);
+            v8::Local<v8::Value> prop = obj->Get(key_name);
             if (prop->IsArray()) {
-                int_type key_id = key->NumberValue();
+                int_type key_id = key_name->NumberValue();
                 arrc.insert(std::make_pair(key_id,intarray()));
                 intarray & vv = arrc[key_id];
                 v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
