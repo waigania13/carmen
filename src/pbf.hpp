@@ -51,8 +51,8 @@ struct message {
 	uint32_t tag;
 };
 
-message::message(const char *data, uint32_t length)
-	: data(data),
+message::message(const char * _data, uint32_t length)
+	: data(_data),
 	  end(data + length)
 {
 }
