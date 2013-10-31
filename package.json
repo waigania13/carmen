@@ -19,7 +19,8 @@
     "iconv": "2.0.x",
     "sphericalmercator": "~1.0.1",
     "nan": "~0.4.0",
-    "minimist": "0.0.5"
+    "minimist": "0.0.5",
+    "clone": "~0.1.11"
   },
   "devDependencies": {
     "mbtiles": "~0.3.2",
