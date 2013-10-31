@@ -5,6 +5,7 @@ node_js:
 
 before_install:
  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+ - sudo add-apt-repository --yes ppa:chris-lea/protobuf
  - sudo apt-get update
  - sudo apt-get install gcc-4.7 g++-4.7 libprotobuf7 libprotobuf-dev protobuf-compiler
 
@@ -13,9 +14,9 @@ install:
 
 before_script:
  - CXX=g++-4.7 npm install
- - make test
+ - npm test
 
 script:
  - make clean
- - npm install --std=0 --lazy=0
- - make test
+ #- npm install --std=0 --lazy=0
+ #- make test
