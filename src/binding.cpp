@@ -335,7 +335,7 @@ NAN_METHOD(Cache::loadJSON)
 {
     NanScope();
     if (args.Length() < 3) {
-        return NanThrowTypeError("expected four args: 'object','type','shard'");
+        return NanThrowTypeError("expected three args: 'object','type','shard'");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be an object");
