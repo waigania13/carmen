@@ -1,6 +1,4 @@
 var _ = require('underscore');
-var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
-var crypto = require('crypto');
 var Parent = require('mbtiles');
 
 module.exports = MBTiles;

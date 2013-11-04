@@ -5,7 +5,8 @@ var path = require('path');
 var argv = process.argv;
 var api = {
     '.s3': require('../api-s3'),
-    '.mbtiles': require('../api-mbtiles')
+    '.mbtiles': require('../api-mbtiles'),
+    '.fs': require('../api-fs')
 };
 var Carmen = require('../index.js');
 var Queue = require('../queue');

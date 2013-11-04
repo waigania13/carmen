@@ -1,3 +1,7 @@
+# Terminology
+
+* Cache: an object that quickly loads sharded data from JSON or protobuf files
+
 # Carmen API
 
 ## Carmen(options)
