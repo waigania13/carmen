@@ -1,9 +1,15 @@
+var EventEmitter = require('events').EventEmitter,
+    fs = require('fs'),
+    inherits = require('util').inherits;
+
 module.exports = MemSource;
+
+inherits(MemSource, EventEmitter);
 
 function MemSource(uri, callback) {
     this._features = {};
     this._shards = {};
-    source.emit('open', err);
+
     return callback(null, this);
 }
 
@@ -25,7 +31,7 @@ MemSource.prototype.getCarmen = function(type, shard, callback) {
 
 // Implements carmen#putCarmen method.
 MemSource.prototype.putCarmen = function(type, shard, data, callback) {
-    if (this._shards[type] == undefined) this._shards[type] = {};
+    if (this._shards[type] === undefined) this._shards[type] = {};
     this._shards[type][shard] = data;
     return callback(null);
 };
@@ -38,4 +44,25 @@ MemSource.prototype.indexable = function(pointer, callback) {
 // Adds carmen schema to startWriting.
 MemSource.prototype.startWriting = function(callback) {
     return callback(null);
+};
+
+MemSource.prototype.dumpFile = function(name, callback) {
+    fs.writeFileSync(name, JSON.stringify({
+        features: this._features,
+        shards: this._shards
+    }, null, 4));
+};
+
+MemSource.prototype.open = function(callback) {
+    return callback(null);
+};
+
+MemSource.prototype.stopWriting = function(callback) {
+    return callback(null);
+};
+
+MemSource.prototype.getInfo = function(callback) {
+    callback(null, {
+        maxzoom: 17
+    });
 };

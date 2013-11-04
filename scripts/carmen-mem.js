@@ -36,7 +36,7 @@ if (nogrids) console.log('Indexing without grids.');
 console.log('Indexing %s ...', f);
 
 var from = new api[path.extname(f)](f, function() {});
-var to = t ? new mem(t, function() {}) : from;
+var to = new mem(t, function() {});
 var carmen = new Carmen({ from: from, to: to });
 
 carmen._open(function(err) {
@@ -65,6 +65,7 @@ carmen._open(function(err) {
                     if (err) throw err;
                     console.log('Indexed %s docs @ %s/s', docs.length, Math.floor(docs.length * 1000 / (+new Date() - start)));
                     index(pointer);
+                    to.dumpFile('test.json');
                 });
             });
         };
