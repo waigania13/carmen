@@ -13,8 +13,6 @@
 #pragma clang diagnostic ignored "-Wconversion"
 #pragma clang diagnostic ignored "-Wshadow"
 #pragma clang diagnostic ignored "-Wsign-compare"
-
-// stl
 #include <iostream>
 #include <exception>
 #include <string>
@@ -23,15 +21,6 @@
 #include <nan.h>
 #include "index.pb.h"
 #pragma clang diagnostic pop
-
-// now set (or not) in binding.gyp
-//#define USE_CXX11
-
-// TODO
-// - add ability to materialize lazy cache or just simplify and only use lazy cache
-// - does capnproto expose ability to get raw bytes of item?
-// - why is string_ref not faster?
-// - why is std::map faster than std::unordered on OS X?
 
 namespace binding {
 
@@ -63,7 +52,6 @@ public:
     static NAN_METHOD(load);
     static void AsyncLoad(uv_work_t* req);
     static void AfterLoad(uv_work_t* req);
-    static NAN_METHOD(loadJSON);
     static NAN_METHOD(search);
     static NAN_METHOD(pack);
     static NAN_METHOD(list);
@@ -91,7 +79,6 @@ void Cache::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "has", has);
     NODE_SET_PROTOTYPE_METHOD(t, "load", load);
     NODE_SET_PROTOTYPE_METHOD(t, "loadSync", loadSync);
-    NODE_SET_PROTOTYPE_METHOD(t, "loadJSON", loadJSON);
     NODE_SET_PROTOTYPE_METHOD(t, "search", search);
     NODE_SET_PROTOTYPE_METHOD(t, "pack", pack);
     NODE_SET_PROTOTYPE_METHOD(t, "list", list);
@@ -327,66 +314,6 @@ NAN_METHOD(Cache::set)
             #else
             vv.push_back(data->Get(i)->NumberValue());
             #endif
-        }
-    } catch (std::exception const& ex) {
-        return NanThrowTypeError(ex.what());
-    }
-    NanReturnValue(Undefined());
-}
-
-NAN_METHOD(Cache::loadJSON)
-{
-    NanScope();
-    if (args.Length() < 3) {
-        return NanThrowTypeError("expected three args: 'object','type','shard'");
-    }
-    if (!args[0]->IsObject()) {
-        return NanThrowTypeError("first argument must be an object");
-    }
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
-        return NanThrowTypeError("a valid object expected for first argument");
-    }
-    if (!args[1]->IsString()) {
-        return NanThrowTypeError("second arg 'type' must be a string");
-    }
-    if (!args[2]->IsNumber()) {
-        return NanThrowTypeError("third arg 'shard' must be an Integer");
-    }
-    try {
-        std::string type = *String::Utf8Value(args[1]->ToString());
-        std::string shard = *String::Utf8Value(args[2]->ToString());
-        std::string key = type + "-" + shard;
-        Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
-        if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));
-        }
-        arraycache & arrc = c->cache_[key];
-        v8::Local<v8::Array> propertyNames = obj->GetPropertyNames();
-        uint32_t prop_len = propertyNames->Length();
-        for (uint32_t i=0;i < prop_len;++i) {
-            v8::Local<v8::Value> key_name = propertyNames->Get(i);
-            v8::Local<v8::Value> prop = obj->Get(key_name);
-            if (prop->IsArray()) {
-                arraycache::key_type key_id = static_cast<arraycache::key_type>(key_name->IntegerValue());
-                arrc.insert(std::make_pair(key_id,intarray()));
-                intarray & vv = arrc[key_id];
-                v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
-                uint32_t arr_len = arr->Length();
-                vv.reserve(arr_len);
-                for (uint32_t j=0;j < arr_len;++j) {
-                    v8::Local<v8::Value> val = arr->Get(j);
-                    if (val->IsNumber()) {
-                        #ifdef USE_CXX11
-                        vv.emplace_back(val->NumberValue());
-                        #else
-                        vv.push_back(val->NumberValue());
-                        #endif
-                    }
-                }
-            }
         }
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
