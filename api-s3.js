@@ -139,7 +139,6 @@ S3.prototype.indexable = function(pointer, callback) {
                 headers: {Connection:'Keep-Alive'},
                 agent: S3.agent
             }).asBuffer(function(err, buffer) {
-                // @TODO consider retry here.
                 if (err) return callback(err);
 
                 var data;

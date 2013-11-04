@@ -95,8 +95,6 @@ MBTiles.prototype.indexable = function(pointer, callback) {
                 var doc = {};
                 doc.id = row.key_name;
                 doc.doc = JSON.parse(row.key_json);
-                // @TODO the doc field name for searching probably (?) belongs
-                // in `metadata` and should be un-hardcoded in the future.
                 doc.text = doc.doc.search || doc.doc.name || '';
                 if (row.zxy) doc.zxy = tms2zxy(row.zxy);
                 return doc;
