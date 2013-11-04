@@ -17,7 +17,7 @@ module.exports = Carmen;
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
 
-    var remaining = Object.keys(options).length;
+    var remaining = pairs(options).length;
     var done = function(err) {
         if (!--remaining || err) {
             remaining = -1;

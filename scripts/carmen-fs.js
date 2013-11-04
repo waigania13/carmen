@@ -19,9 +19,7 @@ var carmen = new Carmen(opts);
 
 if (!argv.query) throw new Error('--query argument required');
 
-var load = +new Date();
 carmen.geocode(argv.query, function(err, data) {
-    time = +new Date() - time;
     if (err) throw err;
     var texts = data.results.reduce(function(memo, r) {
         var text = r.map(function(_) { return _.name; }).join(', ');
@@ -30,10 +28,6 @@ carmen.geocode(argv.query, function(err, data) {
         return memo;
     }, {});
     var keys = Object.keys(texts);
-    console.log('Tokens');
-    console.log('------');
-    console.log(data.query.join(', '));
-    console.log('');
     if (keys.length) {
         console.log('Result (showing %s of %s)', keys.slice(0,10).length, keys.length);
         console.log('-----------------------');
@@ -42,14 +36,6 @@ carmen.geocode(argv.query, function(err, data) {
         });
         console.log('');
     }
-    console.log('Stats');
-    console.log('-----');
-    console.log('- warmup:    %sms', load);
-    console.log('- search:    %s @ %sms', data.stats.searchCount||0, data.stats.searchTime||0);
-    console.log('- relev:     %s @ %sms', data.stats.relevCount||0, data.stats.relevTime||0);
-    console.log('- results:   %s @ %sms', data.stats.contextCount||0, data.stats.contextTime||0);
-    console.log('- relevance: %s', data.stats.relev);
-    console.log('- totaltime: %sms', time);
     if (process.env.DEBUG) Object.keys(opts).forEach(function(dbname) {
         var stats = data.stats['search.'+dbname];
         if (!stats) return;
