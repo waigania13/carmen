@@ -17,7 +17,7 @@ var expected = {
 };
 
 var from = new S3({data:{
-    "_carmen": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country",
+    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country",
     "maxzoom": 8
 }}, function() {});
 

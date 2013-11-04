@@ -4,6 +4,7 @@ var url = require('url');
 var path = require('path');
 var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
+// The S3 datasource is an expanded version of the `tilelive-s3` type
 module.exports = S3;
 
 // Implements carmen#getFeature method.
@@ -12,11 +13,12 @@ S3.prototype.getFeature = function(id, callback, raw) {
 
     // Parse carmen URL.
     try {
-        var uri = url.parse(this.data._carmen);
+        var uri = url.parse(this.data._geocoder);
         uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
         this.get(url.format(uri), function(err, buffer) {
             if (err) return callback(err);
-            try { var data = JSON.parse(buffer.toString('utf8')); }
+            var data;
+            try { data = JSON.parse(buffer.toString('utf8')); }
             catch (err) { return callback(err); }
             if (!raw) delete data._terms;
             return callback(null, data);
@@ -32,7 +34,7 @@ S3.prototype.putFeature = function(id, data, callback) {
 
     // Parse carmen URL.
     try {
-        var uri = url.parse(this.data._carmen);
+        var uri = url.parse(this.data._geocoder);
         var key = path.join(uri.pathname, 'data/' + id + '.json');
         var buffer = new Buffer(JSON.stringify(data));
         var headers = {
@@ -53,7 +55,7 @@ S3.prototype.getCarmen = function(type, shard, callback) {
 
     // Parse carmen URL.
     try {
-        var uri = url.parse(this.data._carmen);
+        var uri = url.parse(this.data._geocoder);
         uri.pathname = path.join(uri.pathname, type + '/' + shard + '.pbf');
         this.get(url.format(uri), function(err, buffer) {
             callback(err && err.status > 499 ? err : null, buffer);
@@ -69,7 +71,7 @@ S3.prototype.putCarmen = function(type, shard, data, callback) {
 
     // Parse carmen URL.
     try {
-        var uri = url.parse(this.data._carmen),
+        var uri = url.parse(this.data._geocoder),
             key = path.join(uri.pathname, type + '/' + shard + '.pbf'),
             headers = {
                 'x-amz-acl': 'public-read',
@@ -89,7 +91,8 @@ S3.prototype.indexable = function(pointer, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
-    try { var uri = url.parse(this.data._carmen); }
+    var uri;
+    try { uri = url.parse(this.data._geocoder); }
     catch (err) { return callback(new Error('Carmen not supported')); }
 
     pointer = pointer || {};
@@ -102,8 +105,8 @@ S3.prototype.indexable = function(pointer, callback) {
 
     new S3.get({
         uri: url.format({
-            hostname:uri.hostname,
-            protocol:uri.protocol,
+            hostname: uri.hostname,
+            protocol: uri.protocol,
             query:{
                 marker: pointer.marker,
                 prefix: path.join(uri.pathname, 'data').substr(1),

@@ -43,25 +43,18 @@ function Carmen(options) {
         }
         return memo;
 
-        function loadedinfo(err, info) {
-            if (err) return done(err);
-            source._carmen = source._carmen || new Cache(key, info.shardlevel || 0);
-            source._carmen.zoom = info.maxzoom;
-            source._carmen.name = key;
-            source._carmen.idx = Object.keys(options).indexOf(key);
-            return done();
-        }
-
         function opened(err) {
             if (err) return done(err);
-            source.getInfo(function(err, info) {
-                if (err) return done(err);
-                source._carmen = source._carmen || new Cache(key, +info.shardlevel || 0);
-                source._carmen.zoom = info.maxzoom;
-                source._carmen.name = key;
-                source._carmen.idx = Object.keys(options).indexOf(key);
-                return done();
-            });
+            source.getInfo(loadedinfo);
+        }
+
+        function loadedinfo(err, info) {
+            if (err) return done(err);
+            source._geocoder = source._geocoder || new Cache(key, +info.shardlevel || 0);
+            source._geocoder.zoom = info.maxzoom;
+            source._geocoder.name = key;
+            source._geocoder.idx = Object.keys(options).indexOf(key);
+            return done();
         }
     }
 }

@@ -34,7 +34,7 @@ var stats = {};
 
 carmen._open(function(err) {
     if (err) throw err;
-    var shardlevel = s._carmen.shardlevel;
+    var shardlevel = s._geocoder.shardlevel;
     stats.shardlevel = shardlevel;
     stats.term = {
         min:Infinity,
@@ -56,7 +56,7 @@ carmen._open(function(err) {
         var term = maxes[i][0];
         var grid = maxes[i][2];
         var ids = [grid];
-        s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
+        s._geocoder.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
             if (err) return callback(err);
             if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
             var id = result[0] % Math.pow(2,25);
@@ -80,7 +80,7 @@ carmen._open(function(err) {
         if (i >= maxes.length) return callback();
         var grid = maxes[i][0];
         var ids = [grid];
-        s._carmen.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
+        s._geocoder.getall(s.getCarmen.bind(s), 'grid', ids, function(err, result) {
             if (!result.length) return callback(new Error('Grid ' + grid + ' not found'));
             var id = result[0] % Math.pow(2,25);
             s.getFeature(id, function(err, doc) {
@@ -122,11 +122,11 @@ carmen._open(function(err) {
         s.getCarmen(type, i, function(err, buffer) {
             if (err) return callback(err);
             // @TODO should getCarmen return a 0-length buffer in this case?
-            s._carmen.load(buffer || new Buffer(0), type, i);
-            var ids = s._carmen.list(type, i);
+            s._geocoder.load(buffer || new Buffer(0), type, i);
+            var ids = s._geocoder.list(type, i);
             while (ids.length) {
                 var id = ids.shift();
-                list = s._carmen.get(type, id);
+                list = s._geocoder.get(type, id);
                 rels = list.length;
 
                 // Verify that relations are unique.

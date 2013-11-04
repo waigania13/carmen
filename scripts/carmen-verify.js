@@ -33,7 +33,7 @@ var stats = {};
 
 carmen._open(function(err) {
     if (err) throw err;
-    var shardlevel = s._carmen.shardlevel;
+    var shardlevel = s._geocoder.shardlevel;
 
     function checkall(from, to, i, stats, callback) {
         stats = stats || [ 0, 0 ];
@@ -42,16 +42,16 @@ carmen._open(function(err) {
 
         s.getCarmen(from, i, function(err, buffer) {
             if (err) return callback(err);
-            s._carmen.load(buffer || new Buffer(0), from, i);
-            var ids = s._carmen.list(from, i);
+            s._geocoder.load(buffer || new Buffer(0), from, i);
+            var ids = s._geocoder.list(from, i);
             stats[0] += ids.length;
             (function check() {
                 if (!ids.length) return checkall(from, to, ++i, stats, callback);
                 var fromid = +ids.shift();
-                var toids = s._carmen.search(from, +i, fromid);
-                if (from === 'degen') toids = toids.map(function(v) { return Math.floor(v/4) });
+                var toids = s._geocoder.search(from, +i, fromid);
+                if (from === 'degen') toids = toids.map(function(v) { return Math.floor(v/4); });
                 stats[1] += toids.length;
-                s._carmen.getall(s.getCarmen.bind(s), to, toids, function(err, res) {
+                s._geocoder.getall(s.getCarmen.bind(s), to, toids, function(err, res) {
                     if (err) return callback(err);
                     if (!res.length) console.warn('%s %s =x %s %s', from, fromid, to, toids);
                     process.nextTick(function() { check() });
