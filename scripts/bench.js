@@ -1,6 +1,6 @@
 var Benchmark = require('benchmark'),
     suite = new Benchmark.Suite(),
-    cache = require('../lib/cxxcache');
+    cache = require('../lib/util/cxxcache');
 
 suite.add('shards', function() {
     cache.shards(4, []);
