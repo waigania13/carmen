@@ -31,12 +31,33 @@ describe('termops', function() {
     });
     describe('degens', function() {
         it('generates degenerates', function() {
-            assert.deepEqual(termops.degens('foo'), {703823573:2815294292});
+            var degens = termops.degens('foobarbaz');
+            assert.deepEqual(degens, {
+                '544039508': 2176158032,
+                '703823573': 2176158035,
+                '773589692': 2176158034,
+                '891624718': 2176158033,
+                '967483786': 2176158035,
+                '1062237935': 2176158035,
+                '1067252074': 2176158035
+            });
+            for (var k in degens) {
+                // Encodes ID for 'foobarbaz'.
+                assert.equal(Math.floor(degens[k]/4), termops.terms('foobarbaz')[0]);
+                // Encodes degen distance (max: 3) from foobarbaz.
+                assert.ok(degens[k] % 4 <= 3);
+            }
         });
     });
     describe('phrase', function() {
         it('generates a name id', function() {
             assert.deepEqual(termops.phrase('foo'), 927239893);
+            assert.deepEqual(termops.phrase('foo street'), 1745043157);
+            assert.deepEqual(termops.phrase('foo lane'), 1732767445);
+            // Clusters phrase IDs based on initial term.
+            assert.deepEqual(termops.phrase('foo') % 4096, 3797);
+            assert.deepEqual(termops.phrase('foo street') % 4096, 3797);
+            assert.deepEqual(termops.phrase('foo lane') % 4096, 3797);
         });
     });
 });
