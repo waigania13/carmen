@@ -7,26 +7,20 @@
 #include <node_version.h>
 #include <node_buffer.h>
 
-// stl
+#include "pbf.hpp"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wsign-compare"
 #include <iostream>
 #include <exception>
 #include <string>
 #include <map>
 #include <vector>
-
 #include <nan.h>
-#include "pbf.hpp"
 #include "index.pb.h"
-
-// now set (or not) in binding.gyp
-//#define USE_LAZY_PROTO_CACHE
-//#define USE_CXX11
-
-// TODO
-// - add ability to materialize lazy cache or just simplify and only use lazy cache
-// - does capnproto expose ability to get raw bytes of item?
-// - why is string_ref not faster?
-// - why is std::map faster than std::unordered on OS X?
+#pragma clang diagnostic pop
 
 namespace binding {
 
@@ -58,18 +52,17 @@ public:
     static NAN_METHOD(load);
     static void AsyncLoad(uv_work_t* req);
     static void AfterLoad(uv_work_t* req);
-    static NAN_METHOD(loadJSON);
     static NAN_METHOD(search);
     static NAN_METHOD(pack);
     static NAN_METHOD(list);
     static NAN_METHOD(set);
     static void AsyncRun(uv_work_t* req);
     static void AfterRun(uv_work_t* req);
-    Cache(std::string const& id, int shardlevel);
+    Cache(std::string const& id, unsigned shardlevel);
     void _ref() { Ref(); }
     void _unref() { Unref(); }
     std::string id_;
-    int shardlevel_;
+    unsigned shardlevel_;
     memcache cache_;
     lazycache lazy_;
 private:
@@ -86,7 +79,6 @@ void Cache::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "has", has);
     NODE_SET_PROTOTYPE_METHOD(t, "load", load);
     NODE_SET_PROTOTYPE_METHOD(t, "loadSync", loadSync);
-    NODE_SET_PROTOTYPE_METHOD(t, "loadJSON", loadJSON);
     NODE_SET_PROTOTYPE_METHOD(t, "search", search);
     NODE_SET_PROTOTYPE_METHOD(t, "pack", pack);
     NODE_SET_PROTOTYPE_METHOD(t, "list", list);
@@ -95,7 +87,7 @@ void Cache::Initialize(Handle<Object> target) {
     NanAssignPersistent(FunctionTemplate, constructor, t);
 }
 
-Cache::Cache(std::string const& id, int shardlevel)
+Cache::Cache(std::string const& id, unsigned shardlevel)
   : ObjectWrap(),
     id_(id),
     shardlevel_(shardlevel),
@@ -108,24 +100,14 @@ Cache::~Cache() { }
 NAN_METHOD(Cache::pack)
 {
     NanScope();
-    if (args.Length() < 2) {
-        return NanThrowTypeError("expected three args: 'type','shard','encoding'");
+    if (args.Length() < 1) {
+        return NanThrowTypeError("expected two args: 'type','shard'");
     }
     if (!args[0]->IsString()) {
         return NanThrowTypeError("first argument must be a string");
     }
     if (!args[1]->IsNumber()) {
         return NanThrowTypeError("second arg must be an integer");
-    }
-    std::string encoding("protobuf");
-    if (args.Length() > 2) {
-        if (!args[2]->IsString()) {
-            return NanThrowTypeError("third arg must be a string");
-        }
-        encoding = *String::Utf8Value(args[2]->ToString());
-        if (encoding != "protobuf") {
-            return NanThrowTypeError((std::string("invalid encoding: ")+ encoding).c_str());
-        }
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -142,14 +124,13 @@ NAN_METHOD(Cache::pack)
                 ::carmen::proto::object_item * new_item = msg.add_items(); 
                 new_item->set_key(aitr->first);
                 intarray const & varr = aitr->second;
-                unsigned varr_size = varr.size();
-                for (unsigned i=0;i<varr_size;++i) {
-                    new_item->add_val(varr[i]);
+                std::size_t varr_size = varr.size();
+                for (std::size_t i=0;i<varr_size;++i) {
+                    new_item->add_val(static_cast<int64_t>(varr[i]));
                 }
                 ++aitr;
             }
         } else {
-            #ifdef USE_LAZY_PROTO_CACHE
             lazycache & lazy = c->lazy_;
             lazycache_iterator_type litr = lazy.begin();
             lazycache_iterator_type lend = lazy.end();
@@ -158,17 +139,17 @@ NAN_METHOD(Cache::pack)
                 larraycache_iterator laend = litr->second.end();
                 while (laitr != laend) {
                     ::carmen::proto::object_item * new_item = msg.add_items();
-                    new_item->set_key(laitr->first);
+                    new_item->set_key(static_cast<int64_t>(laitr->first));
                     string_ref_type const& ref = laitr->second;
                     protobuf::message item(ref.data(), ref.size());
                     while (item.next()) {
                         if (item.tag == 1) {
                             item.skip();
                         } else if (item.tag == 2) {
-                            uint32_t arrays_length = item.varint();
+                            std::size_t arrays_length = static_cast<std::size_t>(item.varint());
                             protobuf::message pbfarray(item.data,arrays_length);
                             while (pbfarray.next()) {
-                                new_item->add_val(pbfarray.value);
+                                new_item->add_val(static_cast<int64_t>(pbfarray.value));
                             }
                             item.skipBytes(arrays_length);
                         } else {
@@ -179,24 +160,27 @@ NAN_METHOD(Cache::pack)
                 }
                 ++litr;
             }
-            #else
-            NanReturnValue(Undefined());                
-            #endif
         }
         int size = msg.ByteSize();
-        #if NODE_VERSION_AT_LEAST(0, 11, 0)
-        Local<Object> retbuf = node::Buffer::New(size);
-        if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+        if (size > 0)
         {
-            NanReturnValue(retbuf);
+            std::size_t usize = static_cast<std::size_t>(size);
+            #if NODE_VERSION_AT_LEAST(0, 11, 0)
+            Local<Object> retbuf = node::Buffer::New(usize);
+            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            {
+                NanReturnValue(retbuf);
+            }
+            #else
+            node::Buffer *retbuf = node::Buffer::New(usize);
+            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            {
+                NanReturnValue(retbuf->handle_);
+            }
+            #endif
+        } else {
+            return NanThrowTypeError("message ByteSize was negative");
         }
-        #else
-        node::Buffer *retbuf = node::Buffer::New(size);
-        if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
-        {
-            NanReturnValue(retbuf->handle_);
-        }
-        #endif
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
@@ -228,7 +212,6 @@ NAN_METHOD(Cache::list)
                 }
                 ++itr;
             }
-            #ifdef USE_LAZY_PROTO_CACHE
             lazycache & lazy = c->lazy_;
             lazycache_iterator_type litr = lazy.begin();
             lazycache_iterator_type lend = lazy.end();
@@ -239,7 +222,6 @@ NAN_METHOD(Cache::list)
                 }
                 ++litr;
             }
-            #endif
             NanReturnValue(ids);
         } else if (args.Length() == 2) {
             std::string shard = *String::Utf8Value(args[1]->ToString());
@@ -254,7 +236,6 @@ NAN_METHOD(Cache::list)
                     ++aitr;
                 }
             }
-            #ifdef USE_LAZY_PROTO_CACHE
             lazycache & lazy = c->lazy_;
             lazycache_iterator_type litr = lazy.find(key);
             if (litr != lazy.end()) {
@@ -265,7 +246,6 @@ NAN_METHOD(Cache::list)
                     ++laitr;
                 }
             }
-            #endif
             NanReturnValue(ids);
         }
     } catch (std::exception const& ex) {
@@ -307,7 +287,7 @@ NAN_METHOD(Cache::set)
             c->cache_.insert(std::make_pair(key,arraycache()));
         }
         arraycache & arrc = c->cache_[key];
-        int_type key_id = args[2]->NumberValue();
+        arraycache::key_type key_id = static_cast<arraycache::key_type>(args[2]->IntegerValue());
         arraycache_iterator itr2 = arrc.find(key_id);
         if (itr2 == arrc.end()) {
             arrc.insert(std::make_pair(key_id,intarray()));   
@@ -331,67 +311,6 @@ NAN_METHOD(Cache::set)
     NanReturnValue(Undefined());
 }
 
-NAN_METHOD(Cache::loadJSON)
-{
-    NanScope();
-    if (args.Length() < 3) {
-        return NanThrowTypeError("expected three args: 'object','type','shard'");
-    }
-    if (!args[0]->IsObject()) {
-        return NanThrowTypeError("first argument must be an object");
-    }
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
-        return NanThrowTypeError("a valid object expected for first argument");
-    }
-    if (!args[1]->IsString()) {
-        return NanThrowTypeError("second arg 'type' must be a string");
-    }
-    if (!args[2]->IsNumber()) {
-        return NanThrowTypeError("third arg 'shard' must be an Integer");
-    }
-    try {
-        std::string type = *String::Utf8Value(args[1]->ToString());
-        std::string shard = *String::Utf8Value(args[2]->ToString());
-        std::string key = type + "-" + shard;
-        Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
-        if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));
-        }
-        arraycache & arrc = c->cache_[key];
-        v8::Local<v8::Array> propertyNames = obj->GetPropertyNames();
-        uint32_t prop_len = propertyNames->Length();
-        for (uint32_t i=0;i < prop_len;++i) {
-            v8::Local<v8::Value> key_name = propertyNames->Get(i);
-            v8::Local<v8::Value> prop = obj->Get(key_name);
-            if (prop->IsArray()) {
-                int_type key_id = key_name->NumberValue();
-                arrc.insert(std::make_pair(key_id,intarray()));
-                intarray & vv = arrc[key_id];
-                v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
-                uint32_t arr_len = arr->Length();
-                vv.reserve(arr_len);
-                for (uint32_t j=0;j < arr_len;++j) {
-                    v8::Local<v8::Value> val = arr->Get(j);
-                    if (val->IsNumber()) {
-                        #ifdef USE_CXX11
-                        vv.emplace_back(val->NumberValue());
-                        #else
-                        vv.push_back(val->NumberValue());
-                        #endif
-                    }
-                }
-            }
-        }
-    } catch (std::exception const& ex) {
-        return NanThrowTypeError(ex.what());
-    }
-    NanReturnValue(Undefined());
-}
-
-#ifdef USE_LAZY_PROTO_CACHE
 void load_into_cache(larraycache & larrc,
                             std::string const& key,
                             const char * data,
@@ -399,7 +318,7 @@ void load_into_cache(larraycache & larrc,
     protobuf::message message(data,size);
     while (message.next()) {
         if (message.tag == 1) {
-            uint32_t bytes = message.varint();
+            uint64_t bytes = message.varint();
             protobuf::message item(message.data, bytes);
             while (item.next()) {
                 if (item.tag == 1) {
@@ -422,51 +341,12 @@ void load_into_cache(larraycache & larrc,
         }
     }
 }
-#else
-void load_into_cache(arraycache & arrc,
-                     std::string const& key,
-                     const char * data,
-                     size_t size) {
-    protobuf::message message(data,size);
-    while (message.next()) {
-        if (message.tag == 1) {
-            uint32_t bytes = message.varint();
-            protobuf::message item(message.data, bytes);
-            int_type key_id = 0;
-            while (item.next()) {
-                if (item.tag == 1) {
-                    key_id = item.varint();
-                    arrc.insert(std::make_pair(key_id,intarray()));
-                } else if (item.tag == 2) {
-                    intarray & vv = arrc[key_id];
-                    uint32_t arrays_length = item.varint();
-                    protobuf::message array(item.data,arrays_length);
-                    while (array.next()) {
-                        #ifdef USE_CXX11
-                        vv.emplace_back(array.value);
-                        #else
-                        vv.push_back(array.value);
-                        #endif
-                    }
-                    item.skipBytes(arrays_length);
-                } else {
-                    throw std::runtime_error("hit unknown type");
-                }
-            }
-            message.skipBytes(bytes);
-        } else {
-            throw std::runtime_error("c skipping when shouldnt");
-            message.skip();
-        }
-    }
-}
-#endif
 
 NAN_METHOD(Cache::loadSync)
 {
     NanScope();
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
+        return NanThrowTypeError("expected at least three args: 'buffer','type', and 'shard'");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -484,14 +364,6 @@ NAN_METHOD(Cache::loadSync)
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
     }
-    if (args.Length() > 3) {
-        if (!args[3]->IsObject()) {
-            return ThrowException(Exception::TypeError(
-                                      String::New("optional second arg must be an options object")));
-        }
-        // TODO - handle options in the future
-        //Local<Object> options = args[3]->ToObject();
-    }
     try {
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
@@ -502,7 +374,6 @@ NAN_METHOD(Cache::loadSync)
         if (itr != mem.end()) {
             c->cache_.insert(std::make_pair(key,arraycache()));
         }
-#ifdef USE_LAZY_PROTO_CACHE
         memcache::iterator itr2 = mem.find(key);
         if (itr2 != mem.end()) {
             mem.erase(itr2);
@@ -513,9 +384,6 @@ NAN_METHOD(Cache::loadSync)
             c->lazy_.insert(std::make_pair(key,larraycache()));
         }
         load_into_cache(c->lazy_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
-#else
-        load_into_cache(c->cache_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
-#endif
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
@@ -525,11 +393,7 @@ NAN_METHOD(Cache::loadSync)
 struct load_baton {
     uv_work_t request;
     Cache * c;
-#ifdef USE_LAZY_PROTO_CACHE
     larraycache arrc;
-#else
-    arraycache arrc;
-#endif
     Persistent<Function> cb;
     std::string key;
     std::string data;
@@ -564,7 +428,6 @@ void Cache::AfterLoad(uv_work_t* req) {
         Local<Value> argv[1] = { Exception::Error(String::New(closure->error_name.c_str())) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     } else {
-#ifdef USE_LAZY_PROTO_CACHE
         memcache::iterator itr2 = closure->c->cache_.find(closure->key);
         if (itr2 != closure->c->cache_.end()) {
             closure->c->cache_.erase(itr2);
@@ -574,13 +437,6 @@ void Cache::AfterLoad(uv_work_t* req) {
         #else
         closure->c->lazy_[closure->key] = closure->arrc;
         #endif
-#else
-        #ifdef USE_CXX11
-        closure->c->cache_[closure->key] = std::move(closure->arrc);
-        #else
-        closure->c->cache_[closure->key] = closure->arrc;
-        #endif
-#endif
         Local<Value> argv[1] = { Local<Value>::New(Null()) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     }
@@ -601,7 +457,7 @@ NAN_METHOD(Cache::load)
         return loadSync(args);
     }
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
+        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally a callback");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -619,15 +475,6 @@ NAN_METHOD(Cache::load)
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
     }
-    if (args.Length() > 3) {
-        if (!args[3]->IsObject()) {
-            return ThrowException(Exception::TypeError(
-                                      String::New("optional second arg must be an options object")));
-        }
-        // TODO - handle options in the future
-        //Local<Object> options = args[3]->ToObject();
-    }
-
     try {
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
@@ -643,7 +490,6 @@ NAN_METHOD(Cache::load)
         return NanThrowTypeError(ex.what());
     }
 }
-
 
 NAN_METHOD(Cache::has)
 {
@@ -667,13 +513,11 @@ NAN_METHOD(Cache::has)
         if (itr != mem.end()) {
             NanReturnValue(True());
         } else {
-            #ifdef USE_LAZY_PROTO_CACHE
             lazycache const& lazy = c->lazy_;
             lazycache_iterator_type litr = lazy.find(key);
             if (litr != lazy.end()) {
                 NanReturnValue(True());
             }
-            #endif
             NanReturnValue(False());
         }
     } catch (std::exception const& ex) {
@@ -699,13 +543,12 @@ NAN_METHOD(Cache::search)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         std::string shard = *String::Utf8Value(args[1]->ToString());
-        int_type id = args[2]->NumberValue();
+        int_type id = static_cast<int_type>(args[2]->IntegerValue());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
         memcache & mem = c->cache_;
         mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
-            #ifdef USE_LAZY_PROTO_CACHE
             lazycache const& lazy = c->lazy_;
             lazycache_iterator_type litr = lazy.find(key);
             if (litr == lazy.end()) {
@@ -715,14 +558,16 @@ NAN_METHOD(Cache::search)
             if (laitr == litr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                intarray array; // TODO - reserve
+                // NOTE: we cannot call array.reserve here since
+                // the total length is not known
+                intarray array;
                 string_ref_type const& ref = laitr->second;
                 protobuf::message item(ref.data(), ref.size());
                 while (item.next()) {
                     if (item.tag == 1) {
                         item.skip();
                     } else if (item.tag == 2) {
-                        uint32_t arrays_length = item.varint();
+                        uint64_t arrays_length = item.varint();
                         protobuf::message pbfarray(item.data,arrays_length);
                         while (pbfarray.next()) {
                             #ifdef USE_CXX11
@@ -736,16 +581,13 @@ NAN_METHOD(Cache::search)
                         throw std::runtime_error("hit unknown type");
                     }
                 }
-                unsigned vals_size = array.size();
-                Local<Array> arr_obj = Array::New(vals_size);
+                std::size_t vals_size = array.size();
+                Local<Array> arr_obj = Array::New(static_cast<int>(vals_size));
                 for (unsigned k=0;k<vals_size;++k) {
                     arr_obj->Set(k,Number::New(array[k]));
                 }
                 NanReturnValue(arr_obj);
             }
-            #else
-            NanReturnValue(Undefined());
-            #endif
         } else {
             arraycache_iterator aitr = itr->second.find(id);
             if (aitr == itr->second.end()) {
@@ -753,7 +595,7 @@ NAN_METHOD(Cache::search)
             } else {
                 intarray const& array = aitr->second;
                 unsigned vals_size = array.size();
-                Local<Array> arr_obj = Array::New(vals_size);
+                Local<Array> arr_obj = Array::New(static_cast<int>(vals_size));
                 for (unsigned k=0;k<vals_size;++k) {
                     arr_obj->Set(k,Number::New(array[k]));
                 }
@@ -782,7 +624,7 @@ NAN_METHOD(Cache::New)
             return NanThrowTypeError("first argument 'shardlevel' must be a number");
         }
         std::string id = *String::Utf8Value(args[0]->ToString());
-        int shardlevel = args[1]->IntegerValue();
+        unsigned shardlevel = static_cast<unsigned>(args[1]->IntegerValue());
         Cache* im = new Cache(id,shardlevel);
         im->Wrap(args.This());
         args.This()->Set(String::NewSymbol("id"),args[0]);

@@ -1,16 +1,14 @@
-CXXFLAGS := $(CXXFLAGS) # inherit from env
-LDFLAGS := $(LDFLAGS) # inherit from env
 
 all: binding
 
 binding:
-	node-gyp build --verbose
+	`npm explore npm -g -- pwd`/bin/node-gyp-bin/node-gyp build
 
 clean:
 	@rm -f src/index.pb.cc
 	@rm -f src/index.pb.h
 	@rm -rf ./build
-	@rm -f lib/*.node
+	@rm -f lib/util/*.node
 
 rebuild:
 	@make clean
