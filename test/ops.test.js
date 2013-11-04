@@ -8,10 +8,10 @@ describe('ops', function() {
             assert.equal(ops.resolveCode(100), 66);
         });
     });
-    describe('sortMod4', function() {
-        it('sorts terms', function() {
-            assert.deepEqual([0, 4, 5].sort(ops.sortMod4), [0, 4, 5]);
-            assert.deepEqual([0, -14, 5].sort(ops.sortMod4), [-14, 0, 5]);
+    describe('sortDegens', function() {
+        it('sorts degens', function() {
+            assert.deepEqual([0, 4, 5].sort(ops.sortDegens), [0, 4, 5]);
+            assert.deepEqual([5, 6, 4].sort(ops.sortDegens), [4, 5, 6]);
         });
     });
     describe('zxy', function() {
