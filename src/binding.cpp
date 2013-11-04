@@ -346,7 +346,7 @@ NAN_METHOD(Cache::loadSync)
 {
     NanScope();
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
+        return NanThrowTypeError("expected at least three args: 'buffer','type', and 'shard'");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -363,14 +363,6 @@ NAN_METHOD(Cache::loadSync)
     }
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
-    }
-    if (args.Length() > 3) {
-        if (!args[3]->IsObject()) {
-            return ThrowException(Exception::TypeError(
-                                      String::New("optional second arg must be an options object")));
-        }
-        // TODO - handle options in the future
-        //Local<Object> options = args[3]->ToObject();
     }
     try {
         std::string type = *String::Utf8Value(args[1]->ToString());
@@ -465,7 +457,7 @@ NAN_METHOD(Cache::load)
         return loadSync(args);
     }
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally an options arg and callback");
+        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally a callback");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -483,15 +475,6 @@ NAN_METHOD(Cache::load)
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
     }
-    if (args.Length() > 3) {
-        if (!args[3]->IsObject()) {
-            return ThrowException(Exception::TypeError(
-                                      String::New("optional second arg must be an options object")));
-        }
-        // TODO - handle options in the future
-        //Local<Object> options = args[3]->ToObject();
-    }
-
     try {
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
@@ -507,7 +490,6 @@ NAN_METHOD(Cache::load)
         return NanThrowTypeError(ex.what());
     }
 }
-
 
 NAN_METHOD(Cache::has)
 {
@@ -576,7 +558,9 @@ NAN_METHOD(Cache::search)
             if (laitr == litr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                intarray array; // TODO - reserve
+                // NOTE: we cannot call array.reserve here since
+                // the total length is not known
+                intarray array;
                 string_ref_type const& ref = laitr->second;
                 protobuf::message item(ref.data(), ref.size());
                 while (item.next()) {
