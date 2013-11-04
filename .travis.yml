@@ -18,5 +18,5 @@ before_script:
 
 script:
  - make clean
- #- npm install --std=0 --lazy=0
- #- make test
+ - npm install --std=0
+ - make test
