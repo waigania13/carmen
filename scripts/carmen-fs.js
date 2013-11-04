@@ -13,7 +13,6 @@ var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
-var FSAPI = require('../api-fs');
 var opts = Carmen.autoSync(path.resolve(dirname));
 var carmen = new Carmen(opts);
 

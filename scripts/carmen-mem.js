@@ -7,6 +7,7 @@ var api = {
     '.s3': require('../api-s3'),
     '.mbtiles': require('../api-mbtiles')
 };
+var mem = require('../api-mem');
 var Carmen = require('../index.js');
 var Queue = require('../queue');
 var f = argv[2];
@@ -35,7 +36,7 @@ if (nogrids) console.log('Indexing without grids.');
 console.log('Indexing %s ...', f);
 
 var from = new api[path.extname(f)](f, function() {});
-var to = t ? new api[path.extname(t)](t, function() {}) : from;
+var to = t ? new mem(t, function() {}) : from;
 var carmen = new Carmen({ from: from, to: to });
 
 carmen._open(function(err) {
@@ -45,11 +46,12 @@ carmen._open(function(err) {
         var index = function(pointer) {
             from.indexable(pointer, function(err, docs, pointer) {
                 if (err) throw err;
+                var start;
                 if (!docs.length) {
-                    var start = +new Date;
+                    start = +new Date();
                     console.log('Storing docs...');
                     return carmen.store(to, function(err) {
-                        console.log('Stored in %ss', Math.floor((+new Date-start) * 0.001));
+                        console.log('Stored in %ss', Math.floor((+new Date()-start) * 0.001));
                         if (err) throw err;
                         to.stopWriting(function(err) {
                             if (err) throw err;
@@ -58,10 +60,10 @@ carmen._open(function(err) {
                         });
                     });
                 }
-                var start = +new Date;
+                start = +new Date();
                 carmen.index(to, docs, function(err) {
                     if (err) throw err;
-                    console.log('Indexed %s docs @ %s/s', docs.length, Math.floor(docs.length * 1000 / (+new Date - start)));
+                    console.log('Indexed %s docs @ %s/s', docs.length, Math.floor(docs.length * 1000 / (+new Date() - start)));
                     index(pointer);
                 });
             });
