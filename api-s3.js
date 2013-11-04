@@ -2,7 +2,6 @@ var _ = require('underscore');
 var S3 = require('tilelive-s3');
 var url = require('url');
 var path = require('path');
-var iconv = new require('iconv').Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 // The S3 datasource is an expanded version of the `tilelive-s3` type
 module.exports = S3;
