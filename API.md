@@ -1,6 +1,18 @@
+# Structure
+
+```
+lib/
+  [operations that are exposed in the public ui and do i/o]
+  util/
+    [algorithmically simple utilities]
+  pure/
+    [pure algorithms]
+```
+
 # Terminology
 
 * Cache: an object that quickly loads sharded data from JSON or protobuf files
+* Source: a Carmen source, such as S3, MBTiles, or memory
 
 # Carmen API
 
@@ -18,13 +30,26 @@ In which `CarmenSource` is an initialized Carmen source object.
 
 ## geocode(query, callback)
 
+Given a `query` string, call callback with `(err, results)` of possible contexts
+represented by that string.
+
 ## context(lon, lat, maxtype, callback)
+
+Given a `lat`, `lon` pair, return a pyramid of features that contain that point,
+in order decreasing specificity.
 
 ## search(source, query, id, callback)
 
+Search a carmen source for features matching query.
+
 ## index(source, docs, callback)
 
+Given a source and documents, index those documents into the source, pre-generating
+varied terms and degenerates for use in geocoding.
+
 ## store(source, callback)
+
+Serialize and make permanent the index currently in memory for a source.
 
 # Carmen Source API
 
