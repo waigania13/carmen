@@ -100,24 +100,14 @@ Cache::~Cache() { }
 NAN_METHOD(Cache::pack)
 {
     NanScope();
-    if (args.Length() < 2) {
-        return NanThrowTypeError("expected three args: 'type','shard','encoding'");
+    if (args.Length() < 1) {
+        return NanThrowTypeError("expected two args: 'type','shard'");
     }
     if (!args[0]->IsString()) {
         return NanThrowTypeError("first argument must be a string");
     }
     if (!args[1]->IsNumber()) {
         return NanThrowTypeError("second arg must be an integer");
-    }
-    std::string encoding("protobuf");
-    if (args.Length() > 2) {
-        if (!args[2]->IsString()) {
-            return NanThrowTypeError("third arg must be a string");
-        }
-        encoding = *String::Utf8Value(args[2]->ToString());
-        if (encoding != "protobuf") {
-            return NanThrowTypeError((std::string("invalid encoding: ")+ encoding).c_str());
-        }
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
