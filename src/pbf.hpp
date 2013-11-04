@@ -30,7 +30,7 @@ namespace protobuf {
 #define PBF_INLINE FORCEINLINE
 
 struct message {
-    PBF_INLINE message(const char *data, uint32_t length);
+    PBF_INLINE message(const char *data, std::size_t length);
 
     PBF_INLINE bool next();
     PBF_INLINE uint64_t varint();
@@ -42,8 +42,8 @@ struct message {
     PBF_INLINE int64_t int64();
     PBF_INLINE bool boolean();
     PBF_INLINE void skip();
-    PBF_INLINE void skipValue(uint32_t val);
-    PBF_INLINE void skipBytes(uint32_t bytes);
+    PBF_INLINE void skipValue(uint64_t val);
+    PBF_INLINE void skipBytes(uint64_t bytes);
 
     const char *data;
     const char *end;
@@ -51,7 +51,7 @@ struct message {
     uint32_t tag;
 };
 
-message::message(const char * _data, uint32_t length)
+message::message(const char * _data, std::size_t length)
     : data(_data),
       end(data + length)
 {
@@ -61,7 +61,7 @@ bool message::next()
 {
     if (data < end) {
         value = varint();
-        tag = value >> 3;
+        tag = static_cast<uint32_t>(value >> 3);
         return true;
     }
     return false;
@@ -70,7 +70,7 @@ bool message::next()
 
 uint64_t message::varint()
 {
-    int8_t byte = 0x80;
+    int8_t byte = static_cast<int8_t>(0x80);
     uint64_t result = 0;
     int bitpos;
     for (bitpos = 0; bitpos < 70 && (byte & 0x80); bitpos += 7) {
@@ -98,16 +98,16 @@ uint64_t message::varint2() {
   if (LIKELY(iend - begin >= kMaxVarintLength64)) {  // fast path
     int64_t b;
     do {
-      b = *p++; val  = (b & 0x7f)      ; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) <<  7; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 14; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 21; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 28; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 35; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 42; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 49; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 56; if (b >= 0) break;
-      b = *p++; val |= (b & 0x7f) << 63; if (b >= 0) break;
+      b = *p++; val  = static_cast<uint64_t>((b & 0x7f)     ); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) <<  7); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 14); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 21); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 28); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 35); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 42); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 49); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 56); if (b >= 0) break;
+      b = *p++; val |= static_cast<uint64_t>((b & 0x7f) << 63); if (b >= 0) break;
       throw std::invalid_argument("Invalid varint value");  // too big
     } while (false);
   } else {
@@ -126,13 +126,13 @@ uint64_t message::varint2() {
 int64_t message::svarint()
 {
     uint64_t n = varint();
-    return (n >> 1) ^ -(int64_t)(n & 1);
+    return (n >> 1) ^ -static_cast<int64_t>((n & 1));
 }
 
 std::string message::string()
 {
-    uint32_t bytes = varint();
-    const char *string = (const char *)data;
+    uint64_t bytes = varint();
+    const char *string = static_cast<const char *>(data);
     skipBytes(bytes);
     return std::string(string, bytes);
 }
@@ -168,7 +168,7 @@ void message::skip()
     skipValue(value);
 }
 
-void message::skipValue(uint32_t val)
+void message::skipValue(uint64_t val)
 {
     switch (val & 0x7) {
         case 0: // varint
@@ -185,12 +185,12 @@ void message::skipValue(uint32_t val)
             break;
         default:
             char msg[80];
-            snprintf(msg, 80, "cannot skip unknown type %d", val & 0x7);
+            snprintf(msg, 80, "cannot skip unknown type %lld", val & 0x7);
             throw std::runtime_error(msg);
     }
 }
 
-void message::skipBytes(uint32_t bytes)
+void message::skipBytes(uint64_t bytes)
 {
     data += bytes;
     if (data > end) {

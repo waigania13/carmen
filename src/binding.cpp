@@ -7,16 +7,22 @@
 #include <node_version.h>
 #include <node_buffer.h>
 
+#include "pbf.hpp"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wsign-compare"
+
 // stl
 #include <iostream>
 #include <exception>
 #include <string>
 #include <map>
 #include <vector>
-
 #include <nan.h>
-#include "pbf.hpp"
 #include "index.pb.h"
+#pragma clang diagnostic pop
 
 // now set (or not) in binding.gyp
 //#define USE_LAZY_PROTO_CACHE
@@ -65,11 +71,11 @@ public:
     static NAN_METHOD(set);
     static void AsyncRun(uv_work_t* req);
     static void AfterRun(uv_work_t* req);
-    Cache(std::string const& id, int shardlevel);
+    Cache(std::string const& id, unsigned shardlevel);
     void _ref() { Ref(); }
     void _unref() { Unref(); }
     std::string id_;
-    int shardlevel_;
+    unsigned shardlevel_;
     memcache cache_;
     lazycache lazy_;
 private:
@@ -95,7 +101,7 @@ void Cache::Initialize(Handle<Object> target) {
     NanAssignPersistent(FunctionTemplate, constructor, t);
 }
 
-Cache::Cache(std::string const& id, int shardlevel)
+Cache::Cache(std::string const& id, unsigned shardlevel)
   : ObjectWrap(),
     id_(id),
     shardlevel_(shardlevel),
@@ -142,9 +148,9 @@ NAN_METHOD(Cache::pack)
                 ::carmen::proto::object_item * new_item = msg.add_items(); 
                 new_item->set_key(aitr->first);
                 intarray const & varr = aitr->second;
-                unsigned varr_size = varr.size();
-                for (unsigned i=0;i<varr_size;++i) {
-                    new_item->add_val(varr[i]);
+                std::size_t varr_size = varr.size();
+                for (std::size_t i=0;i<varr_size;++i) {
+                    new_item->add_val(static_cast<int64_t>(varr[i]));
                 }
                 ++aitr;
             }
@@ -158,17 +164,17 @@ NAN_METHOD(Cache::pack)
                 larraycache_iterator laend = litr->second.end();
                 while (laitr != laend) {
                     ::carmen::proto::object_item * new_item = msg.add_items();
-                    new_item->set_key(laitr->first);
+                    new_item->set_key(static_cast<int64_t>(laitr->first));
                     string_ref_type const& ref = laitr->second;
                     protobuf::message item(ref.data(), ref.size());
                     while (item.next()) {
                         if (item.tag == 1) {
                             item.skip();
                         } else if (item.tag == 2) {
-                            uint32_t arrays_length = item.varint();
+                            std::size_t arrays_length = static_cast<std::size_t>(item.varint());
                             protobuf::message pbfarray(item.data,arrays_length);
                             while (pbfarray.next()) {
-                                new_item->add_val(pbfarray.value);
+                                new_item->add_val(static_cast<int64_t>(pbfarray.value));
                             }
                             item.skipBytes(arrays_length);
                         } else {
@@ -184,19 +190,25 @@ NAN_METHOD(Cache::pack)
             #endif
         }
         int size = msg.ByteSize();
-        #if NODE_VERSION_AT_LEAST(0, 11, 0)
-        Local<Object> retbuf = node::Buffer::New(size);
-        if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+        if (size > 0)
         {
-            NanReturnValue(retbuf);
+            std::size_t usize = static_cast<std::size_t>(size);
+            #if NODE_VERSION_AT_LEAST(0, 11, 0)
+            Local<Object> retbuf = node::Buffer::New(usize);
+            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            {
+                NanReturnValue(retbuf);
+            }
+            #else
+            node::Buffer *retbuf = node::Buffer::New(usize);
+            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            {
+                NanReturnValue(retbuf->handle_);
+            }
+            #endif
+        } else {
+            return NanThrowTypeError("message ByteSize was negative");
         }
-        #else
-        node::Buffer *retbuf = node::Buffer::New(size);
-        if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
-        {
-            NanReturnValue(retbuf->handle_);
-        }
-        #endif
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
@@ -307,7 +319,7 @@ NAN_METHOD(Cache::set)
             c->cache_.insert(std::make_pair(key,arraycache()));
         }
         arraycache & arrc = c->cache_[key];
-        int_type key_id = args[2]->NumberValue();
+        arraycache::key_type key_id = static_cast<arraycache::key_type>(args[2]->IntegerValue());
         arraycache_iterator itr2 = arrc.find(key_id);
         if (itr2 == arrc.end()) {
             arrc.insert(std::make_pair(key_id,intarray()));   
@@ -367,7 +379,7 @@ NAN_METHOD(Cache::loadJSON)
             v8::Local<v8::Value> key_name = propertyNames->Get(i);
             v8::Local<v8::Value> prop = obj->Get(key_name);
             if (prop->IsArray()) {
-                int_type key_id = key_name->NumberValue();
+                arraycache::key_type key_id = static_cast<arraycache::key_type>(key_name->IntegerValue());
                 arrc.insert(std::make_pair(key_id,intarray()));
                 intarray & vv = arrc[key_id];
                 v8::Local<v8::Array> arr = v8::Local<v8::Array>::Cast(prop);
@@ -399,7 +411,7 @@ void load_into_cache(larraycache & larrc,
     protobuf::message message(data,size);
     while (message.next()) {
         if (message.tag == 1) {
-            uint32_t bytes = message.varint();
+            uint64_t bytes = message.varint();
             protobuf::message item(message.data, bytes);
             while (item.next()) {
                 if (item.tag == 1) {
@@ -699,7 +711,7 @@ NAN_METHOD(Cache::search)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         std::string shard = *String::Utf8Value(args[1]->ToString());
-        int_type id = args[2]->NumberValue();
+        int_type id = static_cast<int_type>(args[2]->IntegerValue());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
         memcache & mem = c->cache_;
@@ -722,7 +734,7 @@ NAN_METHOD(Cache::search)
                     if (item.tag == 1) {
                         item.skip();
                     } else if (item.tag == 2) {
-                        uint32_t arrays_length = item.varint();
+                        uint64_t arrays_length = item.varint();
                         protobuf::message pbfarray(item.data,arrays_length);
                         while (pbfarray.next()) {
                             #ifdef USE_CXX11
@@ -736,8 +748,8 @@ NAN_METHOD(Cache::search)
                         throw std::runtime_error("hit unknown type");
                     }
                 }
-                unsigned vals_size = array.size();
-                Local<Array> arr_obj = Array::New(vals_size);
+                std::size_t vals_size = array.size();
+                Local<Array> arr_obj = Array::New(static_cast<int>(vals_size));
                 for (unsigned k=0;k<vals_size;++k) {
                     arr_obj->Set(k,Number::New(array[k]));
                 }
@@ -753,7 +765,7 @@ NAN_METHOD(Cache::search)
             } else {
                 intarray const& array = aitr->second;
                 unsigned vals_size = array.size();
-                Local<Array> arr_obj = Array::New(vals_size);
+                Local<Array> arr_obj = Array::New(static_cast<int>(vals_size));
                 for (unsigned k=0;k<vals_size;++k) {
                     arr_obj->Set(k,Number::New(array[k]));
                 }
@@ -782,7 +794,7 @@ NAN_METHOD(Cache::New)
             return NanThrowTypeError("first argument 'shardlevel' must be a number");
         }
         std::string id = *String::Utf8Value(args[0]->ToString());
-        int shardlevel = args[1]->IntegerValue();
+        unsigned shardlevel = static_cast<unsigned>(args[1]->IntegerValue());
         Cache* im = new Cache(id,shardlevel);
         im->Wrap(args.This());
         args.This()->Set(String::NewSymbol("id"),args[0]);
