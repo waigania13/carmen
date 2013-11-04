@@ -8,6 +8,8 @@ describe('coalesce zooms', function() {
         assert.deepEqual(coalesced, {});
     });
     it('basic coalesce', function() {
+        // The data for this test is from the query "holyoke massachusetts"
+        // against the province and place indexes.
         var coalesced = coalesceZooms(
         // grids
         [
@@ -79,6 +81,9 @@ describe('coalesce zooms', function() {
             province: { _geocoder: { zoom: 9 } },
             place: { _geocoder: { zoom: 11 } }
         });
+
+        // Reformat encoded zxy's and map full features to just their IDs for
+        // easier debugging/assertion of correct results.
         var z, x, y;
         var coalescedCount = {};
         for (var zxy in coalesced) {
