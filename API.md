@@ -15,6 +15,35 @@ Features are indexed by hash values which are 32-bit integers. These integers
 are generated based on the normalized, phrase-parsed words in the name of
 the feature.
 
+* `term`: FNV1a hash of a single (lowercase, ascii) word
+* `distance`: the number of characters removed from the word
+* `phrase`: FNV1a hash of (lowercase ascii) space-separated words, plus
+  the encoding of its first term
+
+The first term is included in the hash for phrases in order to cluster similar
+road names on a common number, so that hashed searches don't require an extremely
+high number of shards to be loaded.
+
+## degenerate
+
+```
+  term      distance
+ ___________________
+|     0-30 | 31-32 |
+|------------------|
+```
+
+### term
+
+```
+ unused       term
+____________________
+| 0-1  |     2-32 |
+-------|------------
+```
+
+### phrase
+
 ```
  phrase   first term
 ____________________
