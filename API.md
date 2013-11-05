@@ -9,6 +9,22 @@ lib/
     [pure algorithms]
 ```
 
+# Hash
+
+Features are indexed by hash values which are 32-bit integers. These integers
+are generated based on the normalized, phrase-parsed words in the name of
+the feature.
+
+```
+ phrase   first term
+____________________
+| 0-19  |     20-32 |
+--------|------------
+```
+
+`fnv1a(str)` is used to turn any string into a 32-bit integer by the FNV
+hashing algorithm.
+
 # Terminology
 
 * Cache: an object that quickly loads sharded data from JSON or protobuf files
