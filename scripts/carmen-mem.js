@@ -56,6 +56,7 @@ carmen._open(function(err) {
                         to.stopWriting(function(err) {
                             if (err) throw err;
                             console.log('Done.');
+                            fs.writeFileSync('test.json', JSON.stringify(to.serialize(), null, 4));
                             process.exit(0);
                         });
                     });
@@ -65,10 +66,9 @@ carmen._open(function(err) {
                     if (err) throw err;
                     console.log('Indexed %s docs @ %s/s', docs.length, Math.floor(docs.length * 1000 / (+new Date() - start)));
                     index(pointer);
-                    to.dumpFile('test.json');
                 });
             });
         };
-        index({nogrids:nogrids});
+        index({nogrids:false});
     });
 });
