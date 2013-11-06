@@ -8,7 +8,7 @@ var api = {
     '.mbtiles': require('../api-mbtiles')
 };
 var Carmen = require('../index.js');
-var tokenize = require('../lib/tokenize');
+var termops = require('../lib/util/termops.js');
 var Queue = require('../queue');
 var _ = require('underscore');
 var f = argv[2];
@@ -63,8 +63,8 @@ carmen._open(function(err) {
             s.getFeature(id, function(err, doc) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
-                var query = tokenize(text);
-                var terms = Carmen.terms(text);
+                var query = termops.tokenize(text);
+                var terms = termops.terms(text);
                 var idx = terms.indexOf(+term);
                 if (idx !== -1) {
                     maxes[i].unshift(query[idx]);
@@ -87,8 +87,8 @@ carmen._open(function(err) {
                 if (err) return callback(err);
                 var text = doc.search || doc.name || '';
                 _(text.split(',')).each(function(syn) {
-                    if (Carmen.phrase(syn) === +grid) {
-                        maxes[i].unshift(tokenize(syn).join(' '));
+                    if (termops.phrase(syn) === +grid) {
+                        maxes[i].unshift(termops.tokenize(syn).join(' '));
                     }
                 });
                 phraselookup(maxes, ++i, callback);
