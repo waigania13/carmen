@@ -85,8 +85,8 @@ S3.prototype.putCarmen = function(type, shard, data, callback) {
 };
 
 // @TODO.
-// Implements carmen#indexable method.
-S3.prototype.indexable = function(pointer, callback) {
+// Implements carmen#getIndexableDocs method.
+S3.prototype.getIndexableDocs = function(pointer, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.

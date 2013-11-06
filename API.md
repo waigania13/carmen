@@ -120,3 +120,14 @@ Put buffer into a shard with index `index`, and call callback with `(err)`
 ## getCarmen(index, shard, callback)
 
 Get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+
+## getIndexableDocs(pointer, callback)
+
+Get documents needed to create a forward geocoding datasource.
+
+`pointer` is an optional object that has different behavior between sources -
+it indicates the state of the database or dataset like a cursor would, allowing
+you to page through documents.
+
+`callback` is called with `(error, documents, pointer)`, in which `documents`
+is a list of objects with `{id, doc, text, zxy}` layout.

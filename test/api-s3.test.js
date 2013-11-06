@@ -71,12 +71,12 @@ it.skip('putCarmen', function(done) {
     });
 });
 
-it('indexable', function(done) {
-    from.indexable({ limit: 10 }, function(err, docs, pointer) {
+it('getIndexableDocs', function(done) {
+    from.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
         assert.ifError(err);
         assert.equal(docs.length, 10);
         assert.deepEqual(pointer, {limit:10, done:false, marker:'dev/01-ne.country/data/107.json' });
-        from.indexable(pointer, function(err, docs, pointer) {
+        from.getIndexableDocs(pointer, function(err, docs, pointer) {
             assert.ifError(err);
             assert.equal(docs.length, 10);
             assert.deepEqual(pointer, { limit: 10, done:false, marker:'dev/01-ne.country/data/116.json' });

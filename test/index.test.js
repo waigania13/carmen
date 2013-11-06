@@ -20,7 +20,7 @@ describe('index', function() {
             to.startWriting(function(err) {
                 if (err) throw err;
                 var index = function(pointer) {
-                    from.indexable(pointer, function(err, docs, pointer) {
+                    from.getIndexableDocs(pointer, function(err, docs, pointer) {
                         if (err) throw err;
                         var start;
                         if (!docs.length) {

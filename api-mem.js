@@ -37,8 +37,8 @@ MemSource.prototype.putCarmen = function(type, shard, data, callback) {
     return callback(null);
 };
 
-// Implements carmen#indexable method.
-MemSource.prototype.indexable = function(pointer, callback) {
+// Implements carmen#getIndexableDocs method.
+MemSource.prototype.getIndexableDocs = function(pointer, callback) {
     return callback(null);
 };
 

@@ -40,8 +40,8 @@ MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
     this.write('carmen2', type + '.' + shard, { type:type, shard: shard, data: data }, callback);
 };
 
-// Implements carmen#indexable method.
-MBTiles.prototype.indexable = function(pointer, callback) {
+// Implements carmen#getIndexableDocs method.
+MBTiles.prototype.getIndexableDocs = function(pointer, callback) {
     pointer = pointer || {};
     pointer.limit = pointer.limit || 10000;
     pointer.offset = pointer.offset || 0;
@@ -61,7 +61,7 @@ MBTiles.prototype.indexable = function(pointer, callback) {
     // documents from an MBTiles database without having to know what search
     // field was used in the past (see comment below).
     if (pointer.table === 'carmen') {
-        return this._db.all("SELECT c.id, c.text, c.zxy, k.key_json FROM carmen c JOIN keymap k ON c.id = k.key_name LIMIT ? OFFSET ?", pointer.limit, pointer.offset, function(err, rows) {
+        return this._db.all('SELECT c.id, c.text, c.zxy, k.key_json FROM carmen c JOIN keymap k ON c.id = k.key_name LIMIT ? OFFSET ?', pointer.limit, pointer.offset, function(err, rows) {
             if (err) return callback(err);
             var docs = rows.map(function(row) {
                 var doc = {};
@@ -107,11 +107,10 @@ MBTiles.prototype.indexable = function(pointer, callback) {
 MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function(parent, callback) {
     parent.call(this, function(err) {
         if (err) return callback(err);
-        var sql = '\
-        CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);\
-        CREATE TABLE IF NOT EXISTS carmen2(type TEXT, shard INTEGER, data BLOB);\
-        CREATE INDEX IF NOT EXISTS carmen2type ON carmen2 (type);\
-        CREATE INDEX IF NOT EXISTS carmen2shard ON carmen2 (type, shard);';
+        var sql = 'CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);' +
+        'CREATE TABLE IF NOT EXISTS carmen2(type TEXT, shard INTEGER, data BLOB);' +
+        'CREATE INDEX IF NOT EXISTS carmen2type ON carmen2 (type);' +
+        'CREATE INDEX IF NOT EXISTS carmen2shard ON carmen2 (type, shard);';
         this._db.exec(sql, function(err) {
             if (err) {
                 return callback(err);
