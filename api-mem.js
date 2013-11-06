@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
+    bops = require('bops'),
     fs = require('fs'),
     inherits = require('util').inherits;
 
@@ -46,11 +47,28 @@ MemSource.prototype.startWriting = function(callback) {
     return callback(null);
 };
 
-MemSource.prototype.dumpFile = function(name, callback) {
-    fs.writeFileSync(name, JSON.stringify({
+MemSource.prototype.serialize = function(name, callback) {
+    function shardify(shards) {
+        var o = {};
+        for (var i in shards) {
+            o[i] = strings(shards[i]);
+        }
+        return o;
+    }
+
+    function strings(shards) {
+        var o = {};
+        for (var i in shards) {
+            o[i] = bops.to(shards[i], 'base64');
+        }
+        return o;
+    }
+
+    return {
         features: this._features,
-        shards: this._shards
-    }, null, 4));
+        shards: shardify(this._shards),
+        geocoder: this._geocoder
+    };
 };
 
 MemSource.prototype.open = function(callback) {
