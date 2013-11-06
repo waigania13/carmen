@@ -21,7 +21,6 @@
     "nan": "~0.4.1",
     "minimist": "0.0.5",
     "clone": "~0.1.11",
-    "json-buffer": "~2.0.7",
     "bops": "~0.1.0"
   },
   "devDependencies": {

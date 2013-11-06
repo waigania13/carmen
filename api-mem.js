@@ -47,6 +47,8 @@ MemSource.prototype.startWriting = function(callback) {
     return callback(null);
 };
 
+// Shards are stored as binary buffers, so we need to convert them to base64
+// strings in order for them to be safe for JSON.stringify
 MemSource.prototype.serialize = function(name, callback) {
     function shardify(shards) {
         var o = {};
