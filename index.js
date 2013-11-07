@@ -120,14 +120,14 @@ Carmen.prototype.contextByFeature = function(data, callback) {
 };
 
 // Search a carmen source for features matching query.
-Carmen.prototype.search = function(source, query, id, callback) {
+Carmen.prototype.search = function(source, query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            getSearch(source, query, id, callback);
+            getSearch(source, query, callback);
         }.bind(this));
     }
-    return getSearch(source, query, id, callback);
+    return getSearch(source, query, callback);
 };
 
 
