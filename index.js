@@ -107,7 +107,7 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
 };
 
 // Retrieve the context for a feature (document).
-Carmen.prototype.contextByFeature = function(data, callback) {
+Carmen.prototype._contextByFeature = function(data, callback) {
     if (!('lon' in data)) return callback(new Error('No lon field in data'));
     if (!('lat' in data)) return callback(new Error('No lat field in data'));
     getContext(this, data.lon, data.lat, data.id.split('.')[0], function(err, context) {
