@@ -49,7 +49,7 @@ it.skip('putFeature', function(done) {
 it('getCarmen', function(done) {
     from.getCarmen('term', 0, function(err, buffer) {
         assert.ifError(err);
-        assert.equal(4098, buffer.length);
+        assert.equal(4137, buffer.length);
         done();
     });
 });
