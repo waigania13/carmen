@@ -11,12 +11,12 @@ var Cache = require('./lib/util/cxxcache'),
     store = require('./lib/store'),
     index = require('./lib/index');
 
-require('util').inherits(Carmen, EventEmitter);
-module.exports = Carmen;
+require('util').inherits(Geocoder, EventEmitter);
+module.exports = Geocoder;
 
-// Initialize and load Carmen, with a selection of indexes.
-function Carmen(options) {
-    if (!options) throw new Error('Carmen options required.');
+// Initialize and load Geocoder, with a selection of indexes.
+function Geocoder(options) {
+    if (!options) throw new Error('Geocoder options required.');
 
     var q = queue(),
         indexes = pairs(options);
@@ -69,23 +69,23 @@ function toObject(mem, s) {
     return mem;
 }
 
-Carmen.S3 = function() { return require('./api-s3'); };
-Carmen.MBTiles = function() { return require('./api-mbtiles'); };
+Geocoder.S3 = function() { return require('./api-s3'); };
+Geocoder.MBTiles = function() { return require('./api-mbtiles'); };
 
 // Ensure that all carmen sources are opened.
-Carmen.prototype._open = function(callback) {
+Geocoder.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
 // Main geocoding API entry point.
 // Returns results across all indexes for a given query.
 //
-// Actual searches are delegated to `Carmen.prototype.search` over each
+// Actual searches are delegated to `Geocoder.prototype.search` over each
 // enabled backend.
 //
 // `query` is a string of text, like "Chester, NJ"
 // `callback` is called with (error, results)
-Carmen.prototype.geocode = function(query, callback) {
+Geocoder.prototype.geocode = function(query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
@@ -99,7 +99,7 @@ Carmen.prototype.geocode = function(query, callback) {
 //
 // This is used for reverse geocoding: given a point, it returns possible
 // regions that contain it.
-Carmen.prototype.context = function(lon, lat, maxtype, callback) {
+Geocoder.prototype.context = function(lon, lat, maxtype, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
@@ -111,7 +111,7 @@ Carmen.prototype.context = function(lon, lat, maxtype, callback) {
 };
 
 // Retrieve the context for a feature (document).
-Carmen.prototype._contextByFeature = function(data, callback) {
+Geocoder.prototype._contextByFeature = function(data, callback) {
     if (!('lon' in data)) return callback(new Error('No lon field in data'));
     if (!('lat' in data)) return callback(new Error('No lat field in data'));
     getContext(this, data.lon, data.lat, data.id.split('.')[0], function(err, context) {
@@ -124,7 +124,7 @@ Carmen.prototype._contextByFeature = function(data, callback) {
 };
 
 // Search a carmen source for features matching query.
-Carmen.prototype.search = function(source, query, callback) {
+Geocoder.prototype.search = function(source, query, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
@@ -136,7 +136,7 @@ Carmen.prototype.search = function(source, query, callback) {
 
 
 // Add docs to a source's index.
-Carmen.prototype.index = function(source, docs, callback) {
+Geocoder.prototype.index = function(source, docs, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
@@ -147,7 +147,7 @@ Carmen.prototype.index = function(source, docs, callback) {
 };
 
 // Serialize and make permanent the index currently in memory for a source.
-Carmen.prototype.store = function(source, callback) {
+Geocoder.prototype.store = function(source, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
@@ -157,4 +157,4 @@ Carmen.prototype.store = function(source, callback) {
     return store(source, callback);
 };
 
-Carmen.autoSync = autoSync(Carmen);
+Geocoder.autoSync = autoSync(Geocoder);
