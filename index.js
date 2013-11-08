@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     path = require('path'),
-    EventEmitter = require('events').EventEmitter;
+    EventEmitter = require('events').EventEmitter,
+    queue = require('queue-async');
 
 var Cache = require('./lib/util/cxxcache'),
     getSearch = require('./lib/search'),
@@ -17,44 +18,42 @@ module.exports = Carmen;
 function Carmen(options) {
     if (!options) throw new Error('Carmen options required.');
 
-    var remaining = pairs(options).length;
-    var done = function(err) {
-        if (!--remaining || err) {
-            remaining = -1;
-            this._error = err;
-            this._opened = true;
-            this.emit('open', err);
-        }
-    }.bind(this);
+    var q = queue(),
+        indexes = pairs(options);
 
-    this.indexes = pairs(options).reduce(loadIndex, {});
+    indexes.forEach(function(index) {
+        q.defer(loadIndex, index);
+    });
 
-    function loadIndex(memo, sourcekey) {
-        var source = sourcekey[1],
-            key = sourcekey[0];
-        // Legacy support.
+    q.awaitAll(function(err, results) {
+        this._error = err;
+        this._opened = true;
+        this.emit('open', err);
+    }.bind(this));
+
+    this.indexes = indexes.reduce(toObject, {});
+
+    function loadIndex(sourceindex, callback) {
+        var source = sourceindex[1],
+            key = sourceindex[0];
+
         source = source.source ? source.source : source;
 
-        memo[key] = source;
-        if (source.open) {
-            source.getInfo(loadedinfo);
-        } else {
-            source.once('open', opened);
-        }
-        return memo;
+        if (source.open) return source.getInfo(loadedinfo);
+        else return source.once('open', opened);
 
         function opened(err) {
-            if (err) return done(err);
+            if (err) return callback(err);
             source.getInfo(loadedinfo);
         }
 
         function loadedinfo(err, info) {
-            if (err) return done(err);
+            if (err) return callback(err);
             source._geocoder = source._geocoder || new Cache(key, +info.shardlevel || 0);
             source._geocoder.zoom = info.maxzoom;
             source._geocoder.name = key;
             source._geocoder.idx = Object.keys(options).indexOf(key);
-            return done();
+            return callback();
         }
     }
 }
@@ -63,6 +62,11 @@ function pairs(o) {
     var a = [];
     for (var k in o) a.push([k, o[k]]);
     return a;
+}
+
+function toObject(mem, s) {
+    mem[s[0]] = s[1].source ? s[1].source : s[1];
+    return mem;
 }
 
 Carmen.S3 = function() { return require('./api-s3'); };
