@@ -9,6 +9,8 @@ var Cache = require('./lib/util/cxxcache'),
     autoSync = require('./lib/autosync'),
     geocode = require('./lib/geocode'),
     store = require('./lib/store'),
+    analyze = require('./lib/analyze'),
+    verify = require('./lib/verify'),
     index = require('./lib/index');
 
 require('util').inherits(Geocoder, EventEmitter);
@@ -155,6 +157,29 @@ Geocoder.prototype.store = function(source, callback) {
         }.bind(this));
     }
     return store(source, callback);
+};
+
+// Verify the integrity of a source's index.
+Geocoder.prototype.verify = function(source, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            verify(source, callback);
+        }.bind(this));
+    }
+    return verify(source, callback);
+};
+
+
+// Analyze a source's index.
+Geocoder.prototype.analyze = function(source, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            analyze(source, callback);
+        }.bind(this));
+    }
+    return analyze(source, callback);
 };
 
 Geocoder.autoSync = autoSync(Geocoder);
