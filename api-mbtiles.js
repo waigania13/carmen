@@ -110,7 +110,7 @@ MBTiles.prototype.startWriting = _(MBTiles.prototype.startWriting).wrap(function
         var sql = 'CREATE INDEX IF NOT EXISTS map_grid_id ON map (grid_id);' +
         'CREATE TABLE IF NOT EXISTS geocoder_data(type TEXT, shard INTEGER, data BLOB);' +
         'CREATE INDEX IF NOT EXISTS geocoder_type_index ON geocoder_data (type);' +
-        'CREATE INDEX IF NOT EXISTS geocoder_shard_index ON geocoder_data (type, shard);';
+        'CREATE UNIQUE INDEX IF NOT EXISTS geocoder_shard_index ON geocoder_data (type, shard);';
         this._db.exec(sql, function(err) {
             if (err) {
                 return callback(err);
