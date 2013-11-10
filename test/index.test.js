@@ -62,4 +62,19 @@ describe('index', function() {
             done();
         });
     });
+    it('wipes index', function(done) {
+        carmen.wipe(to, function(err) {
+            assert.ifError(err);
+            carmen.verify(to, function(err, stats) {
+                assert.deepEqual({
+                    freq: { '0': '' },
+                    term: { '0': '' },
+                    phrase: { '0': '' },
+                    grid: { '0': '' },
+                    degen: { '0': '' }
+                }, to.serialize().shards);
+                done();
+            });
+        });
+    });
 });

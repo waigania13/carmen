@@ -11,6 +11,7 @@ var Cache = require('./lib/util/cxxcache'),
     store = require('./lib/store'),
     analyze = require('./lib/analyze'),
     verify = require('./lib/verify'),
+    wipe = require('./lib/wipe'),
     index = require('./lib/index');
 
 require('util').inherits(Geocoder, EventEmitter);
@@ -180,6 +181,17 @@ Geocoder.prototype.analyze = function(source, callback) {
         }.bind(this));
     }
     return analyze(source, callback);
+};
+
+// Wipe a source's index.
+Geocoder.prototype.wipe = function(source, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            wipe(source, callback);
+        }.bind(this));
+    }
+    return wipe(source, callback);
 };
 
 Geocoder.autoSync = autoSync(Geocoder);
