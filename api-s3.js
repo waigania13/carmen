@@ -56,8 +56,8 @@ S3.prototype.putFeature = function(id, data, callback) {
     }
 };
 
-// Implements carmen#getCarmen method.
-S3.prototype.getCarmen = function(type, shard, callback) {
+// Implements carmen#getGeocoderData method.
+S3.prototype.getGeocoderData = function(type, shard, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.
@@ -72,8 +72,8 @@ S3.prototype.getCarmen = function(type, shard, callback) {
     }
 };
 
-// Implements carmen#putCarmen method.
-S3.prototype.putCarmen = function(type, shard, data, callback) {
+// Implements carmen#putGeocoderData method.
+S3.prototype.putGeocoderData = function(type, shard, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     // Parse carmen URL.

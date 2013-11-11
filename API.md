@@ -113,11 +113,11 @@ Inserts feature `data` and calls callback with `(err, result)`.
 Create necessary indexes or structures in order for this carmen source to
 be written to.
 
-## putCarmen(index, shard, buffer, callback)
+## putGeocoderData(index, shard, buffer, callback)
 
 Put buffer into a shard with index `index`, and call callback with `(err)`
 
-## getCarmen(index, shard, callback)
+## getGeocoderData(index, shard, callback)
 
 Get carmen record at `shard` in `index` and call callback with `(err, buffer)`
 

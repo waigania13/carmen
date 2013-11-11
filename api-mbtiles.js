@@ -28,15 +28,15 @@ MBTiles.prototype.putFeature = function(id, data, callback) {
     }, callback);
 };
 
-// Implements carmen#getCarmen method.
-MBTiles.prototype.getCarmen = function(type, shard, callback) {
+// Implements carmen#getGeocoderData method.
+MBTiles.prototype.getGeocoderData = function(type, shard, callback) {
     return this._db.get('SELECT data FROM geocoder_data WHERE type = ? AND shard = ?', type, shard, function(err, row) {
         callback(err, row ? row.data : null);
     });
 };
 
-// Implements carmen#putCarmen method.
-MBTiles.prototype.putCarmen = function(type, shard, data, callback) {
+// Implements carmen#putGeocoderData method.
+MBTiles.prototype.putGeocoderData = function(type, shard, data, callback) {
     this.write('geocoder_data', type + '.' + shard, { type:type, shard: shard, data: data }, callback);
 };
 

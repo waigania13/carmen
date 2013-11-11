@@ -25,13 +25,13 @@ MemSource.prototype.putFeature = function(id, data, callback) {
     return callback(null);
 };
 
-// Implements carmen#getCarmen method.
-MemSource.prototype.getCarmen = function(type, shard, callback) {
+// Implements carmen#getGeocoderData method.
+MemSource.prototype.getGeocoderData = function(type, shard, callback) {
     return callback(null, this._shards[type] && this._shards[type][shard]);
 };
 
-// Implements carmen#putCarmen method.
-MemSource.prototype.putCarmen = function(type, shard, data, callback) {
+// Implements carmen#putGeocoderData method.
+MemSource.prototype.putGeocoderData = function(type, shard, data, callback) {
     if (this._shards[type] === undefined) this._shards[type] = {};
     this._shards[type][shard] = data;
     return callback(null);

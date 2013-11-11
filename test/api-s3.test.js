@@ -59,30 +59,30 @@ it.skip('putFeature', function(done) {
     });
 });
 
-it('getCarmen', function(done) {
-    from.getCarmen('term', 0, function(err, buffer) {
+it('getGeocoderData', function(done) {
+    from.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);
         assert.equal(4137, buffer.length);
         done();
     });
 });
 
-it('getCarmen (prefixed source)', function(done) {
-    prefixed.getCarmen('term', 0, function(err, buffer) {
+it('getGeocoderData (prefixed source)', function(done) {
+    prefixed.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);
         assert.equal(4137, buffer.length);
         done();
     });
 });
 
-it.skip('putCarmen', function(done) {
+it.skip('putGeocoderData', function(done) {
     to.startWriting(function(err) {
         assert.ifError(err);
-        to.putCarmen('term', 0, new Buffer('asdf'), function(err) {
+        to.putGeocoderData('term', 0, new Buffer('asdf'), function(err) {
             assert.ifError(err);
             to.stopWriting(function(err) {
                 assert.ifError(err);
-                to.getCarmen('term', 0, function(err, buffer) {
+                to.getGeocoderData('term', 0, function(err, buffer) {
                     assert.ifError(err);
                     assert.deepEqual('asdf', buffer.toString());
                     done();
