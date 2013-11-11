@@ -31,8 +31,15 @@ namespace protobuf {
 #define NOINLINE __attribute__((noinline))
 #define PBF_INLINE FORCEINLINE
 
-struct message {
-    PBF_INLINE message(const char *data, std::size_t length);
+class message {
+    typedef const char * value_type;
+    value_type data_;
+    value_type end_;
+public:
+    uint64_t value;
+    uint32_t tag;
+
+    PBF_INLINE message(value_type data, std::size_t length);
 
     PBF_INLINE bool next();
     PBF_INLINE uint64_t varint();
@@ -46,22 +53,18 @@ struct message {
     PBF_INLINE void skip();
     PBF_INLINE void skipValue(uint64_t val);
     PBF_INLINE void skipBytes(uint64_t bytes);
-
-    const char *data;
-    const char *end;
-    uint64_t value;
-    uint32_t tag;
+    PBF_INLINE value_type getData();
 };
 
-message::message(const char * _data, std::size_t length)
-    : data(_data),
-      end(data + length)
+message::message(value_type data, std::size_t length)
+    : data_(data),
+      end_(data + length)
 {
 }
 
 bool message::next()
 {
-    if (data < end) {
+    if (data_ < end_) {
         value = varint();
         tag = static_cast<uint32_t>(value >> 3);
         return true;
@@ -76,11 +79,11 @@ uint64_t message::varint()
     uint64_t result = 0;
     int bitpos;
     for (bitpos = 0; bitpos < 70 && (byte & 0x80); bitpos += 7) {
-        if (data >= end) {
+        if (data_ >= end_) {
             throw std::runtime_error("unterminated varint, unexpected end of buffer");
         }
-        result |= ((uint64_t)(byte = *data) & 0x7F) << bitpos;
-        data++;
+        result |= ((uint64_t)(byte = *data_) & 0x7F) << bitpos;
+        data_++;
     }
     if (bitpos == 70 && (byte & 0x80)) {
         throw std::runtime_error("unterminated varint (too long)");
@@ -92,8 +95,8 @@ uint64_t message::varint()
 static const int8_t kMaxVarintLength64 = 10;
 
 uint64_t message::varint2() {
-  const int8_t* begin = reinterpret_cast<const int8_t*>(data);
-  const int8_t* iend = reinterpret_cast<const int8_t*>(end);
+  const int8_t* begin = reinterpret_cast<const int8_t*>(data_);
+  const int8_t* iend = reinterpret_cast<const int8_t*>(end_);
   const int8_t* p = begin;
   uint64_t val = 0;
 
@@ -121,7 +124,7 @@ uint64_t message::varint2() {
     if (p == iend) throw std::invalid_argument("Invalid varint value");
     val |= static_cast<uint64_t>(*p++) << shift;
   }
-  data = reinterpret_cast<const char *>(p);
+  data_ = reinterpret_cast<value_type>(p);
   return val;
 }
 
@@ -133,24 +136,24 @@ int64_t message::svarint()
 
 std::string message::string()
 {
-    uint64_t bytes = varint();
-    const char *string = static_cast<const char *>(data);
-    skipBytes(bytes);
-    return std::string(string, bytes);
+    uint64_t len = varint();
+    value_type string = static_cast<value_type>(data_);
+    skipBytes(len);
+    return std::string(string, len);
 }
 
 float message::float32()
 {
     skipBytes(4);
     float result;
-    std::memcpy(&result, data - 4, 4);
+    std::memcpy(&result, data_ - 4, 4);
     return result;
 }
 double message::float64()
 {
     skipBytes(8);
     double result;
-    std::memcpy(&result, data - 8, 8);
+    std::memcpy(&result, data_ - 8, 8);
     return result;
 }
 
@@ -162,7 +165,7 @@ int64_t message::int64()
 bool message::boolean()
 {
     skipBytes(1);
-    return *(bool *)(data - 1);
+    return *(bool *)(data_ - 1);
 }
 
 void message::skip()
@@ -194,10 +197,15 @@ void message::skipValue(uint64_t val)
 
 void message::skipBytes(uint64_t bytes)
 {
-    data += bytes;
-    if (data > end) {
+    data_ += bytes;
+    if (data_ > end_) {
         throw std::runtime_error("unexpected end of buffer");
     }
+}
+
+message::value_type message::getData()
+{
+  return data_;
 }
 
 }

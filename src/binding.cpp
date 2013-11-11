@@ -88,12 +88,12 @@ NAN_METHOD(Cache::pack)
                         if (item.tag == 1) {
                             item.skip();
                         } else if (item.tag == 2) {
-                            std::size_t arrays_length = static_cast<std::size_t>(item.varint());
-                            protobuf::message pbfarray(item.data,arrays_length);
+                            uint64_t len = item.varint();
+                            protobuf::message pbfarray(item.getData(),static_cast<std::size_t>(len));
                             while (pbfarray.next()) {
                                 new_item->add_val(static_cast<int64_t>(pbfarray.value));
                             }
-                            item.skipBytes(arrays_length);
+                            item.skipBytes(len);
                         } else {
                             std::stringstream msg("");
                             msg << "pack: hit unknown protobuf type: '" << item.tag << "'";
@@ -243,11 +243,11 @@ NAN_METHOD(Cache::set)
         unsigned array_size = data->Length();
         vv.reserve(array_size);
         for (unsigned i=0;i<array_size;++i) {
-            #ifdef USE_CXX11
+#ifdef USE_CXX11
             vv.emplace_back(data->Get(i)->NumberValue());
-            #else
+#else
             vv.push_back(data->Get(i)->NumberValue());
-            #endif
+#endif
         }
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
@@ -262,23 +262,24 @@ void load_into_cache(Cache::larraycache & larrc,
     protobuf::message message(data,size);
     while (message.next()) {
         if (message.tag == 1) {
-            uint64_t bytes = message.varint();
-            protobuf::message item(message.data, bytes);
+            uint64_t len = message.varint();
+            protobuf::message item(message.getData(), static_cast<std::size_t>(len));
             while (item.next()) {
                 if (item.tag == 1) {
-                    Cache::int_type key_id = item.varint();
+                    uint64_t key_id = item.varint();
                     // NOTE: emplace is faster with libcxx if using std::string
                     // if using boost::string_ref, std::move is faster
-                    #ifdef USE_CXX11
-                    larrc.insert(std::make_pair(key_id,std::move(Cache::string_ref_type((const char *)message.data,bytes))));
-                    #else
-                    larrc.insert(std::make_pair(key_id,Cache::string_ref_type((const char *)message.data,bytes)));
-                    #endif
+#ifdef USE_CXX11
+                    larrc.insert(std::make_pair(key_id,std::move(Cache::string_ref_type(message.getData(),len))));
+#else
+                    larrc.insert(std::make_pair(key_id,Cache::string_ref_type(message.getData(),len)));
+#endif
+                    break;
                 } else {
                     break;
                 }
             }
-            message.skipBytes(bytes);
+            message.skipBytes(len);
         } else {
             std::stringstream msg("");
             msg << "load: hit unknown protobuf type: '" << message.tag << "'";
@@ -377,11 +378,11 @@ void Cache::AfterLoad(uv_work_t* req) {
         if (itr2 != closure->c->cache_.end()) {
             closure->c->cache_.erase(itr2);
         }
-        #ifdef USE_CXX11
+#ifdef USE_CXX11
         closure->c->lazy_[closure->key] = std::move(closure->arrc);
-        #else
+#else
         closure->c->lazy_[closure->key] = closure->arrc;
-        #endif
+#endif
         Local<Value> argv[1] = { Local<Value>::New(Null()) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     }
@@ -488,7 +489,7 @@ NAN_METHOD(Cache::search)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         std::string shard = *String::Utf8Value(args[1]->ToString());
-        Cache::int_type id = static_cast<Cache::int_type>(args[2]->IntegerValue());
+        uint64_t id = static_cast<uint64_t>(args[2]->IntegerValue());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
         Cache::memcache & mem = c->cache_;
@@ -512,16 +513,16 @@ NAN_METHOD(Cache::search)
                     if (item.tag == 1) {
                         item.skip();
                     } else if (item.tag == 2) {
-                        uint64_t arrays_length = item.varint();
-                        protobuf::message pbfarray(item.data,arrays_length);
+                        uint64_t len = item.varint();
+                        protobuf::message pbfarray(item.getData(),static_cast<std::size_t>(len));
                         while (pbfarray.next()) {
-                            #ifdef USE_CXX11
+#ifdef USE_CXX11
                             array.emplace_back(pbfarray.value);
-                            #else
+#else
                             array.push_back(pbfarray.value);
-                            #endif
+#endif
                         }
-                        item.skipBytes(arrays_length);
+                        item.skipBytes(len);
                     } else {
                         std::stringstream msg("");
                         msg << "search: hit unknown protobuf type: '" << item.tag << "'";
