@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __PBF_HPP__
+#define __PBF_HPP__
 
 /*
  * Some parts are from upb - a minimalist implementation of protocol buffers.
@@ -200,3 +201,5 @@ void message::skipBytes(uint64_t bytes)
 }
 
 }
+
+#endif // __PBF_HPP__
