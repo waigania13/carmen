@@ -21,8 +21,21 @@ var from = new S3({data:{
     "maxzoom": 8
 }}, function() {});
 
+var prefixed = new S3({data:{
+    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country.prefixed/{prefix}",
+    "maxzoom": 8
+}}, function() {});
+
 it('getFeature', function(done) {
     from.getFeature(16, function(err, doc) {
+        assert.ifError(err);
+        assert.deepEqual(doc, expected);
+        done();
+    });
+});
+
+it('getFeature (prefixed source)', function(done) {
+    prefixed.getFeature(16, function(err, doc) {
         assert.ifError(err);
         assert.deepEqual(doc, expected);
         done();
@@ -48,6 +61,14 @@ it.skip('putFeature', function(done) {
 
 it('getCarmen', function(done) {
     from.getCarmen('term', 0, function(err, buffer) {
+        assert.ifError(err);
+        assert.equal(4137, buffer.length);
+        done();
+    });
+});
+
+it('getCarmen (prefixed source)', function(done) {
+    prefixed.getCarmen('term', 0, function(err, buffer) {
         assert.ifError(err);
         assert.equal(4137, buffer.length);
         done();
@@ -81,6 +102,27 @@ it('getIndexableDocs', function(done) {
             assert.equal(docs.length, 10);
             assert.deepEqual(pointer, { limit: 10, done:false, marker:'dev/01-ne.country/data/116.json' });
             done();
+        });
+    });
+});
+
+it('getIndexableDocs (prefixed source)', function(done) {
+    prefixed.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
+        assert.ifError(err);
+        assert.equal(docs.length, 0);
+        assert.deepEqual(pointer, {limit:10, done:false, marker:null, prefix:1 });
+        prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
+            assert.ifError(err);
+            assert.equal(1, docs.length);
+            assert.equal('1', docs[0].id);
+            assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:2 });
+            prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
+                assert.ifError(err);
+                assert.equal(1, docs.length);
+                assert.equal('2', docs[0].id);
+                assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:3 });
+                done();
+            });
         });
     });
 });
