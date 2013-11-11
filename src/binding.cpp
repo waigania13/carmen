@@ -1,73 +1,15 @@
-// v8
-#include <v8.h>
 
-// node
-#include <node.h>
-#include <node_object_wrap.h>
+#include "binding.hpp"
 #include <node_version.h>
 #include <node_buffer.h>
 
 #include "pbf.hpp"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wconversion"
-#pragma clang diagnostic ignored "-Wshadow"
-#pragma clang diagnostic ignored "-Wsign-compare"
-#include <iostream>
-#include <exception>
-#include <string>
-#include <map>
-#include <vector>
-#include <nan.h>
-#include "index.pb.h"
-#pragma clang diagnostic pop
+#include <sstream>
 
 namespace binding {
 
 using namespace v8;
-
-typedef uint64_t int_type;
-
-// lazy ref item
-typedef std::string string_ref_type;
-typedef std::map<int_type,string_ref_type> larraycache;
-typedef larraycache::const_iterator larraycache_iterator;
-typedef std::map<std::string,larraycache> lazycache;
-typedef lazycache::const_iterator lazycache_iterator_type;
-
-// fully cached item
-typedef std::vector<int_type> intarray;
-typedef std::map<uint32_t,intarray> arraycache;
-typedef arraycache::const_iterator arraycache_iterator;
-typedef std::map<std::string,arraycache> memcache;
-typedef memcache::const_iterator mem_iterator_type;
-
-class Cache: public node::ObjectWrap {
-public:
-    static Persistent<FunctionTemplate> constructor;
-    static void Initialize(Handle<Object> target);
-    static NAN_METHOD(New);
-    static NAN_METHOD(has);
-    static NAN_METHOD(loadSync);
-    static NAN_METHOD(load);
-    static void AsyncLoad(uv_work_t* req);
-    static void AfterLoad(uv_work_t* req);
-    static NAN_METHOD(search);
-    static NAN_METHOD(pack);
-    static NAN_METHOD(list);
-    static NAN_METHOD(set);
-    static void AsyncRun(uv_work_t* req);
-    static void AfterRun(uv_work_t* req);
-    Cache(std::string const& id, unsigned shardlevel);
-    void _ref() { Ref(); }
-    void _unref() { Unref(); }
-    std::string id_;
-    unsigned shardlevel_;
-    memcache cache_;
-    lazycache lazy_;
-private:
-    ~Cache();
-};
 
 Persistent<FunctionTemplate> Cache::constructor;
 
@@ -114,16 +56,16 @@ NAN_METHOD(Cache::pack)
         std::string shard = *String::Utf8Value(args[1]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache const& mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
-        carmen::proto::object msg;
+        Cache::memcache const& mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
+        carmen::proto::object message;
         if (itr != mem.end()) {
-            arraycache_iterator aitr = itr->second.begin();
-            arraycache_iterator aend = itr->second.end();
+            Cache::arraycache_iterator aitr = itr->second.begin();
+            Cache::arraycache_iterator aend = itr->second.end();
             while (aitr != aend) {
-                ::carmen::proto::object_item * new_item = msg.add_items(); 
+                ::carmen::proto::object_item * new_item = message.add_items(); 
                 new_item->set_key(aitr->first);
-                intarray const & varr = aitr->second;
+                Cache::intarray const & varr = aitr->second;
                 std::size_t varr_size = varr.size();
                 for (std::size_t i=0;i<varr_size;++i) {
                     new_item->add_val(static_cast<int64_t>(varr[i]));
@@ -131,16 +73,16 @@ NAN_METHOD(Cache::pack)
                 ++aitr;
             }
         } else {
-            lazycache & lazy = c->lazy_;
-            lazycache_iterator_type litr = lazy.begin();
-            lazycache_iterator_type lend = lazy.end();
+            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache_iterator_type litr = lazy.begin();
+            Cache::lazycache_iterator_type lend = lazy.end();
             while (litr != lend) {
-                larraycache_iterator laitr = litr->second.begin();
-                larraycache_iterator laend = litr->second.end();
+                Cache::larraycache_iterator laitr = litr->second.begin();
+                Cache::larraycache_iterator laend = litr->second.end();
                 while (laitr != laend) {
-                    ::carmen::proto::object_item * new_item = msg.add_items();
+                    ::carmen::proto::object_item * new_item = message.add_items();
                     new_item->set_key(static_cast<int64_t>(laitr->first));
-                    string_ref_type const& ref = laitr->second;
+                    Cache::string_ref_type const& ref = laitr->second;
                     protobuf::message item(ref.data(), ref.size());
                     while (item.next()) {
                         if (item.tag == 1) {
@@ -153,7 +95,9 @@ NAN_METHOD(Cache::pack)
                             }
                             item.skipBytes(arrays_length);
                         } else {
-                            throw std::runtime_error("hit unknown type");
+                            std::stringstream msg("");
+                            msg << "pack: hit unknown protobuf type: '" << item.tag << "'";
+                            throw std::runtime_error(msg.str());
                         }
                     }
                     ++laitr;
@@ -161,19 +105,19 @@ NAN_METHOD(Cache::pack)
                 ++litr;
             }
         }
-        int size = msg.ByteSize();
+        int size = message.ByteSize();
         if (size > 0)
         {
             std::size_t usize = static_cast<std::size_t>(size);
             #if NODE_VERSION_AT_LEAST(0, 11, 0)
             Local<Object> retbuf = node::Buffer::New(usize);
-            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            if (message.SerializeToArray(node::Buffer::Data(retbuf),size))
             {
                 NanReturnValue(retbuf);
             }
             #else
             node::Buffer *retbuf = node::Buffer::New(usize);
-            if (msg.SerializeToArray(node::Buffer::Data(retbuf),size))
+            if (message.SerializeToArray(node::Buffer::Data(retbuf),size))
             {
                 NanReturnValue(retbuf->handle_);
             }
@@ -199,11 +143,11 @@ NAN_METHOD(Cache::list)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
+        Cache::memcache & mem = c->cache_;
         Local<Array> ids = Array::New();
         if (args.Length() == 1) {
-            mem_iterator_type itr = mem.begin();
-            mem_iterator_type end = mem.end();
+            Cache::mem_iterator_type itr = mem.begin();
+            Cache::mem_iterator_type end = mem.end();
             unsigned idx = 0;
             while (itr != end) {
                 if (itr->first.size() > type.size() && itr->first.substr(0,type.size()) == type) {
@@ -212,9 +156,9 @@ NAN_METHOD(Cache::list)
                 }
                 ++itr;
             }
-            lazycache & lazy = c->lazy_;
-            lazycache_iterator_type litr = lazy.begin();
-            lazycache_iterator_type lend = lazy.end();
+            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache_iterator_type litr = lazy.begin();
+            Cache::lazycache_iterator_type lend = lazy.end();
             while (litr != lend) {
                 if (litr->first.size() > type.size() && litr->first.substr(0,type.size()) == type) {
                     std::string shard = litr->first.substr(type.size()+1,litr->first.size());
@@ -226,21 +170,21 @@ NAN_METHOD(Cache::list)
         } else if (args.Length() == 2) {
             std::string shard = *String::Utf8Value(args[1]->ToString());
             std::string key = type + "-" + shard;
-            mem_iterator_type itr = mem.find(key);
+            Cache::mem_iterator_type itr = mem.find(key);
             unsigned idx = 0;
             if (itr != mem.end()) {
-                arraycache_iterator aitr = itr->second.begin();
-                arraycache_iterator aend = itr->second.end();
+                Cache::arraycache_iterator aitr = itr->second.begin();
+                Cache::arraycache_iterator aend = itr->second.end();
                 while (aitr != aend) {
                     ids->Set(idx++,Number::New(aitr->first)->ToString());
                     ++aitr;
                 }
             }
-            lazycache & lazy = c->lazy_;
-            lazycache_iterator_type litr = lazy.find(key);
+            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache_iterator_type litr = lazy.find(key);
             if (litr != lazy.end()) {
-                larraycache_iterator laitr = litr->second.begin();
-                larraycache_iterator laend = litr->second.end();
+                Cache::larraycache_iterator laitr = litr->second.begin();
+                Cache::larraycache_iterator laend = litr->second.end();
                 while (laitr != laend) {
                     ids->Set(idx++,Number::New(laitr->first)->ToString());
                     ++laitr;
@@ -281,18 +225,18 @@ NAN_METHOD(Cache::set)
         std::string shard = *String::Utf8Value(args[1]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
+        Cache::memcache & mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
-            c->cache_.insert(std::make_pair(key,arraycache()));
+            c->cache_.insert(std::make_pair(key,Cache::arraycache()));
         }
-        arraycache & arrc = c->cache_[key];
-        arraycache::key_type key_id = static_cast<arraycache::key_type>(args[2]->IntegerValue());
-        arraycache_iterator itr2 = arrc.find(key_id);
+        Cache::arraycache & arrc = c->cache_[key];
+        Cache::arraycache::key_type key_id = static_cast<Cache::arraycache::key_type>(args[2]->IntegerValue());
+        Cache::arraycache_iterator itr2 = arrc.find(key_id);
         if (itr2 == arrc.end()) {
-            arrc.insert(std::make_pair(key_id,intarray()));   
+            arrc.insert(std::make_pair(key_id,Cache::intarray()));
         }
-        intarray & vv = arrc[key_id];
+        Cache::intarray & vv = arrc[key_id];
         if (itr2 != arrc.end()) {
             vv.clear();
         }
@@ -311,7 +255,7 @@ NAN_METHOD(Cache::set)
     NanReturnValue(Undefined());
 }
 
-void load_into_cache(larraycache & larrc,
+void load_into_cache(Cache::larraycache & larrc,
                             std::string const& key,
                             const char * data,
                             size_t size) {
@@ -322,13 +266,13 @@ void load_into_cache(larraycache & larrc,
             protobuf::message item(message.data, bytes);
             while (item.next()) {
                 if (item.tag == 1) {
-                    int_type key_id = item.varint();
+                    Cache::int_type key_id = item.varint();
                     // NOTE: emplace is faster with libcxx if using std::string
                     // if using boost::string_ref, std::move is faster
                     #ifdef USE_CXX11
-                    larrc.insert(std::make_pair(key_id,std::move(string_ref_type((const char *)message.data,bytes))));
+                    larrc.insert(std::make_pair(key_id,std::move(Cache::string_ref_type((const char *)message.data,bytes))));
                     #else
-                    larrc.insert(std::make_pair(key_id,string_ref_type((const char *)message.data,bytes)));
+                    larrc.insert(std::make_pair(key_id,Cache::string_ref_type((const char *)message.data,bytes)));
                     #endif
                 } else {
                     break;
@@ -336,8 +280,9 @@ void load_into_cache(larraycache & larrc,
             }
             message.skipBytes(bytes);
         } else {
-            throw std::runtime_error("a skipping when shouldnt");
-            message.skip();
+            std::stringstream msg("");
+            msg << "load: hit unknown protobuf type: '" << message.tag << "'";
+            throw std::runtime_error(msg.str());
         }
     }
 }
@@ -369,19 +314,19 @@ NAN_METHOD(Cache::loadSync)
         std::string shard = *String::Utf8Value(args[2]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
+        Cache::memcache & mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
         if (itr != mem.end()) {
             c->cache_.insert(std::make_pair(key,arraycache()));
         }
-        memcache::iterator itr2 = mem.find(key);
+        Cache::memcache::iterator itr2 = mem.find(key);
         if (itr2 != mem.end()) {
             mem.erase(itr2);
         }
-        lazycache & lazy = c->lazy_;
-        lazycache_iterator_type litr = lazy.find(key);
+        Cache::lazycache & lazy = c->lazy_;
+        Cache::lazycache_iterator_type litr = lazy.find(key);
         if (litr == lazy.end()) {
-            c->lazy_.insert(std::make_pair(key,larraycache()));
+            c->lazy_.insert(std::make_pair(key,Cache::larraycache()));
         }
         load_into_cache(c->lazy_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
     } catch (std::exception const& ex) {
@@ -393,7 +338,7 @@ NAN_METHOD(Cache::loadSync)
 struct load_baton {
     uv_work_t request;
     Cache * c;
-    larraycache arrc;
+    Cache::larraycache arrc;
     Persistent<Function> cb;
     std::string key;
     std::string data;
@@ -428,7 +373,7 @@ void Cache::AfterLoad(uv_work_t* req) {
         Local<Value> argv[1] = { Exception::Error(String::New(closure->error_name.c_str())) };
         closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
     } else {
-        memcache::iterator itr2 = closure->c->cache_.find(closure->key);
+        Cache::memcache::iterator itr2 = closure->c->cache_.find(closure->key);
         if (itr2 != closure->c->cache_.end()) {
             closure->c->cache_.erase(itr2);
         }
@@ -508,13 +453,13 @@ NAN_METHOD(Cache::has)
         std::string shard = *String::Utf8Value(args[1]->ToString());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache const& mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
+        Cache::memcache const& mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
         if (itr != mem.end()) {
             NanReturnValue(True());
         } else {
-            lazycache const& lazy = c->lazy_;
-            lazycache_iterator_type litr = lazy.find(key);
+            Cache::lazycache const& lazy = c->lazy_;
+            Cache::lazycache_iterator_type litr = lazy.find(key);
             if (litr != lazy.end()) {
                 NanReturnValue(True());
             }
@@ -543,25 +488,25 @@ NAN_METHOD(Cache::search)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         std::string shard = *String::Utf8Value(args[1]->ToString());
-        int_type id = static_cast<int_type>(args[2]->IntegerValue());
+        Cache::int_type id = static_cast<Cache::int_type>(args[2]->IntegerValue());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        memcache & mem = c->cache_;
-        mem_iterator_type itr = mem.find(key);
+        Cache::memcache & mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
-            lazycache const& lazy = c->lazy_;
-            lazycache_iterator_type litr = lazy.find(key);
+            Cache::lazycache const& lazy = c->lazy_;
+            Cache::lazycache_iterator_type litr = lazy.find(key);
             if (litr == lazy.end()) {
                 NanReturnValue(Undefined());
             }
-            larraycache_iterator laitr = litr->second.find(id);
+            Cache::larraycache_iterator laitr = litr->second.find(id);
             if (laitr == litr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
                 // NOTE: we cannot call array.reserve here since
                 // the total length is not known
-                intarray array;
-                string_ref_type const& ref = laitr->second;
+                Cache::intarray array;
+                Cache::string_ref_type const& ref = laitr->second;
                 protobuf::message item(ref.data(), ref.size());
                 while (item.next()) {
                     if (item.tag == 1) {
@@ -578,7 +523,9 @@ NAN_METHOD(Cache::search)
                         }
                         item.skipBytes(arrays_length);
                     } else {
-                        throw std::runtime_error("hit unknown type");
+                        std::stringstream msg("");
+                        msg << "search: hit unknown protobuf type: '" << item.tag << "'";
+                        throw std::runtime_error(msg.str());
                     }
                 }
                 std::size_t vals_size = array.size();
@@ -589,11 +536,11 @@ NAN_METHOD(Cache::search)
                 NanReturnValue(arr_obj);
             }
         } else {
-            arraycache_iterator aitr = itr->second.find(id);
+            Cache::arraycache_iterator aitr = itr->second.find(id);
             if (aitr == itr->second.end()) {
                 NanReturnValue(Undefined());
             } else {
-                intarray const& array = aitr->second;
+                Cache::intarray const& array = aitr->second;
                 unsigned vals_size = array.size();
                 Local<Array> arr_obj = Array::New(static_cast<int>(vals_size));
                 for (unsigned k=0;k<vals_size;++k) {
