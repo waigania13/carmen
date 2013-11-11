@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdexcept>
 #include <string>
+#include <cstring>
 #include <cassert>
 
 #undef LIKELY
@@ -141,14 +142,14 @@ float message::float32()
 {
     skipBytes(4);
     float result;
-    memcpy(&result, data - 4, 4);
+    std::memcpy(&result, data - 4, 4);
     return result;
 }
 double message::float64()
 {
     skipBytes(8);
     double result;
-    memcpy(&result, data - 8, 8);
+    std::memcpy(&result, data - 8, 8);
     return result;
 }
 
