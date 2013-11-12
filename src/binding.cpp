@@ -43,13 +43,13 @@ NAN_METHOD(Cache::pack)
 {
     NanScope();
     if (args.Length() < 1) {
-        return NanThrowTypeError("expected two args: 'type','shard'");
+        return NanThrowTypeError("expected two args: 'type', 'shard'");
     }
     if (!args[0]->IsString()) {
-        return NanThrowTypeError("first argument must be a string");
+        return NanThrowTypeError("first argument must be a String");
     }
     if (!args[1]->IsNumber()) {
-        return NanThrowTypeError("second arg must be an integer");
+        return NanThrowTypeError("second arg must be an Integer");
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -123,7 +123,7 @@ NAN_METHOD(Cache::pack)
             }
 #endif
         } else {
-            return NanThrowTypeError("message ByteSize was negative");
+            return NanThrowTypeError("pack: invalid message ByteSize encountered");
         }
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
@@ -138,7 +138,7 @@ NAN_METHOD(Cache::list)
         return NanThrowTypeError("expected at least one arg: 'type' + optional 'shard'");
     }
     if (!args[0]->IsString()) {
-        return NanThrowTypeError("first argument must be a string");
+        return NanThrowTypeError("first argument must be a String");
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -205,16 +205,16 @@ NAN_METHOD(Cache::put)
         return NanThrowTypeError("expected four args: 'type', 'shard', 'id', 'data'");
     }
     if (!args[0]->IsString()) {
-        return NanThrowTypeError("first argument must be a string");
+        return NanThrowTypeError("first argument must be a String");
     }
     if (!args[1]->IsNumber()) {
-        return NanThrowTypeError("second arg must be an integer");
+        return NanThrowTypeError("second arg must be an Integer");
     }
     if (!args[2]->IsNumber()) {
-        return NanThrowTypeError("third arg must be an integer");
+        return NanThrowTypeError("third arg must be an Integer");
     }
     if (!args[3]->IsArray()) {
-        return NanThrowTypeError("fourth arg must be an array");
+        return NanThrowTypeError("fourth arg must be an Array");
     }
     Local<Array> data = Local<Array>::Cast(args[3]);
     if (data->IsNull() || data->IsUndefined()) {
@@ -291,20 +291,20 @@ NAN_METHOD(Cache::loadSync)
 {
     NanScope();
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer', 'type', and 'shard'");
+        return NanThrowTypeError("expected at three args: 'buffer', 'type', and 'shard'");
     }
     if (!args[0]->IsObject()) {
-        return NanThrowTypeError("first argument must be a buffer");
+        return NanThrowTypeError("first argument must be a Buffer");
     }
     Local<Object> obj = args[0]->ToObject();
     if (obj->IsNull() || obj->IsUndefined()) {
         return NanThrowTypeError("a buffer expected for first argument");
     }
     if (!node::Buffer::HasInstance(obj)) {
-        return NanThrowTypeError("first argument must be a buffer");
+        return NanThrowTypeError("first argument must be a Buffer");
     }
     if (!args[1]->IsString()) {
-        return NanThrowTypeError("second arg 'type' must be a string");
+        return NanThrowTypeError("second arg 'type' must be a String");
     }
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
@@ -338,8 +338,8 @@ NAN_METHOD(Cache::loadSync)
 struct load_baton {
     uv_work_t request;
     Cache * c;
-    Cache::larraycache arrc;
     Persistent<Function> cb;
+    Cache::larraycache arrc;
     std::string key;
     std::string data;
     bool error;
@@ -347,6 +347,7 @@ struct load_baton {
     load_baton(std::string const& _key,
                const char * _data,
                size_t size) :
+      arrc(),
       key(_key),
       data(_data,size),
       error(false),
@@ -405,17 +406,17 @@ NAN_METHOD(Cache::load)
         return NanThrowTypeError("expected at least three args: 'buffer', 'type', 'shard', and optionally a callback");
     }
     if (!args[0]->IsObject()) {
-        return NanThrowTypeError("first argument must be a buffer");
+        return NanThrowTypeError("first argument must be a Buffer");
     }
     Local<Object> obj = args[0]->ToObject();
     if (obj->IsNull() || obj->IsUndefined()) {
         return NanThrowTypeError("a buffer expected for first argument");
     }
     if (!node::Buffer::HasInstance(obj)) {
-        return NanThrowTypeError("first argument must be a buffer");
+        return NanThrowTypeError("first argument must be a Buffer");
     }
     if (!args[1]->IsString()) {
-        return NanThrowTypeError("second arg 'type' must be a string");
+        return NanThrowTypeError("second arg 'type' must be a String");
     }
     if (!args[2]->IsNumber()) {
         return NanThrowTypeError("third arg 'shard' must be an Integer");
@@ -443,10 +444,10 @@ NAN_METHOD(Cache::has)
         return NanThrowTypeError("expected two args: type and shard");
     }
     if (!args[0]->IsString()) {
-        return NanThrowTypeError("first arg must be a string");
+        return NanThrowTypeError("first arg must be a String");
     }
     if (!args[1]->IsNumber()) {
-        return NanThrowTypeError("second arg must be an integer");
+        return NanThrowTypeError("second arg must be an Integer");
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -474,16 +475,16 @@ NAN_METHOD(Cache::search)
 {
     NanScope();
     if (args.Length() < 3) {
-        return NanThrowTypeError("expected two args: type, shard, and id");
+        return NanThrowTypeError("expected three args: type, shard, and id");
     }
     if (!args[0]->IsString()) {
-        return NanThrowTypeError("first arg must be a string");
+        return NanThrowTypeError("first arg must be a String");
     }
     if (!args[1]->IsNumber()) {
-        return NanThrowTypeError("second arg must be an integer");
+        return NanThrowTypeError("second arg must be an Integer");
     }
     if (!args[2]->IsNumber()) {
-        return NanThrowTypeError("third arg must be an integer");
+        return NanThrowTypeError("third arg must be an Integer");
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -565,10 +566,10 @@ NAN_METHOD(Cache::New)
             return NanThrowTypeError("expected 'id' and 'shardlevel' arguments");
         }
         if (!args[0]->IsString()) {
-            return NanThrowTypeError("first argument 'id' must be a string");
+            return NanThrowTypeError("first argument 'id' must be a String");
         }
         if (!args[1]->IsNumber()) {
-            return NanThrowTypeError("first argument 'shardlevel' must be a number");
+            return NanThrowTypeError("second argument 'shardlevel' must be a number");
         }
         std::string id = *String::Utf8Value(args[0]->ToString());
         unsigned shardlevel = static_cast<unsigned>(args[1]->IntegerValue());
