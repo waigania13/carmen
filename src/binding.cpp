@@ -339,7 +339,7 @@ NAN_METHOD(Cache::loadSync)
 struct load_baton {
     uv_work_t request;
     Cache * c;
-    Persistent<Function> cb;
+    NanCallback cb;
     Cache::larraycache arrc;
     std::string key;
     std::string data;
@@ -347,12 +347,23 @@ struct load_baton {
     std::string error_name;
     load_baton(std::string const& _key,
                const char * _data,
-               size_t size) :
+               size_t size,
+               Local<Function> callbackHandle,
+               Cache * _c) :
+      c(_c),
+      cb(callbackHandle),
       arrc(),
       key(_key),
       data(_data,size),
       error(false),
-      error_name() {}
+      error_name() {
+        request.data = this;
+        c->_ref();
+      }
+    ~load_baton() {
+         c->_unref();
+         //closure->cb.Dispose();
+    }
 };
 
 void Cache::AsyncLoad(uv_work_t* req) {
@@ -373,7 +384,7 @@ void Cache::AfterLoad(uv_work_t* req) {
     TryCatch try_catch;
     if (closure->error) {
         Local<Value> argv[1] = { Exception::Error(String::New(closure->error_name.c_str())) };
-        closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
+        closure->cb.Call(1, argv);
     } else {
         Cache::memcache::iterator itr2 = closure->c->cache_.find(closure->key);
         if (itr2 != closure->c->cache_.end()) {
@@ -385,14 +396,12 @@ void Cache::AfterLoad(uv_work_t* req) {
         closure->c->lazy_[closure->key] = closure->arrc;
 #endif
         Local<Value> argv[1] = { Local<Value>::New(Null()) };
-        closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
+        closure->cb.Call(1, argv);
     }
     if (try_catch.HasCaught())
     {
         node::FatalException(try_catch);
     }
-    closure->c->_unref();
-    closure->cb.Dispose();
     delete closure;
 }
 
@@ -400,7 +409,7 @@ NAN_METHOD(Cache::load)
 {
     NanScope();
     Local<Value> callback = args[args.Length()-1];
-    if (!args[args.Length()-1]->IsFunction()) {
+    if (!callback->IsFunction()) {
         return loadSync(args);
     }
     if (args.Length() < 2) {
@@ -426,13 +435,13 @@ NAN_METHOD(Cache::load)
         std::string type = *String::Utf8Value(args[1]->ToString());
         std::string shard = *String::Utf8Value(args[2]->ToString());
         std::string key = type + "-" + shard;
-        load_baton *closure = new load_baton(key,node::Buffer::Data(obj),node::Buffer::Length(obj));
-        closure->request.data = closure;
-        closure->c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        closure->cb = Persistent<Function>::New(Handle<Function>::Cast(callback));
+        load_baton *closure = new load_baton(key,
+                                             node::Buffer::Data(obj),
+                                             node::Buffer::Length(obj),
+                                             args[3].As<Function>(),
+                                             node::ObjectWrap::Unwrap<Cache>(args.This()));
         uv_queue_work(uv_default_loop(), &closure->request, AsyncLoad, (uv_after_work_cb)AfterLoad);
-        closure->c->_ref();
-        return Undefined();
+        NanReturnValue(Undefined());
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
