@@ -132,6 +132,32 @@ describe('Cache', function() {
                     done();
                 });
             });
+
+            it('#unload after set', function() {
+                var cache = new Cache('a', 1);
+                cache.set('term', 5, [0,1,2]);
+                assert.deepEqual(true, cache.has('term', 5));
+                cache.unload('term',5);
+                assert.deepEqual(false, cache.has('term', 5));
+            });
+
+            it('#unload after load', function() {
+                var cache = new Cache('a', 1);
+                var array = [];
+                for (var i=0;i<10000;++i) {
+                    array.push(0);
+                }
+                cache.set('term', 5, array);
+                var pack = cache.pack('term', 5);
+                var loader = new Cache('b', 1);
+                loader.load(pack, 'term', 5);
+                assert.deepEqual(array, loader.get('term', 5));
+                assert.deepEqual([5], loader.list('term'), 'single shard');
+                assert.deepEqual(true, loader.has('term', 5));
+                loader.unload('term',5);
+                assert.deepEqual(false, loader.has('term', 5));
+            });
+
         });
     });
 

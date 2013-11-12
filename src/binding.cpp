@@ -25,6 +25,7 @@ void Cache::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "list", list);
     NODE_SET_PROTOTYPE_METHOD(t, "_set", _set);
     NODE_SET_PROTOTYPE_METHOD(t, "_get", _get);
+    NODE_SET_PROTOTYPE_METHOD(t, "unload", unload);
     target->Set(String::NewSymbol("Cache"),t->GetFunction());
     NanAssignPersistent(FunctionTemplate, constructor, t);
 }
@@ -553,6 +554,42 @@ NAN_METHOD(Cache::_get)
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
+}
+
+NAN_METHOD(Cache::unload)
+{
+    NanScope();
+    if (args.Length() < 2) {
+        return NanThrowTypeError("expected at least two args: 'type' and 'shard'");
+    }
+    if (!args[0]->IsString()) {
+        return NanThrowTypeError("first arg must be a String");
+    }
+    if (!args[1]->IsNumber()) {
+        return NanThrowTypeError("second arg must be an Integer");
+    }
+    bool hit = false;
+    try {
+        std::string type = *String::Utf8Value(args[0]->ToString());
+        std::string shard = *String::Utf8Value(args[1]->ToString());
+        std::string key = type + "-" + shard;
+        Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
+        Cache::memcache & mem = c->cache_;
+        Cache::mem_iterator_type itr = mem.find(key);
+        if (itr != mem.end()) {
+            hit = true;
+            mem.erase(itr);
+        }
+        Cache::lazycache & lazy = c->lazy_;
+        Cache::lazycache_iterator_type litr = lazy.find(key);
+        if (litr != lazy.end()) {
+            hit = true;
+            lazy.erase(litr);
+        }
+    } catch (std::exception const& ex) {
+        return NanThrowTypeError(ex.what());
+    }
+    NanReturnValue(Boolean::New(hit));
 }
 
 NAN_METHOD(Cache::New)
