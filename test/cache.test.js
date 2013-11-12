@@ -63,7 +63,12 @@ describe('Cache', function() {
             it('#pack', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual(9, cache.pack('term', 5, 'protobuf').length);
+                assert.deepEqual(9, cache.pack('term', 5).length);
+                // set should replace data
+                cache.set('term', 5, [0,1,2,4]);
+                assert.deepEqual(10, cache.pack('term', 5).length);
+                cache.set('term', 5, []);
+                assert.deepEqual(4, cache.pack('term', 5).length);
             });
 
             it('#load', function() {
