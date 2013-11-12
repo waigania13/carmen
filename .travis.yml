@@ -11,12 +11,13 @@ before_install:
 
 install:
  - npm install mocha
+ - ./scripts/install-dbs.sh
 
 before_script:
  - CXX=g++-4.7 npm install
- - npm test
+ - time npm test
 
 script:
  - make clean
  - npm install --std=0
- - make test
+ - time npm test
