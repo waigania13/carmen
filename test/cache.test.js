@@ -133,11 +133,17 @@ describe('Cache', function() {
                 });
             });
 
+            it('#unload on empty data', function() {
+                var cache = new Cache('a', 1);
+                assert.equal(false,cache.unload('term',5));
+                assert.deepEqual(false, cache.has('term', 5));
+            });
+
             it('#unload after set', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
                 assert.deepEqual(true, cache.has('term', 5));
-                cache.unload('term',5);
+                assert.equal(true,cache.unload('term',5));
                 assert.deepEqual(false, cache.has('term', 5));
             });
 
@@ -154,7 +160,7 @@ describe('Cache', function() {
                 assert.deepEqual(array, loader.get('term', 5));
                 assert.deepEqual([5], loader.list('term'), 'single shard');
                 assert.deepEqual(true, loader.has('term', 5));
-                loader.unload('term',5);
+                assert.equal(true,loader.unload('term',5));
                 assert.deepEqual(false, loader.has('term', 5));
             });
 
