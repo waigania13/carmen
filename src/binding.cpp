@@ -74,7 +74,7 @@ NAN_METHOD(Cache::pack)
                 ++aitr;
             }
         } else {
-            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache const& lazy = c->lazy_;
             Cache::lazycache_iterator_type litr = lazy.begin();
             Cache::lazycache_iterator_type lend = lazy.end();
             while (litr != lend) {
@@ -144,7 +144,7 @@ NAN_METHOD(Cache::list)
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        Cache::memcache & mem = c->cache_;
+        Cache::memcache const& mem = c->cache_;
         Local<Array> ids = Array::New();
         if (args.Length() == 1) {
             Cache::mem_iterator_type itr = mem.begin();
@@ -157,7 +157,7 @@ NAN_METHOD(Cache::list)
                 }
                 ++itr;
             }
-            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache const& lazy = c->lazy_;
             Cache::lazycache_iterator_type litr = lazy.begin();
             Cache::lazycache_iterator_type lend = lazy.end();
             while (litr != lend) {
@@ -181,7 +181,7 @@ NAN_METHOD(Cache::list)
                     ++aitr;
                 }
             }
-            Cache::lazycache & lazy = c->lazy_;
+            Cache::lazycache const& lazy = c->lazy_;
             Cache::lazycache_iterator_type litr = lazy.find(key);
             if (litr != lazy.end()) {
                 Cache::larraycache_iterator laitr = litr->second.begin();
@@ -493,7 +493,7 @@ NAN_METHOD(Cache::_get)
         uint64_t id = static_cast<uint64_t>(args[2]->IntegerValue());
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
-        Cache::memcache & mem = c->cache_;
+        Cache::memcache const& mem = c->cache_;
         Cache::mem_iterator_type itr = mem.find(key);
         if (itr == mem.end()) {
             Cache::lazycache const& lazy = c->lazy_;
