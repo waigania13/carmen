@@ -575,13 +575,13 @@ NAN_METHOD(Cache::unload)
         std::string key = type + "-" + shard;
         Cache* c = node::ObjectWrap::Unwrap<Cache>(args.This());
         Cache::memcache & mem = c->cache_;
-        Cache::mem_iterator_type itr = mem.find(key);
+        Cache::memcache::iterator itr = mem.find(key);
         if (itr != mem.end()) {
             hit = true;
             mem.erase(itr);
         }
         Cache::lazycache & lazy = c->lazy_;
-        Cache::lazycache_iterator_type litr = lazy.find(key);
+        Cache::lazycache::iterator litr = lazy.find(key);
         if (litr != lazy.end()) {
             hit = true;
             lazy.erase(litr);
