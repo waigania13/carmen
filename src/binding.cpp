@@ -24,7 +24,7 @@ void Cache::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "search", search);
     NODE_SET_PROTOTYPE_METHOD(t, "pack", pack);
     NODE_SET_PROTOTYPE_METHOD(t, "list", list);
-    NODE_SET_PROTOTYPE_METHOD(t, "_set", set);
+    NODE_SET_PROTOTYPE_METHOD(t, "put", put);
     target->Set(String::NewSymbol("Cache"),t->GetFunction());
     NanAssignPersistent(FunctionTemplate, constructor, t);
 }
@@ -109,19 +109,19 @@ NAN_METHOD(Cache::pack)
         if (size > 0)
         {
             std::size_t usize = static_cast<std::size_t>(size);
-            #if NODE_VERSION_AT_LEAST(0, 11, 0)
+#if NODE_VERSION_AT_LEAST(0, 11, 0)
             Local<Object> retbuf = node::Buffer::New(usize);
             if (message.SerializeToArray(node::Buffer::Data(retbuf),size))
             {
                 NanReturnValue(retbuf);
             }
-            #else
+#else
             node::Buffer *retbuf = node::Buffer::New(usize);
             if (message.SerializeToArray(node::Buffer::Data(retbuf),size))
             {
                 NanReturnValue(retbuf->handle_);
             }
-            #endif
+#endif
         } else {
             return NanThrowTypeError("message ByteSize was negative");
         }
@@ -198,11 +198,11 @@ NAN_METHOD(Cache::list)
     NanReturnValue(Undefined());
 }
 
-NAN_METHOD(Cache::set)
+NAN_METHOD(Cache::put)
 {
     NanScope();
     if (args.Length() < 3) {
-        return NanThrowTypeError("expected three args: 'type','shard','id','data'");
+        return NanThrowTypeError("expected four args: 'type', 'shard', 'id', 'data'");
     }
     if (!args[0]->IsString()) {
         return NanThrowTypeError("first argument must be a string");
@@ -218,7 +218,7 @@ NAN_METHOD(Cache::set)
     }
     Local<Array> data = Local<Array>::Cast(args[3]);
     if (data->IsNull() || data->IsUndefined()) {
-        return NanThrowTypeError("an array expected for third argument");
+        return NanThrowTypeError("an array expected for fourth argument");
     }
     try {
         std::string type = *String::Utf8Value(args[0]->ToString());
@@ -274,10 +274,9 @@ void load_into_cache(Cache::larraycache & larrc,
 #else
                     larrc.insert(std::make_pair(key_id,Cache::string_ref_type(message.getData(),len)));
 #endif
-                    break;
-                } else {
-                    break;
                 }
+                // it is safe to break immediately because tag 1 should come first
+                break;
             }
             message.skipBytes(len);
         } else {
@@ -292,7 +291,7 @@ NAN_METHOD(Cache::loadSync)
 {
     NanScope();
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type', and 'shard'");
+        return NanThrowTypeError("expected at least three args: 'buffer', 'type', and 'shard'");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
@@ -403,7 +402,7 @@ NAN_METHOD(Cache::load)
         return loadSync(args);
     }
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer','type','shard', and optionally a callback");
+        return NanThrowTypeError("expected at least three args: 'buffer', 'type', 'shard', and optionally a callback");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a buffer");
