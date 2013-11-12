@@ -75,9 +75,8 @@ NAN_METHOD(Cache::pack)
             }
         } else {
             Cache::lazycache const& lazy = c->lazy_;
-            Cache::lazycache_iterator_type litr = lazy.begin();
-            Cache::lazycache_iterator_type lend = lazy.end();
-            while (litr != lend) {
+            Cache::lazycache_iterator_type litr = lazy.find(key);
+            if (litr != lazy.end()) {
                 Cache::larraycache_iterator laitr = litr->second.begin();
                 Cache::larraycache_iterator laend = litr->second.end();
                 while (laitr != laend) {
@@ -103,7 +102,8 @@ NAN_METHOD(Cache::pack)
                     }
                     ++laitr;
                 }
-                ++litr;
+            } else {
+                return NanThrowTypeError("pack: cannot pack empty data");
             }
         }
         int size = message.ByteSize();

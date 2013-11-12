@@ -69,6 +69,19 @@ describe('Cache', function() {
                 assert.deepEqual(10, cache.pack('term', 5).length);
                 cache.set('term', 5, []);
                 assert.deepEqual(4, cache.pack('term', 5).length);
+                // now test packing data created via load
+                var packer = new Cache('a', 1);
+                var array = [];
+                for (var i=0;i<10000;++i) {
+                    array.push(0);
+                }
+                packer.set('term', 5, array);
+                var loader = new Cache('a', 1);
+                loader.load(packer.pack('term',5), 'term', 5);
+                // grab data right back out
+                assert.deepEqual(10008, loader.pack('term', 5).length);
+                // try to grab data that does not exist
+                assert.throws(function() { loader.pack('term', 99999999999999) });
             });
 
             it('#load', function() {
