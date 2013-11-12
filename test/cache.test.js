@@ -52,11 +52,11 @@ describe('Cache', function() {
                 assert.deepEqual(true, cache.has('term', 5));
             });
 
-            it('#search', function() {
+            it('#get', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual([0, 1, 2], cache.search('term', 5, 5));
-                assert.equal(undefined, cache.search('term', 5, 9));
+                assert.deepEqual([0, 1, 2], cache._get('term', 5, 5));
+                assert.equal(undefined, cache._get('term', 5, 9));
             });
 
             it('#pack', function() {

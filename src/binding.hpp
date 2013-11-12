@@ -47,10 +47,10 @@ public:
     static NAN_METHOD(load);
     static void AsyncLoad(uv_work_t* req);
     static void AfterLoad(uv_work_t* req);
-    static NAN_METHOD(search);
     static NAN_METHOD(pack);
     static NAN_METHOD(list);
-    static NAN_METHOD(put);
+    static NAN_METHOD(_get);
+    static NAN_METHOD(_set);
     static void AsyncRun(uv_work_t* req);
     static void AfterRun(uv_work_t* req);
     Cache(std::string const& id, unsigned shardlevel);

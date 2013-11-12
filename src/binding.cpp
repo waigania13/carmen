@@ -21,10 +21,10 @@ void Cache::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(t, "has", has);
     NODE_SET_PROTOTYPE_METHOD(t, "load", load);
     NODE_SET_PROTOTYPE_METHOD(t, "loadSync", loadSync);
-    NODE_SET_PROTOTYPE_METHOD(t, "search", search);
     NODE_SET_PROTOTYPE_METHOD(t, "pack", pack);
     NODE_SET_PROTOTYPE_METHOD(t, "list", list);
-    NODE_SET_PROTOTYPE_METHOD(t, "put", put);
+    NODE_SET_PROTOTYPE_METHOD(t, "_set", _set);
+    NODE_SET_PROTOTYPE_METHOD(t, "_get", _get);
     target->Set(String::NewSymbol("Cache"),t->GetFunction());
     NanAssignPersistent(FunctionTemplate, constructor, t);
 }
@@ -135,7 +135,7 @@ NAN_METHOD(Cache::list)
 {
     NanScope();
     if (args.Length() < 1) {
-        return NanThrowTypeError("expected at least one arg: 'type' + optional 'shard'");
+        return NanThrowTypeError("expected at least one arg: 'type' and optional a 'shard'");
     }
     if (!args[0]->IsString()) {
         return NanThrowTypeError("first argument must be a String");
@@ -198,7 +198,7 @@ NAN_METHOD(Cache::list)
     NanReturnValue(Undefined());
 }
 
-NAN_METHOD(Cache::put)
+NAN_METHOD(Cache::_set)
 {
     NanScope();
     if (args.Length() < 3) {
@@ -403,7 +403,7 @@ NAN_METHOD(Cache::load)
         return loadSync(args);
     }
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected at least three args: 'buffer', 'type', 'shard', and optionally a callback");
+        return NanThrowTypeError("expected at least three args: 'buffer', 'type', 'shard', and optionally a 'callback'");
     }
     if (!args[0]->IsObject()) {
         return NanThrowTypeError("first argument must be a Buffer");
@@ -441,7 +441,7 @@ NAN_METHOD(Cache::has)
 {
     NanScope();
     if (args.Length() < 2) {
-        return NanThrowTypeError("expected two args: type and shard");
+        return NanThrowTypeError("expected two args: 'type' and 'shard'");
     }
     if (!args[0]->IsString()) {
         return NanThrowTypeError("first arg must be a String");
@@ -471,7 +471,7 @@ NAN_METHOD(Cache::has)
     }
 }
 
-NAN_METHOD(Cache::search)
+NAN_METHOD(Cache::_get)
 {
     NanScope();
     if (args.Length() < 3) {
@@ -525,7 +525,7 @@ NAN_METHOD(Cache::search)
                         item.skipBytes(len);
                     } else {
                         std::stringstream msg("");
-                        msg << "search: hit unknown protobuf type: '" << item.tag << "'";
+                        msg << "cxx get: hit unknown protobuf type: '" << item.tag << "'";
                         throw std::runtime_error(msg.str());
                     }
                 }
