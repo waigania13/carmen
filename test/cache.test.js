@@ -56,6 +56,7 @@ describe('Cache', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
                 assert.deepEqual([0, 1, 2], cache._get('term', 5, 5));
+                assert.deepEqual([0, 1, 2], cache.get('term', 5));
                 assert.equal(undefined, cache._get('term', 5, 9));
             });
 
