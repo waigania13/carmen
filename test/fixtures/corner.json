@@ -1,0 +1,75 @@
+[
+    {
+        "query": "Chester, NJ",
+        "result": {
+            "names": ["Chester", "07930", "New Jersey", "United States of America"]
+        }
+    },
+    {
+        "query": "Chester, PA",
+        "result": {
+            "names": ["Chester","19013","Pennsylvania","United States of America"]
+        }
+    },
+    {
+        "query": "Washington",
+        "result": {
+            "names": ["Washington","United States of America"]
+        }
+    },
+    {
+        "query": "Washington, DC",
+        "result": {
+            "names": [ "Washington", "20001", "District of Columbia", "United States of America" ]
+        }
+    },
+    {
+        "query": "New York",
+        "result": {
+            "names": ["New York","United States of America"]
+        }
+    },
+    {
+        "query": "New York State",
+        "result": {
+            "names": ["New York","United States of America"]
+        }
+    },
+    {
+        "query": "New York City",
+        "result": {
+            "names": ["New York", "11203", "New York", "United States of America"]
+        }
+    },
+    {
+        "query": "New York City, NY",
+        "result": {
+            "names": ["New York", "11203", "New York", "United States of America"]
+        }
+    },
+    {
+        "query": "Zzyzx, California",
+        "result": {
+            "names": ["Zzyzx","California","United States of America"]
+        }
+    },
+    {
+        "query": "Hollywood, Alabama",
+        "result": {
+            "names": ["Hollywood","35752","Alabama","United States of America"]
+        }
+    },
+    {
+        "query": "New Mexico",
+        "result": {
+            "names": ["New Mexico","United States of America"]
+        }
+    },
+    {
+        "query": "Mexico",
+        "result": {
+            "names": ["Mexico"]
+        }
+    }
+
+]

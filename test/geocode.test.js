@@ -24,21 +24,26 @@ if (backend === 'mbtiles') var carmen = new Carmen({
 });
 
 function okay(type, a, b, margin) {
-    var margin = margin || 0.01;
-    var typecheck = type === 'place'
-        ? a.type === b.type
-        : a.type === type;
+    margin = margin || 0.01;
+    var typecheck = type === 'place' ?
+        a.type === b.type :
+        a.type === type;
     return typecheck &&
         a.name === b.name &&
         (a.lon >= b.lon - margin) &&
         (a.lon <= b.lon + margin) &&
         (a.lat >= b.lat - margin) &&
         (a.lat <= b.lat + margin);
-};
+}
 
 var summary = function(label, stats, verbose) {
     console.warn('');
-    console.warn('  %s %s% (%s/%s) at %sms/query', label, (stats.okay/stats.total*100).toFixed(1), stats.okay, stats.total, (((+new Date) - stats.start)/stats.total).toFixed(1));
+    console.warn('  %s %s% (%s/%s) at %sms/query',
+        label,
+        (stats.okay/stats.total*100).toFixed(1),
+        stats.okay,
+        stats.total,
+        (((+new Date()) - stats.start)/stats.total).toFixed(1));
 
     if (!verbose) return;
     _(stats.failed).each(function(group, type) {
@@ -46,13 +51,12 @@ var summary = function(label, stats, verbose) {
         console.warn('  ' + type);
         console.warn('  ' + new Array(type.length + 1).join('-'));
         _(group).each(function(results, name) {
-            var results = results.join(', ');
+            results = results.join(', ');
             if (results.length > 40) results = results.substr(0,40) + '...';
             console.warn('  %s => %s', name, results);
         });
     });
-}
-
+};
 
 _(carmen.indexes).each(function(source, type) {
     describe('geocode ' + type, function(done) {
@@ -61,7 +65,7 @@ _(carmen.indexes).each(function(source, type) {
             reverse: []
         };
         var stats = {
-            start: + new Date,
+            start: + new Date(),
             total: 0,
             okay: 0,
             failed: {}
@@ -100,7 +104,7 @@ _(carmen.indexes).each(function(source, type) {
                 stats.total++;
                 var inResults = _(res.results).chain()
                     .pluck('0')
-                    .any(function(r) { return okay(type, r, doc) })
+                    .any(function(r) { return okay(type, r, doc); })
                     .value();
                 if (inResults) {
                     stats.okay++;
@@ -108,7 +112,7 @@ _(carmen.indexes).each(function(source, type) {
                     stats.failed[type] = stats.failed[type] || {};
                     stats.failed[type][doc.name] = _(res.results).chain()
                         .pluck('0')
-                        .map(function(r) { return r.type + '.' + r.name })
+                        .map(function(r) { return r.type + '.' + r.name; })
                         .uniq()
                         .value();
                 }
@@ -128,7 +132,7 @@ _(carmen.indexes).each(function(source, type) {
                 stats.total++;
                 var inResults = _(res.results||[]).chain()
                     .first()
-                    .any(function(r) { return okay(type, r, doc) })
+                    .any(function(r) { return okay(type, r, doc); })
                     .value();
                 if (inResults) {
                     stats.okay++;
@@ -143,10 +147,10 @@ _(carmen.indexes).each(function(source, type) {
             });
         };
         var testcount = {
-            'country': 400,
-            'province': 400,
-            'zipcode': 400,
-            'place': 400
+            country: 400,
+            province: 400,
+            zipcode: 400,
+            place: 400
         };
         for (var i = 0; i < testcount[type]; i++) {
             it(type + ' geocode ' + i, geocode);
