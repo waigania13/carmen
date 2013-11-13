@@ -13,7 +13,9 @@ var path = require('path');
 var Carmen = require('../index');
 var opts = Carmen.autoSync(path.resolve(dirname));
 var carmen = new Carmen(opts);
-var argv = require('minimist')(process.argv);
+var argv = require('minimist')(process.argv, {
+    string: 'query'
+});
 
 if (!argv.query) throw new Error('--query argument required');
 
