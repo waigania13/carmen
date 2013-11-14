@@ -58,6 +58,8 @@ describe('index', function() {
     it('analyzes index', function(done) {
         carmen.analyze(to, function(err, stats) {
             assert.ifError(err);
+            // Updates the mem-analyze.json fixture on disk.
+            // fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
             assert.deepEqual(require('./fixtures/mem-analyze.json'), stats);
             done();
         });
