@@ -71,7 +71,8 @@ describe('index', function() {
                     term: { '0': '' },
                     phrase: { '0': '' },
                     grid: { '0': '' },
-                    degen: { '0': '' }
+                    degen: { '0': '' },
+                    feature: { '0': '' }
                 }, to.serialize().shards);
                 done();
             });

@@ -4,6 +4,7 @@ var _ = require('underscore'),
     queue = require('queue-async');
 
 var Cache = require('./lib/util/cxxcache'),
+    JSONCache = require('./lib/util/jsoncache'),
     getSearch = require('./lib/search'),
     getContext = require('./lib/context'),
     autoSync = require('./lib/autosync'),
@@ -56,6 +57,7 @@ function Geocoder(options) {
             source._geocoder.zoom = info.maxzoom;
             source._geocoder.name = key;
             source._geocoder.idx = Object.keys(options).indexOf(key);
+            source._features = source._features || new JSONCache(key, +info.shardlevel || 0);
             return callback();
         }
     }

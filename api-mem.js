@@ -8,22 +8,10 @@ module.exports = MemSource;
 inherits(MemSource, EventEmitter);
 
 function MemSource(uri, callback) {
-    this._features = {};
     this._shards = {};
 
     return callback(null, this);
 }
-
-// Implements carmen#getFeature method.
-MemSource.prototype.getFeature = function(id, callback) {
-    return callback(null, this._features[id]);
-};
-
-// Implements carmen#putFeature method.
-MemSource.prototype.putFeature = function(id, data, callback) {
-    this._features[id] = data;
-    return callback(null);
-};
 
 // Implements carmen#getGeocoderData method.
 MemSource.prototype.getGeocoderData = function(type, shard, callback) {
@@ -67,7 +55,6 @@ MemSource.prototype.serialize = function(name, callback) {
     }
 
     return {
-        features: this._features,
         shards: shardify(this._shards),
         geocoder: this._geocoder
     };

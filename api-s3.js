@@ -14,48 +14,6 @@ function prepareURI(uri, id) {
     return uri;
 };
 
-// Implements carmen#getFeature method.
-S3.prototype.getFeature = function(id, callback, raw) {
-    if (!this.data) return callback(new Error('Tilesource not loaded'));
-
-    // Parse carmen URL.
-    try {
-        var uri = prepareURI(this.data._geocoder, id);
-        uri.pathname = path.join(uri.pathname, 'data/' + id + '.json');
-        this.get(url.format(uri), function(err, buffer) {
-            if (err) return callback(err);
-            var data;
-            try { data = JSON.parse(buffer.toString('utf8')); }
-            catch (err) { return callback(err); }
-            if (!raw) delete data._terms;
-            return callback(null, data);
-        });
-    } catch (err) {
-        return callback(new Error('Carmen not supported'));
-    }
-};
-
-// Implements carmen#putFeature method.
-S3.prototype.putFeature = function(id, data, callback) {
-    if (!this.data) return callback(new Error('Tilesource not loaded'));
-
-    // Parse carmen URL.
-    try {
-        var uri = prepareURI(this.data._geocoder, id);
-        var key = path.join(uri.pathname, 'data/' + id + '.json');
-        var buffer = new Buffer(JSON.stringify(data));
-        var headers = {
-            'x-amz-acl': 'public-read',
-            'Connection': 'keep-alive',
-            'Content-Length': buffer.length,
-            'Content-Type': 'application/json'
-        };
-        this.put(key, buffer, headers, callback);
-    } catch (err) {
-        return callback(new Error('Carmen not supported'));
-    }
-};
-
 // Implements carmen#getGeocoderData method.
 S3.prototype.getGeocoderData = function(type, shard, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
