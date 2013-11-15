@@ -17,7 +17,9 @@ var count = 0;
 process.stdin
     .pipe(split())
     .on('data', function(d) {
-        var hash = type === 'phrase' ? termops.phrase(d) : termops.terms(d)[0];
+        var hash = type === 'phrase' ?
+            termops.phrase(termops.tokenize(d)) :
+            termops.terms(termops.tokenize(d))[0];
         if (idx[hash] === undefined) {
             idx[hash] = d;
         } else {
