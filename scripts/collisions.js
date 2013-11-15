@@ -18,10 +18,10 @@ process.stdin
     .pipe(split())
     .on('data', function(d) {
         var hash = type === 'phrase' ?
-            termops.phrase(d) :
+            termops.phrase(termops.tokenize(d)) :
             type === 'feature' ?
             termops.feature(d) :
-            termops.terms(d)[0];
+            termops.terms(termops.tokenize(d))[0];
         if (idx[hash] === undefined) {
             idx[hash] = d;
         } else {

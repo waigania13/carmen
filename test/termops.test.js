@@ -8,6 +8,11 @@ describe('termops', function() {
                 assert.deepEqual(termops.tokenize('foo'), ['foo']);
                 assert.deepEqual(termops.tokenize('foo bar'), ['foo', 'bar']);
                 assert.deepEqual(termops.tokenize('foo-bar'), ['foo', 'bar']);
+                assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
+                assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
+                assert.deepEqual(termops.tokenize('Chamonix-Mont-Blanc'), ['chamonix','mont','blanc']);
+                assert.deepEqual(termops.tokenize('Москва'), ['moskva']);
+                assert.deepEqual(termops.tokenize('京都市'), ['jing','du','shi']);
             });
         });
         describe('edge cases', function() {
@@ -18,12 +23,12 @@ describe('termops', function() {
     });
     describe('terms', function() {
         it('tokenizes and hashes values', function() {
-            assert.deepEqual(termops.terms('foo bar'), [2851307220,1991736600]);
+            assert.deepEqual(termops.terms(['foo','bar']), [2851307220,1991736600]);
         });
     });
     describe('termsMap', function() {
         it('tokenizes and hashes values', function() {
-            assert.deepEqual(termops.termsMap('foo bar'), {
+            assert.deepEqual(termops.termsMap(['foo','bar']), {
                 2851307220: 'foo',
                 1991736600: 'bar'
             });
@@ -43,7 +48,7 @@ describe('termops', function() {
             });
             for (var k in degens) {
                 // Encodes ID for 'foobarbaz'.
-                assert.equal(degens[k] >>> 2 << 2 >>> 0, termops.terms('foobarbaz')[0]);
+                assert.equal(degens[k] >>> 2 << 2 >>> 0, termops.terms(['foobarbaz'])[0]);
                 // Encodes degen distance (max: 3) from foobarbaz.
                 assert.ok(degens[k] % 4 <= 3);
             }
@@ -51,13 +56,13 @@ describe('termops', function() {
     });
     describe('phrase', function() {
         it('generates a name id', function() {
-            assert.deepEqual(termops.phrase('foo'), 2851307223);
-            assert.deepEqual(termops.phrase('foo street'), 1742114519);
-            assert.deepEqual(termops.phrase('foo lane'), 3289808599);
+            assert.deepEqual(termops.phrase(['foo']), 2851307223);
+            assert.deepEqual(termops.phrase(['foo','street']), 1742114519);
+            assert.deepEqual(termops.phrase(['foo','lane']), 3289808599);
             // Clusters phrase IDs based on initial term.
-            assert.deepEqual(termops.phrase('foo') % 4096, 3799);
-            assert.deepEqual(termops.phrase('foo street') % 4096, 3799);
-            assert.deepEqual(termops.phrase('foo lane') % 4096, 3799);
+            assert.deepEqual(termops.phrase(['foo']) % 4096, 3799);
+            assert.deepEqual(termops.phrase(['foo','street']) % 4096, 3799);
+            assert.deepEqual(termops.phrase(['foo','lane']) % 4096, 3799);
         });
     });
 });
