@@ -8,6 +8,11 @@ describe('termops', function() {
                 assert.deepEqual(termops.tokenize('foo'), ['foo']);
                 assert.deepEqual(termops.tokenize('foo bar'), ['foo', 'bar']);
                 assert.deepEqual(termops.tokenize('foo-bar'), ['foo', 'bar']);
+                assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
+                assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
+                assert.deepEqual(termops.tokenize('Chamonix-Mont-Blanc'), ['chamonix','mont','blanc']);
+                assert.deepEqual(termops.tokenize('Москва'), ['moskva']);
+                assert.deepEqual(termops.tokenize('京都市'), ['jing','du','shi']);
             });
         });
         describe('edge cases', function() {
