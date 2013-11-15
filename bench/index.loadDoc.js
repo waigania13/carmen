@@ -5,7 +5,7 @@ var index = require('../lib/index');
 var docs = index.assignParts(require('../test/fixtures/docs.json'));
 
 var freq = index.generateFrequency(docs);
-var patch = { grid: {}, term: {}, phrase: {}, degen: {} };
+var patch = { grid: {}, term: {}, phrase: {}, degen: {}, feature: {} };
 var degenerated = {};
 
 suite.add('index', function() {
