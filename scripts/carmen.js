@@ -57,10 +57,12 @@ carmen.geocode(argv.query, function(err, data) {
 
         console.log('Cache');
         console.log('-----');
-        var cachestats = {freq:0,term:0,phrase:0,grid:0,degen:0};
+        var cachestats = {freq:0,term:0,phrase:0,grid:0,degen:0,total:0};
         _(carmen.indexes).each(function(source, name) {
             _(cachestats).each(function(sum, key) {
-                cachestats[key] += source._geocoder.list(key).length;
+                var count = source._geocoder.list(key).length;
+                cachestats[key] += count;
+                cachestats.total += count;
             });
         });
         console.log('- degen:     %s', cachestats.degen);
@@ -68,6 +70,7 @@ carmen.geocode(argv.query, function(err, data) {
         console.log('- term:      %s', cachestats.term);
         console.log('- phrase:    %s', cachestats.phrase);
         console.log('- grid:      %s', cachestats.grid);
+        console.log('- total:     %s', cachestats.total);
         if (process.env.DEBUG) Object.keys(opts).forEach(function(dbname) {
             var stats = data.stats['search.'+dbname];
             if (!stats) return;
