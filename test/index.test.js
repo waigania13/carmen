@@ -30,7 +30,7 @@ describe('index', function() {
                             to.stopWriting(function(err) {
                                 if (err) throw err;
                                 // Updates the mem.json fixture on disk.
-                                fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
+                                // fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
                                 assert.deepEqual(to.serialize(), memFixture);
                                 done();
                             });
