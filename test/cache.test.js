@@ -182,6 +182,29 @@ describe('Cache', function() {
                 assert.deepEqual(false, loader.has('term', 5));
             });
 
+            it('#unloadall', function() {
+                var cache = new Cache('a', 1);
+                var array = [];
+                for (var i=0;i<10000;++i) {
+                    array.push(0);
+                }
+                cache.set('term', 5, array);
+                var pack = cache.pack('term', 5);
+
+                var loader = new Cache('b', 1);
+                loader.load(pack, 'term', 1);
+                loader.load(pack, 'term', 2);
+                loader.load(pack, 'term', 3);
+                loader.load(pack, 'term', 4);
+                loader.load(pack, 'term', 5);
+                assert.deepEqual(array, loader.get('term', 5));
+                assert.deepEqual([1,2,3,4,5], loader.list('term'), 'many shards');
+                assert.deepEqual(true, loader.has('term', 5));
+                assert.equal(true,loader.unloadall('term'));
+                assert.deepEqual(false, loader.has('term', 5));
+                assert.deepEqual([], loader.list('term'), 'no shards');
+            });
+
         });
     });
 
