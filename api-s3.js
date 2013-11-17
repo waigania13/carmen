@@ -18,10 +18,12 @@ function prepareURI(uri, id) {
 S3.prototype.getGeocoderData = function(type, shard, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
+    var extname = type === 'feature' ? '.json' : '.pbf';
+
     // Parse carmen URL.
     try {
         var uri = prepareURI(this.data._geocoder, shard);
-        uri.pathname = path.join(uri.pathname, type + '/' + shard + '.pbf');
+        uri.pathname = path.join(uri.pathname, type + '/' + shard + extname);
         this.get(url.format(uri), function(err, buffer) {
             callback(err && err.status > 499 ? err : null, buffer);
         });
@@ -34,15 +36,24 @@ S3.prototype.getGeocoderData = function(type, shard, callback) {
 S3.prototype.putGeocoderData = function(type, shard, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
+    var ctype = 'application/x-protobuf';
+    var extname = '.pbf';
+    var length = data.length;
+    if (type === 'feature') {
+        ctype = 'application/json';
+        extname = '.json';
+        length = Buffer.byteLength(data);
+    }
+
     // Parse carmen URL.
     try {
         var uri = prepareURI(this.data._geocoder, shard),
-            key = path.join(uri.pathname, type + '/' + shard + '.pbf'),
+            key = path.join(uri.pathname, type + '/' + shard + extname),
             headers = {
                 'x-amz-acl': 'public-read',
                 'Connection': 'keep-alive',
-                'Content-Length': data.length,
-                'Content-Type': 'application/x-protobuf'
+                'Content-Length': length,
+                'Content-Type': ctype
             };
         this.put(key, data, headers, callback);
     } catch (err) {
