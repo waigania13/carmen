@@ -14,7 +14,14 @@ var opts = Carmen.autoSync(path.resolve(dirname));
 var carmen = new Carmen(opts);
 var argv = require('minimist')(process.argv);
 
-carmen.context(parseFloat(argv.lon), parseFloat(argv.lat), null, done);
+if (!argv.lon) throw new Error('--lon=value argument required');
+if (!argv.lat) throw new Error('--lat=value argument required');
+var lon = parseFloat(argv.lon);
+if (isNaN(lon)) throw new Error('invalid --lon arg');
+var lat = parseFloat(argv.lat);
+if (isNaN(lat)) throw new Error('invalid --lat arg');
+
+carmen.context(lon, lat, null, done);
 
 function done(err, data) {
     if (err) throw err;
