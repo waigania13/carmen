@@ -16,15 +16,8 @@ var expected = {
     search: 'Canada, CA'
 };
 
-var from = new S3({data:{
-    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country",
-    "maxzoom": 8
-}}, function() {});
-
-var prefixed = new S3({data:{
-    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country.prefixed/{prefix}",
-    "maxzoom": 8
-}}, function() {});
+var from = new S3({data:JSON.parse(fs.readFileSync(__dirname + '/fixtures/01-ne.country.s3'))}, function() {});
+var prefixed = new S3({data:JSON.parse(fs.readFileSync(__dirname + '/fixtures/01-ne.country.prefixed.s3'))}, function() {});
 
 it('getGeocoderData', function(done) {
     from.getGeocoderData('term', 0, function(err, buffer) {
