@@ -91,7 +91,7 @@ _(carmen.indexes).each(function(source, type) {
         var geocode = function(done) {
             if (!queues.geocode.length) return done();
 
-            var doc = queues.geocode.shift().doc;
+            var doc = queues.geocode.shift();
 
             // @TODO determine why some docs are without a search field.
             if (!('search' in doc)) return done();
@@ -122,7 +122,7 @@ _(carmen.indexes).each(function(source, type) {
         var reverse = function(done) {
             if (!queues.reverse.length) return done();
 
-            var doc = queues.reverse.shift().doc;
+            var doc = queues.reverse.shift();
 
             if (!('lon' in doc) || !('lat' in doc)) return done();
 
