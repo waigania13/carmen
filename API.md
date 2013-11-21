@@ -24,23 +24,25 @@ The first term is included in the hash for phrases in order to cluster similar
 road names on a common number, so that hashed searches don't require an extremely
 high number of shards to be loaded.
 
-## degenerate
+## term (canonical, degenerate, weighted)
 
 ```
-  term      distance
+  term        extra
  ___________________
-|     0-30 | 31-32 |
+|     0-28 | 29-32 |
 |------------------|
 ```
 
-### term
+The first 28 bits of a term hash determine the canonical ID of a term. The
+remaining 4 bits can be used for additional data.
 
-```
- unused       term
-____________________
-| 0-1  |     2-32 |
--------|------------
-```
+- **Degenerates** are terms with delete operations performed on them. The extra
+  4 bits are used to encode the number of delete operations (up to 15 chars)
+  performed on the canonical term to result in the degenerate.
+- **Weighted** terms are term hashes with weights (0-15) relative to other terms
+  in the same phrase. The weights are only relevant in the context of the phrase
+  being considered. A weight of 15 signifies the most significant term in the
+  phrase with other terms being <= 15.
 
 ### phrase
 
