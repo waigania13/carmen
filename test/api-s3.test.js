@@ -53,34 +53,34 @@ it.skip('putGeocoderData', function(done) {
 });
 
 it('getIndexableDocs', function(done) {
-    from.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
+    from.getIndexableDocs({}, function(err, docs, pointer) {
         assert.ifError(err);
-        assert.equal(docs.length, 10);
-        assert.deepEqual(pointer, {limit:10, done:false, marker:'dev/01-ne.country/data/107.json' });
+        assert.equal(docs.length, 63);
+        assert.deepEqual(pointer, {shard:1});
         from.getIndexableDocs(pointer, function(err, docs, pointer) {
             assert.ifError(err);
-            assert.equal(docs.length, 10);
-            assert.deepEqual(pointer, { limit: 10, done:false, marker:'dev/01-ne.country/data/116.json' });
+            assert.equal(docs.length, 64);
+            assert.deepEqual(pointer, {shard:2});
             done();
         });
     });
 });
 
 it('getIndexableDocs (prefixed source)', function(done) {
-    prefixed.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
+    prefixed.getIndexableDocs({}, function(err, docs, pointer) {
         assert.ifError(err);
-        assert.equal(docs.length, 0);
-        assert.deepEqual(pointer, {limit:10, done:false, marker:null, prefix:1 });
+        assert.equal(docs.length, 63);
+        assert.deepEqual(pointer, {shard:1});
         prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
             assert.ifError(err);
-            assert.equal(1, docs.length);
-            assert.equal('1', docs[0].id);
-            assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:2 });
+            assert.equal(64, docs.length);
+            assert.equal('64', docs[0]._id);
+            assert.deepEqual(pointer, {shard:2});
             prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
                 assert.ifError(err);
-                assert.equal(1, docs.length);
-                assert.equal('2', docs[0].id);
-                assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:3 });
+                assert.equal(64, docs.length);
+                assert.equal('128', docs[0]._id);
+                assert.deepEqual(pointer, {shard:3});
                 done();
             });
         });
