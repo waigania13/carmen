@@ -58,6 +58,8 @@ describe('index', function() {
     it('analyzes index', function(done) {
         carmen.analyze(to, function(err, stats) {
             assert.ifError(err);
+            // Updates the mem-analyze.json fixture on disk.
+            // fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
             assert.deepEqual(require('./fixtures/mem-analyze.json'), stats);
             done();
         });
@@ -71,7 +73,8 @@ describe('index', function() {
                     term: { '0': '' },
                     phrase: { '0': '' },
                     grid: { '0': '' },
-                    degen: { '0': '' }
+                    degen: { '0': '' },
+                    feature: { '0': '', '1':'', '2':'', '3':'' }
                 }, to.serialize().shards);
                 done();
             });

@@ -130,4 +130,13 @@ it indicates the state of the database or dataset like a cursor would, allowing
 you to page through documents.
 
 `callback` is called with `(error, documents, pointer)`, in which `documents`
-is a list of objects with `{id, doc, text, zxy}` layout.
+is a list of objects. Each object may have any attributes but the following are
+required:
+
+attribute | description
+----------|------------
+_id       | An integer ID for this feature.
+_zxy      | An array of xyz tile coordinates covered by this feature.
+_text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+lon       | Float. Longitude.
+lat       | Float. Latitude.

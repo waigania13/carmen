@@ -37,20 +37,20 @@ describe('termops', function() {
     describe('degens', function() {
         it('generates degenerates', function() {
             var degens = termops.degens('foobarbaz');
-            assert.deepEqual(degens, {
-                967483784: 1617781335,
-                1062237932: 1617781335,
-                1617781332: 1617781332,
-                2851307220: 1617781335,
-                2921073340: 1617781334,
-                3214735720: 1617781335,
-                4112850188: 1617781333
-            });
-            for (var k in degens) {
+            assert.deepEqual(degens, [
+                1617781332, 1617781332,
+                4112850188, 1617781333,
+                2921073340, 1617781334,
+                3214735720, 1617781335,
+                967483784,  1617781335,
+                1062237932, 1617781335,
+                2851307220, 1617781335
+            ]);
+            for (var i = 0; i < degens.length/2; i = i + 2) {
                 // Encodes ID for 'foobarbaz'.
-                assert.equal(degens[k] >>> 2 << 2 >>> 0, termops.terms(['foobarbaz'])[0]);
+                assert.equal(degens[i+1] >>> 2 << 2 >>> 0, termops.terms(['foobarbaz'])[0]);
                 // Encodes degen distance (max: 3) from foobarbaz.
-                assert.ok(degens[k] % 4 <= 3);
+                assert.ok(degens[i+1] % 4 <= 3);
             }
         });
     });

@@ -16,48 +16,8 @@ var expected = {
     search: 'Canada, CA'
 };
 
-var from = new S3({data:{
-    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country",
-    "maxzoom": 8
-}}, function() {});
-
-var prefixed = new S3({data:{
-    "_geocoder": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.country.prefixed/{prefix}",
-    "maxzoom": 8
-}}, function() {});
-
-it('getFeature', function(done) {
-    from.getFeature(16, function(err, doc) {
-        assert.ifError(err);
-        assert.deepEqual(doc, expected);
-        done();
-    });
-});
-
-it('getFeature (prefixed source)', function(done) {
-    prefixed.getFeature(16, function(err, doc) {
-        assert.ifError(err);
-        assert.deepEqual(doc, expected);
-        done();
-    });
-});
-
-it.skip('putFeature', function(done) {
-    to.startWriting(function(err) {
-        assert.ifError(err);
-        to.putFeature(16, expected, function(err) {
-            assert.ifError(err);
-            to.stopWriting(function(err) {
-                assert.ifError(err);
-                to.getFeature(16, function(err, doc) {
-                    assert.ifError(err);
-                    assert.deepEqual(doc, expected);
-                    done();
-                });
-            });
-        });
-    });
-});
+var from = new S3({data:JSON.parse(fs.readFileSync(__dirname + '/fixtures/01-ne.country.s3'))}, function() {});
+var prefixed = new S3({data:JSON.parse(fs.readFileSync(__dirname + '/fixtures/01-ne.country.prefixed.s3'))}, function() {});
 
 it('getGeocoderData', function(done) {
     from.getGeocoderData('term', 0, function(err, buffer) {
@@ -93,34 +53,34 @@ it.skip('putGeocoderData', function(done) {
 });
 
 it('getIndexableDocs', function(done) {
-    from.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
+    from.getIndexableDocs({}, function(err, docs, pointer) {
         assert.ifError(err);
-        assert.equal(docs.length, 10);
-        assert.deepEqual(pointer, {limit:10, done:false, marker:'dev/01-ne.country/data/107.json' });
+        assert.equal(docs.length, 63);
+        assert.deepEqual(pointer, {shard:1});
         from.getIndexableDocs(pointer, function(err, docs, pointer) {
             assert.ifError(err);
-            assert.equal(docs.length, 10);
-            assert.deepEqual(pointer, { limit: 10, done:false, marker:'dev/01-ne.country/data/116.json' });
+            assert.equal(docs.length, 64);
+            assert.deepEqual(pointer, {shard:2});
             done();
         });
     });
 });
 
 it('getIndexableDocs (prefixed source)', function(done) {
-    prefixed.getIndexableDocs({ limit: 10 }, function(err, docs, pointer) {
+    prefixed.getIndexableDocs({}, function(err, docs, pointer) {
         assert.ifError(err);
-        assert.equal(docs.length, 0);
-        assert.deepEqual(pointer, {limit:10, done:false, marker:null, prefix:1 });
+        assert.equal(docs.length, 63);
+        assert.deepEqual(pointer, {shard:1});
         prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
             assert.ifError(err);
-            assert.equal(1, docs.length);
-            assert.equal('1', docs[0].id);
-            assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:2 });
+            assert.equal(64, docs.length);
+            assert.equal('64', docs[0]._id);
+            assert.deepEqual(pointer, {shard:2});
             prefixed.getIndexableDocs(pointer, function(err, docs, pointer) {
                 assert.ifError(err);
-                assert.equal(1, docs.length);
-                assert.equal('2', docs[0].id);
-                assert.deepEqual(pointer, { limit: 10, done:false, marker:null, prefix:3 });
+                assert.equal(64, docs.length);
+                assert.equal('128', docs[0]._id);
+                assert.deepEqual(pointer, {shard:3});
                 done();
             });
         });

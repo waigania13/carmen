@@ -39,31 +39,6 @@ after(function(done) {
     });
 });
 
-it('getFeature', function(done) {
-    from.getFeature(16, function(err, doc) {
-        assert.ifError(err);
-        assert.deepEqual(doc, expected);
-        done();
-    });
-});
-
-it('putFeature', function(done) {
-    to.startWriting(function(err) {
-        assert.ifError(err);
-        to.putFeature(16, expected, function(err) {
-            assert.ifError(err);
-            to.stopWriting(function(err) {
-                assert.ifError(err);
-                to.getFeature(16, function(err, doc) {
-                    assert.ifError(err);
-                    assert.deepEqual(doc, expected);
-                    done();
-                });
-            });
-        });
-    });
-});
-
 it('getGeocoderData', function(done) {
     from.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);

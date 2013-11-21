@@ -5,8 +5,8 @@ var split = require('split');
 var termops = require('../lib/util/termops.js');
 var type = process.argv[2];
 
-if (type !== 'phrase' && type !== 'term') {
-    console.log('Usage: collisions.js <phrase|term>');
+if (type !== 'phrase' && type !== 'term' && type !== 'feature') {
+    console.log('Usage: collisions.js <phrase|term|feature>');
     process.exit(1);
 }
 
@@ -19,6 +19,8 @@ process.stdin
     .on('data', function(d) {
         var hash = type === 'phrase' ?
             termops.phrase(termops.tokenize(d)) :
+            type === 'feature' ?
+            termops.feature(d) :
             termops.terms(termops.tokenize(d))[0];
         if (idx[hash] === undefined) {
             idx[hash] = d;
