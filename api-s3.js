@@ -45,11 +45,9 @@ S3.prototype.putGeocoderData = function(type, shard, data, callback) {
     var source = this;
     var ctype = 'application/x-protobuf';
     var extname = '.pbf';
-    var length = data.length;
     if (type === 'feature') {
         ctype = 'application/json';
         extname = '.json';
-        length = Buffer.byteLength(data);
     }
 
     // Parse carmen URL.
@@ -60,11 +58,11 @@ S3.prototype.putGeocoderData = function(type, shard, data, callback) {
                 'x-amz-acl': 'public-read',
                 'Connection': 'keep-alive',
                 'Content-Encoding': 'deflate',
-                'Content-Length': length,
                 'Content-Type': ctype
             };
         zlib.deflate(data, function(err, zdata) {
             if (err) return callback(err);
+            headers['Content-Length'] = zdata.length;
             source.put(key, zdata, headers, callback);
         });
     } catch (err) {
