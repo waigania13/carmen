@@ -2,6 +2,7 @@ var _ = require('underscore');
 var S3 = require('tilelive-s3');
 var url = require('url');
 var path = require('path');
+var zlib = require('zlib');
 
 // The S3 datasource is an expanded version of the `tilelive-s3` type
 module.exports = S3;
@@ -19,13 +20,18 @@ S3.prototype.getGeocoderData = function(type, shard, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
     var extname = type === 'feature' ? '.json' : '.pbf';
+    var source = this;
 
     // Parse carmen URL.
     try {
         var uri = prepareURI(this.data._geocoder, shard);
         uri.pathname = path.join(uri.pathname, type + '/' + shard + extname);
-        this.get(url.format(uri), function(err, buffer) {
-            callback(err && err.status > 499 ? err : null, buffer);
+        this.get(url.format(uri), function(err, zdata) {
+            if (err && err.status > 499) return callback(err);
+            zlib.inflate(zdata, function(err, data) {
+                if (err) return callback(err);
+                callback(null, data);
+            })
         });
     } catch (err) {
         return callback(new Error('Carmen not supported'));
@@ -36,13 +42,12 @@ S3.prototype.getGeocoderData = function(type, shard, callback) {
 S3.prototype.putGeocoderData = function(type, shard, data, callback) {
     if (!this.data) return callback(new Error('Tilesource not loaded'));
 
+    var source = this;
     var ctype = 'application/x-protobuf';
     var extname = '.pbf';
-    var length = data.length;
     if (type === 'feature') {
         ctype = 'application/json';
         extname = '.json';
-        length = Buffer.byteLength(data);
     }
 
     // Parse carmen URL.
@@ -52,10 +57,14 @@ S3.prototype.putGeocoderData = function(type, shard, data, callback) {
             headers = {
                 'x-amz-acl': 'public-read',
                 'Connection': 'keep-alive',
-                'Content-Length': length,
+                'Content-Encoding': 'deflate',
                 'Content-Type': ctype
             };
-        this.put(key, data, headers, callback);
+        zlib.deflate(data, function(err, zdata) {
+            if (err) return callback(err);
+            headers['Content-Length'] = zdata.length;
+            source.put(key, zdata, headers, callback);
+        });
     } catch (err) {
         return callback(new Error('Carmen not supported'));
     }

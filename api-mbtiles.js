@@ -1,4 +1,5 @@
 var _ = require('underscore');
+var zlib = require('zlib');
 var Parent = require('mbtiles');
 
 module.exports = MBTiles;
@@ -14,13 +15,19 @@ function MBTiles(uri, callback) {
 // Implements carmen#getGeocoderData method.
 MBTiles.prototype.getGeocoderData = function(type, shard, callback) {
     return this._db.get('SELECT data FROM geocoder_data WHERE type = ? AND shard = ?', type, shard, function(err, row) {
-        callback(err, row ? row.data : null);
+        if (err) return callback(err);
+        if (!row) return callback();
+        zlib.inflate(row.data, callback);
     });
 };
 
 // Implements carmen#putGeocoderData method.
 MBTiles.prototype.putGeocoderData = function(type, shard, data, callback) {
-    this.write('geocoder_data', type + '.' + shard, { type:type, shard: shard, data: data }, callback);
+    var source = this;
+    zlib.deflate(data, function(err, zdata) {
+        if (err) return callback(err);
+        source.write('geocoder_data', type + '.' + shard, { type:type, shard: shard, data: zdata }, callback);
+    });
 };
 
 // Implements carmen#getIndexableDocs method.
