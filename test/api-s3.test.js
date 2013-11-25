@@ -22,7 +22,7 @@ var prefixed = new S3({data:JSON.parse(fs.readFileSync(__dirname + '/fixtures/01
 it('getGeocoderData', function(done) {
     from.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);
-        assert.equal(4137, buffer.length);
+        assert.equal(4136, buffer.length);
         done();
     });
 });
@@ -30,7 +30,7 @@ it('getGeocoderData', function(done) {
 it('getGeocoderData (prefixed source)', function(done) {
     prefixed.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);
-        assert.equal(4137, buffer.length);
+        assert.equal(4136, buffer.length);
         done();
     });
 });
