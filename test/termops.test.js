@@ -57,12 +57,12 @@ describe('termops', function() {
     describe('phrase', function() {
         it('generates a name id', function() {
             assert.deepEqual(termops.phrase(['foo']), 2851307223);
-            assert.deepEqual(termops.phrase(['foo','street']), 1742114519);
-            assert.deepEqual(termops.phrase(['foo','lane']), 3289808599);
+            assert.deepEqual(termops.phrase(['foo','street']), 2849408590);
+            assert.deepEqual(termops.phrase(['foo','lane']), 2836822079);
             // Clusters phrase IDs based on initial term.
-            assert.deepEqual(termops.phrase(['foo']) % 4096, 3799);
-            assert.deepEqual(termops.phrase(['foo','street']) % 4096, 3799);
-            assert.deepEqual(termops.phrase(['foo','lane']) % 4096, 3799);
+            assert.deepEqual(termops.phrase(['foo']) >>> 24, 169);
+            assert.deepEqual(termops.phrase(['foo','street']) >>> 24, 169);
+            assert.deepEqual(termops.phrase(['foo','lane']) >>> 24, 169);
         });
     });
 });
