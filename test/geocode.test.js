@@ -99,7 +99,7 @@ _(carmen.indexes).each(function(source, type) {
             // @TODO some languages do not get tokenized/converted by iconv.
             if (!tokenize(doc.name).length) return done();
 
-            carmen.geocode(doc.name || '', function(err, res) {
+            carmen.geocode(doc.name || '', {}, function(err, res) {
                 assert.ifError(err);
                 stats.total++;
                 var inResults = _(res.results).chain()
@@ -127,7 +127,7 @@ _(carmen.indexes).each(function(source, type) {
             if (!('lon' in doc) || !('lat' in doc)) return done();
 
             var lonlat = doc.lon + ',' + doc.lat;
-            carmen.geocode(lonlat, function(err, res) {
+            carmen.geocode(lonlat, {}, function(err, res) {
                 assert.ifError(err);
                 stats.total++;
                 var inResults = _(res.results||[]).chain()

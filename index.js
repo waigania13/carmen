@@ -87,15 +87,16 @@ Geocoder.prototype._open = function(callback) {
 // enabled backend.
 //
 // `query` is a string of text, like "Chester, NJ"
+// `options` is an object with additional parameters
 // `callback` is called with (error, results)
-Geocoder.prototype.geocode = function(query, callback) {
+Geocoder.prototype.geocode = function(query, options, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            geocode(this, query, callback);
+            geocode(this, query, options, callback);
         }.bind(this));
     }
-    return geocode(this, query, callback);
+    return geocode(this, query, options, callback);
 };
 
 // Returns a hierarchy of features ("context") for a given lon, lat pair.

@@ -20,11 +20,11 @@ var argv = require('minimist')(process.argv, {
 if (!argv.query) throw new Error('--query argument required');
 
 var load = +new Date;
-carmen.geocode(argv.query, function(err, data) {
+carmen.geocode(argv.query, {}, function(err, data) {
     if (err) throw err;
     load = +new Date - load;
     var time = +new Date;
-    carmen.geocode(argv.query, function(err, data) {
+    carmen.geocode(argv.query, {}, function(err, data) {
         time = +new Date - time;
         if (err) throw err;
         var texts = data.results.reduce(function(memo, r) {

@@ -50,7 +50,7 @@ describe('geocode corner cases', function(done) {
     describe('place variations', function() {
         corner.forEach(function(c) {
             it(c.query, function(done) {
-                carmen.geocode(c.query, function(err, res) {
+                carmen.geocode(c.query, {}, function(err, res) {
                     assert.ok(res, 'should give results');
                     assert.deepEqual(_.pluck(res.results[0], 'name'), c.result.names);
                     done();
