@@ -47,14 +47,15 @@ remaining 4 bits can be used for additional data.
 ### phrase
 
 ```
- phrase   first term
+1st term      phrase
 ____________________
-| 0-19  |     20-32 |
+| 0-11  |     12-32 |
 --------|------------
 ```
 
-`fnv1a(str)` is used to turn any string into a 32-bit integer by the FNV
-hashing algorithm.
+The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
+the first term of a phrase. This scheme clusters phrases with the same beginning
+term in the same shards.
 
 # Terminology
 

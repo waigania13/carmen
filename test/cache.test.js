@@ -10,8 +10,12 @@ describe('Cache', function() {
                 assert.equal(0, Cache.shard(0, 1), 'level0 => 0 shard for all ids');
 
                 assert.equal(0, Cache.shard(1, 0));
-                assert.equal(1, Cache.shard(1, 1));
-                assert.equal(0, Cache.shard(1, 16));
+                assert.equal(0, Cache.shard(1, 1));
+                assert.equal(3, Cache.shard(1, Cache.mp[28] * 3));
+                assert.equal(3, Cache.shard(1, Cache.mp[28] * 3 + 5), 'lower bits do not affect shard');
+                assert.equal(15, Cache.shard(1, Cache.mp[28] * 15));
+                assert.equal(3, Cache.shard(2, Cache.mp[24] * 3));
+                assert.equal(15, Cache.shard(2, Cache.mp[24] * 15));
                 assert.equal(false, Cache.shard(1));
             });
 
@@ -22,9 +26,9 @@ describe('Cache', function() {
                 Cache.shardsort(0, arr);
                 assert.deepEqual([0,1,2,3,4,5], arr);
 
-                arr = [0,1,16,2,17,3];
+                arr = [0,1,Cache.mp[24],2,Cache.mp[23],3];
                 Cache.shardsort(1, arr);
-                assert.deepEqual([0,16,1,17,2,3], arr);
+                assert.deepEqual([0,1,2,3,Cache.mp[23],Cache.mp[24]], arr);
             });
 
             it('.uniq', function() {
@@ -43,19 +47,19 @@ describe('Cache', function() {
             it('#list', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual([5], cache.list('term'));
+                assert.deepEqual([0], cache.list('term'));
             });
 
             it('#has', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual(true, cache.has('term', 5));
+                assert.deepEqual(true, cache.has('term', 0));
             });
 
             it('#get', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual([0, 1, 2], cache._get('term', 5, 5));
+                assert.deepEqual([0, 1, 2], cache._get('term', 0, 5));
                 assert.deepEqual([0, 1, 2], cache.get('term', 5));
                 assert.equal(undefined, cache._get('term', 5, 9));
             });
@@ -63,12 +67,12 @@ describe('Cache', function() {
             it('#pack', function() {
                 var cache = new Cache('a', 1);
                 cache.set('term', 5, [0,1,2]);
-                assert.deepEqual(9, cache.pack('term', 5).length);
+                assert.deepEqual(9, cache.pack('term', 0).length);
                 // set should replace data
                 cache.set('term', 5, [0,1,2,4]);
-                assert.deepEqual(10, cache.pack('term', 5).length);
+                assert.deepEqual(10, cache.pack('term', 0).length);
                 cache.set('term', 5, []);
-                assert.deepEqual(4, cache.pack('term', 5).length);
+                assert.deepEqual(4, cache.pack('term', 0).length);
                 // now test packing data created via load
                 var packer = new Cache('a', 1);
                 var array = [];
@@ -77,9 +81,9 @@ describe('Cache', function() {
                 }
                 packer.set('term', 5, array);
                 var loader = new Cache('a', 1);
-                loader.load(packer.pack('term',5), 'term', 5);
+                loader.load(packer.pack('term',0), 'term', 0);
                 // grab data right back out
-                assert.deepEqual(10008, loader.pack('term', 5).length);
+                assert.deepEqual(10008, loader.pack('term', 0).length);
                 // try to grab data that does not exist
                 assert.throws(function() { loader.pack('term', 99999999999999) });
             });
@@ -94,20 +98,20 @@ describe('Cache', function() {
 
                 cache.set('term', 5, [0,1,2]);
                 assert.deepEqual([0,1,2], cache.get('term', 5));
-                assert.deepEqual([5], cache.list('term'));
+                assert.deepEqual([0], cache.list('term'));
 
                 cache.set('term', 21, [5,6]);
                 assert.deepEqual([5,6], cache.get('term', 21));
-                assert.deepEqual([5], cache.list('term'), 'single shard');
-                assert.deepEqual([5, 21], cache.list('term', 5), 'keys in shard');
+                assert.deepEqual([0], cache.list('term'), 'single shard');
+                assert.deepEqual([5, 21], cache.list('term', 0), 'keys in shard');
 
                 // cache A serializes data, cache B loads serialized data.
-                var pack = cache.pack('term', 5);
+                var pack = cache.pack('term', 0);
                 var loader = new Cache('b', 1);
-                loader.load(pack, 'term', 5);
+                loader.load(pack, 'term', 0);
                 assert.deepEqual([5,6], loader.get('term', 21));
-                assert.deepEqual([5], loader.list('term'), 'single shard');
-                assert.deepEqual([5, 21], loader.list('term', 5), 'keys in shard');
+                assert.deepEqual([0], loader.list('term'), 'single shard');
+                assert.deepEqual([5, 21], loader.list('term', 0), 'keys in shard');
             });
 
             it('#load (async)', function(done) {
@@ -116,37 +120,37 @@ describe('Cache', function() {
                 for (var i=0;i<10000;++i) {
                     array.push(0);
                 }
-                cache.set('term', 5, array);
-                var pack = cache.pack('term', 5);
+                cache.set('term', 0, array);
+                var pack = cache.pack('term', 0);
                 var loader = new Cache('b', 1);
                 // multiple inserts to ensure we are thread safe
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                 });
-                loader.load(pack, 'term', 5,function(err) {
-                    assert.deepEqual(array, loader.get('term', 5));
-                    assert.deepEqual([5], loader.list('term'), 'single shard');
+                loader.load(pack, 'term', 0,function(err) {
+                    assert.deepEqual(array, loader.get('term', 0));
+                    assert.deepEqual([0], loader.list('term'), 'single shard');
                     done();
                 });
             });
@@ -159,10 +163,10 @@ describe('Cache', function() {
 
             it('#unload after set', function() {
                 var cache = new Cache('a', 1);
-                cache.set('term', 5, [0,1,2]);
-                assert.deepEqual(true, cache.has('term', 5));
-                assert.equal(true,cache.unload('term',5));
-                assert.deepEqual(false, cache.has('term', 5));
+                cache.set('term', 0, [0,1,2]);
+                assert.deepEqual(true, cache.has('term', 0));
+                assert.equal(true,cache.unload('term',0));
+                assert.deepEqual(false, cache.has('term', 0));
             });
 
             it('#unload after load', function() {
@@ -172,14 +176,14 @@ describe('Cache', function() {
                     array.push(0);
                 }
                 cache.set('term', 5, array);
-                var pack = cache.pack('term', 5);
+                var pack = cache.pack('term', 0);
                 var loader = new Cache('b', 1);
-                loader.load(pack, 'term', 5);
+                loader.load(pack, 'term', 0);
                 assert.deepEqual(array, loader.get('term', 5));
-                assert.deepEqual([5], loader.list('term'), 'single shard');
-                assert.deepEqual(true, loader.has('term', 5));
-                assert.equal(true,loader.unload('term',5));
-                assert.deepEqual(false, loader.has('term', 5));
+                assert.deepEqual([0], loader.list('term'), 'single shard');
+                assert.deepEqual(true, loader.has('term', 0));
+                assert.equal(true,loader.unload('term',0));
+                assert.deepEqual(false, loader.has('term', 0));
             });
 
             it('#unloadall', function() {
@@ -189,19 +193,19 @@ describe('Cache', function() {
                     array.push(0);
                 }
                 cache.set('term', 5, array);
-                var pack = cache.pack('term', 5);
+                var pack = cache.pack('term', 0);
 
                 var loader = new Cache('b', 1);
+                loader.load(pack, 'term', 0);
                 loader.load(pack, 'term', 1);
                 loader.load(pack, 'term', 2);
                 loader.load(pack, 'term', 3);
                 loader.load(pack, 'term', 4);
-                loader.load(pack, 'term', 5);
                 assert.deepEqual(array, loader.get('term', 5));
-                assert.deepEqual([1,2,3,4,5], loader.list('term'), 'many shards');
-                assert.deepEqual(true, loader.has('term', 5));
+                assert.deepEqual([0,1,2,3,4], loader.list('term'), 'many shards');
+                assert.deepEqual(true, loader.has('term', 0));
                 assert.equal(true,loader.unloadall('term'));
-                assert.deepEqual(false, loader.has('term', 5));
+                assert.deepEqual(false, loader.has('term', 0));
                 assert.deepEqual([], loader.list('term'), 'no shards');
             });
 
@@ -209,23 +213,40 @@ describe('Cache', function() {
     });
 
     describe('#getall', function() {
+        var Memsource = require('../api-mem');
+        var mem = new Memsource({}, function() {});
+        var docs = require('./fixtures/docs.json');
+        var index = require('../lib/index');
+        var store = require('../lib/store');
+        var stats = { term:0, phrase:0 };
+        var cache = new Cache('a', 1);
+
+        mem._geocoder = cache;
+
+        before(function(done) {
+            index(mem, docs, function(err) {
+                if (err) return done(err);
+                store(mem, function(err) {
+                    if (err) return done(err);
+                    mem._geocoder.unloadall('term');
+                    mem._geocoder.unloadall('phrase');
+                    done();
+                });
+            });
+        });
 
         function getter(type, shard, callback) {
             stats[type]++;
-            fs.readFile(__dirname + '/fixtures/' + type + '.' + shard + '.pbf', callback);
+            mem.getGeocoderData(type, shard, callback);
         }
-
-        var stats = { term:0, grid:0 };
-        var cache = new Cache('a', 2);
 
         it('term', function(done) {
             var ids = [
-                872807937, // shard1
-                462467840, // shard0
-                283479809, // shard1
-                986137856, // shard0
-                450992896, // shard0
-                556780290, // shard2
+                238637120, // shard0
+                474088544, // shard1
+                268231120, // shard0
+                546393072, // shard2
+                515671616, // shard1
             ];
             var check = function(err, result) {
                 assert.ifError(err);
@@ -233,20 +254,17 @@ describe('Cache', function() {
                 // Returns ids mapped to input ids.
                 result.sort();
                 assert.deepEqual([
-                    126117647032898,
-                    18578132799233,
-                    2245607251996,
-                    247567914995457,
-                    251957525165442,
-                    30308292408064,
-                    57200341024257,
-                    64627530548480
+                    1185978131,
+                    235087459,
+                    474088545,
+                    515671625,
+                    546393074
                 ], result);
 
                 // Has loaded shards into cache -- other ids in same shards
                 // can be retrieved without additional IO.
-                assert.deepEqual([105151062623251,38786692070144], cache.get('term', 591837952), 'shard 0 in memory');
-                assert.deepEqual([44433332596993], cache.get('term', 677998849), 'shard 1 in memory');
+                assert.deepEqual([4835448], cache.get('term', 4835440), 'shard 0 in memory');
+                assert.deepEqual([269748232], cache.get('term', 284048608), 'shard 1 in memory');
 
                 // Check IO counter.
                 assert.equal(3, stats.term);
@@ -263,21 +281,20 @@ describe('Cache', function() {
             });
         });
 
-        it('term err', function(done) {
+        it('term empty', function(done) {
             cache.getall(getter, 'term', [556780291], function(err, result) {
-                assert.ok(err);
-                assert.equal('ENOENT', err.code);
+                assert.deepEqual([], result);
                 done();
             });
         });
 
-        it('grid', function(done) {
+        it('phrase', function(done) {
             var ids = [
-                52712469173248, // 0
-                3504240518402, // 2,
-                98071753006080, // 0
-                141956873251072, // 0
-                35554947385346, // 2
+                675462407, // shard2
+                183935330, // shard0
+                617460680, // shard2
+                646157956, // shard2
+                184073316, // shard0
             ];
             var check = function(err, result) {
                 assert.ifError(err);
@@ -285,39 +302,29 @@ describe('Cache', function() {
                 // Returns ids mapped to input ids.
                 result.sort();
                 assert.deepEqual([
-                    186940699735014,
-                    267755911658816,
-                    267758562448752,
-                    276002785732597,
-                    280400899352565,
-                    294145365125876,
-                    294145398680308,
-                    328778739895470,
-                    343622281069633,
-                    344172003329089,
-                    344172036883521,
-                    571769031339059,
-                    599253667911333,
-                    608600389166031
+                    183935343,
+                    184073327,
+                    2378165935,
+                    617460687,
+                    646157967,
+                    681154076
                 ], result);
 
                 // Has loaded shards into cache -- other ids in same shards
                 // can be retrieved without additional IO.
-                assert.equal(102901, cache.get('grid', 229811356881664)[0] % Math.pow(2,25), 'grid ID check');
-                assert.equal(100453, cache.get('grid', 67003285138178)[0] % Math.pow(2,25), 'grid ID check');
-                assert.deepEqual([ 593756243988981, 593756277543413 ], cache.get('grid', 229811356881664), 'shard 0 in memory');
-                assert.deepEqual([ 623996739618917 ], cache.get('grid', 67003285138178), 'shard 2 in memory');
+                assert.deepEqual([ 5468735, 1415173647 ], cache.get('phrase', 7819215), 'shard 0 in memory');
+                assert.deepEqual([ 681154076, 694145855 ], cache.get('phrase', 680656192), 'shard 2 in memory');
 
                 // Check IO counter.
-                assert.equal(2, stats.grid);
+                assert.equal(2, stats.phrase);
             };
 
             // x2 runs and check ensures that
             // - IO does not occur beyond first run.
             // - result is identical with/without IO.
-            cache.getall(getter, 'grid', ids, function(err, result) {
+            cache.getall(getter, 'phrase', ids, function(err, result) {
                 check(err, result);
-                cache.getall(getter, 'grid', ids, function(err, result) {
+                cache.getall(getter, 'phrase', ids, function(err, result) {
                     check(err, result);
                     done();
                 });
