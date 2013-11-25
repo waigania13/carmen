@@ -24,7 +24,7 @@ S3.prototype.getGeocoderData = function(type, shard, callback) {
 
     // Parse carmen URL.
     try {
-        var uri = prepareURI(this.data._geocoder, shard);
+        var uri = prepareURI(this.data.geocoder_data, shard);
         uri.pathname = path.join(uri.pathname, type + '/' + shard + extname);
         this.get(url.format(uri), function(err, zdata) {
             if (err && err.status > 499) return callback(err);
@@ -52,7 +52,7 @@ S3.prototype.putGeocoderData = function(type, shard, data, callback) {
 
     // Parse carmen URL.
     try {
-        var uri = prepareURI(this.data._geocoder, shard),
+        var uri = prepareURI(this.data.geocoder_data, shard),
             key = path.join(uri.pathname, type + '/' + shard + extname),
             headers = {
                 'x-amz-acl': 'public-read',
