@@ -19,13 +19,13 @@ var argv = require('minimist')(process.argv, {
 
 if (!argv.query) throw new Error('--query argument required');
 
-var load = +new Date;
+var load = +new Date();
 carmen.geocode(argv.query, {}, function(err, data) {
     if (err) throw err;
-    load = +new Date - load;
-    var time = +new Date;
+    load = +new Date() - load;
+    var time = +new Date();
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
-        time = +new Date - time;
+        time = +new Date() - time;
         if (err) throw err;
         var texts = data.results.reduce(function(memo, r) {
             var text = r.map(function(_) { return _.name; }).join(', ');
@@ -34,8 +34,8 @@ carmen.geocode(argv.query, {}, function(err, data) {
             return memo;
         }, {});
         var keys = Object.keys(texts);
-        console.log('Tokens')
-        console.log('------')
+        console.log('Tokens');
+        console.log('------');
         console.log(data.query.join(', '));
         console.log('');
         if (keys.length) {
@@ -86,4 +86,4 @@ function rpad(str, len) {
     if (typeof str !== 'string') str = str.toString();
     while (str.length < len) str = str + ' ';
     return str;
-};
+}
