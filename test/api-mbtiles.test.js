@@ -42,7 +42,7 @@ after(function(done) {
 it('getGeocoderData', function(done) {
     from.getGeocoderData('term', 0, function(err, buffer) {
         assert.ifError(err);
-        assert.equal(4136, buffer.length);
+        assert.equal(3891, buffer.length);
         done();
     });
 });

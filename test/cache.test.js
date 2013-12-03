@@ -253,18 +253,12 @@ describe('Cache', function() {
 
                 // Returns ids mapped to input ids.
                 result.sort();
-                assert.deepEqual([
-                    1185978131,
-                    235087459,
-                    474088545,
-                    515671625,
-                    546393074
-                ], result);
+                assert.deepEqual([238233187,267425555,474088545,515671625,546393074], result);
 
                 // Has loaded shards into cache -- other ids in same shards
                 // can be retrieved without additional IO.
                 assert.deepEqual([4835448], cache.get('term', 4835440), 'shard 0 in memory');
-                assert.deepEqual([269748232], cache.get('term', 284048608), 'shard 1 in memory');
+                assert.deepEqual([283379720], cache.get('term', 284048608), 'shard 1 in memory');
 
                 // Check IO counter.
                 assert.equal(3, stats.term);
@@ -290,10 +284,10 @@ describe('Cache', function() {
 
         it('phrase', function(done) {
             var ids = [
-                675462407, // shard2
-                183935330, // shard0
-                617460680, // shard2
-                646157956, // shard2
+                733221362, // shard2
+                4835448,   // shard0
+                619528441, // shard2
+                579414696, // shard2
                 184073316, // shard0
             ];
             var check = function(err, result) {
@@ -301,19 +295,12 @@ describe('Cache', function() {
 
                 // Returns ids mapped to input ids.
                 result.sort();
-                assert.deepEqual([
-                    183935343,
-                    184073327,
-                    2378165935,
-                    617460687,
-                    646157967,
-                    681154076
-                ], result);
+                assert.deepEqual([184073327,4835455,733221375], result);
 
                 // Has loaded shards into cache -- other ids in same shards
                 // can be retrieved without additional IO.
-                assert.deepEqual([ 5468735, 1415173647 ], cache.get('phrase', 7819215), 'shard 0 in memory');
-                assert.deepEqual([ 681154076, 694145855 ], cache.get('phrase', 680656192), 'shard 2 in memory');
+                assert.deepEqual([ 7592655 ], cache.get('phrase', 7592655), 'shard 0 in memory');
+                assert.deepEqual([ 546393087 ], cache.get('phrase', 546393074), 'shard 2 in memory');
 
                 // Check IO counter.
                 assert.equal(2, stats.phrase);

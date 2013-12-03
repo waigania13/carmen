@@ -47,15 +47,15 @@ remaining 4 bits can be used for additional data.
 ### phrase
 
 ```
-1st term      phrase
+sig term      phrase
 ____________________
 | 0-11  |     12-32 |
 --------|------------
 ```
 
 The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
-the first term of a phrase. This scheme clusters phrases with the same beginning
-term in the same shards.
+the most significant term (based on IDF of freq index) of a phrase. This scheme
+clusters phrases in shards by the term used to query each phrase.
 
 # Terminology
 
