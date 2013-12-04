@@ -12,10 +12,6 @@ if (!f) {
     console.warn('Usage: carmen-index.js <from> [to]');
     process.exit(1);
 }
-if (!fs.existsSync(f)) {
-    console.warn('File %s does not exist.', f);
-    process.exit(1);
-}
 
 var nogrids = ('NOGRIDS' in process.env);
 if (nogrids) console.log('Indexing without grids.');
