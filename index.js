@@ -6,7 +6,7 @@ var _ = require('underscore'),
 var Cache = require('./lib/util/cxxcache'),
     getSearch = require('./lib/search'),
     getContext = require('./lib/context'),
-    autoSync = require('./lib/autosync'),
+    loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
     store = require('./lib/store'),
     analyze = require('./lib/analyze'),
@@ -195,4 +195,5 @@ Geocoder.prototype.wipe = function(source, callback) {
     return wipe(source, callback);
 };
 
-Geocoder.autoSync = autoSync(Geocoder);
+Geocoder.auto = loader.auto;
+Geocoder.autodir = loader.autodir;
