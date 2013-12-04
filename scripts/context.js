@@ -10,7 +10,7 @@ var dirname = process.env.CARMEN_DIR || (__dirname + '/../tiles');
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
-var opts = Carmen.autoSync(path.resolve(dirname));
+var opts = Carmen.autodir(path.resolve(dirname));
 var carmen = new Carmen(opts);
 var argv = require('minimist')(process.argv);
 

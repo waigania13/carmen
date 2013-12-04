@@ -49,8 +49,8 @@ describe('index', function() {
     it('verifies index', function(done) {
         carmen.verify(to, function(err, stats) {
             assert.ifError(err);
-            assert.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 275, 286 ] }, stats[0]);
-            assert.deepEqual({ relation: [ 'term', 'grid' ], count: [ 275, 286 ] }, stats[1]);
+            assert.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
+            assert.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
             assert.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
             done();
         });

@@ -3,10 +3,6 @@
 var fs = require('fs');
 var path = require('path');
 var argv = process.argv;
-var api = {
-    '.s3': require('../api-s3'),
-    '.mbtiles': require('../api-mbtiles')
-};
 var Carmen = require('../index.js');
 var Queue = require('../queue');
 var f = argv[2];
@@ -16,26 +12,14 @@ if (!f) {
     console.warn('Usage: carmen-index.js <from> [to]');
     process.exit(1);
 }
-if (!fs.existsSync(f)) {
-    console.warn('File %s does not exist.', f);
-    process.exit(1);
-}
-if (!api[path.extname(f)]) {
-    console.warn('File %s format not recognized.', f);
-    process.exit(1);
-}
-if (t && !api[path.extname(t)]) {
-    console.warn('File %s format not recognized.', t);
-    process.exit(1);
-}
 
 var nogrids = ('NOGRIDS' in process.env);
 if (nogrids) console.log('Indexing without grids.');
 
 console.log('Indexing %s ...', f);
 
-var from = new api[path.extname(f)](f, function() {});
-var to = t ? new api[path.extname(t)](t, function() {}) : from;
+var from = Carmen.auto(f);
+var to = t ? Carmen.auto(t) : from;
 var carmen = new Carmen({ from: from, to: to });
 
 carmen._open(function(err) {
