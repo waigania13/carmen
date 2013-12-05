@@ -72,9 +72,6 @@ function toObject(mem, s) {
     return mem;
 }
 
-Geocoder.S3 = function() { return require('./api-s3'); };
-Geocoder.MBTiles = function() { return require('./api-mbtiles'); };
-
 // Ensure that all carmen sources are opened.
 Geocoder.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);

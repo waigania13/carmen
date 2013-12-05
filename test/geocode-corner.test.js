@@ -4,19 +4,9 @@ var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
 var tokenize = require('../lib/util/termops').tokenize;
-var S3 = Carmen.S3();
-var MBTiles = Carmen.MBTiles();
+var MBTiles = require('mbtiles');
 
-// Use BACKEND=<backend> env var to specify the carmen backend to be tested.
-var backend = (process.env.BACKEND||'mbtiles').toLowerCase();
-if (backend !== 'mbtiles' && backend !== 's3') {
-    console.warn('Backend %s unknown.', backend);
-    process.exit(1);
-} else {
-    console.warn('Testing %s backend.', backend);
-}
-
-if (backend === 'mbtiles') var carmen = new Carmen({
+var carmen = new Carmen({
     country: new MBTiles(__dirname + '/../tiles/01-ne.country.mbtiles', function(){}),
     province: new MBTiles(__dirname + '/../tiles/02-ne.province.mbtiles', function(){}),
     zipcode: new MBTiles(__dirname + '/../tiles/03-tiger.zipcode.mbtiles', function(){}),

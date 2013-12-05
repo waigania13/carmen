@@ -4,7 +4,7 @@ var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
 var memFixture = require('./fixtures/mem.json');
-var MBTiles = require('../api-mbtiles'),
+var MBTiles = require('mbtiles'),
     mem = require('../api-mem');
 
 describe('index', function() {
