@@ -42,7 +42,7 @@ function Geocoder(options) {
 
         source = source.source ? source.source : source;
 
-        if (source.open) return source.getInfo(loadedinfo);
+        if (source.open === true) return source.getInfo(loadedinfo);
         else return source.once('open', opened);
 
         function opened(err) {
