@@ -18,6 +18,7 @@
     "express": "~2.5.x",
     "sphericalmercator": "~1.0.1",
     "nan": "~0.4.1",
+    "mapnik": "https://github.com/mapnik/node-mapnik/tarball/master",
     "minimist": "0.0.5",
     "split": "0.2.x",
     "bops": "~0.1.0",
