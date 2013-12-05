@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var zlib = require('zlib');
 var Parent = require('mbtiles');
+var through = require('through');
 
 module.exports = MBTiles;
 require('util').inherits(MBTiles, Parent);
@@ -19,6 +20,24 @@ MBTiles.prototype.getGeocoderData = function(type, shard, callback) {
         if (!row) return callback();
         zlib.inflate(row.data, callback);
     });
+};
+
+MBTiles.prototype._getAllDocs = function() {
+    var out = through();
+    this._db.all('SELECT data FROM geocoder_data', function(err, rows) {
+        rows.forEach(function(row) {
+            try {
+                zlib.inflate(row.data, function(err, d) {
+                    try {
+                        var data = JSON.parse(d.toString());
+                        for (var k in data) out.write(JSON.parse(data[k])[k]);
+                    } catch(e) {}
+                });
+            } catch(e) {
+            }
+        });
+    });
+    return out;
 };
 
 // Implements carmen#putGeocoderData method.
