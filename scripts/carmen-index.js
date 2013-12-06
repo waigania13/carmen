@@ -21,35 +21,19 @@ console.log('Indexing %s ...', f);
 var from = Carmen.auto(f);
 var to = t ? Carmen.auto(t) : from;
 var carmen = new Carmen({ from: from, to: to });
+var last = +new Date;
+var total = 0;
 
-carmen._open(function(err) {
+carmen.on('index', function(num) {
+    console.log('Indexed %s docs @ %s/s', num, Math.floor(num * 1000 / (+new Date - last)));
+    last = +new Date;
+});
+carmen.on('store', function(num) {
+    last = +new Date;
+});
+carmen.index(from, to, {nogrids:nogrids}, function(err) {
     if (err) throw err;
-    to.startWriting(function(err) {
-        if (err) throw err;
-        var index = function(pointer) {
-            from.getIndexableDocs(pointer, function(err, docs, pointer) {
-                if (err) throw err;
-                if (!docs.length) {
-                    var start = +new Date;
-                    console.log('Storing docs...');
-                    return carmen.store(to, function(err) {
-                        console.log('Stored in %ss', Math.floor((+new Date-start) * 0.001));
-                        if (err) throw err;
-                        to.stopWriting(function(err) {
-                            if (err) throw err;
-                            console.log('Done.');
-                            process.exit(0);
-                        });
-                    });
-                }
-                var start = +new Date;
-                carmen.index(to, docs, function(err) {
-                    if (err) throw err;
-                    console.log('Indexed %s docs @ %s/s', docs.length, Math.floor(docs.length * 1000 / (+new Date - start)));
-                    index(pointer);
-                });
-            });
-        };
-        index({nogrids:nogrids});
-    });
+    console.log('Stored in %ss', Math.floor((+new Date - last) * 0.001));
+    console.log('Done.');
+    process.exit(0);
 });

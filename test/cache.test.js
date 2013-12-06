@@ -217,16 +217,15 @@ describe('Cache', function() {
         var mem = new Memsource({}, function() {});
         var docs = require('./fixtures/docs.json');
         var index = require('../lib/index');
-        var store = require('../lib/store');
         var stats = { term:0, phrase:0 };
         var cache = new Cache('a', 1);
 
         mem._geocoder = cache;
 
         before(function(done) {
-            index(mem, docs, function(err) {
+            index.update(mem, docs, function(err) {
                 if (err) return done(err);
-                store(mem, function(err) {
+                index.store(mem, function(err) {
                     if (err) return done(err);
                     mem._geocoder.unloadall('term');
                     mem._geocoder.unloadall('phrase');
