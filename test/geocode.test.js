@@ -3,6 +3,7 @@ var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
+var feature = require('../lib/util/feature');
 var tokenize = require('../lib/util/termops').tokenize;
 var MBTiles = require('mbtiles');
 
@@ -13,12 +14,10 @@ var carmen = new Carmen({
     place: new MBTiles(__dirname + '/../tiles/04-mb.place.mbtiles', function(){})
 });
 
-function okay(type, a, b, margin) {
+function okay(a, b, margin) {
     margin = margin || 0.01;
-    var typecheck = type === 'place' ?
-        a.type === b.type :
-        a.type === type;
-    return typecheck &&
+    var namecheck = a.name === b.name;
+    return namecheck &&
         a.name === b.name &&
         (a.lon >= b.lon - margin) &&
         (a.lon <= b.lon + margin) &&
@@ -67,7 +66,7 @@ _(carmen.indexes).each(function(source, type) {
             });
         });
         before(function(done) {
-            source.getIndexableDocs({nogrids:true}, function(err, rows, pointer) {
+            feature.getAllFeatures(source, function(err, rows) {
                 assert.ifError(err);
                 queues.geocode = queues.geocode.concat(rows);
                 queues.reverse = queues.reverse.concat(rows);
@@ -94,7 +93,7 @@ _(carmen.indexes).each(function(source, type) {
                 stats.total++;
                 var inResults = _(res.results).chain()
                     .pluck('0')
-                    .any(function(r) { return okay(type, r, doc); })
+                    .any(function(r) { return okay(r, doc); })
                     .value();
                 if (inResults) {
                     stats.okay++;
@@ -122,7 +121,7 @@ _(carmen.indexes).each(function(source, type) {
                 stats.total++;
                 var inResults = _(res.results||[]).chain()
                     .first()
-                    .any(function(r) { return okay(type, r, doc); })
+                    .any(function(r) { return okay(r, doc); })
                     .value();
                 if (inResults) {
                     stats.okay++;
