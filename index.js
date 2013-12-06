@@ -42,7 +42,8 @@ function Geocoder(options) {
         source = source.source ? source.source : source;
 
         if (source.open === true) return source.getInfo(loadedinfo);
-        else return source.once('open', opened);
+        if (typeof source.open === 'function') return source.open(opened);
+        return source.once('open', opened);
 
         function opened(err) {
             if (err) return callback(err);
