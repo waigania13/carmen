@@ -4,7 +4,7 @@ var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
 var memFixture = require('./fixtures/mem.json');
-var MBTiles = require('../api-mbtiles'),
+var MBTiles = require('mbtiles'),
     mem = require('../api-mem');
 
 describe('index', function() {
@@ -14,36 +14,13 @@ describe('index', function() {
         from: from,
         to: to
     });
-    before(function(done) {
-        carmen._open(done);
-    });
     it('indexes a document', function(done) {
-        to.startWriting(function(err) {
-            if (err) throw err;
-            var index = function(pointer) {
-                from.getIndexableDocs(pointer, function(err, docs, pointer) {
-                    if (err) throw err;
-                    var start;
-                    if (!docs.length) {
-                        return carmen.store(to, function(err) {
-                            if (err) throw err;
-                            to.stopWriting(function(err) {
-                                if (err) throw err;
-                                // Updates the mem.json fixture on disk.
-                                // fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
-                                assert.deepEqual(to.serialize(), memFixture);
-                                done();
-                            });
-                        });
-                    }
-                    start = +new Date();
-                    carmen.index(to, docs, function(err) {
-                        if (err) throw err;
-                        index(pointer);
-                    });
-                });
-            };
-            index({nogrids:false});
+        carmen.index(from, to, {}, function(err) {
+            assert.ifError(err);
+            // Updates the mem.json fixture on disk.
+            // fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
+            assert.deepEqual(to.serialize(), memFixture);
+            done();
         });
     });
     it('verifies index', function(done) {

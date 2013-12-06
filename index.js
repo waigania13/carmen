@@ -8,7 +8,6 @@ var Cache = require('./lib/util/cxxcache'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
-    store = require('./lib/store'),
     analyze = require('./lib/analyze'),
     verify = require('./lib/verify'),
     wipe = require('./lib/wipe'),
@@ -43,7 +42,8 @@ function Geocoder(options) {
         source = source.source ? source.source : source;
 
         if (source.open === true) return source.getInfo(loadedinfo);
-        else return source.once('open', opened);
+        if (typeof source.open === 'function') return source.open(opened);
+        return source.once('open', opened);
 
         function opened(err) {
             if (err) return callback(err);
@@ -72,9 +72,6 @@ function toObject(mem, s) {
     mem[s[0]] = s[1].source ? s[1].source : s[1];
     return mem;
 }
-
-Geocoder.S3 = function() { return require('./api-s3'); };
-Geocoder.MBTiles = function() { return require('./api-mbtiles'); };
 
 // Ensure that all carmen sources are opened.
 Geocoder.prototype._open = function(callback) {
@@ -140,26 +137,15 @@ Geocoder.prototype.search = function(source, query, callback) {
 };
 
 
-// Add docs to a source's index.
-Geocoder.prototype.index = function(source, docs, callback) {
+// Index docs from one source to another.
+Geocoder.prototype.index = function(from, to, pointer, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            index(source, docs, callback);
+            index(this, from, to, pointer, callback);
         }.bind(this));
     }
-    return index(source, docs, callback);
-};
-
-// Serialize and make permanent the index currently in memory for a source.
-Geocoder.prototype.store = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            store(source, callback);
-        }.bind(this));
-    }
-    return store(source, callback);
+    return index(this, from, to, pointer, callback);
 };
 
 // Verify the integrity of a source's index.

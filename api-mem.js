@@ -9,7 +9,7 @@ inherits(MemSource, EventEmitter);
 
 function MemSource(uri, callback) {
     this._shards = {};
-
+    this.open = true;
     return callback(null, this);
 }
 
@@ -58,10 +58,6 @@ MemSource.prototype.serialize = function(name, callback) {
         shards: shardify(this._shards),
         geocoder: this._geocoder
     };
-};
-
-MemSource.prototype.open = function(callback) {
-    return callback(null);
 };
 
 MemSource.prototype.stopWriting = function(callback) {
