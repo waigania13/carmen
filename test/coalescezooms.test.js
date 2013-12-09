@@ -14,6 +14,7 @@ describe('coalesce zooms', function() {
         // grids
         [
             [ 83019436130799,
+              83019436130800,
               83019469685231,
               83569191944687,
               83569225499119,
@@ -49,7 +50,14 @@ describe('coalesce zooms', function() {
                  reason: 2,
                  idx: 1,
                  db: 'province',
-                 tmpid: 100000000000495 } },
+                 tmpid: 100000000000495 },
+              '496':
+               { id: 496,
+                 relev: 1,
+                 reason: 2,
+                 idx: 1,
+                 db: 'province',
+                 tmpid: 100000000000496 } },
             { '7711':
                { id: 7711,
                  relev: 1,
@@ -94,7 +102,7 @@ describe('coalesce zooms', function() {
             coalescedCount[key] = coalesced[zxy].map(function(f) { return f.id });
         }
         assert.deepEqual({
-            '9/151/188': [ 495 ],
+            '9/151/188': [ 495, 496 ],
             '9/151/189': [ 495 ],
             '9/152/188': [ 495 ],
             '9/152/189': [ 495 ],
