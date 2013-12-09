@@ -74,7 +74,17 @@ Initialize a Carmen object with an object in the format
 }
 ```
 
-In which `CarmenSource` is an initialized Carmen source object.
+In which `CarmenSource` is an initialized Carmen source object. Each
+`CarmenSource` is a tilelive API source that has additional geocoder methods
+(see **Carmen Source API** below). In addition following `tilelive#getInfo`
+keys affect how Carmen source objects operate.
+
+attribute      | description
+---------------|------------
+maxzoom        | The assumed zoom level of the zxy geocoder grid index.
+shardlevel     | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
+format         | Optional. If set to `pbf` context operations will make use of vector tiles rather than utf grids.
+geocoder_layer | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
 
 ## geocode(query, callback)
 
