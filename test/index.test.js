@@ -8,7 +8,7 @@ var MBTiles = require('mbtiles'),
     mem = require('../api-mem');
 
 describe('index', function() {
-    var from = new MBTiles(__dirname + '/../tiles/01-ne.country.mbtiles', function(){});
+    var from = new mem(null, function() {});
     var to = new mem(null, function() {});
     var carmen = new Carmen({
         from: from,

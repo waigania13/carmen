@@ -9,7 +9,6 @@ var MBTiles = require('mbtiles');
 var carmen = new Carmen({
     country: new MBTiles(__dirname + '/../tiles/01-ne.country.mbtiles', function(){}),
     province: new MBTiles(__dirname + '/../tiles/02-ne.province.mbtiles', function(){}),
-    zipcode: new MBTiles(__dirname + '/../tiles/03-tiger.zipcode.mbtiles', function(){}),
     place: new MBTiles(__dirname + '/../tiles/04-mb.place.mbtiles', function(){})
 });
 

@@ -1,4 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
+    docs = require('./test/fixtures/docs.json'),
     bops = require('bops'),
     fs = require('fs'),
     inherits = require('util').inherits;
@@ -27,7 +28,9 @@ MemSource.prototype.putGeocoderData = function(type, shard, data, callback) {
 
 // Implements carmen#getIndexableDocs method.
 MemSource.prototype.getIndexableDocs = function(pointer, callback) {
-    return callback(null);
+    pointer = pointer || {};
+    if (pointer.done) return callback(null, [], pointer);
+    return callback(null, docs, {done:true});
 };
 
 // Adds carmen schema to startWriting.
