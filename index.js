@@ -54,8 +54,9 @@ function Geocoder(options) {
             if (err) return callback(err);
             source._geocoder = source._geocoder || new Cache(key, +info.shardlevel || 0);
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
+            source._geocoder.maxzoom = info.maxzoom;
+            source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
             source._geocoder.format = info.format || '';
-            source._geocoder.zoom = info.maxzoom;
             source._geocoder.name = key;
             source._geocoder.idx = Object.keys(options).indexOf(key);
             return callback();

@@ -26,8 +26,9 @@
         "id": "to",
         "shardlevel": 0,
         "geocoder_layer": "",
-        "format": "",
+        "maxzoom": 17,
         "zoom": 17,
+        "format": "",
         "name": "to",
         "idx": 1
     }
