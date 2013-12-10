@@ -1,7 +1,6 @@
 {
   'variables': {
-      'std%':'c++11',
-      'lazy%':'true'
+      'std%':'c++11'
   },
   'includes': [ 'common.gypi' ],
   'targets': [
@@ -66,12 +65,6 @@
               'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
               'MACOSX_DEPLOYMENT_TARGET':'10.7'
             }
-        }
-        ],
-        ['lazy == "true"', {
-            'defines': [
-               'USE_LAZY_PROTO_CACHE'
-            ]
         }
         ]
       ]
