@@ -82,11 +82,11 @@ _(carmen.indexes).each(function(source, type) {
             var doc = queues[mode].shift();
             var text = doc._text.split(',')[0];
 
-            // If docs have no text, lon, lat -- skip these.
+            // If docs have no text -- skip these.
             if (!tokenize(text).length) return done();
-            if (!('lon' in doc) || !('lat' in doc)) return done();
+            if (!doc._center) return done(new Error('Doc has no _center ' + doc));
 
-            var query = mode === 'geocode' ? text : (doc.lon + ',' + doc.lat);
+            var query = mode === 'geocode' ? text : doc._center.join(',');
 
             carmen.geocode(query, {}, function(err, res) {
                 assert.ifError(err);
