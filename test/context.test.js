@@ -18,19 +18,15 @@ describe('context vector', function() {
             assert.ifError(err);
             assert.equal(1, contexts.length);
             assert.deepEqual(contexts[0], {
-                bounds: [
-                    -18.1666125083856,
-                    27.6419831344512,
-                    4.35190962713521,
-                    43.8051825973074
-                ],
+                _id: 33,
+                _text: 'Spain',
+                bounds: '-18.1666125083856,27.6419831344512,4.35190962713521,43.8051825973074',
                 iso2: 'ES',
                 lat: 39.90916717581237,
                 lon: -3.4783597872980687,
                 name: 'Spain',
                 population: 40525002,
-                id: 'country.33',
-                type: 'country'
+                _extid: 'country.33'
             });
             done();
         });
@@ -49,18 +45,14 @@ describe('context utf', function() {
             assert.ifError(err);
             assert.equal(1, contexts.length);
             assert.deepEqual(contexts[0], {
-                bounds: [
-                    -18.1666125083856,
-                    27.6419831344512,
-                    4.35190962713521,
-                    43.8051825973075
-                ],
+                bounds: '-18.1666125083856,27.6419831344512,4.35190962713521,43.8051825973075',
                 lat: 39.9091671758124,
                 lon: -3.47835978729807,
                 name: 'Spain',
                 population: 40525002,
-                id: 'country.24',
-                type: 'country'
+                search: 'Spain',
+                _extid: 'country.24',
+                _text: 'Spain'
             });
             done();
         });
