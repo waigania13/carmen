@@ -40,7 +40,6 @@ var summary = function(label, stats, verbose) {
         console.warn('  ' + type);
         console.warn('  ' + new Array(type.length + 1).join('-'));
         _(group).each(function(results, name) {
-            results = results.join(', ');
             if (results.length > 40) results = results.substr(0,40) + '...';
             console.warn('  %s => %s', name, results);
         });
@@ -77,64 +76,38 @@ _(carmen.indexes).each(function(source, type) {
             summary('geocode ' + type, stats, true);
             done();
         });
-        var geocode = function(done) {
-            if (!queues.geocode.length) return done();
+        var runner = function(mode) { return function(done) {
+            if (!queues[mode].length) return done();
 
-            var doc = queues.geocode.shift();
+            var doc = queues[mode].shift();
+            var text = doc._text.split(',')[0];
 
-            // @TODO determine why some docs are without a search field.
-            if (!('search' in doc)) return done();
-
-            // @TODO some languages do not get tokenized/converted by iconv.
-            if (!tokenize(doc.name).length) return done();
-
-            carmen.geocode(doc.name || '', {}, function(err, res) {
-                assert.ifError(err);
-                stats.total++;
-                var inResults = _(res.results).chain()
-                    .pluck('0')
-                    .any(function(r) { return okay(r, doc); })
-                    .value();
-                if (inResults) {
-                    stats.okay++;
-                } else {
-                    stats.failed[type] = stats.failed[type] || {};
-                    stats.failed[type][doc.name] = _(res.results).chain()
-                        .pluck('0')
-                        .map(function(r) { return r.type + '.' + r.name; })
-                        .uniq()
-                        .value();
-                }
-                done();
-            });
-        };
-        var reverse = function(done) {
-            if (!queues.reverse.length) return done();
-
-            var doc = queues.reverse.shift();
-
+            // If docs have no text, lon, lat -- skip these.
+            if (!tokenize(text).length) return done();
             if (!('lon' in doc) || !('lat' in doc)) return done();
 
-            var lonlat = doc.lon + ',' + doc.lat;
-            carmen.geocode(lonlat, {}, function(err, res) {
+            var query = mode === 'geocode' ? text : (doc.lon + ',' + doc.lat);
+
+            carmen.geocode(query, {}, function(err, res) {
                 assert.ifError(err);
                 stats.total++;
-                var inResults = _(res.results||[]).chain()
-                    .first()
-                    .any(function(r) { return okay(r, doc); })
-                    .value();
-                if (inResults) {
+                var exact = res.features.filter(function(feat) {
+                    return feat.id === type + '.' + doc._id
+                })[0];
+                var loose = res.features.filter(function(feat) {
+                    return (feat.text.indexOf(text) !== -1) &&
+                        Math.abs(feat.center[0]-doc.lon) < 0.01 &&
+                        Math.abs(feat.center[1]-doc.lat) < 0.01;
+                })[0];
+                if (exact || loose) {
                     stats.okay++;
                 } else {
                     stats.failed[type] = stats.failed[type] || {};
-                    stats.failed[type][lonlat + ' (' + doc.name + ')'] = _(res.results||[]).chain()
-                        .first()
-                        .pluck('name')
-                        .value();
+                    stats.failed[type][text] = res.features.length ? res.features[0].place_name : 'No results';
                 }
                 done();
             });
-        };
+        }};
         var testcount = {
             country: 400,
             province: 400,
@@ -142,8 +115,8 @@ _(carmen.indexes).each(function(source, type) {
             place: 400
         };
         for (var i = 0; i < testcount[type]; i++) {
-            it(type + ' geocode ' + i, geocode);
-            it(type + ' reverse ' + i, reverse);
+            it(type + ' geocode ' + i, runner('geocode'));
+            it(type + ' reverse ' + i, runner('reverse'));
         }
     });
 });
