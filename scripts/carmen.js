@@ -27,10 +27,8 @@ carmen.geocode(argv.query, {}, function(err, data) {
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
         time = +new Date() - time;
         if (err) throw err;
-        var texts = data.results.reduce(function(memo, r) {
-            var text = r.map(function(_) { return _.name; }).join(', ');
-            var pt = (r.filter(function(_) { return _.address_point; })[0] || {}).address_point;
-            if (pt) text += ' ' + pt.map(function(_) { return _.toFixed(5); }).join(', ');
+        var texts = data.features.reduce(function(memo, r) {
+            var text = r.place_name;
             if (!memo[text]) memo[text] = 0;
             memo[text]++;
             return memo;
