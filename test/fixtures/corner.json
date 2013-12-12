@@ -2,73 +2,73 @@
     {
         "query": "Chester, NJ",
         "result": {
-            "names": ["Chester","New Jersey", "United States of America"]
+            "names": "Chester, New Jersey, United States of America"
         }
     },
     {
         "query": "Chester, PA",
         "result": {
-            "names": ["Chester","Pennsylvania","United States of America"]
+            "names": "Chester, Pennsylvania, United States of America"
         }
     },
     {
         "query": "Washington",
         "result": {
-            "names": ["Washington","United States of America"]
+            "names": "Washington, United States of America"
         }
     },
     {
         "query": "Washington, DC",
         "result": {
-            "names": [ "Washington","District of Columbia", "United States of America" ]
+            "names": "Washington, District of Columbia, United States of America"
         }
     },
     {
         "query": "New York",
         "result": {
-            "names": ["New York","United States of America"]
+            "names": "New York, United States of America"
         }
     },
     {
         "query": "New York State",
         "result": {
-            "names": ["New York","United States of America"]
+            "names": "New York, United States of America"
         }
     },
     {
         "query": "New York City",
         "result": {
-            "names": ["New York", "New York", "United States of America"]
+            "names": "New York, New York, United States of America"
         }
     },
     {
         "query": "New York City, NY",
         "result": {
-            "names": ["New York", "New York", "United States of America"]
+            "names": "New York, New York, United States of America"
         }
     },
     {
         "query": "Zzyzx, California",
         "result": {
-            "names": ["Zzyzx","California","United States of America"]
+            "names": "Zzyzx, California, United States of America"
         }
     },
     {
         "query": "Hollywood, Alabama",
         "result": {
-            "names": ["Hollywood","Alabama","United States of America"]
+            "names": "Hollywood, Alabama, United States of America"
         }
     },
     {
         "query": "New Mexico",
         "result": {
-            "names": ["New Mexico","United States of America"]
+            "names": "New Mexico, United States of America"
         }
     },
     {
         "query": "Mexico",
         "result": {
-            "names": ["Mexico"]
+            "names": "Mexico"
         }
     }
 
