@@ -89,7 +89,7 @@ _(carmen.indexes).each(function(source, type) {
             var query = mode === 'geocode' ? text : doc._center.join(',');
 
             carmen.geocode(query, {}, function(err, res) {
-                assert.ifError(err);
+                if (err) return done(err);
                 stats.total++;
                 var exact = res.features.filter(function(feat) {
                     return feat.id === type + '.' + doc._id
@@ -103,7 +103,7 @@ _(carmen.indexes).each(function(source, type) {
                     stats.okay++;
                 } else {
                     stats.failed[type] = stats.failed[type] || {};
-                    stats.failed[type][text] = res.features.length ? res.features[0].place_name : 'No results';
+                    stats.failed[type][query] = res.features.length ? res.features[0].place_name : 'No results';
                 }
                 done();
             });
