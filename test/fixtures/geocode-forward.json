@@ -1,0 +1,70 @@
+{
+    "type": "FeatureCollection",
+    "query": [
+        "georgia"
+    ],
+    "address": null,
+    "features": [
+        {
+            "id": "country.120",
+            "type": "Feature",
+            "text": "Georgia",
+            "place_name": "Georgia",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    43.6386835723578,
+                    42.309976705381
+                ]
+            },
+            "center": [
+                43.6386835723578,
+                42.309976705381
+            ],
+            "bbox": [
+                39.985910278441736,
+                41.04411082000942,
+                46.694803100348786,
+                43.57584259075261
+            ],
+            "properties": {
+                "iso2": "GE",
+                "name": "Georgia",
+                "population": 4615807
+            }
+        },
+        {
+            "id": "province.3540",
+            "type": "Feature",
+            "text": "Georgia",
+            "place_name": "Georgia, United States of America",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -83.2503387913911,
+                    32.6815714707468
+                ]
+            },
+            "center": [
+                -83.2503387913911,
+                32.6815714707468
+            ],
+            "bbox": [
+                -85.605682415511,
+                30.362699400057277,
+                -80.83551640066132,
+                35.00044354143634
+            ],
+            "properties": {
+                "area": 152322993191.646,
+                "name": "Georgia"
+            },
+            "context": [
+                {
+                    "id": "country.5",
+                    "text": "United States of America"
+                }
+            ]
+        }
+    ]
+}
