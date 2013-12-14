@@ -1,0 +1,6 @@
+{
+    "tiles": ["http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.province/{z}/{x}/{y}.vector.pbf"],
+    "geocoder_data": "http://mapbox-carmen.s3.amazonaws.com/dev/01-ne.province",
+    "format": "pbf",
+    "maxzoom": 6
+}
