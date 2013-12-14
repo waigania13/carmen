@@ -41,7 +41,7 @@ describe('geocode corner cases', function(done) {
             it(c.query, function(done) {
                 carmen.geocode(c.query, {}, function(err, res) {
                     assert.ok(res, 'should give results');
-                    assert.deepEqual(_.pluck(res.results[0], 'name'), c.result.names);
+                    assert.deepEqual(res.features[0].place_name, c.result.names);
                     done();
                 });
             });

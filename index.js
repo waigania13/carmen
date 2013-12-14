@@ -99,34 +99,6 @@ Geocoder.prototype.geocode = function(query, options, callback) {
     return geocode(this, query, options, callback);
 };
 
-// Returns a hierarchy of features ("context") for a given lon, lat pair.
-//
-// This is used for reverse geocoding: given a point, it returns possible
-// regions that contain it.
-Geocoder.prototype.context = function(lon, lat, maxtype, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            getContext(this, lon, lat, maxtype, callback);
-        }.bind(this));
-    }
-
-    return getContext(this, lon, lat, maxtype, callback);
-};
-
-// Retrieve the context for a feature (document).
-Geocoder.prototype._contextByFeature = function(data, callback) {
-    if (!('lon' in data)) return callback(new Error('No lon field in data'));
-    if (!('lat' in data)) return callback(new Error('No lat field in data'));
-    getContext(this, data.lon, data.lat, data.id.split('.')[0], function(err, context) {
-        if (err) return callback(err);
-
-        // Push feature onto the top level.
-        context.unshift(data);
-        return callback(null, context);
-    });
-};
-
 // Search a carmen source for features matching query.
 Geocoder.prototype.search = function(source, query, callback) {
     if (!this._opened) {

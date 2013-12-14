@@ -151,5 +151,6 @@ attribute | description
 _id       | An integer ID for this feature.
 _zxy      | An array of xyz tile coordinates covered by this feature.
 _text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
-lon       | Float. Longitude.
-lat       | Float. Latitude.
+_center   | An array in the form [lon,lat].
+_bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
+_score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.

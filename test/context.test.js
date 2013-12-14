@@ -8,30 +8,27 @@ var context = require('../lib/context');
 
 describe('context vector', function() {
     var geocoder = new Carmen({
-        country: Carmen.auto(__dirname + '/fixtures/01-ne.country.s3')
+        country: Carmen.auto(__dirname + '/fixtures/01-ne.country.s3'),
+        province: Carmen.auto(__dirname + '/fixtures/02-ne.province.s3')
     });
     before(function(done) {
         geocoder._open(done);
     });
-    it ('context', function(done) {
-        context(geocoder, 0, 40, null, function(err, contexts) {
+    it ('context vt full', function(done) {
+        context(geocoder, 0, 40, null, true, function(err, contexts) {
             assert.ifError(err);
-            assert.equal(1, contexts.length);
-            assert.deepEqual(contexts[0], {
-                bounds: [
-                    -18.1666125083856,
-                    27.6419831344512,
-                    4.35190962713521,
-                    43.8051825973074
-                ],
-                iso2: 'ES',
-                lat: 39.90916717581237,
-                lon: -3.4783597872980687,
-                name: 'Spain',
-                population: 40525002,
-                id: 'country.33',
-                type: 'country'
-            });
+            assert.equal(2, contexts.length);
+            // fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/context-vt-full.json'), contexts);
+            done();
+        });
+    });
+    it ('context vt light', function(done) {
+        context(geocoder, 0, 40, null, false, function(err, contexts) {
+            assert.ifError(err);
+            assert.equal(2, contexts.length);
+            // fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/context-vt-light.json'), contexts);
             done();
         });
     });
@@ -44,24 +41,21 @@ describe('context utf', function() {
     before(function(done) {
         geocoder._open(done);
     });
-    it ('context', function(done) {
-        context(geocoder, 0, 40, null, function(err, contexts) {
+    it ('context utf full', function(done) {
+        context(geocoder, 0, 40, null, true, function(err, contexts) {
             assert.ifError(err);
             assert.equal(1, contexts.length);
-            assert.deepEqual(contexts[0], {
-                bounds: [
-                    -18.1666125083856,
-                    27.6419831344512,
-                    4.35190962713521,
-                    43.8051825973075
-                ],
-                lat: 39.9091671758124,
-                lon: -3.47835978729807,
-                name: 'Spain',
-                population: 40525002,
-                id: 'country.24',
-                type: 'country'
-            });
+            // fs.writeFileSync(__dirname + '/fixtures/context-utf-full.json', JSON.stringify(contexts, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/context-utf-full.json'), contexts);
+            done();
+        });
+    });
+    it ('context utf light', function(done) {
+        context(geocoder, 0, 40, null, false, function(err, contexts) {
+            assert.ifError(err);
+            assert.equal(1, contexts.length);
+            // fs.writeFileSync(__dirname + '/fixtures/context-utf-light.json', JSON.stringify(contexts, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/context-utf-light.json'), contexts);
             done();
         });
     });
