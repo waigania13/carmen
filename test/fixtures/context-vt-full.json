@@ -26,7 +26,8 @@
             0.523668654384946,
             40.779914252240964
         ],
-        "_extid": "province.3427"
+        "_extid": "province.3427",
+        "_fhash": "province.3427"
     },
     {
         "_center": [
@@ -57,6 +58,7 @@
             4.351909627135207,
             43.80518259730744
         ],
-        "_extid": "country.33"
+        "_extid": "country.33",
+        "_fhash": "country.33"
     }
 ]
