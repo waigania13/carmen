@@ -14,6 +14,11 @@ describe('termops', function() {
                 assert.deepEqual(termops.tokenize('Москва'), ['moskva']);
                 assert.deepEqual(termops.tokenize('京都市'), ['jing','du','shi']);
             });
+            it('tokenizes lonlat', function() {
+                assert.deepEqual(termops.tokenize('40,0', true), [40,0]);
+                assert.deepEqual(termops.tokenize('-120.9129102983109, 45.312312', true), [-120.9129102983109,45.312312]);
+                assert.deepEqual(termops.tokenize('14th 15th', true), ['14th','15th']);
+            });
         });
         describe('edge cases', function() {
             it('empty string', function() {
