@@ -154,3 +154,22 @@ _text     | Text to index for this feature. Synonyms, translations, etc. should 
 _center   | An array in the form [lon,lat].
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
 _score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
+_geometry | Optional. A geojson geometry object.
+
+### TIGER address interpolation
+
+Carmen has basic support for interpolating geometries based on TIGER address
+range data. To make use of this feature the following additional keys must be
+present.
+
+attribute | description
+----------|------------
+_rangetype| The type of range data available. Only possible value atm is 'tiger'.
+_geometry | A LineString or MultiLineString geometry object.
+_lfromhn  | Single (LineString) or array of values (Multi) of TIGER LFROMHN field.
+_ltohn    | Single (LineString) or array of values (Multi) of TIGER LTOHN field.
+_rfromhn  | Single (LineString) or array of values (Multi) of TIGER RFROMHN field.
+_rtohn    | Single (LineString) or array of values (Multi) of TIGER RTOHN field.
+_parityl  | Single (LineString) or array of values (Multi) of TIGER PARITYL field.
+_parityr  | Single (LineString) or array of values (Multi) of TIGER PARITYR field.
+
