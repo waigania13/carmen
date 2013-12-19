@@ -1,23 +1,36 @@
 #!/usr/bin/env node
 
 if (!process.argv[2]) {
-    console.log('Usage: carmen.js --query="<query>"');
+    console.log('Usage: carmen.js [file|dir] --query="<query>"');
     process.exit(1);
 }
-
-var dirname = process.env.CARMEN_DIR || (__dirname + '/../tiles');
 
 var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
-var opts = Carmen.autodir(path.resolve(dirname));
-var carmen = new Carmen(opts);
 var argv = require('minimist')(process.argv, {
-    string: 'query'
+    string: 'query',
+    boolean: 'geojson',
+    boolean: 'stats'
 });
 
 if (!argv.query) throw new Error('--query argument required');
+
+var opts = {};
+if (argv._.length > 2) {
+    var src = path.resolve(argv._[argv._.length-1]);
+    var stat = fs.statSync(src);
+    if (stat.isDirectory()) {
+        opts = Carmen.autodir(src);
+    } else {
+        opts[path.basename(src)] = Carmen.auto(src);
+    }
+} else {
+    opts = Carmen.autodir(path.resolve(__dirname + '/../tiles'));
+}
+
+var carmen = new Carmen(opts);
 
 var load = +new Date();
 carmen.geocode(argv.query, {}, function(err, data) {
@@ -34,11 +47,11 @@ carmen.geocode(argv.query, {}, function(err, data) {
             return memo;
         }, {});
         var keys = Object.keys(texts);
-        console.log('Tokens');
-        console.log('------');
-        console.log(data.query.join(', '));
-        console.log('');
-        if (keys.length) {
+        if (keys.length && !argv.geojson) {
+            console.log('Tokens');
+            console.log('------');
+            console.log(data.query.join(', '));
+            console.log('');
             console.log('Result (showing %s of %s)', keys.slice(0,10).length, keys.length);
             console.log('-----------------------');
             keys.slice(0,10).forEach(function(key) {
@@ -46,6 +59,10 @@ carmen.geocode(argv.query, {}, function(err, data) {
             });
             console.log('');
         }
+        if (keys.length && argv.geojson) {
+            console.log(JSON.stringify(data, null, 2));
+        }
+        if (!argv.stats) return;
         console.log('Stats');
         console.log('-----');
         console.log('- warmup:    %sms', load);
