@@ -40,26 +40,19 @@ carmen.geocode(argv.query, {}, function(err, data) {
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
         time = +new Date() - time;
         if (err) throw err;
-        var texts = data.features.reduce(function(memo, r) {
-            var text = r.place_name;
-            if (!memo[text]) memo[text] = 0;
-            memo[text]++;
-            return memo;
-        }, {});
-        var keys = Object.keys(texts);
-        if (keys.length && !argv.geojson) {
+        if (data.features.length && !argv.geojson) {
             console.log('Tokens');
             console.log('------');
             console.log(data.query.join(', '));
             console.log('');
-            console.log('Result (showing %s of %s)', keys.slice(0,10).length, keys.length);
-            console.log('-----------------------');
-            keys.slice(0,10).forEach(function(key) {
-                console.log('- %s %s', key, texts[key] > 1 ? 'x' + texts[key] : '');
+            console.log('Features');
+            console.log('--------');
+            data.features.forEach(function(f) {
+                console.log('- %s %s', f.relevance.toFixed(2), f.place_name);
             });
             console.log('');
         }
-        if (keys.length && argv.geojson) {
+        if (data.features.length && argv.geojson) {
             console.log(JSON.stringify(data, null, 2));
         }
         if (!argv.stats) return;
