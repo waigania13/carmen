@@ -28,4 +28,12 @@ describe('geocode', function() {
             done();
         });
     });
+    it ('noresults', function(done) {
+        geocoder.geocode('asdfasdf', {}, function(err, res) {
+            assert.ifError(err);
+            // fs.writeFileSync(__dirname + '/fixtures/geocode-noresults.json', JSON.stringify(res, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/geocode-noresults.json'), res);
+            done();
+        });
+    });
 });
