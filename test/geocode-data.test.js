@@ -88,7 +88,7 @@ _(carmen.indexes).each(function(source, type) {
 
             var query = mode === 'geocode' ? text : doc._center.join(',');
 
-            carmen.geocode(query, {}, function(err, res) {
+            carmen.geocode(query, { limit:20 }, function(err, res) {
                 if (err) return done(err);
                 stats.total++;
                 var exact = res.features.filter(function(feat) {
