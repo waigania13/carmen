@@ -36,9 +36,7 @@ var load = +new Date();
 carmen.geocode(argv.query, {}, function(err, data) {
     if (err) throw err;
     load = +new Date() - load;
-    var time = +new Date();
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
-        time = +new Date() - time;
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
@@ -62,12 +60,11 @@ carmen.geocode(argv.query, {}, function(err, data) {
         console.log('- search:    %s @ %sms', data.stats.searchCount||0, data.stats.searchTime||0);
         console.log('- relev:     %s @ %sms', data.stats.relevCount||0, data.stats.relevTime||0);
         console.log('- results:   %s @ %sms', data.stats.contextCount||0, data.stats.contextTime||0);
-        console.log('- relevance: %s', data.stats.relev);
-        console.log('- totaltime: %sms', time);
+        console.log('- totaltime: %sms', data.stats.totalTime||0);
 
         console.log('Cache');
         console.log('-----');
-        var cachestats = {freq:0,term:0,phrase:0,grid:0,degen:0,total:0};
+        var cachestats = {term:0,phrase:0,grid:0,degen:0,total:0};
         _(carmen.indexes).each(function(source, name) {
             _(cachestats).each(function(sum, key) {
                 var count = source._geocoder.list(key).length;
@@ -76,7 +73,6 @@ carmen.geocode(argv.query, {}, function(err, data) {
             });
         });
         console.log('- degen:     %s', cachestats.degen);
-        console.log('- freq:      %s', cachestats.freq);
         console.log('- term:      %s', cachestats.term);
         console.log('- phrase:    %s', cachestats.phrase);
         console.log('- grid:      %s', cachestats.grid);
