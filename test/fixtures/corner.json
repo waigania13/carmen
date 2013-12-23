@@ -36,6 +36,12 @@
         }
     },
     {
+        "query": "New York New York",
+        "result": {
+            "names": "New York, New York, United States of America"
+        }
+    },
+    {
         "query": "New York City",
         "result": {
             "names": "New York, New York, United States of America"
