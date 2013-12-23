@@ -31,8 +31,8 @@ describe('getSetRelevance', function() {
         ]));
         // Repeated terms but match counts are exhausted.
         assert.equal(0.5, getSetRelevance(['new','york','new','york','new','york','new','york'], [
-            { id: 1, relev: 1, reason: 15, count: 2, idx: 2, db: 'province', tmpid: 300000000000001 },
-            { id: 2, relev: 1, reason: 15, count: 2, idx: 3, db: 'place', tmpid: 300000000000002 }
+            { id: 1, relev: 1, reason: 255, count: 2, idx: 2, db: 'province', tmpid: 300000000000001 },
+            { id: 2, relev: 1, reason: 255, count: 2, idx: 3, db: 'place', tmpid: 300000000000002 }
         ]));
     });
 });
