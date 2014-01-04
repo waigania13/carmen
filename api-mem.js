@@ -1,6 +1,5 @@
 var EventEmitter = require('events').EventEmitter,
     docs = require('./test/fixtures/docs.json'),
-    bops = require('bops'),
     fs = require('fs'),
     inherits = require('util').inherits;
 
@@ -52,7 +51,7 @@ MemSource.prototype.serialize = function(name, callback) {
     function strings(shards) {
         var o = {};
         for (var i in shards) {
-            o[i] = bops.to(shards[i], 'base64');
+            o[i] = shards[i].toString('base64');
         }
         return o;
     }
