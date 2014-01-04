@@ -1,4 +1,3 @@
-var _ = require('underscore');
 var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
@@ -35,18 +34,20 @@ var summary = function(label, stats, verbose) {
         (((+new Date()) - stats.start)/stats.total).toFixed(1));
 
     if (!verbose) return;
-    _(stats.failed).each(function(group, type) {
+    for (var type in stats.failed) {
+        var group = stats.failed[type];
         console.warn('');
         console.warn('  ' + type);
         console.warn('  ' + new Array(type.length + 1).join('-'));
-        _(group).each(function(results, name) {
+        for (var name in group) {
+            var results = group[name];
             if (results.length > 40) results = results.substr(0,40) + '...';
             console.warn('  %s => %s', name, results);
-        });
-    });
+        }
+    }
 };
 
-_(carmen.indexes).each(function(source, type) {
+for (var type in carmen.indexes) (function(type, source) {
     describe('geocode ' + type, function(done) {
         var queues = {
             geocode: [],
@@ -119,4 +120,4 @@ _(carmen.indexes).each(function(source, type) {
             it(type + ' reverse ' + i, runner('reverse'));
         }
     });
-});
+})(type, carmen.indexes[type]);
