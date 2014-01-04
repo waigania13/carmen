@@ -5,7 +5,6 @@ var path = require('path');
 var argv = process.argv;
 var Carmen = require('../index.js');
 var Queue = require('../queue');
-var _ = require('underscore');
 var f = argv[2];
 
 if (!f) {

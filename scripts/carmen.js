@@ -5,7 +5,6 @@ if (!process.argv[2]) {
     process.exit(1);
 }
 
-var _ = require('underscore');
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
@@ -65,8 +64,8 @@ carmen.geocode(argv.query, {}, function(err, data) {
         console.log('Cache');
         console.log('-----');
         var cachestats = {term:0,phrase:0,grid:0,degen:0,total:0};
-        _(carmen.indexes).each(function(source, name) {
-            _(cachestats).each(function(sum, key) {
+        carmen.indexes.forEach(function(source, name) {
+            cachestats.forEach(function(sum, key) {
                 var count = source._geocoder.list(key).length;
                 cachestats[key] += count;
                 cachestats.total += count;
