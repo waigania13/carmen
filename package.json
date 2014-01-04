@@ -22,14 +22,12 @@
     "split": "0.2.x",
     "unidecode": "0.1.3",
     "tilelive": "~4.5.3",
-    "queue-async": "1.0.x",
-    "through": "~2.3.4"
+    "queue-async": "1.0.x"
   },
   "devDependencies": {
     "mbtiles": "0.4.x",
     "tilelive-s3": "0.10.x",
     "mocha": "~1.13.0",
-    "queue-async": "~1.0.4",
     "benchmark": "~1.0.0"
   },
   "main": "./index.js",
