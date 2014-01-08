@@ -213,7 +213,7 @@ describe('Cache', function() {
     });
 
     describe('#getall', function() {
-        var Memsource = require('../api-mem');
+        var Memsource = require('../lib/api-mem');
         var mem = new Memsource({}, function() {});
         var docs = require('./fixtures/docs.json');
         var index = require('../lib/index');

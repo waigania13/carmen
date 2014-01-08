@@ -4,7 +4,7 @@ var util = require('util');
 var Carmen = require('..');
 var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles'),
-    mem = require('../api-mem');
+    mem = require('../lib/api-mem');
 
 describe('index', function() {
     var from = new mem(null, function() {});
