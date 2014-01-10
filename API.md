@@ -88,28 +88,29 @@ geocoder_layer      | Optional. A string in the form `layer.field`. `layer` is u
 geocoder_address    | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0.
 geocoder_resolution | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
 
-## geocode(query, callback)
+## geocode(query, options, callback)
 
 Given a `query` string, call callback with `(err, results)` of possible contexts
 represented by that string.
 
-## context(lon, lat, maxtype, callback)
+## index(from, to, pointer, callback)
 
-Given a `lat`, `lon` pair, return a pyramid of features that contain that point,
-in order decreasing specificity.
+Indexes docs using `from` as the source and `to` as the destination. Options can
+be passed to `pointer` or omitted.
 
-## search(source, query, id, callback)
+## verify(source, callback)
 
-Search a carmen source for features matching query.
+Verify the integrity of index relations for a given source.
 
-## index(source, docs, callback)
+## analyze(source, callback)
 
-Given a source and documents, index those documents into the source, pre-generating
-varied terms and degenerates for use in geocoding.
+Analyze index relations for a given source. Generates stats on degenerate terms,
+term => phrase relations, etc.
 
-## store(source, callback)
+## wipe(source, callback)
 
-Serialize and make permanent the index currently in memory for a source.
+Clear all geocoding indexes on a source.
+
 
 # Carmen Source API
 

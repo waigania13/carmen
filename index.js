@@ -99,18 +99,6 @@ Geocoder.prototype.geocode = function(query, options, callback) {
     return geocode(this, query, options, callback);
 };
 
-// Search a carmen source for features matching query.
-Geocoder.prototype.search = function(source, query, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            getSearch(source, query, callback);
-        }.bind(this));
-    }
-    return getSearch(source, query, callback);
-};
-
-
 // Index docs from one source to another.
 Geocoder.prototype.index = function(from, to, pointer, callback) {
     if (!this._opened) {
