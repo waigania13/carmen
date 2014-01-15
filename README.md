@@ -211,7 +211,7 @@ performance, especially in V8 as keys of a hash object. To convert arbitrary
 text (like tokenized text) to integers the FNV1a hash is used and sometimes
 truncated to make room for additional encoded data.
 
-## term (canonical, degenerate, weighted)
+### term (canonical, degenerate, weighted)
 
 term | extra
 -----|------
