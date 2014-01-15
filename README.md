@@ -1,29 +1,24 @@
 # carmen
 
-[UTFGrid](https://www.mapbox.com/developers/utfgrid/)/[MBTiles](https://www.mapbox.com/mbtiles-spec/)-based
-geocoder with support for swappable data sources.
-
-This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306)
-by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
+[Mapnik vector tile](https://github.com/mapbox/mapnik-vector-tile)-based geocoder with support for swappable data sources.
+This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
 [![Build Status](https://secure.travis-ci.org/mapbox/carmen.png)](https://travis-ci.org/mapbox/carmen)
 
 ## Depends
 
- - Node v0.8.x or Node v0.10.x
- - sqlite3 command line program (`apt-get install sqlite3`)
- - libprotobuf-lite and protoc compiler
- - C++11 capable compiler (>= g++ 4.7 or >= clang 3.2)
+- Node v0.8.x or Node v0.10.x
+- libprotobuf-lite and protoc compiler
+- C++11 capable compiler (>= g++ 4.7 or >= clang 3.2)
+- *Optional* libsqlite3 for [node-mbtiles](https://github.com/mapbox/node-mbtiles) storage backend
 
 ## Install
 
-Linux / apt:
+Ubuntu precise:
 
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+    sudo add-apt-repository ppa:george-edison55/gcc4.7-precise
     sudo apt-get update
-    sudo apt-get install gcc-4.7 g++-4.7 libprotobuf7 libprotobuf-dev protobuf-compiler
-    export CC=gcc-4.7
-    export CXX=g++-4.7
+    sudo apt-get install gcc-4.7 gcc g++ libprotobuf7 libprotobuf-dev protobuf-compiler
 
 OSX / homebrew:
 
@@ -35,190 +30,211 @@ All:
 
 Note: if running as `root` user you need to do `npm install --unsafe-perm` to avoid `cannot run in wd carmen@0.1.0` error that prevents the build.
 
-Installs dependencies and downloads the default tiles indexes (about 1GB of data).
+Installs dependencies and downloads the default tiles indexes (about 200MB of data).
 
-## Usage
+## Command line
 
-    npm start
+Carmen comes with command line utilities that also act as examples of API usage.
 
-Runs an example geocoding server at `http://localhost:3000`.
+To query the default indexes:
 
-## Tests
+    ./scripts/carmen.js --query="new york"
 
-Install, and then
+To analyze an index:
 
-    npm test
+    ./scripts/carmen-analyze.js tiles/01-ne.country.mbtiles
 
-## Example
+## Example data
+
+Example TM2 projects are available in the `datadev` branch.
+
+------
+
+## Carmen API
+
+## Carmen(options)
+
+Create a new Carmen geocoder instance. Takes a hash of index objects to use,
+keyed by each `id`. Each index object should be an instance of a `CarmenSource`
+object.
 
 ```js
 var Carmen = require('carmen');
-var carmen = new Carmen(options /*see below for details on options*/);
-carmen.geocode('Washington, DC', function(err, data) {
-    console.log(data);
+var MBTiles = require('mbtiles');
+var geocoder = new Carmen({
+    country: new MBTiles('./country.mbtiles'),
+    province: new MBTiles('./province.mbtiles')
 });
+
+geocoder.geocode('New York', {}, callback);
 ```
 
-## API
+Each `CarmenSource` is a tilelive API source that has additional geocoder
+methods (see **Carmen Source API** below). In addition following
+`tilelive#getInfo` keys affect how Carmen source objects operate.
 
-### new Carmen(options)
+attribute           | description
+--------------------|------------
+maxzoom             | The assumed zoom level of the zxy geocoder grid index.
+shardlevel          | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
+format              | Optional. If set to `pbf` context operations will make use of vector tiles rather than utf grids.
+geocoder_layer      | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
+geocoder_address    | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0.
+geocoder_resolution | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
 
-Create a new Carmen object. Takes a hash of index objects to use, keyed by
-each `id`. Each index object should resemble the following:
+### geocode(query, options, callback)
 
-```js
-{
-  // Required. MBTiles instance to be used.
-  source: new MBTiles('./myindex.mbtiles'),
+Given a `query` string, call callback with `(err, results)` of possible contexts
+represented by that string.
 
-  // Optional. Set to `false` to skip this index for token queries.
-  query: true,
+### index(from, to, pointer, callback)
 
-  // Optional. Set to `false` to exclude this index from contexts.
-  context: true,
+Indexes docs using `from` as the source and `to` as the destination. Options can
+be passed to `pointer` or omitted.
 
-  // Optional. Search weight. Higher = greater priority.
-  weight: 2,
+### verify(source, callback)
 
-  // Optional. Return a value to break ties between results. Higher values beat lower.
-  sortBy: function(data) { return data.myKey; },
+Verify the integrity of index relations for a given source.
 
-  // Optional. Token filter. Return false to skip querying this index.
-  filter: function(token) { return true; },
+### analyze(source, callback)
 
-  // Optional. Map the feature data to a different output format.
-  map: function(data) { return data; }
-}
+Analyze index relations for a given source. Generates stats on degenerate terms,
+term => phrase relations, etc.
+
+### wipe(source, callback)
+
+Clear all geocoding indexes on a source.
+
+------
+
+## Carmen Source API
+
+Carmen sources often [inherit from tilelive sources](https://github.com/mapbox/tilelive.js/blob/master/API.md).
+
+### getFeature(id, callback)
+
+Retrieves a feature given by `id`, calls `callback` with `(err, result)`
+
+### putFeature(id, data, callback)
+
+Inserts feature `data` and calls callback with `(err, result)`.
+
+### startWriting(callback)
+
+Create necessary indexes or structures in order for this carmen source to
+be written to.
+
+### putGeocoderData(index, shard, buffer, callback)
+
+Put buffer into a shard with index `index`, and call callback with `(err)`
+
+### getGeocoderData(index, shard, callback)
+
+Get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+
+### getIndexableDocs(pointer, callback)
+
+Get documents needed to create a forward geocoding datasource.
+
+`pointer` is an optional object that has different behavior between sources -
+it indicates the state of the database or dataset like a cursor would, allowing
+you to page through documents.
+
+`callback` is called with `(error, documents, pointer)`, in which `documents`
+is a list of objects. Each object may have any attributes but the following are
+required:
+
+attribute | description
+----------|------------
+_id       | An integer ID for this feature.
+_zxy      | An array of xyz tile coordinates covered by this feature.
+_text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+_center   | An array in the form [lon,lat].
+_bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
+_score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
+_geometry | Optional. A geojson geometry object.
+
+### TIGER address interpolation
+
+Carmen has basic support for interpolating geometries based on TIGER address
+range data. To make use of this feature the following additional keys must be
+present.
+
+attribute | description
+----------|------------
+_rangetype| The type of range data available. Only possible value atm is 'tiger'.
+_geometry | A LineString or MultiLineString geometry object.
+_lfromhn  | Single (LineString) or array of values (Multi) of TIGER LFROMHN field.
+_ltohn    | Single (LineString) or array of values (Multi) of TIGER LTOHN field.
+_rfromhn  | Single (LineString) or array of values (Multi) of TIGER RFROMHN field.
+_rtohn    | Single (LineString) or array of values (Multi) of TIGER RTOHN field.
+_parityl  | Single (LineString) or array of values (Multi) of TIGER PARITYL field.
+_parityr  | Single (LineString) or array of values (Multi) of TIGER PARITYR field.
+
+------
+
+## Dev notes
+
+Some incomplete notes about the Carmen codebase.
+
+### Terminology
+
+* Cache: an object that quickly loads sharded data from JSON or protobuf files
+* Source: a Carmen source, such as S3, MBTiles, or memory
+
+### Source structure
+
+```
+lib/
+  [operations that are exposed in the public ui and do i/o]
+  util/
+    [algorithmically simple utilities]
+  pure/
+    [pure algorithms]
 ```
 
-### carmen.geocode([string], callback)
+### Index structure
 
-Geocode a string query. The result is passed to `callback(err, data)` in the following form:
+There are two types of index stores in Carmen.
 
-```js
-{
-  query: ['washington', 'dc'],
-  results: [
-    [
-      {
-        lat: 38.8951148,
-        lon: -77.0363716000006,
-        name: 'Washington',
-        type: 'city'
-      },
-      {
-        lat: 38.9108045088125,
-        lon: -77.0096131357235,
-        name: 'District of Columbia',
-        type: 'province'
-      },
-      {
-        lat: 51.1974842447091,
-        lon: -119.265098284354,
-        name: 'United States of America',
-        type: 'country'
-      }
-    ]
-  ]
-}
-```
+- `cxxcache` is used for storing the `degen`, `term`, `phrase`, `grid`, and
+  `freq` indexes. Each index is sharded and each shard contains a one-to-many
+  hash with 32-bit integer keys that map to arrays of arbitrary length
+  containing 32-bit integer elements.
+- `feature` is used to store feature docs. Each index is sharded and each shard
+  contains a one-to-many hash with 32-bit integer keys that map to a bundle of
+  features. Each bundle contains feature documents keyed by their original, full
+  id.
 
-Each array in `results` contains a match for the query, where the first feature
-in each match contains the matching element and subsequent elements describe
-other geographic features containing the first element.
+32-bit unsigned integers are widely used in the Carmen codebase because of their
+performance, especially in V8 as keys of a hash object. To convert arbitrary
+text (like tokenized text) to integers the FNV1a hash is used and sometimes
+truncated to make room for additional encoded data.
 
-`carmen.geocode()` can also be called with a pair of coordinates in the form
-`lon,lat` to do "reverse" geocoding. The result data is identical for a reverse geocoding query.
+## term (canonical, degenerate, weighted)
 
-### carmen.context(longitude: number, latitude: number, maxtype, callback: function)
+term | extra
+-----|------
+0-27 | 28-31
 
-Reverse-geocode a point on the earth, calling `callback` with `(err, results)`
+The first 28 bits of a term hash determine the canonical ID of a term. The
+remaining 4 bits can be used for additional data.
 
-Results are a list of places in the form:
+- **Degenerates** are terms with delete operations performed on them. The extra
+  4 bits are used to encode the number of delete operations (up to 15 chars)
+  performed on the canonical term to result in the degenerate.
+- **Weighted** terms are term hashes with weights (0-15) relative to other terms
+  in the same phrase. The weights are only relevant in the context of the phrase
+  being considered. A weight of 15 signifies the most significant term in the
+  phrase with other terms being <= 15.
 
-```json
-[
-  {
-    "bounds": [
-      -80.0100559999999,
-      37.978863,
-      -79.9505769999999,
-      38.0010829999999
-    ],
-    "lat": 37.9864357468642,
-    "lon": -79.9800636337067,
-    "name": "Bolar",
-    "score": 2112180.24540208,
-    "type": "place",
-    "id": "place.154513"
-  }
-]
-```
+### phrase
 
-### carmen.index(source: tilelive source, docs: array, callback: function)
+sig term | phrase
+---------|-------
+0-11     | 12-31
 
-Given `source` as a tilelive source, `docs` as an array of documents to index,
-and `callback` being called with `(err)` argument indicating any errors,
-use Carmen to write a new geocodable index to the source.
+The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
+the most significant term (based on IDF of freq index) of a phrase. This scheme
+clusters phrases in shards by the term used to query each phrase.
 
-## Indexes
-
-Each carmen index is an MBTiles file with an additional SQLite fulltext search table `carmen`. The table can be added by running
-
-    ./scripts/carmen-index.js MBTILES
-
-The only requirement for a carmen MBTiles file is that it contains grids and
-features with a field suitable for use as search terms. Any additional keys
-included with features will be automatically passed through to the results.
-The following fields have special meaning to carmen if present:
-
-- `search` - text to be indexed for forward geocoding.
-- `lon` - longitude of the feature. If omitted, `lon` is calculated from the UTFGrid.
-- `lat` - latitude of the feature. If omitted, `lat` is calculated from the UTFGrid.
-- `type` - type of feature. If omitted, the index key is used.
-- `score` - numeric score. If present, used by the default `sortBy` function to sort results.
-- `bounds` - comma-separated coordinates that bound the feature in order: w,s,e,n. If present, carmen will split and format this field into an array of values.
-
-Note that the UTFGrid-based centroid calculation for polygon features is
-currently very rough. Providing a more accurate lon/lat pair for these
-features is more performant and recommended.
-
-### Designing for carmen in TileMill
-
-Here are some guidelines if you are creating an MBTiles specifically for carmen in TileMill:
-
-- Only the highest zoom level of an MBTiles is used by carmen. To save on disk space and render time you will probably want to export only the highest zoom level of your map.
-- Since carmen uses the rendered UTFGrid you should ensure that the zoom level of your map is high enough to get the precision you need. 
-- The field you use for search terms (by default `search`) can contain comma separated "synonyms". For example, a value of `United States, America` will allow searches for either `United States` or `America` to both match the same feature.
-- Image tiles in your MBTiles can be helpful for debugging but are not strictly necessary. To remove them and reclaim space:
-
-        sqlite3 [mbtiles] "DELETE FROM images; UPDATE map SET tile_id = NULL; VACUUM;"
-
-## Default indexes
-
-Four index files (country/province/place/zipcode) are provided by default with carmen. Their TileMill projects are available in the `data` branch.
-
-- `ne-countries` - countries, from Natural Earth. Public domain.
-- `ne-provinces` - provinces, from Natural Earth. Public domain.
-- `osm-places` - places (cities/towns/villages/etc.), OpenStreetMap and contributors. CC-by-SA.
-- `tiger-zipcodes`- US zipcodes, from TIGER. Public domain.
-
-Two other projects are available in the `data` branch:
-
-- `flickr-places` - places (localities), from Flickr. Public domain.
-- `tiger-places` - places (cities/towns/villages/etc.), from TIGER. Public domain.
-
-Fully rendered and indexed copies of these sources can be downloaded at:
-
-    http://mapbox-carmen.s3.amazonaws.com/carmen/flickr-places.mbtiles
-    http://mapbox-carmen.s3.amazonaws.com/carmen/ne-countries.mbtiles
-    http://mapbox-carmen.s3.amazonaws.com/carmen/ne-provinces.mbtiles
-    http://mapbox-carmen.s3.amazonaws.com/carmen/osm-places.mbtiles
-    http://mapbox-carmen.s3.amazonaws.com/carmen/tiger-zipcodes.mbtiles
-    http://mapbox-carmen.s3.amazonaws.com/carmen/tiger-places.mbtiles
-
-## Known issues
-
-- Cyrillic UTF-8 characters are not supported by the SQLite3 `simple` tokenizer. This issue can be fixed by compiling SQLite3 with `libicu` support. See issue #1.
-- Very small features in the default datasources are lost during the rasterization process because of the 4x4 resolution of the UTFGrid renderer. See issue #2.
-- Discrepancies between default datasources sometimes assign the wrong context to a feature. For example, the rough administrative boundaries of natural earth place the OSM point for "El Paso" in Mexico rather than Texas. See issue #3.
