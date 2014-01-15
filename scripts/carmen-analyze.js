@@ -5,7 +5,6 @@ var path = require('path');
 var argv = process.argv;
 var Carmen = require('../index.js');
 var termops = require('../lib/util/termops.js');
-var Queue = require('../queue');
 var f = argv[2];
 
 if (!f) {
