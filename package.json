@@ -1,7 +1,7 @@
 {
   "name": "carmen",
-  "description": "UTFGrid/MBTiles-based geocoder with support for swappable data sources.",
-  "version": "0.1.0",
+  "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
+  "version": "0.2.0-alpha1",
   "url": "http://github.com/mapbox/carmen",
   "author": {
     "name": "MapBox",
@@ -35,6 +35,6 @@
     "test": "mocha"
   },
   "engines": {
-    "node": "0.6.x || 0.8.x || 0.10.x"
+    "node": "0.8.x || 0.10.x"
   }
 }
