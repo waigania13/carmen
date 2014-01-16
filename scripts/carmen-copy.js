@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var argv = process.argv;
 var Carmen = require('../index.js');
-var queue = require('queue-async');
 var f = argv[2];
 var t = argv[3];
 
