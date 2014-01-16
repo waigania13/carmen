@@ -10,6 +10,7 @@ var Cache = require('./lib/util/cxxcache'),
     analyze = require('./lib/analyze'),
     verify = require('./lib/verify'),
     wipe = require('./lib/wipe'),
+    copy = require('./lib/copy'),
     index = require('./lib/index');
 
 require('util').inherits(Geocoder, EventEmitter);
@@ -142,6 +143,17 @@ Geocoder.prototype.wipe = function(source, callback) {
         }.bind(this));
     }
     return wipe(source, callback);
+};
+
+// Copy a source's index to another.
+Geocoder.prototype.copy = function(from, to, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            copy(from, to, callback);
+        }.bind(this));
+    }
+    return copy(from, to, callback);
 };
 
 Geocoder.auto = loader.auto;

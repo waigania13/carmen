@@ -23,34 +23,12 @@ console.log('Copying %s => %s', f, t);
 var from = Carmen.auto(f);
 var to = Carmen.auto(t);
 var carmen = new Carmen({ from: from, to: to });
-
-carmen._open(function(err) {
+carmen.copy(from, to, function(err) {
     if (err) throw err;
-    to.startWriting(function(err) {
+    to.stopWriting(function(err) {
         if (err) throw err;
-        var q = queue(100);
-        var shardlevel = from._geocoder.shardlevel;
-        var types = ['degen','term','freq','phrase','grid','feature'];
-        for (var j = 0; j < types.length; j++) {
-            var type = types[j];
-            var limit = type === 'feature' ?
-                Math.pow(16,shardlevel+1) :
-                Math.pow(16,shardlevel);
-            for (var i = 0; i < limit; i++) {
-                q.defer(function(type, shard, callback) {
-                    from.getGeocoderData(type, shard, function(err, buffer) {
-                        if (err) return callback(err);
-                        if (!buffer) return callback();
-                        to.putGeocoderData(type, shard, buffer, callback);
-                    });
-                }, type, i);
-            }
-        }
-        q.awaitAll(function(err) {
-            to.stopWriting(function(err) {
-                if (err) throw err;
-                console.log('Done.');
-            });
-        });
+        console.log('Done.');
+        process.exit(0);
     });
 });
+

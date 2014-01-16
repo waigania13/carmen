@@ -225,12 +225,7 @@ describe('Cache', function() {
         before(function(done) {
             index.update(mem, docs, function(err) {
                 if (err) return done(err);
-                index.store(mem, function(err) {
-                    if (err) return done(err);
-                    mem._geocoder.unloadall('term');
-                    mem._geocoder.unloadall('phrase');
-                    done();
-                });
+                index.store(mem, done);
             });
         });
 

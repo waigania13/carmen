@@ -105,6 +105,10 @@ term => phrase relations, etc.
 
 Clear all geocoding indexes on a source.
 
+### copy(from, to, callback)
+
+Copy an index wholesale between `from` and `to`.
+
 ------
 
 ## Carmen Source API
