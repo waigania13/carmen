@@ -16,6 +16,7 @@ describe('termops', function() {
             });
             it('tokenizes lonlat', function() {
                 assert.deepEqual(termops.tokenize('40,0', true), [40,0]);
+                assert.deepEqual(termops.tokenize('40.00000,-40.31200', true), [40,-40.312]);
                 assert.deepEqual(termops.tokenize('-120.9129102983109, 45.312312', true), [-120.9129102983109,45.312312]);
                 assert.deepEqual(termops.tokenize('14th 15th', true), ['14th','15th']);
             });
