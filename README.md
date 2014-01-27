@@ -369,7 +369,7 @@ But this works better:
 Unfortunately, the carmen codebase is more complex than this explanation.
 
 1. There's more code cleanup, organization, and documentation to do.
-2. Indexes are *sharded* and designed for *updates*. This means algorithmic code is sometimes interrupted by lazy loading and other I/O.
+2. Indexes are *sharded*, designed for *updates* and hot-swapping with other indexes. This means algorithmic code is sometimes interrupted by lazy loading and other I/O.
 3. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it extremely challenging to identify the semantic equivalents in the middle of a geocode.
 
 ------
