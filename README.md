@@ -356,6 +356,22 @@ The user intends to match 5th st in New York City with this query. She may, inst
 
 Based on score and reason bitmask both should have a querymatch score of 1.0. However, because there is a "gap" in the index hierarchy for the second match it receives an extremely small penalty (0.01) -- one that would not affect its standing amongst other scores other than a perfect tie.
 
+Carmen thus *prefers* queries that contain contiguous hierarchy over ones that do not. This works:
+
+    seattle usa => 0.99
+
+But this works better:
+
+    seattle washington => 1.00
+
+### 7. Carmen is more complex
+
+Unfortunately, the carmen codebase is more complex than this explanation.
+
+1. There's more code cleanup, organization, and documentation to do.
+2. Indexes are *sharded* and designed for *updates*. This means algorithmic code is sometimes interrupted by lazy loading and other I/O.
+3. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it extremely challenging to identify the semantic equivalents in the middle of a geocode.
+
 ------
 
 ## Dev notes
