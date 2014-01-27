@@ -178,6 +178,186 @@ _parityr  | Single (LineString) or array of values (Multi) of TIGER PARITYR fiel
 
 ------
 
+## How does carmen work?
+
+A user searches for
+
+> 350 Fairfax Dr Arlington
+
+How does an appropriately indexed carmen geocoder come up with its results?
+
+For the purpose of this example, we will assume the carmen geocoder is working with four indexes:
+
+    01 country
+    02 province
+    03 place
+    04 street
+
+### 1. Tokenization
+
+    "350 Fairfax Dr Arlington" => ["350", "fairfax", "dr", "arlington"]
+
+    // Other examples
+    "Chicago Illinois"         => ["chicago", "illinois"]
+    "San José CALIFORNIA"      => ["san", "jose", "california"]
+    "SAINT-LOUIS,MO"           => ["saint", "louis", "mo"]
+
+The user input is transformed into a tokenized `query` -- an array of strings that are
+
+- **split** on spaces, dashes, and other splitting punctuation characters,
+- **normalized** to remove non-splitting punctuation like apostraphes,
+- **lowercased** to make searches case-insensitive,
+- **unidecoded** to squash accented characters and avoid subtle unicode mismatches.
+
+The same normalization process is used when creating the search indexes that carmen uses. By normalizing both the indexed text and user queries we can eliminate non-substantive variations in the query and focus on getting real term matches.
+
+*Note: from this point on in carmen there are actually no text strings used. Each token is converted to a 32-bit integer using the FNV-1a hash and any index lookups are done with integer values. The examples below retain string versions of each term and phrase for easy reading.*
+
+### 2. Term matching
+
+The first step in the search process is to identify *terms* in each of the search indexes that match, or may match, one of the query tokens. The `degen` index provides a set of degenerate terms that may match each query token:
+
+**Degen matches for "fairfax"**
+
+    01 country   02 province   03 place     04 street
+    ----------   -----------   --------     ---------
+    <none>       <none>        fairfax d0   fairfax d0
+
+Each degenerate term entry in the index is mapped to one or more real terms with a *character distance* value for the number of deletions performed to reach the degenerate term. For example, the token "fair" may have the following results:
+
+    "fair" => fairfax d3, fairway d3, fairmont d4, fairfield d5
+
+While each term match is considered, larger character distance values have a negative impact on the eventual relevance of results to ensure that close and exact values win when they are otherwise equivalent to looser term matches.
+
+Currently degenerates are indexed only for the purposes of *autocomplete*. The index structure, however, was designed to be used with "fast similarity search" -- ie. random character deletions -- a feature to be added in future versions.
+
+### 3. Phrase matching
+
+With true term matches for each index on hand we can now lookup all the phrases that include one of the terms:
+
+    01 country                02 province
+    ----------                -----------
+                              dar'a          1.0 --x-
+                              drenthe        1.0 --x-
+
+    03 place                  04 street
+    --------                  ---------
+    fairfax       1.0 -x--    fairfax dr     1.0 -xx-
+    arlington     1.0 ---x    arlington dr   0.9 ---x
+                              fairfax ct     0.9 -x--
+                              n fairfax st   0.8 -x--
+                              fairfax cty rd 0.7 -x--
+
+Matching phrases are drawn from each index for *every* query token. No assumptions are made about what a particular token refers to, leading to results like
+[Drenthe](http://en.wikipedia.org/wiki/Drenthe) because `dr` has been indexed as one of its synonyms (its postal code). For tokens to match a phrase some basic rules are followed, like term order + continuity.
+
+    Order + continuity check examples:
+
+    ["dr","arlington"] => arlington dr 0.9 -x
+    ["arlington","dr"] => arlington dr 1.0 xx
+
+Each phrase match is assigned a
+
+- **score**, the sum of the weights of matching query terms. Each phrase has a possible score of 1.0 with its component terms contributing varying weights based on their IDF significance -- terms that appear most commonly have lower weights.
+
+        fairfax   cty   rd
+        0.7       0.2   0.1
+
+- **reason**, a bitmask storing the query tokens that contributed to the score value.
+
+        350   fairfax   dr   arlington
+        0     1         0    0
+
+### 4. Spatial matching
+
+To make sense of the "result soup" from step 3 -- sometimes thousands of potential results of comparable score -- a zxy coordinate index is used to determine which results overlap in geographic space. This is the `grid` index, which maps phrases to individual feature IDs and their respective zxy coordinates.
+
+    04 street
+    ................
+    ............x...
+    ................
+    ...x............
+    .......x........ <== fairfax dr
+    .........x...... <== arlington dr
+    ................
+    ................
+    .x..............
+
+    03 place
+    ................
+    ................
+    ................
+    .......xx.......
+    ......xxxxxx.... <== arlington
+    ........xx......
+    x...............
+    xx..............
+    xxxx............ <== fairfax
+
+Features which overlap in the grid index are candidates to have their scores combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with.
+
+    1 fairfax dr    1.0 -xx-  =  0.75 -xxx
+      arlington     1.0 ---x
+
+    2 n fairfax st  0.8 -x--  =  0.45 -x-x
+      arlington     1.0 ---x
+
+    3 arlington dr  0.9 ---x  =  0.25 ---x
+      arlington     1.0 ---x
+
+    4 drenthe       1.0 --x-  =  0.25 --x-
+
+The *query match* has a score of 1.0 if,
+
+1. all query terms are accounted for by features with 1.0 scores,
+2. no two features are from the same index,
+3. no two features have overlapping reason bitmasks,
+4. several other heuristics (see "Challenging cases")
+
+### 5. Verify, interpolate
+
+The `grid` index is fast but not 100% accurate. It answers the question "Do features A + B overlap?" with **No/Maybe** -- leaving open the possibility of false positives. The best results from step 4 are now verified by querying real geometries in vector tiles.
+
+Finally, if a geocoding index support *address interpolation*, an initial query token like `350` can be used to interpolate a point position along the line geometry of the matching feature.
+
+### 6. Challenging cases
+
+Most challenging cases are solvable but stress performance/optimization assumptions in the carmen codebase.
+
+#### Repeated query tokens
+
+Prior to `e6522498` the following would occur:
+
+    new york new york =>
+
+    02 place    new york 1.0 xx--
+    01 province new york 1.0 xx--
+
+Leading to bitmasks that canceled each other out at query match time. The current workaround for these cases in carmen is to store a *greedy* term position bitmask and a third param -- a count of the number of terms matched:
+
+    new york new york =>
+
+    02 place    new york 1.0 xxxx 2
+    01 province new york 1.0 xxxx 2
+
+At query match time the `2` count is decremented until 0 to exhaust the first phrase match, moving onto the province phrase match which has remaining counts to be used against its greedy bitmask.
+
+#### Continuity of feature hierarchy
+
+    5th st new york
+
+The user intends to match 5th st in New York City with this query. She may, instead, receive equally relevant results that match a 5th st in Albany or any other 5th st in the state of New York. To address this case, carmen introduces a slight penalty for "index gaps" when query matching. Consider the two following query matches:
+
+    04 street   5th st   1.0 xx--
+    03 place    new york 1.0 --xx
+
+    04 street   5th st   1.0 xx--
+    02 province new york 1.0 --xx
+
+Based on score and reason bitmask both should have a querymatch score of 1.0. However, because there is a "gap" in the index hierarchy for the second match it receives an extremely small penalty (0.01) -- one that would not affect its standing amongst other scores other than a perfect tie.
+
+------
+
 ## Dev notes
 
 Some incomplete notes about the Carmen codebase.
