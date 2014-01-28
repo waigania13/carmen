@@ -17,6 +17,7 @@ rebuild:
 
 test:
 	./node_modules/.bin/mocha test/cache.test.js
+	node bench/load-query.js
 
 check: test
 
