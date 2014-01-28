@@ -7,7 +7,7 @@ function getter(term,shard,ext) {
     return fs.readFileSync(__dirname + '/fixtures/' + term+'-'+shard+ext);
 }
 
-var bench = new Benchmark('CXXCache Term',{
+suite.add('CXXCache Term',{
     'defer':true,
     'fn': function(deferred) {
         var cache = new CXXCache('a', 2);
@@ -17,9 +17,8 @@ var bench = new Benchmark('CXXCache Term',{
         deferred.resolve();        
     }
 });
-suite.add(bench)
 
-var bench = new Benchmark('CXXCache Phrase',{
+suite.add('CXXCache Phrase',{
     'defer':true,
     'fn': function(deferred) {
         var cache = new CXXCache('a', 2);
@@ -29,7 +28,6 @@ var bench = new Benchmark('CXXCache Phrase',{
         deferred.resolve();        
     }
 });
-suite.add(bench)
 
 suite.on('cycle', function(event) {
   console.log(String(event.target));
