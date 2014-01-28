@@ -16,7 +16,7 @@ var messages = [
 ]
 
 function load_terms() {
-    for (var i=0;i<1000000000;++i) {
+    for (var i=0;i<100000;++i) {
         var cache = new CXXCache('a', 2);
         messages.forEach(function(msg) {
             cache.loadSync(msg[2], msg[0],msg[1]);
