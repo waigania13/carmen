@@ -3,7 +3,6 @@ var path = require('path'),
     queue = require('queue-async');
 
 var Cache = require('./lib/util/cxxcache'),
-    getSearch = require('./lib/search'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
