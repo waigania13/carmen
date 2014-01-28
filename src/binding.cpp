@@ -268,9 +268,13 @@ void load_into_cache(Cache::larraycache & larrc,
             while (item.next()) {
                 if (item.tag == 1) {
                     uint64_t key_id = item.varint();
-                    // NOTE: emplace is faster with libcxx if using std::string
-                    // if using boost::string_ref, std::move is faster
 #ifdef USE_CXX11
+                    // insert/std::move here because:
+                    //  - libstdc++ does not support std::map::emplace
+                    //  - larrc.emplace(item.varint(),Cache::string_ref_type(message.getData(),len)) was not faster on OS X
+                    // potential optimizations
+                    //  - use something better than std::string
+                    //  - store the offset to the protobuf instead of copying a chunk of it
                     larrc.insert(std::make_pair(key_id,std::move(Cache::string_ref_type(message.getData(),len))));
 #else
                     larrc.insert(std::make_pair(key_id,Cache::string_ref_type(message.getData(),len)));
