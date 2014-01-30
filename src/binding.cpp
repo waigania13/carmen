@@ -244,11 +244,7 @@ NAN_METHOD(Cache::_set)
         unsigned array_size = data->Length();
         vv.reserve(array_size);
         for (unsigned i=0;i<array_size;++i) {
-#ifdef USE_CXX11
             vv.emplace_back(data->Get(i)->NumberValue());
-#else
-            vv.push_back(data->Get(i)->NumberValue());
-#endif
         }
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
@@ -268,7 +264,6 @@ void load_into_cache(Cache::larraycache & larrc,
             while (item.next()) {
                 if (item.tag == 1) {
                     uint64_t key_id = item.varint();
-#ifdef USE_CXX11
                     // insert/std::move here because:
                     //  - libstdc++ does not support std::map::emplace
                     //  - larrc.emplace(item.varint(),Cache::string_ref_type(message.getData(),len)) was not faster on OS X
@@ -276,9 +271,6 @@ void load_into_cache(Cache::larraycache & larrc,
                     //  - use something better than std::string
                     //  - store the offset to the protobuf instead of copying a chunk of it
                     larrc.insert(std::make_pair(key_id,std::move(Cache::string_ref_type(message.getData(),len))));
-#else
-                    larrc.insert(std::make_pair(key_id,Cache::string_ref_type(message.getData(),len)));
-#endif
                 }
                 // it is safe to break immediately because tag 1 should come first
                 break;
@@ -394,11 +386,7 @@ void Cache::AfterLoad(uv_work_t* req) {
         if (itr2 != closure->c->cache_.end()) {
             closure->c->cache_.erase(itr2);
         }
-#ifdef USE_CXX11
         closure->c->lazy_[closure->key] = std::move(closure->arrc);
-#else
-        closure->c->lazy_[closure->key] = closure->arrc;
-#endif
         Local<Value> argv[1] = { Local<Value>::New(Null()) };
         closure->cb.Call(1, argv);
     }
@@ -530,11 +518,7 @@ NAN_METHOD(Cache::_get)
                         uint64_t len = item.varint();
                         protobuf::message pbfarray(item.getData(),static_cast<std::size_t>(len));
                         while (pbfarray.next()) {
-#ifdef USE_CXX11
                             array.emplace_back(pbfarray.value);
-#else
-                            array.push_back(pbfarray.value);
-#endif
                         }
                         item.skipBytes(len);
                     } else {
