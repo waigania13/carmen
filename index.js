@@ -8,6 +8,7 @@ var Cache = require('./lib/util/cxxcache'),
     geocode = require('./lib/geocode'),
     analyze = require('./lib/analyze'),
     verify = require('./lib/verify'),
+    loadall = require('./lib/loadall'),
     wipe = require('./lib/wipe'),
     copy = require('./lib/copy'),
     index = require('./lib/index');
@@ -143,6 +144,17 @@ Geocoder.prototype.wipe = function(source, callback) {
         }.bind(this));
     }
     return wipe(source, callback);
+};
+
+// Load all shards for a source.
+Geocoder.prototype.loadall = function(source, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            loadall(source, callback);
+        }.bind(this));
+    }
+    return loadall(source, callback);
 };
 
 // Copy a source's index to another.
