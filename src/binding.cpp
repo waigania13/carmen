@@ -234,7 +234,6 @@ NAN_METHOD(Cache::_set)
 }
 
 void load_into_cache(Cache::larraycache & larrc,
-                            std::string const& key,
                             const char * data,
                             size_t size) {
     protobuf::message message(data,size);
@@ -306,7 +305,7 @@ NAN_METHOD(Cache::loadSync)
         if (litr == lazy.end()) {
             c->lazy_.insert(std::make_pair(key,Cache::larraycache()));
         }
-        load_into_cache(c->lazy_[key],key,node::Buffer::Data(obj),node::Buffer::Length(obj));
+        load_into_cache(c->lazy_[key],node::Buffer::Data(obj),node::Buffer::Length(obj));
     } catch (std::exception const& ex) {
         return NanThrowTypeError(ex.what());
     }
@@ -346,7 +345,7 @@ struct load_baton {
 void Cache::AsyncLoad(uv_work_t* req) {
     load_baton *closure = static_cast<load_baton *>(req->data);
     try {
-        load_into_cache(closure->arrc,closure->key,closure->data.data(),closure->data.size());
+        load_into_cache(closure->arrc,closure->data.data(),closure->data.size());
     }
     catch (std::exception const& ex)
     {
