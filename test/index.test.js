@@ -40,6 +40,24 @@ describe('index', function() {
             done();
         });
     });
+    it('loadall index', function(done) {
+        to._geocoder.unloadall('degen');
+        to._geocoder.unloadall('term');
+        to._geocoder.unloadall('phrase');
+        to._geocoder.unloadall('grid');
+        assert.ok(!to._geocoder.has('degen', 0));
+        assert.ok(!to._geocoder.has('term', 0));
+        assert.ok(!to._geocoder.has('phrase', 0));
+        assert.ok(!to._geocoder.has('grid', 0));
+        carmen.loadall(to, function(err) {
+            assert.ifError(err);
+            assert.ok(to._geocoder.has('degen', 0));
+            assert.ok(to._geocoder.has('term', 0));
+            assert.ok(to._geocoder.has('phrase', 0));
+            assert.ok(to._geocoder.has('grid', 0));
+            done();
+        });
+    });
     it('wipes index', function(done) {
         carmen.wipe(to, function(err) {
             assert.ifError(err);
