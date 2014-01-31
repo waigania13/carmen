@@ -19,6 +19,7 @@
 #include <vector>
 #include "index.pb.h"
 #pragma clang diagnostic pop
+#include <sparsehash/sparse_hash_map>
 
 namespace binding {
 
@@ -27,18 +28,14 @@ class Cache: public node::ObjectWrap {
 public:
     typedef uint64_t int_type;
     // lazy ref item
-    typedef std::string string_ref_type;
-    typedef std::map<int_type,string_ref_type> larraycache;
-    typedef larraycache::const_iterator larraycache_iterator;
+    typedef uint64_t offset_type;
+    typedef google::sparse_hash_map<int_type,offset_type> larraycache;
     typedef std::map<std::string,larraycache> lazycache;
-    typedef lazycache::const_iterator lazycache_iterator_type;
-
+    typedef std::map<std::string,std::string> message_cache;
     // fully cached item
     typedef std::vector<int_type> intarray;
     typedef std::map<uint32_t,intarray> arraycache;
-    typedef arraycache::const_iterator arraycache_iterator;
     typedef std::map<std::string,arraycache> memcache;
-    typedef memcache::const_iterator mem_iterator_type;
     static v8::Persistent<v8::FunctionTemplate> constructor;
     static void Initialize(v8::Handle<v8::Object> target);
     static NAN_METHOD(New);
@@ -61,6 +58,7 @@ public:
     unsigned shardlevel_;
     memcache cache_;
     lazycache lazy_;
+    message_cache msg_;
 };
 
 }

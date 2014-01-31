@@ -3,6 +3,10 @@ var Benchmark = require('benchmark'),
 var CXXCache = require('../lib/util/cxxcache');
 var fs = require('fs');
 
+var bytes = require('bytes');
+
+console.log(bytes(process.memoryUsage().rss))
+
 function getter(term,shard,ext) {
     return fs.readFileSync(__dirname + '/fixtures/' + term+'-'+shard+ext);
 }
@@ -27,3 +31,4 @@ function load_terms() {
 console.time('loading messages into cache');
 load_terms()
 console.timeEnd('loading messages into cache');
+console.log(bytes(process.memoryUsage().rss))
