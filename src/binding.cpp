@@ -35,7 +35,8 @@ Cache::Cache(std::string const& id, unsigned shardlevel)
     id_(id),
     shardlevel_(shardlevel),
     cache_(),
-    lazy_()
+    lazy_(),
+    msg_()
     { }
 
 Cache::~Cache() { }
@@ -259,6 +260,8 @@ void load_into_cache(Cache::larraycache & larrc,
                     larrc.insert(std::make_pair(key_id,offsets));
                 }
                 // it is safe to break immediately because tag 1 should come first
+                // it would also be safe to not use `while (buffer.next())` here, but we do it
+                // because I've not seen a performance cost (dane/osx) and being explicit is good
                 break;
             }
             message.skipBytes(len);
