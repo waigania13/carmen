@@ -49,7 +49,7 @@ describe('index', function() {
         assert.ok(!to._geocoder.has('term', 0));
         assert.ok(!to._geocoder.has('phrase', 0));
         assert.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, function(err) {
+        carmen.loadall(to, 1, function(err) {
             assert.ifError(err);
             assert.ok(to._geocoder.has('degen', 0));
             assert.ok(to._geocoder.has('term', 0));
