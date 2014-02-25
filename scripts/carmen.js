@@ -64,8 +64,9 @@ carmen.geocode(argv.query, {}, function(err, data) {
         console.log('Cache');
         console.log('-----');
         var cachestats = {term:0,phrase:0,grid:0,degen:0,total:0};
-        carmen.indexes.forEach(function(source, name) {
-            cachestats.forEach(function(sum, key) {
+        Object.keys(carmen.indexes).forEach(function(source) {
+            source = carmen.indexes[source];
+            Object.keys(cachestats).forEach(function(key) {
                 var count = source._geocoder.list(key).length;
                 cachestats[key] += count;
                 cachestats.total += count;
