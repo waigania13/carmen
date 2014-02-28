@@ -5,12 +5,10 @@ node_js:
  - "0.8"
 
 before_install:
- - sudo apt-add-repository --yes ppa:mapnik/v2.2.0
  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  - sudo add-apt-repository --yes ppa:chris-lea/protobuf
  - sudo apt-get update
  - sudo apt-get install gcc-4.7 g++-4.7 gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
- - sudo apt-get install libmapnik=2.2.0* mapnik-utils=2.2.0* libmapnik-dev=2.2.0*
 
 install:
  - npm install mocha
