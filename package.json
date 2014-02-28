@@ -16,7 +16,7 @@
   "dependencies": {
     "sphericalmercator": "~1.0.1",
     "nan": "~0.4.1",
-    "mapnik": "1.4.0-alpha",
+    "mapnik": "1.4.0",
     "minimist": "0.0.5",
     "split": "0.2.x",
     "unidecode": "0.1.3",
