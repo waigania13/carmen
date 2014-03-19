@@ -205,7 +205,7 @@ For the purpose of this example, we will assume the carmen geocoder is working w
 The user input is transformed into a tokenized `query` -- an array of strings that are
 
 - **split** on spaces, dashes, and other splitting punctuation characters,
-- **normalized** to remove non-splitting punctuation like apostraphes,
+- **normalized** to remove non-splitting punctuation like apostrophes,
 - **lowercased** to make searches case-insensitive,
 - **unidecoded** to squash accented characters and avoid subtle unicode mismatches.
 
