@@ -36,4 +36,4 @@ script:
 - npm test
 
 after_success:
-- ./test/build-publish.sh
+- ./test/travis-publish.sh
