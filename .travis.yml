@@ -2,7 +2,6 @@ language: cpp
 
 compiler:
 - gcc
-- clang
 
 env:
   matrix:
@@ -28,9 +27,12 @@ before_install:
 - ./scripts/install-dbs.sh
 
 install:
-- CXX=g++-4.8 npm install
+- CXX=g++-4.8 npm install --build-from-source
 
 script:
-- time npm test
-- make clean
+- npm test
+- node-pre-gyp package testpackage
+- npm test
 
+after_success:
+- node-pre-gyp info
