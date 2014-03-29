@@ -30,10 +30,6 @@ before_install:
 - ./scripts/install-dbs.sh
 
 install:
-- CXX=g++-4.8 npm install
-- CXX=g++-4.8 npm install --build-from-source
-
-script:
 # test publishing and installing from remote if
 # [publish binary] is present in commit message
 - PUBLISH_BINARY=false
@@ -41,7 +37,9 @@ script:
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; FALLBACK_TO_BUILD=false; fi;
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp publish info; fi
 - rm -rf {build,lib/binding}
-- CXX=g++4.8 npm install --fallback-to-build=$FALLBACK_TO_BUILD
+- CXX=g++-4.8 npm install --fallback-to-build=$FALLBACK_TO_BUILD
+
+script:
 - npm test
 
 after_success:
