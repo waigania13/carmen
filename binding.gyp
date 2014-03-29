@@ -19,7 +19,7 @@
       ]
     },
     {
-      'target_name': 'binding',
+      'target_name': 'carmen',
       'dependencies': [ 'action_before_build' ],
       'sources': [
         "./src/binding.cpp",
@@ -57,10 +57,10 @@
     {
       'target_name': 'action_after_build',
       'type': 'none',
-      'dependencies': [ 'binding' ],
+      'dependencies': [ 'carmen' ],
       'copies': [
           {
-            'files': [ '<(PRODUCT_DIR)/binding.node' ],
+            'files': [ '<(PRODUCT_DIR)/carmen.node' ],
             'destination': './lib/binding/'
           }
       ]

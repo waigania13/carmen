@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-namespace binding {
+namespace carmen {
 
 using namespace v8;
 
@@ -632,6 +632,6 @@ extern "C" {
     }
 }
 
-} // namespace binding
+} // namespace carmen
 
-NODE_MODULE(binding, binding::start)
+NODE_MODULE(carmen, carmen::start)

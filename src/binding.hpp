@@ -21,7 +21,7 @@
 #pragma clang diagnostic pop
 #include <sparsehash/sparse_hash_map>
 
-namespace binding {
+namespace carmen {
 
 class Cache: public node::ObjectWrap {
     ~Cache();
