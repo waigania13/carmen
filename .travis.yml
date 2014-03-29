@@ -7,6 +7,9 @@ env:
   matrix:
   - NODE_NVM_VERSION="0.10"
   - NODE_NVM_VERSION="0.8"
+  global:
+  - node_pre_gyp_accessKeyId: AKIAJBPMCF2RIVXM3O7Q
+  - secure: "W/3NZU0p9VlQ7vQO8mHGROuXkl12f9q2nU/+EwxHAV60r8tSPZBv8kBu16rdUH/hhM1Z7ThJ4oiettvqx7HnHE/YrNCmki5m/IyjXEnQg0tppkgPGz+bCeMoaUs2D24a+hQwUDOLxv+1TOuy+btGoZlCAeiO0vo3p2J43Y9gEfE="
 
 before_install:
 # here we set up the node version on the fly based on the matrix value.
@@ -23,12 +26,20 @@ before_install:
 - sudo add-apt-repository --yes ppa:chris-lea/protobuf
 - sudo apt-get update
 - sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
-- npm install mocha
+- npm install mocha aws-sdk
 - ./scripts/install-dbs.sh
 
 install:
 - CXX=g++-4.8 npm install
 - CXX=g++-4.8 npm install --build-from-source
+
+before_script:
+# test publishing and installing from remote if
+# [publish binary] is present in commit message
+- PUBLISH_BINARY=false
+- if [[ ${CXX} == "g++" ]] && test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then echo yes;PUBLISH_BINARY=true; fi;
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp publish info; rm -rf {build,lib/binding}; npm install --fallback-to-build=false; npm test; fi
+- node-pre-gyp clean
 
 script:
 - npm test
