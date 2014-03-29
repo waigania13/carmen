@@ -26,7 +26,6 @@ before_install:
 - sudo add-apt-repository --yes ppa:chris-lea/protobuf
 - sudo apt-get update
 - sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
-- npm install mocha aws-sdk
 - ./scripts/install-dbs.sh
 
 install:
@@ -36,9 +35,9 @@ install:
 - FALLBACK_TO_BUILD=true
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; FALLBACK_TO_BUILD=false; fi;
+- CXX=g++-4.8 npm install --fallback-to-build=$FALLBACK_TO_BUILD
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp publish info; fi
 - rm -rf {build,lib/binding}
-- CXX=g++-4.8 npm install --fallback-to-build=$FALLBACK_TO_BUILD
 
 script:
 - npm test
