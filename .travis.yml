@@ -31,13 +31,14 @@ before_install:
 install:
 # test publishing and installing from remote if
 # [publish binary] is present in commit message
+- export CXX=g++-4.8
 - PUBLISH_BINARY=false
 - FALLBACK_TO_BUILD=true
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; FALLBACK_TO_BUILD=false; fi;
-- if [[ $PUBLISH_BINARY == true ]]; then CXX=g++-4.8 npm install; node-pre-gyp publish info; fi
+- if [[ $PUBLISH_BINARY == true ]]; then npm install; npm install aws-sdk; node-pre-gyp publish info; fi
 - rm -rf {build,lib/binding}
-- CXX=g++-4.8 npm install --fallback-to-build=$FALLBACK_TO_BUILD
+- npm install --fallback-to-build=$FALLBACK_TO_BUILD
 
 script:
 - npm test
