@@ -30,7 +30,6 @@ before_install:
 
 install:
 - CXX=g++-4.8 npm install
-- CXX=g++-4.8 npm install --build-from-source
 
 after_success:
 - ./test/build-publish.sh
