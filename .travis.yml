@@ -32,5 +32,8 @@ install:
 - export CXX=g++-4.8
 - npm install
 
+script:
+- npm test
+
 after_success:
 - ./test/build-publish.sh
