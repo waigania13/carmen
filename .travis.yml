@@ -1,24 +1,36 @@
-language: node_js
+language: cpp
 
-node_js:
- - "0.10"
- - "0.8"
+compiler:
+- gcc
+- clang
+
+env:
+  matrix:
+  - NODE_NVM_VERSION="0.10"
+  - NODE_NVM_VERSION="0.8"
 
 before_install:
- - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
- - sudo add-apt-repository --yes ppa:chris-lea/protobuf
- - sudo apt-get update
- - sudo apt-get install gcc-4.7 g++-4.7 gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
+# here we set up the node version on the fly based on the matrix value.
+# This is done manually so that it is easy to flip the 'language' to
+# objective-c in another branch (to run the same travis.yml on OS X)
+- git clone https://github.com/creationix/nvm.git $HOME/.nvm
+- source $HOME/.nvm/nvm.sh
+- nvm install $NODE_NVM_VERSION
+- nvm use $NODE_NVM_VERSION
+- node --version
+- npm --version
+# carmen build dependencies
+- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+- sudo add-apt-repository --yes ppa:chris-lea/protobuf
+- sudo apt-get update
+- sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
+- npm install mocha
+- ./scripts/install-dbs.sh
 
 install:
- - npm install mocha
- - ./scripts/install-dbs.sh
-
-before_script:
- - CXX=g++-4.7 npm install
- - time npm test
+- CXX=g++-4.8 npm install
 
 script:
- - make clean
- - CXX=g++-4.8 npm install
- - time npm test
+- time npm test
+- make clean
+
