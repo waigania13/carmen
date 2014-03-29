@@ -29,7 +29,8 @@ before_install:
 - ./scripts/install-dbs.sh
 
 install:
-- CXX=g++-4.8 npm install
+- export CXX=g++-4.8
+- npm install
 
 after_success:
 - ./test/build-publish.sh
