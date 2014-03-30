@@ -1,39 +1,29 @@
 language: cpp
-
 compiler:
 - gcc
-
 env:
   matrix:
   - NODE_NVM_VERSION="0.10"
   - NODE_NVM_VERSION="0.8"
   global:
   - node_pre_gyp_accessKeyId: AKIAJBPMCF2RIVXM3O7Q
-  - secure: "W/3NZU0p9VlQ7vQO8mHGROuXkl12f9q2nU/+EwxHAV60r8tSPZBv8kBu16rdUH/hhM1Z7ThJ4oiettvqx7HnHE/YrNCmki5m/IyjXEnQg0tppkgPGz+bCeMoaUs2D24a+hQwUDOLxv+1TOuy+btGoZlCAeiO0vo3p2J43Y9gEfE="
-
+  - secure: KYec4ATF0Lh43GCieRaVSxmNz0EVuRu1p00sJK1DWkF21aN7PKqsRpgb4B5Yk4cenDJtNCzBQKFO7RkY6ETJgSAkwcT/IGdl/xkVXdhevEXU3qmz1pOn4d4g/rVGn5bGDw1FUZQf5tMopn1dVsewzJydP6Xpj37gycuAvBNQaNA=
 before_install:
-# here we set up the node version on the fly based on the matrix value.
-# This is done manually so that it is easy to flip the 'language' to
-# objective-c in another branch (to run the same travis.yml on OS X)
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
 - nvm use $NODE_NVM_VERSION
 - node --version
 - npm --version
-# carmen build dependencies
 - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
 - sudo add-apt-repository --yes ppa:chris-lea/protobuf
 - sudo apt-get update
 - sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
 - ./scripts/install-dbs.sh
-
 install:
 - export CXX=g++-4.8
 - npm install
-
 script:
 - npm test
-
 after_success:
 - ./test/travis-publish.sh
