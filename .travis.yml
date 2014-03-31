@@ -9,19 +9,17 @@ env:
   - node_pre_gyp_accessKeyId: AKIAJBPMCF2RIVXM3O7Q
   - secure: KYec4ATF0Lh43GCieRaVSxmNz0EVuRu1p00sJK1DWkF21aN7PKqsRpgb4B5Yk4cenDJtNCzBQKFO7RkY6ETJgSAkwcT/IGdl/xkVXdhevEXU3qmz1pOn4d4g/rVGn5bGDw1FUZQf5tMopn1dVsewzJydP6Xpj37gycuAvBNQaNA=
 before_install:
+- platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+- if [[ "$platform" == "linux" ]]; then sudo add-apt-repository --yes ppa:george-edison55/gcc4.7-precise; sudo apt-get update; sudo apt-get install gcc-4.7 gcc g++; fi
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
 - nvm use $NODE_NVM_VERSION
 - node --version
 - npm --version
-- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-- sudo apt-get update
-- sudo apt-get install gcc-4.8 g++-4.8
 - sudo ./test/travis-protobuf.sh
 - ./scripts/install-dbs.sh
 install:
-- export CXX=g++-4.8
 - npm install
 script:
 - npm test
