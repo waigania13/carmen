@@ -16,7 +16,7 @@ if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"
     # Intended to confirm that binary has no deps on external libs.
     build_dir="$(pwd)"
     cd /tmp/protobuf-2.5.0
-    make uninstall
+    sudo make uninstall
     cd $build_dir
 
     rm -rf build
