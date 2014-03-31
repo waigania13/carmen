@@ -9,8 +9,8 @@ if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"
     PUBLISH_BINARY=true
     FALLBACK_TO_BUILD=false
     npm install aws-sdk
-    node-pre-gyp package testpackage
-    node-pre-gyp publish info
+    ./node_modules/.bin/node-pre-gyp package testpackage
+    ./node_modules/.bin/node-pre-gyp publish info
 
     rm -rf build
     rm -rf lib/binding
