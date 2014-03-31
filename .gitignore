@@ -8,5 +8,5 @@
 npm-debug.log
 src/index.pb.cc
 src/index.pb.h
-lib/util/binding.node
+lib/binding/carmen.node
 build

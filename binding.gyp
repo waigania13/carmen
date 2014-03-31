@@ -19,7 +19,7 @@
       ]
     },
     {
-      'target_name': 'binding',
+      'target_name': '<(module_name)',
       'dependencies': [ 'action_before_build' ],
       'sources': [
         "./src/binding.cpp",
@@ -57,11 +57,11 @@
     {
       'target_name': 'action_after_build',
       'type': 'none',
-      'dependencies': [ 'binding' ],
+      'dependencies': [ '<(module_name)' ],
       'copies': [
           {
-            'files': [ '<(PRODUCT_DIR)/binding.node' ],
-            'destination': './lib/util/'
+            'files': [ '<(PRODUCT_DIR)/<(module_name).node' ],
+            'destination': '<(module_path)'
           }
       ]
     }
