@@ -11,6 +11,7 @@ env:
 before_install:
 - platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
 - if [[ "$platform" == "linux" ]]; then sudo add-apt-repository --yes ppa:george-edison55/gcc4.7-precise; sudo apt-get update; sudo apt-get install gcc-4.7 gcc g++; fi
+- if [[ "$platform" == 'darwin' ]]; then brew install jpeg-turbo libpng; fi
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
