@@ -6,8 +6,6 @@ COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 
 if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"
     then
-    PUBLISH_BINARY=true
-    FALLBACK_TO_BUILD=false
     npm install aws-sdk
     ./node_modules/.bin/node-pre-gyp package testpackage
     ./node_modules/.bin/node-pre-gyp publish info
