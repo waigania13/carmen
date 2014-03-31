@@ -12,6 +12,13 @@ if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"
     ./node_modules/.bin/node-pre-gyp package testpackage
     ./node_modules/.bin/node-pre-gyp publish info
 
+    # Uninstall lib protobuf.
+    # Intended to confirm that binary has no deps on external libs.
+    build_dir="$(pwd)"
+    cd /tmp/protobuf-2.5.0
+    make uninstall
+    cd $build_dir
+
     rm -rf build
     rm -rf lib/binding
     npm install --fallback-to-build=false
