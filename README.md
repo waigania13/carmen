@@ -16,16 +16,14 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 Ubuntu precise:
 
-    sudo add-apt-repository ppa:george-edison55/gcc4.7-precise
+    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
     sudo apt-get update
-    sudo apt-get install gcc-4.7 gcc g++ libprotobuf7 libprotobuf-dev protobuf-compiler
+    sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
+    CXX=g++-4.8 npm install && ./scripts/install-dbs.sh
 
 OSX / homebrew:
 
     brew install protobuf
-
-All:
-
     npm install && ./scripts/install-dbs.sh
 
 Note: if running as `root` user you need to do `npm install --unsafe-perm` to avoid `cannot run in wd carmen@0.1.0` error that prevents the build.
