@@ -9,7 +9,7 @@ env:
   - node_pre_gyp_accessKeyId: AKIAJBPMCF2RIVXM3O7Q
   - secure: KYec4ATF0Lh43GCieRaVSxmNz0EVuRu1p00sJK1DWkF21aN7PKqsRpgb4B5Yk4cenDJtNCzBQKFO7RkY6ETJgSAkwcT/IGdl/xkVXdhevEXU3qmz1pOn4d4g/rVGn5bGDw1FUZQf5tMopn1dVsewzJydP6Xpj37gycuAvBNQaNA=
 before_install:
-- platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+- export platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
 - if [[ "$platform" == "linux" ]]; then sudo add-apt-repository --yes ppa:george-edison55/gcc4.7-precise; sudo apt-get update; sudo apt-get install gcc-4.7 gcc g++; fi
 - if [[ "$platform" == 'darwin' ]]; then brew install jpeg-turbo libpng; fi
 - git clone https://github.com/creationix/nvm.git ../.nvm

@@ -6,6 +6,14 @@ COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 
 if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"
     then
+
+    # Inspect binary.
+    if [ $platform == "linux" ]; then
+        ldd ./lib/binding/carmen.node
+    else
+        otool -L ./lib/binding/carmen.node
+    fi
+
     npm install aws-sdk
     ./node_modules/.bin/node-pre-gyp package testpackage
     ./node_modules/.bin/node-pre-gyp publish info
