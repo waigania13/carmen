@@ -6,7 +6,3 @@
 /tiles
 /node_modules
 npm-debug.log
-src/index.pb.cc
-src/index.pb.h
-lib/binding/carmen.node
-build
