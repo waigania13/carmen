@@ -17,7 +17,7 @@
     "node-pre-gyp": "0.5.x",
     "sphericalmercator": "~1.0.1",
     "nan": "~0.4.1",
-    "mapnik": "1.4.0",
+    "mapnik": "1.4.1",
     "minimist": "0.0.5",
     "split": "0.2.x",
     "unidecode": "0.1.3",
