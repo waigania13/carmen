@@ -8,25 +8,10 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 ## Depends
 
 - Node v0.8.x or Node v0.10.x
-- libprotobuf-lite and protoc compiler
-- C++11 capable compiler (>= g++ 4.7 or >= clang 3.2)
-- *Optional* libsqlite3 for [node-mbtiles](https://github.com/mapbox/node-mbtiles) storage backend
 
 ## Install
 
-Ubuntu precise:
-
-    sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-    sudo apt-get update
-    sudo apt-get install gcc-4.8 g++-4.8 libprotobuf7 libprotobuf-dev protobuf-compiler
-    CXX=g++-4.8 npm install && ./scripts/install-dbs.sh
-
-OSX / homebrew:
-
-    brew install protobuf
     npm install && ./scripts/install-dbs.sh
-
-Note: if running as `root` user you need to do `npm install --unsafe-perm` to avoid `cannot run in wd carmen@0.1.0` error that prevents the build.
 
 Installs dependencies and downloads the default tiles indexes (about 200MB of data).
 
