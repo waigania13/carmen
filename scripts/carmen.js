@@ -34,9 +34,7 @@ var carmen = new Carmen(opts);
 var load = +new Date();
 carmen.geocode(argv.query, {}, function(err, data) {
     if (err) throw err;
-    
-    console.log("data" + JSON.stringify(data));
-    
+   
     load = +new Date() - load;
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
         if (err) throw err;
