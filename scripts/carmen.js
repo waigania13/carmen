@@ -17,7 +17,7 @@ var argv = require('minimist')(process.argv, {
 if (!argv.query) throw new Error('--query argument required');
 
 var opts = {};
-if (argv._.length > 2) {
+if (argv._.length > 2) { //Given Tile Source
     var src = path.resolve(argv._[argv._.length-1]);
     var stat = fs.statSync(src);
     if (stat.isDirectory()) {
@@ -25,7 +25,7 @@ if (argv._.length > 2) {
     } else {
         opts[path.basename(src)] = Carmen.auto(src);
     }
-} else {
+} else { //Default Tile Source
     opts = Carmen.autodir(path.resolve(__dirname + '/../tiles'));
 }
 
@@ -34,6 +34,7 @@ var carmen = new Carmen(opts);
 var load = +new Date();
 carmen.geocode(argv.query, {}, function(err, data) {
     if (err) throw err;
+   
     load = +new Date() - load;
     carmen.geocode(argv.query, { stats:true }, function(err, data) {
         if (err) throw err;
