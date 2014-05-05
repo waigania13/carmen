@@ -65,6 +65,7 @@ geocoder_address    | Optional. A flag (0/1) to indicate that an index can geoco
 geocoder_resolution | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
 geocoder_shardlevel | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 geocoder_group      | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
+geocoder_tokens     | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 
 ### geocode(query, options, callback)
 

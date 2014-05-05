@@ -27,6 +27,39 @@ describe('termops', function() {
             });
         });
     });
+    describe('tokenMap', function() {
+        it('maps query tokens', function() {
+            assert.deepEqual([
+                'nw',
+                'broad',
+                'st'
+            ], termops.tokenMap({
+                'street': 'st',
+                'northwest': 'nw'
+            }, [
+                'northwest',
+                'broad',
+                'street'
+            ]));
+        });
+    });
+    describe('tokenizeMapping', function() {
+        it('tokenizes mapping', function() {
+            assert.deepEqual({}, termops.tokenizeMapping({}));
+            assert.deepEqual({
+                'street': 'st'
+            }, termops.tokenizeMapping({
+                'Street': 'St'
+            }));
+            assert.throws(function() {
+                assert.deepEqual({
+                    'north west': 'nw'
+                }, termops.tokenizeMapping({
+                    'North West': 'NW'
+                }));
+            }, /Invalid mapping token North West/);
+        });
+    });
     describe('terms', function() {
         it('tokenizes and hashes values', function() {
             assert.deepEqual(termops.terms(['foo','bar']), [2851307216,1991736592]);
