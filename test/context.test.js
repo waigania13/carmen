@@ -4,6 +4,7 @@ var util = require('util');
 var Carmen = require('..');
 var tilelive = require('tilelive');
 var context = require('../lib/context');
+var UPDATE = process.env.UPDATE;
 
 describe('context vector', function() {
     var geocoder = new Carmen({
@@ -17,7 +18,7 @@ describe('context vector', function() {
         context(geocoder, 0, 40, null, true, function(err, contexts) {
             assert.ifError(err);
             assert.equal(2, contexts.length);
-            // fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
             assert.deepEqual(require(__dirname + '/fixtures/context-vt-full.json'), contexts);
             done();
         });
@@ -26,7 +27,7 @@ describe('context vector', function() {
         context(geocoder, 0, 40, null, false, function(err, contexts) {
             assert.ifError(err);
             assert.equal(2, contexts.length);
-            // fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
             assert.deepEqual(require(__dirname + '/fixtures/context-vt-light.json'), contexts);
             done();
         });
@@ -44,7 +45,7 @@ describe('context utf', function() {
         context(geocoder, 0, 40, null, true, function(err, contexts) {
             assert.ifError(err);
             assert.equal(1, contexts.length);
-            // fs.writeFileSync(__dirname + '/fixtures/context-utf-full.json', JSON.stringify(contexts, null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-utf-full.json', JSON.stringify(contexts, null, 4));
             assert.deepEqual(require(__dirname + '/fixtures/context-utf-full.json'), contexts);
             done();
         });
@@ -53,7 +54,7 @@ describe('context utf', function() {
         context(geocoder, 0, 40, null, false, function(err, contexts) {
             assert.ifError(err);
             assert.equal(1, contexts.length);
-            // fs.writeFileSync(__dirname + '/fixtures/context-utf-light.json', JSON.stringify(contexts, null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-utf-light.json', JSON.stringify(contexts, null, 4));
             assert.deepEqual(require(__dirname + '/fixtures/context-utf-light.json'), contexts);
             done();
         });
