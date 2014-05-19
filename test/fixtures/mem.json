@@ -27,6 +27,7 @@
         "shardlevel": 0,
         "geocoder_address": false,
         "geocoder_layer": "",
+        "geocoder_tokens": {},
         "maxzoom": 17,
         "zoom": 17,
         "format": "",
