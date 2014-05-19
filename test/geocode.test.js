@@ -20,6 +20,14 @@ describe('geocode', function() {
             done();
         });
     });
+    it ('forward + geocoder_tokens', function(done) {
+        geocoder.geocode('n korea', {}, function(err, res) {
+            assert.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-forward-tokens.json', JSON.stringify(res, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/geocode-forward-tokens.json'), res);
+            done();
+        });
+    });
     it ('reverse', function(done) {
         geocoder.geocode('0, 40', {}, function(err, res) {
             assert.ifError(err);
