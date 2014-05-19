@@ -5,6 +5,7 @@ var Carmen = require('..');
 var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles'),
     mem = require('../lib/api-mem');
+var UPDATE = process.env.UPDATE;
 
 describe('index', function() {
     var from = new mem(null, function() {});
@@ -17,7 +18,7 @@ describe('index', function() {
         carmen.index(from, to, {}, function(err) {
             assert.ifError(err);
             // Updates the mem.json fixture on disk.
-            // fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
             assert.deepEqual(to.serialize(), memFixture);
             done();
         });
@@ -35,7 +36,7 @@ describe('index', function() {
         carmen.analyze(to, function(err, stats) {
             assert.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
-            // fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
             assert.deepEqual(require('./fixtures/mem-analyze.json'), stats);
             done();
         });
