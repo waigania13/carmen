@@ -20,6 +20,14 @@ describe('geocode', function() {
             done();
         });
     });
+    it ('forward + by id', function(done) {
+        geocoder.geocode('country.38', {}, function(err, res) {
+            assert.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/search-ident.json', JSON.stringify(res, null, 4));
+            assert.deepEqual(require(__dirname + '/fixtures/search-ident.json'), res);
+            done();
+        });
+    });
     it ('forward + geocoder_tokens', function(done) {
         geocoder.geocode('n korea', {}, function(err, res) {
             assert.ifError(err);

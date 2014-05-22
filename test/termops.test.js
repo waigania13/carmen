@@ -27,6 +27,24 @@ describe('termops', function() {
             });
         });
     });
+    describe('isIdent', function() {
+        it('tests if searching by id', function() {
+            index = {
+                country: "",
+                province: "",
+                place: "",
+                postcode: ""
+            }
+            assert.strictEqual(termops.isIdent(index, 'country.5432'), true);
+            assert.strictEqual(termops.isIdent(index, 'province.123'), true);
+            assert.strictEqual(termops.isIdent(index, 'postcode.546'), true);
+            assert.strictEqual(termops.isIdent(index, 'place.455233'), true);
+            assert.strictEqual(termops.isIdent(index, 'gotham.43213'), false);
+            assert.strictEqual(termops.isIdent(index, 'country.a445'), false);
+            assert.strictEqual(termops.isIdent(index, 'place.32f424'), false);
+            assert.strictEqual(termops.isIdent(index, 'country.424k'), false);
+        });
+    });
     describe('tokenMap', function() {
         it('maps query tokens', function() {
             assert.deepEqual([
