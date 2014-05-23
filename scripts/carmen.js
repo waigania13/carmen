@@ -9,10 +9,22 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
+    string: 'local',
     string: 'query',
     boolean: 'geojson',
-    boolean: 'stats'
+    boolean: 'stats',
+    boolean: 'help'
 });
+
+if (argv.help) {
+    console.log('carmen.js --query="<query>" [options]');
+    console.log('[options]:');
+    console.log('  --local="lat,lng"   Favour local results');
+    console.log('  --geojson           Return a geojson object');
+    console.log('  --stats             Generate Stats on the query');
+    console.log('  --help              Print this report');
+    process.exit(0);
+}
 
 if (!argv.query) throw new Error('--query argument required');
 
