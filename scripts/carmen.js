@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
-    string: 'local',
+    string: 'proximity',
     string: 'query',
     boolean: 'geojson',
     boolean: 'stats',
@@ -19,10 +19,10 @@ var argv = require('minimist')(process.argv, {
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
     console.log('[options]:');
-    console.log('  --local="lat,lng"   Favour local results');
-    console.log('  --geojson           Return a geojson object');
-    console.log('  --stats             Generate Stats on the query');
-    console.log('  --help              Print this report');
+    console.log('  --proximity="lat,lng"   Favour results by proximity');
+    console.log('  --geojson               Return a geojson object');
+    console.log('  --stats                 Generate Stats on the query');
+    console.log('  --help                  Print this report');
     process.exit(0);
 }
 
@@ -41,18 +41,18 @@ if (argv._.length > 2) { //Given Tile Source
     opts = Carmen.autodir(path.resolve(__dirname + '/../tiles'));
 }
 
-var local = [];
-if (argv.local)
-    local = argv.local.replace(new RegExp(" ","g"), "").split(',');
+var proximity = [];
+if (argv.proximity)
+    proximity = argv.proximity.replace(new RegExp(" ","g"), "").split(',');
 
 var carmen = new Carmen(opts);
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'local': local }, function(err, data) {
+carmen.geocode(argv.query, { 'proximity': proximity }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'local': local, stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'proximity': proximity, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
@@ -62,7 +62,7 @@ carmen.geocode(argv.query, { 'local': local }, function(err, data) {
             console.log('Features');
             console.log('--------');
             data.features.forEach(function(f) {
-                console.log('- %s %s', f.relevance.toFixed(2), f.place_name);
+                console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id.split('.')[0]);
             });
             console.log('');
         }
