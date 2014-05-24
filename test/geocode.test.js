@@ -36,6 +36,19 @@ describe('geocode', function() {
             done();
         });
     });
+    it ('proximity geocoding', function(done) {
+        geocoder.geocode('saint john', {}, function(err, res) {
+            assert.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-without-proximity.json', JSON.stringify(res, null, 4));
+            assert.equal(res.features[0].place_name, require(__dirname + '/fixtures/geocode-without-proximity.json').features[0].place_name, res);
+            geocoder.geocode('saint john', { proximity: [13.177876,-59.504401]}, function(err, res) {
+                assert.ifError(err);
+                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-with-proximity.json', JSON.stringify(res, null, 4));
+                assert.equal(res.features[0].place_name, require(__dirname + '/fixtures/geocode-with-proximity.json').features[0].place_name, res);
+                done();
+            });
+        });
+    });
     it ('reverse', function(done) {
         geocoder.geocode('0, 40', {}, function(err, res) {
             assert.ifError(err);
