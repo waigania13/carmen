@@ -51,29 +51,25 @@ describe('geocode', function() {
     });
     it ('invalid proximity length', function(done) {
             geocoder.geocode('saint john', { proximity: [98.177876]}, function(err, res) {    
-                if (!err || res)
-                    assert.fail(err, "1Invalid Proximity did not throw");
+                assert.ifError(!err);
                 done();
             });
     });
     it ('invalid proximity lat', function(done) {
             geocoder.geocode('n korea', { proximity: [98.177876,-59.504401]}, function(err, res) {
-                if (!err || res)
-                    assert.fail(err, "2Invalid Proximity did not throw");
-                done();;
+                assert.ifError(!err);
+                done();
             });
     });
     it ('invalid proximity lon', function(done) {
             geocoder.geocode('new york', { proximity: [58.177876,-200.504401]}, function(err, res) {
-                if (!err || res)
-                    assert.fail(err, "3Invalid Proximity did not throw");
+                assert.ifError(!err);
                 done();
             });
     });
     it ('text in proximity field', function(done) {
             geocoder.geocode('usa', { proximity: ["58d.177876","-200.5044s01"]}, function(err, res) {
-                if (!err || res)
-                    assert.fail(err, "4Invalid Proximity did not throw");
+                assert.ifError(!err);
                 done();
             });
     });
