@@ -41,18 +41,14 @@ if (argv._.length > 2) { //Given Tile Source
     opts = Carmen.autodir(path.resolve(__dirname + '/../tiles'));
 }
 
-var proximity = [];
-if (argv.proximity)
-    proximity = argv.proximity.replace(new RegExp(" ","g"), "").split(',');
-
 var carmen = new Carmen(opts);
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'proximity': proximity }, function(err, data) {
+carmen.geocode(argv.query, { 'proximity': argv.proximity }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'proximity': proximity, stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'proximity': argv.proximity, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');

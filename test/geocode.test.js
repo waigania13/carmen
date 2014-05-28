@@ -49,6 +49,20 @@ describe('geocode', function() {
             });
         });
     });
+    it ('string proximity geocoding', function(done) {
+        geocoder.geocode('saint john', { proximity: "13.177876, -59.504401"}, function(err, res) {
+            assert.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-with-proximity.json', JSON.stringify(res, null, 4));
+            assert.equal(res.features[0].place_name, require(__dirname + '/fixtures/geocode-with-proximity.json').features[0].place_name, res);
+            done();
+        });
+    });
+    it ('string proximity geocoding', function(done) {
+        geocoder.geocode('n korea', { proximity: "13.177876"}, function(err, res) {
+            assert.ifError(!err);
+            done();
+        });
+    });
     it ('invalid proximity length', function(done) {
             geocoder.geocode('saint john', { proximity: [98.177876]}, function(err, res) {    
                 assert.ifError(!err);
