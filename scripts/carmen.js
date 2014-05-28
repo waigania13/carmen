@@ -43,6 +43,12 @@ if (argv._.length > 2) { //Given Tile Source
 
 var carmen = new Carmen(opts);
 
+if (argv.proximity) {
+    if (argv.proximity.indexOf(',') === -1)
+        throw new Error("Proximity must be lat,lon");
+    argv.proximity.split(',');
+}
+
 var load = +new Date();
 carmen.geocode(argv.query, { 'proximity': argv.proximity }, function(err, data) {
     if (err) throw err;
