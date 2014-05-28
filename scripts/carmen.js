@@ -46,7 +46,7 @@ var carmen = new Carmen(opts);
 if (argv.proximity) {
     if (argv.proximity.indexOf(',') === -1)
         throw new Error("Proximity must be lat,lon");
-    argv.proximity.split(',');
+    argv.proximity = argv.proximity.split(',');
 }
 
 var load = +new Date();
