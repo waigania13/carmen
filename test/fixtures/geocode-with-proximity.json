@@ -1,0 +1,77 @@
+{
+    "type": "FeatureCollection",
+    "query": [
+        "saint",
+        "john"
+    ],
+    "features": [
+        {
+            "id": "province.1990",
+            "type": "Feature",
+            "text": "Saint John",
+            "place_name": "Saint John, Barbados",
+            "relevance": 1,
+            "center": [
+                -59.50529,
+                13.18165
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -59.50529,
+                    13.18165
+                ]
+            },
+            "bbox": [
+                -59.54021033413953,
+                13.145761216307145,
+                -59.46768246087678,
+                13.21753978073632
+            ],
+            "properties": {
+                "area": 31242376,
+                "title": "Saint John"
+            },
+            "context": [
+                {
+                    "id": "country.179",
+                    "text": "Barbados"
+                }
+            ]
+        },
+        {
+            "id": "province.1435",
+            "type": "Feature",
+            "text": "Saint John",
+            "place_name": "Saint John, Dominica",
+            "relevance": 1,
+            "center": [
+                -61.441402,
+                15.568417
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -61.441402,
+                    15.568417
+                ]
+            },
+            "bbox": [
+                -61.488928595778006,
+                15.50300751428538,
+                -61.40771908206996,
+                15.633826401966928
+            ],
+            "properties": {
+                "area": 65010565,
+                "title": "Saint John"
+            },
+            "context": [
+                {
+                    "id": "country.191",
+                    "text": "Dominica"
+                }
+            ]
+        }
+    ]
+}

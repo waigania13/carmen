@@ -36,6 +36,49 @@ describe('geocode', function() {
             done();
         });
     });
+    it ('proximity geocoding', function(done) {
+        geocoder.geocode('saint john', {}, function(err, res) {
+            assert.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-without-proximity.json', JSON.stringify(res, null, 4));
+            assert.equal(res.features[0].place_name, require(__dirname + '/fixtures/geocode-without-proximity.json').features[0].place_name, res);
+            geocoder.geocode('saint john', { proximity: [13.177876,-59.504401]}, function(err, res) {
+                assert.ifError(err);
+                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-with-proximity.json', JSON.stringify(res, null, 4));
+                assert.equal(res.features[0].place_name, require(__dirname + '/fixtures/geocode-with-proximity.json').features[0].place_name, res);
+                done();
+            });
+        });
+    });
+    it ('string proximity geocoding', function(done) {
+        geocoder.geocode('n korea', { proximity: "13.177876"}, function(err, res) {
+            assert.ifError(!err);
+            done();
+        });
+    });
+    it ('invalid proximity length', function(done) {
+            geocoder.geocode('saint john', { proximity: [98.177876]}, function(err, res) {    
+                assert.ifError(!err);
+                done();
+            });
+    });
+    it ('invalid proximity lat', function(done) {
+            geocoder.geocode('n korea', { proximity: [98.177876,-59.504401]}, function(err, res) {
+                assert.ifError(!err);
+                done();
+            });
+    });
+    it ('invalid proximity lon', function(done) {
+            geocoder.geocode('new york', { proximity: [58.177876,-200.504401]}, function(err, res) {
+                assert.ifError(!err);
+                done();
+            });
+    });
+    it ('text in proximity field', function(done) {
+            geocoder.geocode('usa', { proximity: ["58d.177876","-200.5044s01"]}, function(err, res) {
+                assert.ifError(!err);
+                done();
+            });
+    });
     it ('reverse', function(done) {
         geocoder.geocode('0, 40', {}, function(err, res) {
             assert.ifError(err);

@@ -9,10 +9,22 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
+    string: 'proximity',
     string: 'query',
     boolean: 'geojson',
-    boolean: 'stats'
+    boolean: 'stats',
+    boolean: 'help'
 });
+
+if (argv.help) {
+    console.log('carmen.js --query="<query>" [options]');
+    console.log('[options]:');
+    console.log('  --proximity="lat,lng"   Favour results by proximity');
+    console.log('  --geojson               Return a geojson object');
+    console.log('  --stats                 Generate Stats on the query');
+    console.log('  --help                  Print this report');
+    process.exit(0);
+}
 
 if (!argv.query) throw new Error('--query argument required');
 
@@ -31,12 +43,18 @@ if (argv._.length > 2) { //Given Tile Source
 
 var carmen = new Carmen(opts);
 
+if (argv.proximity) {
+    if (argv.proximity.indexOf(',') === -1)
+        throw new Error("Proximity must be lat,lon");
+    argv.proximity = [ Number(argv.proximity.split(',')[0]), Number(argv.proximity.split(',')[1]) ];
+}
+
 var load = +new Date();
-carmen.geocode(argv.query, {}, function(err, data) {
+carmen.geocode(argv.query, { 'proximity': argv.proximity }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'proximity': argv.proximity, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
@@ -46,7 +64,7 @@ carmen.geocode(argv.query, {}, function(err, data) {
             console.log('Features');
             console.log('--------');
             data.features.forEach(function(f) {
-                console.log('- %s %s', f.relevance.toFixed(2), f.place_name);
+                console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id.split('.')[0]);
             });
             console.log('');
         }
