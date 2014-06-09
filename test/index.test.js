@@ -2,10 +2,46 @@ var fs = require('fs');
 var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
+var index = require('../lib/index');
 var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles'),
     mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
+
+describe('index.update', function() {
+    var to = new mem(null, function() {});
+    var carmen = new Carmen({ to: to });
+    it('error no _id', function(done) {
+        index.update(to, [{_text:'main st'}], function(err) {
+            assert.equal('Error: doc has no _id', err.toString());
+            done();
+        });
+    });
+    it('error no _zxy', function(done) {
+        index.update(to, [{_text:'main st',_id:1}], function(err) {
+            assert.equal('Error: doc has no _zxy', err.toString());
+            done();
+        });
+    });
+    it('error no _zxy (empty array)', function(done) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:[]}], function(err) {
+            assert.equal('Error: doc has no _zxy', err.toString());
+            done();
+        });
+    });
+    it('error no _center', function(done) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], function(err) {
+            assert.equal('Error: doc has no _center', err.toString());
+            done();
+        });
+    });
+    it('indexes single doc', function(done) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], function(err) {
+            assert.ifError(err);
+            done();
+        });
+    });
+});
 
 describe('index', function() {
     var from = new mem(null, function() {});
