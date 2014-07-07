@@ -31,6 +31,26 @@ function Geocoder(options) {
     q.awaitAll(function(err, results) {
         this._error = err;
         this._opened = true;
+
+        var names = [];
+        results.forEach(function(info, i) {
+            var id = indexes[i][0];
+            var source = indexes[i][1];
+            var name = info.geocoder_name || id;
+            if (names.indexOf(name) === -1) names.push(name);
+            source._geocoder = source._geocoder || new Cache(key, +info.geocoder_shardlevel || 0);
+            source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
+            source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
+            source._geocoder.geocoder_tokens = termops.tokenizeMapping(info.geocoder_tokens||{});
+            source._geocoder.maxzoom = info.maxzoom;
+            source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+            source._geocoder.format = info.format || '';
+            source._geocoder.group = info.geocoder_group || '';
+            source._geocoder.name = name;
+            source._geocoder.id = id;
+            source._geocoder.idx = names.indexOf(name);
+        });
+
         this.emit('open', err);
     }.bind(this));
 
@@ -42,28 +62,13 @@ function Geocoder(options) {
 
         source = source.source ? source.source : source;
 
-        if (source.open === true) return source.getInfo(loadedinfo);
+        if (source.open === true) return source.getInfo(callback);
         if (typeof source.open === 'function') return source.open(opened);
         return source.once('open', opened);
 
         function opened(err) {
             if (err) return callback(err);
-            source.getInfo(loadedinfo);
-        }
-
-        function loadedinfo(err, info) {
-            if (err) return callback(err);
-            source._geocoder = source._geocoder || new Cache(key, +info.geocoder_shardlevel || 0);
-            source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
-            source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
-            source._geocoder.geocoder_tokens = termops.tokenizeMapping(info.geocoder_tokens||{});
-            source._geocoder.maxzoom = info.maxzoom;
-            source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
-            source._geocoder.format = info.format || '';
-            source._geocoder.group = info.geocoder_group || '';
-            source._geocoder.name = key;
-            source._geocoder.idx = Object.keys(options).indexOf(key);
-            return callback();
+            source.getInfo(callback);
         }
     }
 }
