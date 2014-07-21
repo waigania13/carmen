@@ -49,6 +49,7 @@ function Geocoder(options) {
             source._geocoder.name = name;
             source._geocoder.id = id;
             source._geocoder.idx = names.indexOf(name);
+            source._geocoder.bounds = info.metadata.bounds || [ -180, -85, 180, 85 ];
         });
 
         this.emit('open', err);
