@@ -1,5 +1,4 @@
 var Cache = require('../lib/util/cxxcache');
-var assert = require('assert');
 var fs = require('fs');
 
 describe('Cache', function() {
