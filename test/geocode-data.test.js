@@ -1,10 +1,10 @@
 var fs = require('fs');
-var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
 var feature = require('../lib/util/feature');
 var tokenize = require('../lib/util/termops').tokenize;
 var MBTiles = require('mbtiles');
+var test = require('tape');
 
 var carmen = new Carmen({
     country: new MBTiles(__dirname + '/../tiles/01-ne.country.mbtiles', function(){}),
@@ -48,7 +48,7 @@ var summary = function(label, stats, verbose) {
 };
 
 for (var type in carmen.indexes) (function(type, source) {
-    describe('geocode ' + type, function(done) {
+    test('geocode ' + type, function(t) {
         var queues = {
             geocode: [],
             reverse: []
@@ -59,24 +59,23 @@ for (var type in carmen.indexes) (function(type, source) {
             okay: 0,
             failed: {}
         };
-        before(function(done) {
+
+        t.test('carmen open', function(q){
             carmen._open(function(err) {
-                assert.ifError(err);
-                done();
+                q.ifError(err);
+                q.end();
             });
         });
-        before(function(done) {
+
+        t.test('carmen open', function(q){
             feature.getAllFeatures(source, function(err, rows) {
-                assert.ifError(err);
+                q.ifError(err);
                 queues.geocode = queues.geocode.concat(rows);
                 queues.reverse = queues.reverse.concat(rows);
-                done();
+                q.end();
             });
         });
-        after(function(done) {
-            summary('geocode ' + type, stats, true);
-            done();
-        });
+
         var runner = function(mode) { return function(done) {
             if (!queues[mode].length) return done();
 
@@ -116,8 +115,8 @@ for (var type in carmen.indexes) (function(type, source) {
             place: 400
         };
         for (var i = 0; i < testcount[type]; i++) {
-            it(type + ' geocode ' + i, runner('geocode'));
-            it(type + ' reverse ' + i, runner('reverse'));
+            type + ' geocode ' + i, runner('geocode');
+            type + ' reverse ' + i, runner('reverse');
         }
     });
 })(type, carmen.indexes[type]);
