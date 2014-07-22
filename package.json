@@ -32,7 +32,7 @@
   "main": "./index.js",
   "scripts": {
     "pretest": "./scripts/install-dbs.sh",
-    "test": "mocha"
+    "test": "tape ./test/*.js"
   },
   "engines": {
     "node": "0.10.x"
