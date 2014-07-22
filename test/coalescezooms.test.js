@@ -1,13 +1,14 @@
-var assert = require('assert');
 var coalesceZooms = require('../lib/pure/coalescezooms');
 var ops = require('../lib/util/ops');
+var test = require('tape');
 
-describe('coalesce zooms', function() {
-    it('zero case', function() {
+test('coalesce zooms', function(t) {
+    t.test('zero case', function(q) {
         var coalesced = coalesceZooms([], [], {}, [], {});
-        assert.deepEqual(coalesced, {});
+        q.deepEqual(coalesced, {});
+        q.end();
     });
-    it('basic coalesce', function() {
+    t.test('basic coalesce', function(q) {
         // The data for this test is from the query "holyoke massachusetts"
         // against the province and place indexes.
         var coalesced = coalesceZooms(
@@ -101,7 +102,7 @@ describe('coalesce zooms', function() {
             var key = [z,x,y].join('/');
             coalescedCount[key] = coalesced[zxy].map(function(f) { return f.id });
         }
-        assert.deepEqual({
+        q.deepEqual({
             '9/151/188': [ 495, 496 ],
             '9/151/189': [ 495 ],
             '9/152/188': [ 495 ],
@@ -130,5 +131,7 @@ describe('coalesce zooms', function() {
             '11/610/759': [ 14180, 495 ],
             '11/611/758': [ 14180, 495 ]
         }, coalescedCount);
+        q.end();
     });
+    t.end();
 });

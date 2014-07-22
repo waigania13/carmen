@@ -1,23 +1,21 @@
-var assert = require('assert'),
-    ops = require('../lib/util/ops');
+var ops = require('../lib/util/ops');
+var test = require('tape');
 
-describe('ops', function() {
-    describe('resolveCode', function() {
-        it('resolves basic codes', function() {
-            assert.equal(ops.resolveCode(80), 47);
-            assert.equal(ops.resolveCode(100), 66);
-        });
+test('ops', function(t) {
+    t.test('resolveCode', function(q) {
+        q.equal(ops.resolveCode(80), 47);
+        q.equal(ops.resolveCode(100), 66);
+        q.end();
     });
-    describe('sortDegens', function() {
-        it('sorts degens', function() {
-            assert.deepEqual([0, 4, 5].sort(ops.sortDegens), [0, 4, 5]);
-            assert.deepEqual([5, 6, 4].sort(ops.sortDegens), [4, 5, 6]);
-        });
+    t.test('sortDegens', function(q) {
+        q.deepEqual([0, 4, 5].sort(ops.sortDegens), [0, 4, 5]);
+        q.deepEqual([5, 6, 4].sort(ops.sortDegens), [4, 5, 6]);
+        q.end();
     });
-    describe('zxy', function() {
-        it('encodes zxy values', function() {
-            assert.deepEqual(ops.zxy(0, '4/0/0'), 0);
-            assert.deepEqual(ops.zxy(20, '4/3/3'), 1649368104980);
-        });
+    t.test('zxy', function(q) {
+        q.deepEqual(ops.zxy(0, '4/0/0'), 0);
+        q.deepEqual(ops.zxy(20, '4/3/3'), 1649368104980);
+        q.end();
     });
+    t.end();
 });

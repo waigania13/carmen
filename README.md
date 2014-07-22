@@ -66,6 +66,7 @@ geocoder_resolution | Optional. Integer bonus against maxzoom used to increase t
 geocoder_shardlevel | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 geocoder_group      | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens     | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
+geocoder_name       | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
 
 ### geocode(query, options, callback)
 

@@ -1,5 +1,4 @@
 var fs = require('fs');
-var assert = require('assert');
 var util = require('util');
 var Carmen = require('..');
 var memFixture = require('./fixtures/mem.json');
@@ -8,8 +7,9 @@ var mem = require('../lib/api-mem');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
 var docs = require('./fixtures/docs.json');
+var test = require('tape');
 
-describe('copy', function() {
+test('copy', function(t) {
     var from = new mem(null, function() {});
     var to = new mem(null, function() {});
     var carmen = new Carmen({
@@ -17,35 +17,41 @@ describe('copy', function() {
         to: to
     });
 
-    before(function(done) {
+    t.test(function(q) {
         index.update(from, docs, function(err) {
-            if (err) return done(err);
-            index.store(from, done);
+            if (err) q.fail();
+            index.store(from, function(){
+                q.end();
+            });
         });
     });
 
-    it('blank', function(done) {
+    t.test('blank', function(q) {
         carmen.verify(to, function(err, stats) {
-            assert.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 0, 0 ] }, stats[0]);
-            assert.deepEqual({ relation: [ 'term', 'grid' ], count: [ 0, 0 ] }, stats[1]);
-            assert.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 0, 0 ] }, stats[2]);
-            done();
+            q.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 0, 0 ] }, stats[0]);
+            q.deepEqual({ relation: [ 'term', 'grid' ], count: [ 0, 0 ] }, stats[1]);
+            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 0, 0 ] }, stats[2]);
+            q.end();
         });
     });
-    it('copies', function(done) {
+
+    t.test('copies', function(q) {
         carmen.copy(from, to, function(err) {
-            assert.ifError(err);
-            assert.deepEqual(to.serialize(), memFixture);
-            done();
+            q.ifError(err);
+            q.deepEqual(to.serialize(), memFixture);
+            q.end();
         });
     });
-    it('verifies copy', function(done) {
+
+    t.test('verifies copy', function(q) {
         carmen.verify(to, function(err, stats) {
-            assert.ifError(err);
-            assert.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
-            assert.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
-            assert.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
-            done();
+            q.ifError(err);
+            q.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
+            q.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
+            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
+            q.end();
         });
     });
+
+    t.end();
 });
