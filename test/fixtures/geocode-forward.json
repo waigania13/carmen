@@ -9,6 +9,11 @@
             "type": "Feature",
             "text": "Georgia",
             "place_name": "Georgia",
+            "relevance": 1,
+            "center": [
+                43.638684,
+                42.309977
+            ],
             "geometry": {
                 "type": "Point",
                 "coordinates": [
@@ -16,11 +21,6 @@
                     42.309977
                 ]
             },
-            "relevance": 1,
-            "center": [
-                43.638684,
-                42.309977
-            ],
             "bbox": [
                 39.985910278441736,
                 41.04411082000942,
@@ -38,6 +38,11 @@
             "type": "Feature",
             "text": "Georgia",
             "place_name": "Georgia, United States of America",
+            "relevance": 1,
+            "center": [
+                -83.250339,
+                32.681571
+            ],
             "geometry": {
                 "type": "Point",
                 "coordinates": [
@@ -45,11 +50,6 @@
                     32.681571
                 ]
             },
-            "relevance": 1,
-            "center": [
-                -83.250339,
-                32.681571
-            ],
             "bbox": [
                 -85.605682415511,
                 30.362699400057277,

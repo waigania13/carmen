@@ -1,37 +1,37 @@
 {
-  "type": "FeatureCollection",
-  "query": [
-    "country.38"
-  ],
-  "features": [
-    {
-      "id": "country.38",
-      "type": "Feature",
-      "text": "Canada",
-      "place_name": "Canada",
-      "relevance": 0,
-      "center": [
-        -110.424643,
-        56.83546
-      ],
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -110.424643,
-          56.83546
-        ]
-      },
-      "bbox": [
-        -141.00554866645078,
-        41.66908559191079,
-        -52.615930948991924,
-        83.11611643539153
-      ],
-      "properties": {
-        "iso2": "CA",
-        "population": 33487208,
-        "title": "Canada"
-      }
-    }
-  ]
+    "type": "FeatureCollection",
+    "query": [
+        "country.38"
+    ],
+    "features": [
+        {
+            "id": "country.38",
+            "type": "Feature",
+            "text": "Canada",
+            "place_name": "Canada",
+            "relevance": 0,
+            "center": [
+                -110.424643,
+                56.83546
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -110.424643,
+                    56.83546
+                ]
+            },
+            "bbox": [
+                -141.00554866645078,
+                41.66908559191079,
+                -52.615930948991924,
+                83.11611643539153
+            ],
+            "properties": {
+                "iso2": "CA",
+                "population": 33487208,
+                "title": "Canada"
+            }
+        }
+    ]
 }
