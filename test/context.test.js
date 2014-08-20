@@ -87,7 +87,7 @@ test('contextVector deflate', function(t) {
     });
 });
 
-test.skip('contextVector gzip', function(t) {
+test('contextVector gzip', function(t) {
     var source = {
         getTile: function(z,x,y,callback) {
             return callback(null, fs.readFileSync(__dirname + '/fixtures/0.0.0.vector.pbfz'), {
@@ -109,6 +109,24 @@ test.skip('contextVector gzip', function(t) {
             _fhash: 'test.5',
             _text: 'United States of America, United States, America, USA, US'
         });
+        t.end();
+    });
+});
+
+test('contextVector badbuffer', function(t) {
+    var source = {
+        getTile: function(z,x,y,callback) {
+            return callback(null, new Buffer('lkzvjlkajsdf'));
+        },
+        _geocoder: {
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            id: 'test'
+        }
+    };
+    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+        t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
 });
