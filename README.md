@@ -67,7 +67,6 @@ geocoder_shardlevel     | Optional. An integer order of magnitude that geocoder 
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
-geocoder_address_points | Optional + advanced. Uses the HSTORE _cluster object to reduce index size of address points
 
 ### geocode(query, options, callback)
 
@@ -144,6 +143,7 @@ _center   | An array in the form [lon,lat].
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
 _score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
 _geometry | Optional. A geojson geometry object.
+_cluster  | Optional. Used with `geocoder_address`. A json or HSTORE object of clustered addresses in the format `{ number: { geojson point geom } }`
 
 ### TIGER address interpolation
 
