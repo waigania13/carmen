@@ -143,7 +143,7 @@ _center   | An array in the form [lon,lat].
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
 _score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
 _geometry | Optional. A geojson geometry object.
-_cluster  | Optional. Used with `geocoder_address`. A json or HSTORE object of clustered addresses in the format `{ number: { geojson point geom } }`
+_cluster  | Optional. Used with `geocoder_address`. A json object of clustered addresses in the format `{ number: { geojson point geom } }`
 
 ### TIGER address interpolation
 
