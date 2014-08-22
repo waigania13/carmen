@@ -42,6 +42,20 @@ test('address point clustering', function(t) {
     t.end();
 });
 
+test('address point clustering fail', function(t) {
+    t.deepEqual(
+        addressCluster(
+            {
+                _cluster: {
+                    9: { type: "Point", coordinates: [1,1] },
+                    10: { type: "Point", coordinates: [2,2] },
+                    7: { type: "Point", coordinates: [0,0] }
+                }
+            }, 11),
+        undefined);
+    t.end();
+});
+
 test('parity: even + even', function(t) {
     t.deepEqual({
         type:'Point',
