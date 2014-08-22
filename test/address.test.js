@@ -42,6 +42,56 @@ test('address point clustering', function(t) {
     t.end();
 });
 
+test('address point clustering invalid coords', function(t) {
+    t.deepEqual(
+        addressCluster(
+            {
+                _cluster: {
+                    9: { type: "Point", coordinates: [1,1,1] },
+                    10: { type: "Point", coordinates: [2,2,2] },
+                    7: { type: "Point", coordinates: [0,0,0] }
+                }
+            }, 9),
+        undefined);
+    t.end();
+});
+
+test('address point clustering not point', function(t) {
+    t.deepEqual(
+        addressCluster(
+            {
+                _cluster: {
+                    9: { "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [
+                                    -17.2265625,
+                                    8.407168163601076
+                                ],
+                                [
+                                    -17.2265625,
+                                    53.9560855309879
+                                ],
+                                [
+                                    34.80468749999999,
+                                    53.9560855309879
+                                ],
+                                [
+                                    34.80468749999999,
+                                    8.407168163601076
+                                ],
+                                [
+                                    -17.2265625,
+                                    8.407168163601076
+                                ]
+                            ]
+                        ] }
+                }
+            }, 9),
+        undefined);
+    t.end();
+});
+
 test('address point clustering fail', function(t) {
     t.deepEqual(
         addressCluster(
