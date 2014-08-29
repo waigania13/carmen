@@ -89,7 +89,7 @@ var test = require('tape');
         });
     });
     test('new york', function(t) {
-        c.geocode('new york', { limit_verify:2 }, function(err, res) {
+        c.geocode('new york', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york');
             t.deepEqual(res.features[0].id, 'province.1');
@@ -97,7 +97,7 @@ var test = require('tape');
         });
     });
     test('new york new york', function(t) {
-        c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
+        c.geocode('new york new york', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -105,7 +105,7 @@ var test = require('tape');
         });
     });
     test('ny ny', function(t) {
-        c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
+        c.geocode('ny ny', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -118,6 +118,55 @@ var test = require('tape');
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
+            t.end();
+        });
+    });
+})();
+
+// Confirm that for equally relevant features across three indexes
+// the first in hierarchy beats the others.
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+        province: new mem(null, function() {}),
+        city: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _text:'china',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        conf.country.putGrid(6, 32, 32, solidGrid(country));
+        index.update(conf.country, [country], t.end);
+    });
+    test('index province', function(t) {
+        var province = {
+            _id:1,
+            _text:'china',
+            _zxy:['6/33/32'],
+            _center:[360/64,0]
+        };
+        conf.province.putGrid(6, 33, 32, solidGrid(province));
+        index.update(conf.province, [province], t.end);
+    });
+    test('index city', function(t) {
+        var city = {
+            _id:1,
+            _text:'china',
+            _zxy:['6/34/32'],
+            _center:[360/64*2,0]
+        };
+        conf.city.putGrid(6, 34, 32, solidGrid(city));
+        index.update(conf.city, [city], t.end);
+    });
+    test('china', function(t) {
+        c.geocode('china', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'china');
+            t.deepEqual(res.features[0].id, 'country.1');
             t.end();
         });
     });
