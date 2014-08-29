@@ -8,6 +8,14 @@ var mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
 
+// limit_verify 1 implies that the correct result must be the very top
+// result prior to context verification. It means even with a long list
+// of competing results the correct candidate is sorted to the top.
+
+// limit_verify 2 implies that there is some ambiguity prior to context
+// verification (e.g. new york (city) vs new york (province)) that is sorted
+// into the correct order after context verification occurs.
+
 (function() {
     var conf = {
         province: new mem(null, function() {}),
@@ -67,21 +75,21 @@ var test = require('tape');
         index.update(conf.street, [street], t.end);
     });
     test('west st, tonawanda, ny', function(t) {
-        c.geocode('west st tonawanda ny', { limit_verify:5 }, function(err, res) {
+        c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'west st, tonawanda, new york');
             t.end();
         });
     });
     test('west st, new york, ny', function(t) {
-        c.geocode('west st new york ny', { limit_verify:5 }, function(err, res) {
+        c.geocode('west st new york ny', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'west st, new york, new york');
             t.end();
         });
     });
     test('new york', function(t) {
-        c.geocode('new york', { limit_verify:5 }, function(err, res) {
+        c.geocode('new york', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york');
             t.deepEqual(res.features[0].id, 'province.1');
@@ -89,7 +97,7 @@ var test = require('tape');
         });
     });
     test('new york new york', function(t) {
-        c.geocode('new york new york', { limit_verify:5 }, function(err, res) {
+        c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -97,7 +105,7 @@ var test = require('tape');
         });
     });
     test('ny ny', function(t) {
-        c.geocode('ny ny', { limit_verify:5 }, function(err, res) {
+        c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -106,7 +114,7 @@ var test = require('tape');
     });
     // failing
     test.skip('new york ny', function(t) {
-        c.geocode('new york ny', { limit_verify:5 }, function(err, res) {
+        c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -153,11 +161,21 @@ var test = require('tape');
         conf.street.putGrid(6, 33, 32, solidGrid(street));
         index.update(conf.street, [street], t.end);
     });
-    // failing
-    test.skip('windsor ct', function(t) {
-        c.geocode('windsor ct', { limit_verify:5 }, function(err, res) {
+    // city beats street at spatialmatch
+    test('windsor ct (limit 1)', function(t) {
+        c.geocode('windsor ct', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
+            t.deepEqual(res.features[0].id, 'city.1');
+            t.end();
+        });
+    });
+    // city beats street at context sort
+    test('windsor ct (limit 2)', function(t) {
+        c.geocode('windsor ct', { limit_verify:2 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
+            t.deepEqual(res.features[0].id, 'city.1');
             t.end();
         });
     });
