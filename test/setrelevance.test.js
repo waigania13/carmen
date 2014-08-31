@@ -38,5 +38,17 @@ test('getSetRelevance', function(t) {
         { id: 1, relev: 1, reason: 255, count: 2, idx: 2, db: 'province', tmpid: 300000000000001 },
         { id: 2, relev: 1, reason: 255, count: 2, idx: 3, db: 'place', tmpid: 300000000000002 }
     ]));
+    // Test that elements of the stack without contribution are set to false.
+    var stack = [
+        { id: 3553, relev: 1, reason: 2, count: 1, idx: 1, db: 'province', tmpid: 100000000003553 },
+        { id: 1, relev: 1, reason: 255, count: 2, idx: 1, db: 'province', tmpid: 300000000000001 },
+        { id: 130305, relev: 1, reason: 1, count: 1, idx: 2, db: 'place', tmpid: 300000000130305 },
+        { id: 2, relev: 1, reason: 255, count: 2, idx: 3, db: 'venue', tmpid: 300000000000002 }
+    ];
+    t.equal(1, getSetRelevance(['georgia','vermont'], stack));
+    t.equal(!!stack[0], true, 'province 0 set');
+    t.equal(stack[1], false, 'province 1 false');
+    t.equal(!!stack[2], true, 'place 0 set');
+    t.equal(!!stack[3], true, 'venue 0 set');
     t.end();
 });
