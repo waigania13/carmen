@@ -9,6 +9,7 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
+    string: 'config',
     string: 'proximity',
     string: 'query',
     boolean: 'geojson',
@@ -19,6 +20,7 @@ var argv = require('minimist')(process.argv, {
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
     console.log('[options]:');
+    console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
     console.log('  --geojson               Return a geojson object');
     console.log('  --stats                 Generate Stats on the query');
@@ -29,7 +31,9 @@ if (argv.help) {
 if (!argv.query) throw new Error('--query argument required');
 
 var opts = {};
-if (argv._.length > 2) { //Given Tile Source
+if (argv.config) {
+    opts = require(path.resolve(argv.config));
+} else if (argv._.length > 2) { //Given Tile Source
     var src = path.resolve(argv._[argv._.length-1]);
     var stat = fs.statSync(src);
     if (stat.isDirectory()) {
