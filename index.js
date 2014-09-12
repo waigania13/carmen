@@ -24,6 +24,9 @@ function Geocoder(options) {
     var q = queue(),
         indexes = pairs(options);
 
+    this.indexes = indexes.reduce(toObject, {});
+    this.order = {};
+
     indexes.forEach(function(index) {
         q.defer(loadIndex, index);
     });
@@ -48,14 +51,14 @@ function Geocoder(options) {
             source._geocoder.group = info.geocoder_group || '';
             source._geocoder.name = name;
             source._geocoder.id = id;
-            source._geocoder.idx = names.indexOf(name);
             source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
-        });
+
+            // map id => idx
+            this.order[id] = names.indexOf(name);
+        }.bind(this));
 
         this.emit('open', err);
     }.bind(this));
-
-    this.indexes = indexes.reduce(toObject, {});
 
     function loadIndex(sourceindex, callback) {
         var source = sourceindex[1],
