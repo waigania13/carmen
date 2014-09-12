@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "carmen-cache": "0.0.1",
-    "mapnik": "https://github.com/mapnik/node-mapnik/archive/vt-query-async.tar.gz",
+    "mapnik": "mapnik/node-mapnik#vt-query-async",
     "minimist": "0.0.5",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
