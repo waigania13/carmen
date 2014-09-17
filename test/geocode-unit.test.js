@@ -250,11 +250,30 @@ var test = require('tape');
         conf.country.putGrid(6, 32, 32, solidGrid(country));
         index.update(conf.country, [country], t.end);
     });
+    test('index country2', function(t) {
+        var country = {
+            _id:2,
+            _text:'fake country two',
+            _zxy:['7/32/32'],
+            _center:[0,0]
+        };
+        conf.country.putGrid(7, 32, 32, solidGrid(country));
+        index.update(conf.country, [country], t.end);
+    });
     test('czech => czech repblic', function(t) {
         c.geocode('czech', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'czech republic');
             t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+
+    //Is not above 0.5 relev so should fail.
+    test('fake => [fail]', function(t) {
+        c.geocode('fake', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.notOk(res.features[0]);
             t.end();
         });
     });
