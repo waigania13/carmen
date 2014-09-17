@@ -232,6 +232,34 @@ var test = require('tape');
     });
 })();
 
+
+//Ensure that results that have equal relev in phrasematch
+//are matched against the 0.5 relev bar instead of 0.75
+(function() {
+    var conf = {
+        country: new mem({ maxzoom:6 }, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _text:'czech republic',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        conf.country.putGrid(6, 32, 32, solidGrid(country));
+        index.update(conf.country, [country], t.end);
+    });
+    test('czech => czech repblic', function(t) {
+        c.geocode('czech', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'czech republic');
+            t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+})();
+
 function solidGrid(feature) {
     return {
         "grid": [
