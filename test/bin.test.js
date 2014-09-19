@@ -18,4 +18,13 @@ tape('bin/carmen query', function(t) {
         t.end();
     });
 });
+tape('bin/lookup query', function(t) {
+    exec(bin + '/lookup.js --query="czech republic", --index="country" --term', function(err, stdout, stderr) {
+        t.ifError(err);
+        var lookup = stdout.replace(/\r?\n|\r/g, " ");
+        var lookupFixture = fs.readFileSync(__dirname + '/fixtures/lookup', 'utf-8').replace(/\r?\n|\r/g, " ");
 
+        t.equal(lookup, lookupFixture, 'finds czech republic');
+        t.end();
+    });
+});
