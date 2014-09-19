@@ -20,7 +20,7 @@ process.stdin.pipe(split()).on('data', function(line) {
     } else if (type == "term") {
         termops.tokenize(line).forEach(function (l) {
             var hash = [];
-            hash.push(parseInt(String(fnv(l, null)).substring(0, String(fnv(l, null)).length -2) + "00"))
+            hash.push(parseInt(String(fnv(l, 28)).substring(0, String(fnv(l, 28)).length -2) + "00"))
             console.log('[TERM]:', JSON.stringify(hash));
         });
     }
