@@ -7,7 +7,7 @@ var fnv = require('../lib/util/fnv.js');
 var feature = require('../lib/util/feature.js');
 
 if (!process.argv[2]) {
-    console.log('Usage: phrasematch.js [file|dir] --query="<query>" --[phrase|term] --index="" --geojson');
+    console.log('Usage: phrasematch.js --query="<query>" --[phrase|term] --index="" --geojson');
     process.exit(1);
 }
 
