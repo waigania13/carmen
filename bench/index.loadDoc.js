@@ -9,7 +9,7 @@ var patch = { grid: {}, term: {}, phrase: {}, degen: {}, feature: {} };
 var known = { term: {} };
 
 suite.add('index', function() {
-    for (var i = 0; i < docs.length; i++) index.loadDoc(docs[i], freq, patch, known);
+    for (var i = 0; i < docs.length; i++) index.loadDoc(docs[i], freq, patch, known, 6);
 })
 .on('cycle', function(event) {
     console.log(String(event.target));
