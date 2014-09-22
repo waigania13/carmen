@@ -10,6 +10,15 @@ test('geocode', function(t) {
         province: Carmen.auto(__dirname + '/fixtures/02-ne.province.s3')
     });
 
+    t.test ('phrasematch 0.5 relev', function(q) {
+        geocoder.geocode('czech', {}, function(err, res) {
+            q.ifError(err);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-phraserelev.json', JSON.stringify(res, null, 4));
+            q.deepEqual(require(__dirname + '/fixtures/geocode-phraserelev.json'), res);
+            q.end();
+        });
+    });
+
     t.test ('forward', function(q) {
         geocoder.geocode('georgia', {}, function(err, res) {
             q.ifError(err);
