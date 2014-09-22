@@ -12,19 +12,19 @@ test('index.update', function(t) {
     var to = new mem(null, function() {});
     var carmen = new Carmen({ to: to });
     t.test('error no _id', function(q) {
-        index.update(to, [{_text:'main st'}], function(err) {
+        index.update(to, [{_text:'main st'}],0, function(err) {
             q.equal('Error: doc has no _id', err.toString());
             q.end();
         });
     });
     t.test('error no _center', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], function(err) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], 0, function(err) {
             q.equal('Error: doc has no _center on _id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], function(err) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], 0, function(err) {
             q.ifError(err);
             q.end();
         });
