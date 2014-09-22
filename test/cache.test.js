@@ -237,7 +237,7 @@ test('Cache', function(t) {
 
         mem._geocoder = cache;
 
-        index.update(mem, docs, function(err) {
+        index.update(mem, docs, 6, function(err) {
             if (err) t.fail();
             index.store(mem, run);
         });

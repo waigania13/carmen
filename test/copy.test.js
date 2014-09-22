@@ -17,8 +17,8 @@ test('copy', function(t) {
         to: to
     });
 
-    t.test(function(q) {
-        index.update(from, docs, function(err) {
+    t.test('update', function(q) {
+        index.update(from, docs, 6, function(err) {
             if (err) q.fail();
             index.store(from, function(){
                 q.end();
