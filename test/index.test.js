@@ -44,7 +44,7 @@ test('index', function(t) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
-            //q.deepEqual(to.serialize(), memFixture);
+            q.deepEqual(to.serialize(), memFixture);
             q.end();
         });
     });
@@ -101,4 +101,30 @@ test('index', function(t) {
         });
     });
     t.end();
+});
+
+test('error -- zoom too high', function(t) {
+    var from = new mem({maxzoom: 15}, function() {});
+    var to = new mem(null, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: zoom must be less than 15', err.toString())
+        t.end();
+    });
+});
+
+test('error -- zoom too low', function(t) {
+    var from = new mem({maxzoom: -1}, function() {});
+    var to = new mem(null, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: zoom must be greater than 0', err.toString())
+        t.end();
+    });
 });
