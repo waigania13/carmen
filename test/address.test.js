@@ -42,6 +42,22 @@ test('address point clustering', function(t) {
     t.end();
 });
 
+test('reverse address point clustering', function(t) {
+    t.deepEqual(
+        addressCluster.reverse(
+            {
+                _text: "test",
+                _cluster: {
+                    9: { type: "Point", coordinates: [1,1] },
+                    10: { type: "Point", coordinates: [2,2] },
+                    7: { type: "Point", coordinates: [0,0] }
+                },
+                _geometry: { text: "MultiPoint Here" }
+            }, [1,1]),
+        { _cluster: { 10: { coordinates: [ 2, 2 ], type: 'Point' }, 7: { coordinates: [ 0, 0 ], type: 'Point' }, 9: { coordinates: [ 1, 1 ], type: 'Point' } }, _geometry: { coordinates: [ 1, 1 ], type: 'Point' }, _text: '9 test' });
+    t.end();
+});
+
 test('address point clustering invalid coords', function(t) {
     t.deepEqual(
         addressCluster(
