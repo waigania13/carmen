@@ -48,13 +48,16 @@ test('reverse address point clustering', function(t) {
             {
                 _text: "test",
                 _cluster: {
-                    9: { type: "Point", coordinates: [1,1] },
-                    10: { type: "Point", coordinates: [2,2] },
-                    7: { type: "Point", coordinates: [0,0] }
+                    9: { type: "Point", coordinates: [1,3] },
+                    10: { type: "Point", coordinates: [2,4] },
+                    7: { type: "Point", coordinates: [0,1] }
                 },
                 _geometry: { text: "MultiPoint Here" }
-            }, [1,1]),
-        { _cluster: { 10: { coordinates: [ 2, 2 ], type: 'Point' }, 7: { coordinates: [ 0, 0 ], type: 'Point' }, 9: { coordinates: [ 1, 1 ], type: 'Point' } }, _geometry: { coordinates: [ 1, 1 ], type: 'Point' }, _text: '9 test' });
+            }, [1,3]),
+        {
+            _cluster: { 10: { coordinates: [ 2, 4 ], type: 'Point' }, 7: { coordinates: [ 0, 1 ], type: 'Point' }, 9: { coordinates: [ 1, 3 ], type: 'Point' } },
+            _geometry: { coordinates: [ 2, 4 ], type: 'Point' },
+            _text: '10 test' });
     t.end();
 });
 
