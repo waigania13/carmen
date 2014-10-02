@@ -33,7 +33,7 @@ test('index.update -- error', function(t) {
 });
 
 test('index', function(t) {
-    var from = new mem(null, function() {});
+    var from = new mem({maxzoom:6}, function() {});
     var to = new mem(null, function() {});
     var carmen = new Carmen({
         from: from,
