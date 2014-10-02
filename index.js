@@ -52,6 +52,7 @@ function Geocoder(options) {
             source._geocoder.name = name;
             source._geocoder.id = id;
             source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
+            source._geocoder.geometry_reduce = !!parseInt(info.geometry_reduce||0,10);
 
             // map id => idx
             this.order[id] = names.indexOf(name);

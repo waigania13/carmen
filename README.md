@@ -68,6 +68,8 @@ geocoder_group          | Optional + advanced. For indexes that share the exact 
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
 
+The sum of maxzoom + geocoder_resolution must be no greater than 14.
+
 ### geocode(query, options, callback)
 
 Given a `query` string, call callback with `(err, results)` of possible contexts

@@ -32,7 +32,7 @@ var test = require('tape');
         };
         conf.province.putGrid(6, 32, 32, solidGrid(province));
         conf.province.putGrid(6, 33, 32, solidGrid(province));
-        index.update(conf.province, [province], t.end);
+        index.update(conf.province, [province], 6, t.end);
     });
     test('index city 1', function(t) {
         var city = {
@@ -42,7 +42,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.city.putGrid(6, 32, 32, solidGrid(city));
-        index.update(conf.city, [city], t.end);
+        index.update(conf.city, [city], 6, t.end);
     });
     test('index city 2', function(t) {
         var city = {
@@ -52,7 +52,7 @@ var test = require('tape');
             _center:[360/64,0]
         };
         conf.city.putGrid(6, 33, 32, solidGrid(city));
-        index.update(conf.city, [city], t.end);
+        index.update(conf.city, [city], 6, t.end);
     });
     test('index street 1', function(t) {
         var street = {
@@ -62,7 +62,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.street.putGrid(6, 32, 32, solidGrid(street));
-        index.update(conf.street, [street], t.end);
+        index.update(conf.street, [street], 6, t.end);
     });
     test('index street 2', function(t) {
         var street = {
@@ -72,7 +72,7 @@ var test = require('tape');
             _center:[360/64,0]
         };
         conf.street.putGrid(6, 33, 32, solidGrid(street));
-        index.update(conf.street, [street], t.end);
+        index.update(conf.street, [street], 6, t.end);
     });
     test('west st, tonawanda, ny', function(t) {
         c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
@@ -140,7 +140,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.country.putGrid(6, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], t.end);
+        index.update(conf.country, [country], 6, t.end);
     });
     test('index province', function(t) {
         var province = {
@@ -150,7 +150,7 @@ var test = require('tape');
             _center:[360/64,0]
         };
         conf.province.putGrid(6, 33, 32, solidGrid(province));
-        index.update(conf.province, [province], t.end);
+        index.update(conf.province, [province], 6, t.end);
     });
     test('index city', function(t) {
         var city = {
@@ -160,7 +160,7 @@ var test = require('tape');
             _center:[360/64*2,0]
         };
         conf.city.putGrid(6, 34, 32, solidGrid(city));
-        index.update(conf.city, [city], t.end);
+        index.update(conf.city, [city], 6, t.end);
     });
     test('china', function(t) {
         c.geocode('china', { limit_verify:1 }, function(err, res) {
@@ -188,7 +188,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.province.putGrid(6, 32, 32, solidGrid(province));
-        index.update(conf.province, [province], t.end);
+        index.update(conf.province, [province], 6, t.end);
     });
     test('index city', function(t) {
         var city = {
@@ -198,7 +198,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.city.putGrid(6, 32, 32, solidGrid(city));
-        index.update(conf.city, [city], t.end);
+        index.update(conf.city, [city], 6, t.end);
     });
     test('index street', function(t) {
         var street = {
@@ -208,7 +208,7 @@ var test = require('tape');
             _center:[360/64,0]
         };
         conf.street.putGrid(6, 33, 32, solidGrid(street));
-        index.update(conf.street, [street], t.end);
+        index.update(conf.street, [street], 6, t.end);
     });
     // failing
     // city beats street at spatialmatch
@@ -248,7 +248,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.country.putGrid(6, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], t.end);
+        index.update(conf.country, [country], 6, t.end);
     });
     test('index country2', function(t) {
         var country = {
@@ -258,7 +258,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.country.putGrid(7, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], t.end);
+        index.update(conf.country, [country], 6, t.end);
     });
     test('czech => czech repblic', function(t) {
         c.geocode('czech', { limit_verify:1 }, function(err, res) {
