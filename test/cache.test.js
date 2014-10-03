@@ -234,10 +234,11 @@ test('Cache', function(t) {
         var index = require('../lib/index');
         var stats = { term:0, phrase:0 };
         var cache = new Cache('a', 1);
+        var zoom = 6;
 
         mem._geocoder = cache;
 
-        index.update(mem, docs, 6, function(err) {
+        index.update(mem, docs, zoom, function(err) {
             if (err) t.fail();
             index.store(mem, run);
         });

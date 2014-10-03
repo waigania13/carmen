@@ -1,7 +1,7 @@
 {
   "name": "carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "url": "http://github.com/mapbox/carmen",
   "author": {
     "name": "MapBox",
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "carmen-cache": "0.0.1",
-    "mapnik": "~1.4.0",
+    "mapnik": "~1.4.16",
     "minimist": "0.0.5",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",

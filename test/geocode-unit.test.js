@@ -258,7 +258,7 @@ var test = require('tape');
             _center:[0,0]
         };
         conf.country.putGrid(7, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], 6, t.end);
+        index.update(conf.country, [country], 7, t.end);
     });
     test('czech => czech repblic', function(t) {
         c.geocode('czech', { limit_verify:1 }, function(err, res) {
