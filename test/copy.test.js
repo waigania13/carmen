@@ -49,7 +49,7 @@ test('copy', function(t) {
             q.ifError(err);
             q.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
             q.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
-            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
+            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 412 ] }, stats[2]);
             q.end();
         });
     });

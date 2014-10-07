@@ -45,7 +45,7 @@ test('index', function(t) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
-            //q.deepEqual(to.serialize(), memFixture);
+            q.deepEqual(to.serialize(), memFixture);
             q.end();
         });
     });
@@ -54,7 +54,7 @@ test('index', function(t) {
             q.ifError(err);
             q.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
             q.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
-            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
+            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 412 ] }, stats[2]);
             q.end();
         });
     });
