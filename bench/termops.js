@@ -6,7 +6,7 @@ var termops = require('../lib/util/termops');
 suite.add('termops', function() {
     var text = 'Chamonix-Mont-Blanc';
     var tokens = termops.tokenize(text);
-    termops.phrase(tokens);
+    termops.phrase(tokens, '');
     termops.terms(tokens);
     termops.termsMap(tokens);
 })
