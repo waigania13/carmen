@@ -139,12 +139,12 @@ required:
 attribute | description
 ----------|------------
 _id       | An integer ID for this feature.
-_geometry | A geojson geometry object.
 _text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+_geometry | A geojson geometry object. Required if no _zxy provided.
+_zxy      | An array of xyz tile coordinates covered by this feature. Required if no _geometry provided.
 _center   | Optional. An array in the form [lon,lat]. _center must be on the _geometry surface, or the _center will be recalculated.
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
 _score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
-_zxy      | Optional. An array of xyz tile coordinates covered by this feature.
 _cluster  | Optional. Used with `geocoder_address`. A json object of clustered addresses in the format `{ number: { geojson point geom } }`
 
 ### TIGER address interpolation
