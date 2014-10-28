@@ -339,6 +339,36 @@ var test = require('tape');
     });
 })();
 
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index address', function(t) {
+            var address = {
+                _id:1,
+                _text:'fake street',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _cluster: {
+                    '9': { type: "Point", coordinates: [0,0] },
+                    '10': { type: "Point", coordinates: [0,0] },
+                    '7': { type: "Point", coordinates: [0,0] }
+                }
+            };
+            conf.address.putGrid(6, 32, 32, solidGrid(address));
+            index.update(conf.address, [address], t.end);
+    });
+    test('test address query with alphanumeric', function(t) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+})();
+
 //If the layer does not have geocoder_address do not take house number into account
 (function() {
     var conf = {
