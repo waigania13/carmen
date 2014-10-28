@@ -362,7 +362,7 @@ var test = require('tape');
     test('test address query with alphanumeric', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
