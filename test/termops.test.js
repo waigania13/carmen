@@ -115,5 +115,16 @@ test('termops', function(t) {
         q.deepEqual(termops.phrase(['foo','lane'], 'foo') >>> 24, 169);
         q.end();
     });
+    
+    t.test('address', function(q) {
+        q.deepEqual(termops.address('500 baker st'), '500', 'full address');
+        q.deepEqual(termops.address('baker st'), null, 'no housenum');
+        q.deepEqual(termops.address('500'), null, 'only number');
+        q.deepEqual(termops.address('500b baker st'), '500b', 'alphanumeric');
+        q.deepEqual(termops.address('15th st'), null, 'numbered st');
+        q.deepEqual(termops.address('15 st francis drive'), '15', 'ambiguous abbr');
+        q.end();
+    }); 
+
     t.end();
 });
