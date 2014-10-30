@@ -7,6 +7,7 @@ var MBTiles = require('mbtiles'),
     mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
+var termops = require('../lib/util/termops');
 
 test('index.update -- error', function(t) {
     var to = new mem(null, function() {});
@@ -140,4 +141,38 @@ test('error -- zoom too low', function(t) {
         t.equal('Error: zoom must be greater than 0 --- zoom was -1 on _id:undefined', err.toString());
         t.end();
     });
+});
+
+test('index phrase collection', function(assert) {
+    var conf = { test:new mem({maxzoom:6}, function() {}) };
+    var c = new Carmen(conf);
+    var docs = [{
+        _id:1,
+        _text:'fake street',
+        _zxy:['6/32/32'],
+        _center:[0,0]
+    }, {
+        _id:2,
+        _text:'fake street',
+        _zxy:['6/32/32'],
+        _center:[0,0]
+    }];
+    index.update(conf.test, docs, 6, afterUpdate);
+    function afterUpdate(err) {
+        assert.ifError(err);
+        assert.deepEqual(conf.test._geocoder.list('phrase',0), ['559741915'], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.get('phrase',559741915), [ 559417695, 1986331711 ], 'phrase has 2 terms');
+
+        assert.deepEqual(conf.test._geocoder.list('grid',0), [ '559741915' ], '1 grid');
+        assert.deepEqual(conf.test._geocoder.get('grid',559741915), [ 17593259786241, 17593259786242 ], 'grid has 2 zxy+feature ids');
+
+        assert.deepEqual(conf.test._geocoder.list('term',0), ['559417680'], '1 term (significant)');
+        assert.deepEqual(conf.test._geocoder.get('term',559417680), [ 559741915, 559741915 ], 'term => phrase is not deduped (yet)');
+
+        assert.deepEqual(conf.test._geocoder.list('degen',0), [ '559417680', '1986331696', '2784490928', '3259748752', '3529213088', '4027714032' ], '6 degens');
+        assert.deepEqual(conf.test._geocoder.get('degen',559417680), [ 559417680 ], 'degen => term is unique');
+        assert.deepEqual(conf.test._geocoder.get('degen',2784490928), [ 559417681 ], 'degen => term is unique');
+
+        assert.end();
+    }
 });
