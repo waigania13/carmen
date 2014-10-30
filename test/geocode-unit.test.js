@@ -327,7 +327,7 @@ var test = require('tape');
                 }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], t.end);
+            index.update(conf.address, [address], 6, t.end);
     });
     test('test address index for alphanumerics', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
@@ -357,7 +357,7 @@ var test = require('tape');
                 }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], t.end);
+            index.update(conf.address, [address], 6, t.end);
     });
     test('test address query with alphanumeric', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
@@ -389,7 +389,7 @@ var test = require('tape');
                 }   
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], t.end);
+            index.update(conf.address, [address], 6, t.end);
     });
     test('test address query with address range', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
@@ -421,7 +421,7 @@ var test = require('tape');
                 }   
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], t.end);
+            index.update(conf.address, [address], 6, t.end);
     });
     test('test alphanumeric address query with address range', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
