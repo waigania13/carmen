@@ -20,7 +20,7 @@
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
     "split": "0.2.x",
-    "tile-cover": "2.0.0",
+    "tile-cover": "2.1.0",
     "tilebelt": "^0.5.3",
     "tilelive": "5.2.x",
     "turf-point-on-surface": "^1.0.2",
