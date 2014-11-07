@@ -16,9 +16,10 @@ test('copy', function(t) {
         from: from,
         to: to
     });
+    var zoom = 6;
 
-    t.test(function(q) {
-        index.update(from, docs, function(err) {
+    t.test('update', function(q) {
+        index.update(from, docs, zoom, function(err) {
             if (err) q.fail();
             index.store(from, function(){
                 q.end();

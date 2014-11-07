@@ -68,6 +68,8 @@ geocoder_group          | Optional + advanced. For indexes that share the exact 
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
 
+The sum of maxzoom + geocoder_resolution must be no greater than 14.
+
 ### geocode(query, options, callback)
 
 Given a `query` string, call callback with `(err, results)` of possible contexts
@@ -137,12 +139,12 @@ required:
 attribute | description
 ----------|------------
 _id       | An integer ID for this feature.
-_zxy      | An array of xyz tile coordinates covered by this feature.
 _text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
-_center   | An array in the form [lon,lat].
+_geometry | A geojson geometry object. Required if no _zxy provided.
+_zxy      | An array of xyz tile coordinates covered by this feature. Required if no _geometry provided.
+_center   | An array in the form [lon,lat]. _center must be on the _geometry surface, or the _center will be recalculated. Required only if no _geometry provided.
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
 _score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first.
-_geometry | Optional. A geojson geometry object.
 _cluster  | Optional. Used with `geocoder_address`. A json object of clustered addresses in the format `{ number: { geojson point geom } }`
 
 ### TIGER address interpolation

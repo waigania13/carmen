@@ -7,36 +7,38 @@ var MBTiles = require('mbtiles'),
     mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
+var termops = require('../lib/util/termops');
 
-test('index.update', function(t) {
+test('index.update -- error', function(t) {
     var to = new mem(null, function() {});
     var carmen = new Carmen({ to: to });
+    var zoom = 6;
     t.test('error no _id', function(q) {
-        index.update(to, [{_text:'main st'}], function(err) {
+        index.update(to, [{_text:'main st'}], zoom, function(err) {
             q.equal('Error: doc has no _id', err.toString());
             q.end();
         });
     });
-    t.test('error no _zxy', function(q) {
-        index.update(to, [{_text:'main st',_id:1}], function(err) {
-            q.equal('Error: doc has no _zxy on _id:1', err.toString());
-            q.end();
-        });
-    });
-    t.test('error no _zxy (empty array)', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:[]}], function(err) {
-            q.equal('Error: doc has no _zxy on _id:1', err.toString());
-            q.end();
-        });
-    });
     t.test('error no _center', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], function(err) {
-            q.equal('Error: doc has no _center on _id:1', err.toString());
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], zoom, function(err) {
+            q.equal('Error: doc has no _center or _geometry on _id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], function(err) {
+        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], zoom, function(err) {
+            q.ifError(err);
+            q.end();
+        });
+    });
+    t.test('indexes doc with _geometry and no _center or _zxy', function(q) {
+        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]}}], zoom, function(err) {
+            q.ifError(err);
+            q.end();
+        });
+    });
+    t.test('indexes doc with _geometry and _center, but no _zxy', function(q) {
+        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]},_center:[-75.598211,38.367333]}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
@@ -45,7 +47,7 @@ test('index.update', function(t) {
 });
 
 test('index', function(t) {
-    var from = new mem(null, function() {});
+    var from = new mem({maxzoom:6}, function() {});
     var to = new mem(null, function() {});
     var carmen = new Carmen({
         from: from,
@@ -113,4 +115,64 @@ test('index', function(t) {
         });
     });
     t.end();
+});
+
+test('error -- zoom too high', function(t) {
+    var from = new mem({maxzoom: 15}, function() {});
+    var to = new mem(null, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: zoom must be less than 15 --- zoom was 15 on _id:undefined', err.toString());
+        t.end();
+    });
+});
+
+test('error -- zoom too low', function(t) {
+    var from = new mem({maxzoom: -1}, function() {});
+    var to = new mem({maxzoom:10}, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: zoom must be greater than 0 --- zoom was -1 on _id:undefined', err.toString());
+        t.end();
+    });
+});
+
+test('index phrase collection', function(assert) {
+    var conf = { test:new mem({maxzoom:6}, function() {}) };
+    var c = new Carmen(conf);
+    var docs = [{
+        _id:1,
+        _text:'fake street',
+        _zxy:['6/32/32'],
+        _center:[0,0]
+    }, {
+        _id:2,
+        _text:'fake street',
+        _zxy:['6/32/32'],
+        _center:[0,0]
+    }];
+    index.update(conf.test, docs, 6, afterUpdate);
+    function afterUpdate(err) {
+        assert.ifError(err);
+        assert.deepEqual(conf.test._geocoder.list('phrase',0), ['559741915'], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.get('phrase',559741915), [ 559417695, 1986331711 ], 'phrase has 2 terms');
+
+        assert.deepEqual(conf.test._geocoder.list('grid',0), [ '559741915' ], '1 grid');
+        assert.deepEqual(conf.test._geocoder.get('grid',559741915).sort(), [ 17593259786241, 17593259786242 ], 'grid has 2 zxy+feature ids');
+
+        assert.deepEqual(conf.test._geocoder.list('term',0), ['559417680'], '1 term (significant)');
+        assert.deepEqual(conf.test._geocoder.get('term',559417680), [ 559741915, 559741915 ], 'term => phrase is not deduped (yet)');
+
+        assert.deepEqual(conf.test._geocoder.list('degen',0), [ '559417680', '1986331696', '2784490928', '3259748752', '3529213088', '4027714032' ], '6 degens');
+        assert.deepEqual(conf.test._geocoder.get('degen',559417680), [ 559417680, 559417680 ], 'degen => term is not deduped (yet)');
+        assert.deepEqual(conf.test._geocoder.get('degen',2784490928), [ 559417681, 559417681 ], 'degen => term is not deduped (yet)');
+
+        assert.end();
+    }
 });
