@@ -50,7 +50,6 @@ test('index.update -- error', function(t) {
 test('index', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var from = new mem(docs, {maxzoom:6}, function() {});
-    //console.log(from.getIndexableDocs(null, function(d){}))
     var to = new mem(docs, null, function() {});
     var carmen = new Carmen({
         from: from,
@@ -58,8 +57,6 @@ test('index', function(t) {
     });
     t.test('indexes a document', function(q) {
         carmen.index(from, to, {}, function(err) {
-
-            console.log('EEEEEEERRRR', err)
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
