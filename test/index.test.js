@@ -176,3 +176,15 @@ test('index phrase collection', function(assert) {
         assert.end();
     }
 });
+
+test('index.cleanDocs', function(assert) {
+    var docs;
+    var sourceWithAddress = {_geocoder:{geocoder_address:true}};
+    var sourceWithoutAddress = {_geocoder:{geocoder_address:false}};
+
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{}}])[0]._geometry, 'object', 'with address: preserves geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{_geometry:{}}])[0]._geometry, 'undefined', 'without address: removes geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{},_cluster:{}}])[0]._geometry, 'undefined', 'with cluster: removes geometry');
+    assert.end();
+});
+
