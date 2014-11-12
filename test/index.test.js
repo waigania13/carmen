@@ -3,14 +3,15 @@ var util = require('util');
 var Carmen = require('..');
 var index = require('../lib/index');
 var memFixture = require('./fixtures/mem.json');
-var MBTiles = require('mbtiles'),
-    mem = require('../lib/api-mem');
+var MBTiles = require('mbtiles');
+var mem = require('./fixtures/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 
 test('index.update -- error', function(t) {
-    var to = new mem(null, function() {});
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var to = new mem(docs, null, function() {});
     var carmen = new Carmen({ to: to });
     var zoom = 6;
     t.test('error no _id', function(q) {
@@ -47,14 +48,18 @@ test('index.update -- error', function(t) {
 });
 
 test('index', function(t) {
-    var from = new mem({maxzoom:6}, function() {});
-    var to = new mem(null, function() {});
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var from = new mem(docs, {maxzoom:6}, function() {});
+    //console.log(from.getIndexableDocs(null, function(d){}))
+    var to = new mem(docs, null, function() {});
     var carmen = new Carmen({
         from: from,
         to: to
     });
     t.test('indexes a document', function(q) {
         carmen.index(from, to, {}, function(err) {
+
+            console.log('EEEEEEERRRR', err)
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
@@ -118,8 +123,9 @@ test('index', function(t) {
 });
 
 test('error -- zoom too high', function(t) {
-    var from = new mem({maxzoom: 15}, function() {});
-    var to = new mem(null, function() {});
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var from = new mem(docs, {maxzoom: 15}, function() {});
+    var to = new mem(docs, null, function() {});
     var carmen = new Carmen({
         from: from,
         to: to
@@ -131,8 +137,9 @@ test('error -- zoom too high', function(t) {
 });
 
 test('error -- zoom too low', function(t) {
-    var from = new mem({maxzoom: -1}, function() {});
-    var to = new mem({maxzoom:10}, function() {});
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var from = new mem(docs, {maxzoom: -1}, function() {});
+    var to = new mem(docs, {maxzoom:10}, function() {});
     var carmen = new Carmen({
         from: from,
         to: to
@@ -144,7 +151,8 @@ test('error -- zoom too low', function(t) {
 });
 
 test('index phrase collection', function(assert) {
-    var conf = { test:new mem({maxzoom:6}, function() {}) };
+    var memDocs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var conf = { test:new mem(memDocs, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
     var docs = [{
         _id:1,
@@ -175,4 +183,18 @@ test('index phrase collection', function(assert) {
 
         assert.end();
     }
+});
+
+test('error -- _geometry too high resolution', function(t) {
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/hugedoc.json'));
+    var from = new mem(docs, {maxzoom: 6}, function() {});
+    var to = new mem(docs, null, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts.', err.toString());
+        t.end();
+    });
 });
