@@ -458,7 +458,6 @@ var test = require('tape');
     });
 })();
 
-
 function solidGrid(feature) {
     return {
         "grid": [

@@ -206,3 +206,9 @@ test('index.cleanDocs', function(assert) {
     assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{},_cluster:{}}])[0]._geometry, 'undefined', 'with cluster: removes geometry');
     assert.end();
 });
+
+test('index.teardown', function(assert) {
+    index.teardown();
+    assert.end();
+});
+
