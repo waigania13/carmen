@@ -33,6 +33,35 @@
                 "population": 22665345,
                 "title": "North Korea"
             }
+        },
+        {
+            "id": "country.27",
+            "type": "Feature",
+            "text": "South Korea",
+            "place_name": "South Korea",
+            "relevance": 0.5,
+            "center": [
+                127.998542,
+                36.435141
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    127.998542,
+                    36.435141
+                ]
+            },
+            "bbox": [
+                124.61397465050943,
+                33.19730295839713,
+                130.92092818265328,
+                38.57834350799337
+            ],
+            "properties": {
+                "iso2": "KR",
+                "population": 48508972,
+                "title": "South Korea"
+            }
         }
     ]
 }
