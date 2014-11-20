@@ -95,12 +95,14 @@ test('coalesce zooms', function(t) {
         // easier debugging/assertion of correct results.
         var z, x, y;
         var coalescedCount = {};
+        var coalescedKeys = {};
         for (var zxy in coalesced) {
             z = Math.floor(zxy/Math.pow(2,28));
             x = Math.floor(zxy%Math.pow(2,28)/Math.pow(2,14));
             y = zxy % Math.pow(2,14)
             var key = [z,x,y].join('/');
             coalescedCount[key] = coalesced[zxy].map(function(f) { return f.id });
+            coalescedKeys[key] = coalesced[zxy].key;
         }
         q.deepEqual({
             '9/151/188': [ 495, 496 ],
@@ -131,6 +133,35 @@ test('coalesce zooms', function(t) {
             '11/610/759': [ 14180, 495 ],
             '11/611/758': [ 14180, 495 ]
         }, coalescedCount);
+        q.deepEqual({
+            '11/441/770': 7711,
+            '11/441/771': 7711,
+            '11/442/770': 7711,
+            '11/442/771': 7711,
+            '11/498/724': 131599,
+            '11/610/758': '14180-495',
+            '11/610/759': '14180-495',
+            '11/611/758': '14180-495',
+            '9/151/188': '495-496',
+            '9/151/189': 495,
+            '9/152/188': 495,
+            '9/152/189': 495,
+            '9/152/190': 495,
+            '9/153/188': 495,
+            '9/153/189': 495,
+            '9/153/190': 495,
+            '9/154/188': 495,
+            '9/154/189': 495,
+            '9/154/190': 495,
+            '9/154/191': 495,
+            '9/155/188': 495,
+            '9/155/189': 495,
+            '9/155/190': 495,
+            '9/155/191': 495,
+            '9/156/189': 495,
+            '9/156/190': 495,
+            '9/156/191': 495
+        }, coalescedKeys);
         q.end();
     });
     t.end();

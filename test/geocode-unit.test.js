@@ -458,6 +458,63 @@ var test = require('tape');
     });
 })();
 
+// spatialmatch test to ensure the highest relev for a stacked zxy cell
+// is used, disallowing a lower scoring cell from overwriting a previous
+// entry.
+(function() {
+    var conf = {
+        place: new mem({maxzoom: 6}, function() {}),
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index place', function(t) {
+        var feature = {
+            _id:1,
+            _text:'fakecity',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+        };
+        conf.place.putGrid(6, 32, 32, solidGrid(feature));
+        index.update(conf.place, [feature], 6, t.end);
+    });
+    test('index matching address', function(t) {
+        var feature = {
+            _id:2,
+            _text:'fake street',
+            _zxy:['6/32/32','6/32/33'],
+            _center:[0,0],
+            _cluster: {
+                '1': { type: "Point", coordinates: [0,0] }
+            }
+        };
+        conf.address.putGrid(6, 32, 32, solidGrid(feature));
+        conf.address.putGrid(6, 32, 33, solidGrid(feature));
+        index.update(conf.address, [feature], 6, t.end);
+    });
+    test('index other address', function(t) {
+        var feature = {
+            _id:3,
+            _text:'fake street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                '2': { type: "Point", coordinates: [0,0] }
+            }
+        };
+        conf.address.putGrid(6, 32, 32, solidGrid(feature));
+        index.update(conf.address, [feature], 6, t.end);
+    });
+    test('test spatialmatch relev', function(t) {
+        c.geocode('1 fake street fakecity', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].id, 'address.2');
+            t.end();
+        });
+    });
+})();
+
 test('index.teardown', function(assert) {
     index.teardown();
     assert.end();
