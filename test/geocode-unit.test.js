@@ -441,12 +441,12 @@ var test = require('tape');
     test('index address', function(t) {
             var address = {
                 _id:1,
-                _text:'fake street',
+                _text:'beach street',
                 _zxy:['6/32/32'],
                 _center:[0,0],
                 _rangetype:'tiger',
-                _lfromhn: '0',
-                _ltohn: '100',
+                _lfromhn: '23-100',
+                _ltohn: '23-500',
                 _geometry: {
                     type:'LineString',
                     coordinates:[[0,0],[0,100]]
