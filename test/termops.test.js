@@ -7,6 +7,7 @@ test('termops', function(t) {
             r.deepEqual(termops.tokenize('foo'), ['foo']);
             r.deepEqual(termops.tokenize('foo bar'), ['foo', 'bar']);
             r.deepEqual(termops.tokenize('foo-bar'), ['foo', 'bar']);
+            r.deepEqual(termops.tokenize('69-150'), ['69-150']);
             r.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
             r.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
             r.deepEqual(termops.tokenize('Chamonix-Mont-Blanc'), ['chamonix','mont','blanc']);
