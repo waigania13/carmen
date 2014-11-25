@@ -9,7 +9,7 @@ test('termops', function(t) {
             r.deepEqual(termops.tokenize('foo-bar'), ['foo', 'bar']);
             r.deepEqual(termops.tokenize('69-150'), ['69-150']);
             r.deepEqual(termops.tokenize('4-10'), ['4-10']);
-            r.deepEqual(termops.tokenize('5-02a'), ['5-02a']);
+            r.deepEqual(termops.tokenize('5-02A'), ['5-02a']);
             r.deepEqual(termops.tokenize('23-'), ['23']);
             r.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
             r.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
