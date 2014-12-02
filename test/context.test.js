@@ -73,7 +73,8 @@ test('contextVector deflate', function(t) {
             geocoder_layer: 'data',
             maxzoom: 0,
             minzoom: 0,
-            id: 'test'
+            name: 'test',
+            id: 'testA'
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
@@ -99,7 +100,8 @@ test('contextVector gzip', function(t) {
             geocoder_layer: 'data',
             maxzoom: 0,
             minzoom: 0,
-            id: 'test'
+            name: 'test',
+            id: 'testA'
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
@@ -122,7 +124,8 @@ test('contextVector badbuffer', function(t) {
             geocoder_layer: 'data',
             maxzoom: 0,
             minzoom: 0,
-            id: 'test'
+            name: 'test',
+            id: 'testA'
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
