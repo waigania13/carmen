@@ -32,16 +32,25 @@ test('termops', function(t) {
         q.end();
     });
     t.test('id - tests if searching by id', function(q) {
-        q.deepEqual(termops.id('country.5432'), {dbname:'country', id:'5432'});
-        q.deepEqual(termops.id('province.123'), {dbname:'province', id:'123'});
-        q.deepEqual(termops.id('postcode.546'), {dbname:'postcode', id:'546'});
-        q.deepEqual(termops.id('place.455233'), {dbname:'place', id:'455233'});
-        q.deepEqual(termops.id('multi.part.455233'), {dbname:'multi.part', id:'455233'});
-        q.strictEqual(termops.id('near country.5432'), false);
-        q.strictEqual(termops.id('country.5432 street'), false);
-        q.strictEqual(termops.id('country.a445'), false);
-        q.strictEqual(termops.id('place.32f424'), false);
-        q.strictEqual(termops.id('country.424k'), false);
+        var indexes = {
+            country: {},
+            province: {},
+            place: {},
+            postcode: {},
+            'multi.part': {}
+        };
+        q.deepEqual(termops.id(indexes, 'country.5432'), {dbname:'country', id:'5432'});
+        q.deepEqual(termops.id(indexes, 'province.123'), {dbname:'province', id:'123'});
+        q.deepEqual(termops.id(indexes, 'postcode.546'), {dbname:'postcode', id:'546'});
+        q.deepEqual(termops.id(indexes, 'place.455233'), {dbname:'place', id:'455233'});
+        q.deepEqual(termops.id(indexes, 'multi.part.455233'), {dbname:'multi.part', id:'455233'});
+        q.strictEqual(termops.id(indexes, 'near country.5432'), false);
+        q.strictEqual(termops.id(indexes, 'country.5432 street'), false);
+        q.strictEqual(termops.id(indexes, '123.451,8.123'), false);
+        q.strictEqual(termops.id(indexes, 'gotham.43213'), false);
+        q.strictEqual(termops.id(indexes, 'country.a445'), false);
+        q.strictEqual(termops.id(indexes, 'place.32f424'), false);
+        q.strictEqual(termops.id(indexes, 'country.424k'), false);
         q.end();
     });
     t.test('tokenMap - maps query tokens', function(q) {

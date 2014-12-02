@@ -26,6 +26,7 @@ function Geocoder(options) {
 
     this.indexes = indexes.reduce(toObject, {});
     this.order = {};
+    this.byname = {};
 
     indexes.forEach(function(index) {
         q.defer(loadIndex, index);
@@ -40,7 +41,10 @@ function Geocoder(options) {
             var id = indexes[i][0];
             var source = indexes[i][1];
             var name = info.geocoder_name || id;
-            if (names.indexOf(name) === -1) names.push(name);
+            if (names.indexOf(name) === -1) {
+                names.push(name);
+                this.byname[name] = [];
+            }
             source._geocoder = source._geocoder || new Cache(name, +info.geocoder_shardlevel || 0);
             source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
@@ -55,6 +59,9 @@ function Geocoder(options) {
 
             // map id => idx
             this.order[id] = names.indexOf(name);
+
+            // add byname index lookup
+            this.byname[name].push(source);
         }.bind(this));
 
         this.emit('open', err);
