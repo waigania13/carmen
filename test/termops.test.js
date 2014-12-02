@@ -31,21 +31,25 @@ test('termops', function(t) {
         });
         q.end();
     });
-    t.test('isIdent - tests if searching by id', function(q) {
+    t.test('id - tests if searching by id', function(q) {
         var index = {
-            country: "",
-            province: "",
-            place: "",
-            postcode: ""
+            country: {},
+            province: {},
+            place: {},
+            postcode: {},
+            'multi.part': {}
         };
-        q.strictEqual(termops.isIdent(index, 'country.5432'), true);
-        q.strictEqual(termops.isIdent(index, 'province.123'), true);
-        q.strictEqual(termops.isIdent(index, 'postcode.546'), true);
-        q.strictEqual(termops.isIdent(index, 'place.455233'), true);
-        q.strictEqual(termops.isIdent(index, 'gotham.43213'), false);
-        q.strictEqual(termops.isIdent(index, 'country.a445'), false);
-        q.strictEqual(termops.isIdent(index, 'place.32f424'), false);
-        q.strictEqual(termops.isIdent(index, 'country.424k'), false);
+        q.deepEqual(termops.id(index, 'country.5432'), {dbid:'country', id:'5432'});
+        q.deepEqual(termops.id(index, 'province.123'), {dbid:'province', id:'123'});
+        q.deepEqual(termops.id(index, 'postcode.546'), {dbid:'postcode', id:'546'});
+        q.deepEqual(termops.id(index, 'place.455233'), {dbid:'place', id:'455233'});
+        q.deepEqual(termops.id(index, 'multi.part.455233'), {dbid:'multi.part', id:'455233'});
+        q.strictEqual(termops.id(index, 'near country.5432'), false);
+        q.strictEqual(termops.id(index, 'country.5432 street'), false);
+        q.strictEqual(termops.id(index, 'gotham.43213'), false);
+        q.strictEqual(termops.id(index, 'country.a445'), false);
+        q.strictEqual(termops.id(index, 'place.32f424'), false);
+        q.strictEqual(termops.id(index, 'country.424k'), false);
         q.end();
     });
     t.test('tokenMap - maps query tokens', function(q) {
