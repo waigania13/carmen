@@ -4,7 +4,7 @@ var test = require('tape');
 
 test('coalesce zooms', function(t) {
     t.test('zero case', function(q) {
-        var coalesced = coalesceZooms([], [], {}, [], {});
+        var coalesced = coalesceZooms([], {}, []);
         q.deepEqual(coalesced, {});
         q.end();
     });
@@ -80,15 +80,8 @@ test('coalesce zooms', function(t) {
              db: 'place',
              tmpid: 100131599 }
         },
-        // types
-        [ 'province', 'place' ],
         // zooms
-        [ 9, 11 ],
-        // indexes (stripped down representation)
-        {
-            province: { _geocoder: { zoom: 9 } },
-            place: { _geocoder: { zoom: 11 } }
-        });
+        [ 9, 11 ]);
 
         // Reformat encoded zxy's and map full features to just their IDs for
         // easier debugging/assertion of correct results.

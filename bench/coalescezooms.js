@@ -7,10 +7,10 @@ var coalesceZooms = require('../lib/pure/coalescezooms'),
 
 suite.add('coalescezooms 1', function() {
     // @TODO worst case scenario this data
-    coalesceZooms(args[0], args[1], args[2], args[3], args[4]);
+    coalesceZooms(args[0], args[1], args[2]);
 }).add('coalescezooms 2', function() {
     // @TODO worst case scenario this data
-    coalesceZooms(args[0], args[1], args[2], args[3], args[4]);
+    coalesceZooms(args[0], args[1], args[2]);
 })
 .on('cycle', function(event) {
   console.log(String(event.target));
