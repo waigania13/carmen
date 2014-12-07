@@ -33,7 +33,7 @@ var tape = require('tape');
         var runs = 10000;
         console.time('phrasematch x'+runs);
         var q = queue(10);
-        for (var i = 0; i < 10000; i++) q.defer(doit);
+        for (var i = 0; i < runs; i++) q.defer(doit);
         function doit(done) {
             phrasematch(conf.street, 0, 'Lake View Rd', function(err, features, result) {
                 if (result.length !== 10) {
