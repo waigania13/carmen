@@ -4,7 +4,7 @@ var test = require('tape');
 
 test('coalesce zooms', function(t) {
     t.test('zero case', function(q) {
-        var coalesced = coalesceZooms([], {}, []);
+        var coalesced = coalesceZooms([], []);
         q.deepEqual(coalesced, {});
         q.end();
     });
@@ -43,43 +43,6 @@ test('coalesce zooms', function(t) {
               335376514299748,
               335926236559204 ]
         ],
-        // feats
-        { '495':
-           { id: 495,
-             relev: 1,
-             reason: 2,
-             idx: 1,
-             db: 'province',
-             tmpid: 495 },
-          '496':
-           { id: 496,
-             relev: 1,
-             reason: 2,
-             idx: 1,
-             db: 'province',
-             tmpid: 496 },
-          '100007711':
-           { id: 7711,
-             relev: 1,
-             reason: 1,
-             idx: 3,
-             db: 'place',
-             tmpid: 100007711 },
-          '100014180':
-           { id: 14180,
-             relev: 1,
-             reason: 1,
-             idx: 3,
-             db: 'place',
-             tmpid: 100014180 },
-          '100131599':
-           { id: 131599,
-             relev: 1,
-             reason: 1,
-             idx: 3,
-             db: 'place',
-             tmpid: 100131599 }
-        },
         // zooms
         [ 9, 11 ]);
 
