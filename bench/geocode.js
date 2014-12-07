@@ -29,22 +29,18 @@ var tape = require('tape');
             assert.end();
         });
     });
-    tape('phrasematch', function(assert) {
+    tape('geocode', function(assert) {
         var runs = 10000;
-        console.time('phrasematch x'+runs);
+        console.time('geocode x'+runs);
         var q = queue(10);
         for (var i = 0; i < runs; i++) q.defer(doit);
         function doit(done) {
-            phrasematch(conf.street, 0, 'Lake View Rd', function(err, features, result) {
-                if (result.length !== 10) {
-                    done(new Error('result.length !== ' + result.length));
-                } else {
-                    done();
-                }
+            c.geocode('Lake View Rd', {}, function (err, res) {
+                done();
             });
         }
         q.awaitAll(function(err) {
-            console.timeEnd('phrasematch x'+runs);
+            console.timeEnd('geocode x'+runs);
             assert.ifError(err);
             assert.end();
             process.exit();
