@@ -45,7 +45,7 @@ var tape = require('tape');
         for (var i = 0; i < runs; i++) q.defer(doit);
         function doit(done) {
             c.geocode('Lake View Rd', {}, function (err, res) {
-                if (!result.length) {
+                if (!res.features.length) {
                     done(new Error('No results'));
                 } else {
                     done();
