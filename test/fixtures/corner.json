@@ -26,13 +26,7 @@
     {
         "query": "New York",
         "result": {
-            "names": "New York, United States of America"
-        }
-    },
-    {
-        "query": "New York State",
-        "result": {
-            "names": "New York, United States of America"
+            "names": "New York, New York, United States of America"
         }
     },
     {
@@ -74,7 +68,7 @@
     {
         "query": "Mexico",
         "result": {
-            "names": "Mexico"
+            "names": "México, Mexico"
         }
     }
 
