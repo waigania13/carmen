@@ -124,7 +124,7 @@ var test = require('tape');
 })();
 
 // Confirm that for equally relevant features across three indexes
-// the first in hierarchy beats the others.
+// the first in hierarchy beats the others. (NO SCORES)
 (function() {
     var conf = {
         country: new mem(null, function() {}),
@@ -167,6 +167,59 @@ var test = require('tape');
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'china');
             t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+})();
+
+// Confirm that for equally relevant features across three indexes
+// the one with the highest score beats the others.
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+        province: new mem(null, function() {}),
+        city: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _score: 5,
+            _text:'china',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        conf.country.putGrid(6, 32, 32, solidGrid(country));
+        index.update(conf.country, [country], 6, t.end);
+    });
+    test('index province', function(t) {
+        var province = {
+            _id:2,
+            _score: 10,
+            _text:'china',
+            _zxy:['6/33/32'],
+            _center:[360/64,0]
+        };
+        conf.province.putGrid(6, 33, 32, solidGrid(province));
+        index.update(conf.province, [province], 6, t.end);
+    });
+    test('index city', function(t) {
+        var city = {
+            _id:3,
+            _score: 6,
+            _text:'china',
+            _zxy:['6/34/32'],
+            _center:[360/64*2,0]
+        };
+        conf.city.putGrid(6, 34, 32, solidGrid(city));
+        index.update(conf.city, [city], 6, t.end);
+    });
+    test('china', function(t) {
+        c.geocode('china', { limit_verify:3 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].id, 'province.2');
+            t.deepEqual(res.features[1].id, 'city.3');
+            t.deepEqual(res.features[2].id, 'country.1');
             t.end();
         });
     });
@@ -553,79 +606,12 @@ test('index.teardown', function(assert) {
 });
 
 function solidGrid(feature) {
+    var grid = [];
+    for (var i = 0; i < 64; i++) grid.push(new Array(65).join(' '));
     return {
-        "grid": [
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                ",
-            "                                                                "
-        ],
-        "keys": [
-            "89"
-        ],
-        "data": {
-            "89": feature
-        }
+        "grid": grid,
+        "keys": [ "89" ],
+        "data": { "89": feature }
     };
 };
 
