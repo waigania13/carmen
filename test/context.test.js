@@ -5,6 +5,11 @@ var tilelive = require('tilelive');
 var context = require('../lib/context');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
+var zlib = require('zlib');
+var path = require('path');
+var mapnik = require('mapnik');
+
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
 test('context vector', function(t) {
     var geocoder = new Carmen({
@@ -133,4 +138,78 @@ test('contextVector badbuffer', function(t) {
         t.end();
     });
 });
+
+test('contextVector ignores negative score', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "A", "_score": -1 }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "B" }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data._text, 'B');
+            assert.end();
+        });
+    });
+});
+
+test('contextVector only negative score', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "A", "_score": -1 }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data, false);
+            assert.end();
+        });
+    });
+});
+
 
