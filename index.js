@@ -56,6 +56,7 @@ function Geocoder(options) {
             source._geocoder.group = info.geocoder_group || '';
             source._geocoder.name = name;
             source._geocoder.id = id;
+            source._geocoder.idx = i;
             source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
 
             // map id => idx
