@@ -27,6 +27,7 @@ function Geocoder(options) {
     this.indexes = indexes.reduce(toObject, {});
     this.order = {};
     this.byname = {};
+    this.byidx = {};
     this.nameidx = {};
 
     indexes.forEach(function(index) {
@@ -67,6 +68,9 @@ function Geocoder(options) {
 
             // add byname index lookup
             this.byname[name].push(source);
+
+            // add byidx index lookup
+            this.byidx[i] = source;
         }.bind(this));
 
         this.emit('open', err);
