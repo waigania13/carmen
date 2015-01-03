@@ -25,7 +25,6 @@ function Geocoder(options) {
         indexes = pairs(options);
 
     this.indexes = indexes.reduce(toObject, {});
-    this.order = {};
     this.byname = {};
     this.byidx = {};
     this.nameidx = {};
@@ -59,9 +58,6 @@ function Geocoder(options) {
             source._geocoder.id = id;
             source._geocoder.idx = i;
             source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
-
-            // map id => idx
-            this.order[id] = names.indexOf(name);
 
             // add name => idx lookup
             this.nameidx[name] = names.indexOf(name);
