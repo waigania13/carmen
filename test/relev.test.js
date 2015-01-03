@@ -11,3 +11,14 @@ test('relev', function(t) {
     t.equal(r.tmpid, 200000002);
     t.end();
 });
+
+test('encode', function(t) {
+    t.deepEqual(Relev.encode({
+        id: 2,
+        relev: 1,
+        reason: 3,
+        count: 2,
+        idx: 2
+    }), 8796118859120642);
+    t.end();
+});
