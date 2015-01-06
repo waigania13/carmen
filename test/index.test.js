@@ -196,6 +196,30 @@ test('error -- _geometry too high resolution', function(t) {
     });
 });
 
+test('error -- _zxy too large tile-cover', function(t) {
+    var docs = [{
+        _id:2,
+        _text:'fake street',
+        _zxy:['6/32/32'],
+        _center:[0,0]
+    }, {
+        _id:1,
+        _text:'fake street',
+        _zxy:new Array(10001),
+        _center:[0,0]
+    }];
+    var from = new mem(docs, {maxzoom: 6}, function() {});
+    var to = new mem(docs, null, function() {});
+    var carmen = new Carmen({
+        from: from,
+        to: to
+    });
+    carmen.index(from, to, {}, function(err) {
+        t.equal('Error: doc._zxy exceeded 10000, doc id:1', err.toString());
+        t.end();
+    });
+});
+
 test('index.cleanDocs', function(assert) {
     var docs;
     var sourceWithAddress = {_geocoder:{geocoder_address:true}};
