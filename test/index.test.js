@@ -128,7 +128,7 @@ test('error -- zoom too high', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: zoom must be less than 15 --- zoom was 15 on _id:undefined', err.toString());
+        t.equal('Error: zoom must be less than 15 --- zoom was 15', err.toString());
         t.end();
     });
 });
@@ -142,7 +142,7 @@ test('error -- zoom too low', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: zoom must be greater than 0 --- zoom was -1 on _id:undefined', err.toString());
+        t.equal('Error: zoom must be greater than 0 --- zoom was -1', err.toString());
         t.end();
     });
 });
