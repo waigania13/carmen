@@ -15,7 +15,6 @@
     "tile-cover": "2.4.x",
     "tilebelt": "^0.5.3",
     "tilelive": "5.2.x",
-    "turf-kinks": "^1.2.0",
     "turf-point-on-surface": "^1.0.2",
     "unidecode": "0.1.3"
   },
