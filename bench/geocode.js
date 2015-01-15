@@ -16,10 +16,10 @@ var tape = require('tape');
         var docs = require('fs').readFileSync(__dirname + '/fixtures/lake-streetnames.txt', 'utf8')
             .split('\n')
             .filter(function(text) { return !!text; })
-            .slice(0,10000)
+            .slice(0,1000)
             .reduce(function(memo, text) {
                 // generate between 1-100 features with this text.
-                var seed = Math.ceil(Math.random() * 100);
+                var seed = 100;
                 for (var i = 0; i < seed; i++) {
                     var lat = Math.random() * 180 - 90;
                     var lon = Math.random() * 360 - 180;
@@ -39,7 +39,7 @@ var tape = require('tape');
         });
     });
     tape('geocode', function(assert) {
-        var runs = 10000;
+        var runs = 1000;
         console.time('geocode x'+runs);
         var q = queue(10);
         for (var i = 0; i < runs; i++) q.defer(doit);
