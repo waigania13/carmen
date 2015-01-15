@@ -406,6 +406,49 @@ var test = require('tape');
         address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
     };
     var c = new Carmen(conf);
+    test('tiger, between the lines', function(t) {
+            var address = {
+                _id:1,
+                _text:'fake street',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _rangetype:'tiger',
+                _lfromhn: ['0','104'],
+                _ltohn: ['100','200'],
+                _geometry: {
+                    type:'MultiLineString',
+                    coordinates:
+                    [
+                        [
+                            [0,0],
+                            [0,10]
+                        ],
+                        [
+                            [0,11],
+                            [0,20]
+                        ],
+                    ]
+                }   
+            };
+            conf.address.putGrid(6, 32, 32, solidGrid(address));
+            index.update(conf.address, [address], 6, t.end);
+    });
+    
+    test('test address query with address range', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
     test('index address', function(t) {
             var address = {
                 _id:1,
