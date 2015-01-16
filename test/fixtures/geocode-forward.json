@@ -5,35 +5,6 @@
     ],
     "features": [
         {
-            "id": "country.120",
-            "type": "Feature",
-            "text": "Georgia",
-            "place_name": "Georgia",
-            "relevance": 1,
-            "center": [
-                43.638684,
-                42.309977
-            ],
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    43.638684,
-                    42.309977
-                ]
-            },
-            "bbox": [
-                39.985910278441736,
-                41.04411082000942,
-                46.694803100348786,
-                43.57584259075261
-            ],
-            "properties": {
-                "iso2": "GE",
-                "population": 4615807,
-                "title": "Georgia"
-            }
-        },
-        {
             "id": "province.3540",
             "type": "Feature",
             "text": "Georgia",
@@ -66,6 +37,35 @@
                     "text": "United States of America"
                 }
             ]
+        },
+        {
+            "id": "country.120",
+            "type": "Feature",
+            "text": "Georgia",
+            "place_name": "Georgia",
+            "relevance": 1,
+            "center": [
+                43.638684,
+                42.309977
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    43.638684,
+                    42.309977
+                ]
+            },
+            "bbox": [
+                39.985910278441736,
+                41.04411082000942,
+                46.694803100348786,
+                43.57584259075261
+            ],
+            "properties": {
+                "iso2": "GE",
+                "population": 4615807,
+                "title": "Georgia"
+            }
         }
     ]
 }
