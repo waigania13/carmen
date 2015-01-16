@@ -434,10 +434,10 @@ var test = require('tape');
             index.update(conf.address, [address], 6, t.end);
     });
     
-    test('test address query with address range', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+    test('test tiger interpolation house number', function(t) {
+        c.geocode('102 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
+            t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
