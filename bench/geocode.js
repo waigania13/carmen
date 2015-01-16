@@ -19,7 +19,7 @@ var tape = require('tape');
             .slice(0,100)
             .reduce(function(memo, text) {
                 // generate between 1-100 features with this text.
-                var seed = 1000;
+                var seed = 2000;
                 for (var i = 0; i < seed; i++) {
                     var lat = Math.random() * 180 - 90;
                     var lon = Math.random() * 360 - 180;
