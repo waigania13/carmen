@@ -143,7 +143,11 @@ test('parity: even + even', function(t) {
 });
 
 test('parity: even + odd', function(t) {
-    t.deepEqual(undefined, address({
+    t.deepEqual({
+        coordinates: [ 0, 9 ],
+        omitted: true, // because parity does not match
+        type: 'Point'
+    }, address({
         _rangetype:'tiger',
         _lfromhn: '0',
         _ltohn: '100',
@@ -191,7 +195,11 @@ test('parity: odd + odd', function(t) {
 });
 
 test('parity: odd + even', function(t) {
-    t.deepEqual(undefined, address({
+    t.deepEqual({
+        coordinates: [ 0, 9 ],
+        omitted: true, // because parity does not match
+        type: 'Point'
+    }, address({
         _rangetype:'tiger',
         _lfromhn: '1',
         _ltohn: '101',
