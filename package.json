@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "carmen-cache": "0.1.0",
+    "carmen-cache": "0.1.1",
     "mapnik": "~3.1.0",
     "minimist": "0.0.5",
     "queue-async": "1.0.x",
