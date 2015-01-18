@@ -2,6 +2,55 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+test('address.parseSemiNumber', function(assert) {
+    assert.equal(address.parseSemiNumber('5'), 5);
+    assert.equal(address.parseSemiNumber('5b'), 5);
+    assert.equal(address.parseSemiNumber('asdf'), null);
+    assert.end();
+});
+
+test('address.calculateDistance', function(assert) {
+    assert.equal(address.calculateDistance([[0,0],[1,1]]), Math.sqrt(2));
+    assert.equal(address.calculateDistance([[0,0],[0,0]]), 0);
+    assert.end();
+});
+
+test('address.setPoint', function(assert) {
+    assert.deepEqual(address.setPoint(2,0,8,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0.25,0]
+    }, 'x2, forward');
+    assert.deepEqual(address.setPoint(2,8,0,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0.75,0]
+    }, 'x2, reverse');
+    assert.deepEqual(address.setPoint(2,8,0,[[0,0],[0,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x2, identity (line)');
+    assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x2, identity (address)');
+   assert.deepEqual(address.setPoint(3,0,12,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[0.5,0]
+    }, 'x3, forward');
+    assert.deepEqual(address.setPoint(9,0,12,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[1.5,0]
+    }, 'x3, reverse');
+    assert.deepEqual(address.setPoint(9,0,12,[[0,0],[0,0],[0,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x3, identity (line)');
+    assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x3, identity (address)');
+    assert.end();
+});
+
 test('address interpolation - noop', function(t) {
     t.deepEqual(undefined, address({ _rangetype:'' }, 100));
     t.deepEqual(undefined, address({ _rangetype:'tiger' }, 100));
@@ -143,7 +192,11 @@ test('parity: even + even', function(t) {
 });
 
 test('parity: even + odd', function(t) {
-    t.deepEqual(undefined, address({
+    t.deepEqual({
+        coordinates: [ 0, 9 ],
+        omitted: true, // because parity does not match
+        type: 'Point'
+    }, address({
         _rangetype:'tiger',
         _lfromhn: '0',
         _ltohn: '100',
@@ -191,7 +244,11 @@ test('parity: odd + odd', function(t) {
 });
 
 test('parity: odd + even', function(t) {
-    t.deepEqual(undefined, address({
+    t.deepEqual({
+        coordinates: [ 0, 9 ],
+        omitted: true, // because parity does not match
+        type: 'Point'
+    }, address({
         _rangetype:'tiger',
         _lfromhn: '1',
         _ltohn: '101',
@@ -257,3 +314,47 @@ test('multi', function(t) {
     }, 100).coordinates);
     t.end();
 });
+
+test('nearest', function(t) {
+    t.deepEqual(address({
+        _rangetype:'tiger',
+        _lfromhn: '1000',
+        _ltohn: '1100',
+        _geometry: {
+            type:'LineString',
+            coordinates:[[0,0],[0,100]]
+        }
+    }, 900), {
+        coordinates: [ 0, 0 ],
+        omitted: true, // because nearest endpoint match
+        type: 'Point'
+    }, 'nearest startpoint');
+
+    t.deepEqual(address({
+        _rangetype:'tiger',
+        _lfromhn: '1000',
+        _ltohn: '1100',
+        _geometry: {
+            type:'LineString',
+            coordinates:[[0,0],[0,100]]
+        }
+    }, 1200), {
+        coordinates: [ 0, 100 ],
+        omitted: true, // because nearest endpoint match
+        type: 'Point'
+    }, 'nearest endpoint');
+
+    t.deepEqual(address({
+        _rangetype:'tiger',
+        _lfromhn: '1000',
+        _ltohn: '1100',
+        _geometry: {
+            type:'LineString',
+            coordinates:[[0,0],[0,100]]
+        }
+    }, 2000),
+    undefined,
+    'outside threshold');
+    t.end();
+});
+
