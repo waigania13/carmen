@@ -2,6 +2,55 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+test('address.parseSemiNumber', function(assert) {
+    assert.equal(address.parseSemiNumber('5'), 5);
+    assert.equal(address.parseSemiNumber('5b'), 5);
+    assert.equal(address.parseSemiNumber('asdf'), null);
+    assert.end();
+});
+
+test('address.calculateDistance', function(assert) {
+    assert.equal(address.calculateDistance([[0,0],[1,1]]), Math.sqrt(2));
+    assert.equal(address.calculateDistance([[0,0],[0,0]]), 0);
+    assert.end();
+});
+
+test('address.setPoint', function(assert) {
+    assert.deepEqual(address.setPoint(2,0,8,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0.25,0]
+    }, 'x2, forward');
+    assert.deepEqual(address.setPoint(2,8,0,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0.75,0]
+    }, 'x2, reverse');
+    assert.deepEqual(address.setPoint(2,8,0,[[0,0],[0,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x2, identity (line)');
+    assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x2, identity (address)');
+   assert.deepEqual(address.setPoint(3,0,12,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[0.5,0]
+    }, 'x3, forward');
+    assert.deepEqual(address.setPoint(9,0,12,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[1.5,0]
+    }, 'x3, reverse');
+    assert.deepEqual(address.setPoint(9,0,12,[[0,0],[0,0],[0,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x3, identity (line)');
+    assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0],[2,0]],false), {
+        type: 'Point',
+        coordinates:[0,0]
+    }, 'x3, identity (address)');
+    assert.end();
+});
+
 test('address interpolation - noop', function(t) {
     t.deepEqual(undefined, address({ _rangetype:'' }, 100));
     t.deepEqual(undefined, address({ _rangetype:'tiger' }, 100));
