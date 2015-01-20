@@ -39,22 +39,22 @@ var tape = require('tape');
         });
     });
     tape('geocode', function(assert) {
+        var errored = false;
         var runs = 100;
         console.time('geocode x'+runs);
         var q = queue(10);
         for (var i = 0; i < runs; i++) q.defer(doit);
         function doit(done) {
             c.geocode('Westside Lake Rd', {}, function (err, res) {
-                if (!res.features.length) {
-                    done(new Error('No results'));
-                } else {
-                    done();
+                if (err || (res && !res.features.length)) {
+                    errored = true;
                 }
+                done();
             });
         }
         q.awaitAll(function(err) {
             console.timeEnd('geocode x'+runs);
-            assert.ifError(err);
+            assert.ifError(errored);
             assert.end();
             process.exit();
         });
