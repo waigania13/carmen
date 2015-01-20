@@ -2,14 +2,23 @@ var Relev = require('../lib/util/relev');
 var test = require('tape');
 
 test('relev', function(t) {
-    var r = new Relev(0, 1, 2, 1, 3, 'place', 'place', 5);
-    t.equal(r.id, 0);
+    var r = new Relev(8796118859120642);
+    t.equal(r.id, 2);
     t.equal(r.relev, 1);
-    t.equal(r.reason, 2);
-    t.equal(r.count, 1);
-    t.equal(r.idx, 3);
-    t.equal(r.dbid, 'place');
-    t.equal(r.dbname, 'place');
-    t.equal(r.tmpid, 5);
+    t.equal(r.reason, 3);
+    t.equal(r.count, 2);
+    t.equal(r.idx, 2);
+    t.equal(r.tmpid, 200000002);
+    t.end();
+});
+
+test('encode', function(t) {
+    t.deepEqual(Relev.encode({
+        id: 2,
+        relev: 1,
+        reason: 3,
+        count: 2,
+        idx: 2
+    }), 8796118859120642);
     t.end();
 });

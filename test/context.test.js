@@ -79,14 +79,15 @@ test('contextVector deflate', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
-            id: 'testA'
+            id: 'testA',
+            idx: 1
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _extid: 'test.5',
-            _fhash: 'test.5',
+            _tmpid: 100000005,
             _text: 'United States of America, United States, America, USA, US'
         });
         t.end();
@@ -106,14 +107,15 @@ test('contextVector gzip', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
-            id: 'testA'
+            id: 'testA',
+            idx: 1
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _extid: 'test.5',
-            _fhash: 'test.5',
+            _tmpid: 100000005,
             _text: 'United States of America, United States, America, USA, US'
         });
         t.end();
