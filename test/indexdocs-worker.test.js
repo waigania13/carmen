@@ -15,7 +15,7 @@ tape('worker.getIndexableText', function(assert) {
             [ 'main', 'street' ]
         ]
     }, 'creates indexableText');
-    assert.deepEqual(worker.getIndexableText('Main Street', freq, termops.tokenizeMapping({'Street':'St'})), {
+    assert.deepEqual(worker.getIndexableText('Main Street', freq, termops.tokenizeMapping({'street':'st'})), {
         termsets: [
             [ 3935363599, 1986331711 ],
             [ 3935363599, 1263673935 ]
@@ -29,7 +29,7 @@ tape('worker.getIndexableText', function(assert) {
             [ 'main', 'st' ]
         ]
     }, 'creates contracted phrases using geocoder_tokens');
-    assert.deepEqual(worker.getIndexableText('Main Street, main st', freq, termops.tokenizeMapping({'Street':'St'})), {
+    assert.deepEqual(worker.getIndexableText('Main Street, main st', freq, termops.tokenizeMapping({'street':'st'})), {
         termsets: [
             [ 3935363599, 1986331711 ],
             [ 3935363599, 1263673935 ]
@@ -43,7 +43,7 @@ tape('worker.getIndexableText', function(assert) {
             [ 'main', 'st' ]
         ]
     }, 'dedupes phrases');
-    assert.deepEqual(worker.getIndexableText('Main Street Lane', freq, termops.tokenizeMapping({'Street':'St', 'Lane':'Ln'})), {
+    assert.deepEqual(worker.getIndexableText('Main Street Lane', freq, termops.tokenizeMapping({'street':'st', 'lane':'ln'})), {
         termsets: [
             [ 3935363599, 1986331711, 1860843567 ],
             [ 3935363599, 1263673935, 1127334399 ]
@@ -57,6 +57,53 @@ tape('worker.getIndexableText', function(assert) {
             [ 'main', 'st', 'ln' ]
         ]
     }, 'dedupes phrases');
+    assert.deepEqual(worker.getIndexableText('Avenue du dix-huitième régiment', freq, termops.tokenizeMapping({'dix-huitième':'18e'})), {
+            termsets: [
+                [
+                    214095199,
+                    1276949887,
+                    3814893615,
+                    2955928287,
+                    4111263999
+                ],
+                [
+                    214095199,
+                    1276949887,
+                    606069615,
+                    4111263999
+                ]
+            ],
+            termsmaps: [
+                {
+                    1276949872: 'du',
+                    214095184: 'avenue',
+                    2955928272: 'huitieme',
+                    3814893600: 'dix',
+                    4111263984: 'regiment'
+                },
+                {
+                    1276949872: 'du',
+                    214095184: 'avenue',
+                    4111263984: 'regiment',
+                    606069600: '18e'
+                }
+            ],
+            tokensets: [
+                [
+                    'avenue',
+                    'du',
+                    'dix',
+                    'huitieme',
+                    'regiment'
+                ],
+                [
+                    'avenue',
+                    'du',
+                    '18e',
+                    'regiment'
+                ]
+            ]
+        }, 'dedupes phrases');
     assert.end();
 });
 
