@@ -237,6 +237,7 @@ test('Cache', function(t) {
         var zoom = 6;
 
         mem._geocoder = cache;
+        mem._geocoder.geocoder_tokens = {};
 
         index.update(mem, docs, zoom, function(err) {
             if (err) t.fail();
