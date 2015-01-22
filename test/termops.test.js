@@ -137,3 +137,28 @@ test('termops', function(t) {
 
     t.end();
 });
+
+test('termops.getIndexableText', function(assert) {
+    var freq = { 0:[2] };
+    assert.deepEqual(termops.getIndexableText({}, 'Main Street'), [
+        [ 'main', 'street' ]
+    ], 'creates indexableText');
+    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St'}), 'Main Street'), [
+        [ 'main', 'street' ],
+        [ 'main', 'st' ]
+    ], 'creates contracted phrases using geocoder_tokens');
+    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St'}), 'Main Street, main st'), [
+        [ 'main', 'street' ],
+        [ 'main', 'st' ]
+    ], 'dedupes phrases');
+    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St', 'Lane':'Ln'}), 'Main Street Lane'), [
+        [ 'main', 'street', 'lane' ],
+        [ 'main', 'st', 'ln' ]
+    ], 'dedupes phrases');
+    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'dix-huitième':'18e'}), 'Avenue du dix-huitième régiment'), [
+        [ 'avenue', 'du', 'dix', 'huitieme', 'regiment' ],
+        [ 'avenue', 'du', '18e', 'regiment' ]
+    ], 'hypenated replacement');
+    assert.end();
+});
+
