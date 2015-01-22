@@ -1,10 +1,9 @@
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
-var assert = require('assert');
 var unidecode = require('unidecode');
 var token = require('../lib/util/token');
 
-var tokens = normalize({
+var tokens = token_reg({
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -203,18 +202,22 @@ var tokens = normalize({
     "West": "W"
 });
 
-function normalize(tokens) {
-    var decoded = {};
+function token_reg(tokens) {
+    var decoded = []; 
 
-    for (var from in tokens) {
-        var t = [];
-        var f = unidecode(from);                               // normalize expanded
+    for (var token in tokens) {
+        var entry = {};
+        var f = unidecode(token); // normalize expanded
+        entry.from = f;
+
+        var t = []; 
         var f_regex = new RegExp("(\\W|^)"+f+"(\\W|$)", "gi"); // create regex obj for expanded
-        var to = unidecode(tokens[from]);                      // normalize abbrev
-
+        var to = unidecode(tokens[token]); // normalize abbrev
+          
         t.push(f_regex, to);
-        decoded[f] = t;
-    }
+        entry.to = t;
+        decoded.push(entry);
+    }   
     return decoded;
 };
 
