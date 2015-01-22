@@ -18,6 +18,7 @@
     "turf-bearing": "^1.0.0",
     "turf-destination": "^1.2.0",
     "turf-distance": "^1.0.0",
+    "turf-line-distance": "^1.0.0",
     "turf-linestring": "^1.0.1",
     "turf-point": "^2.0.0",
     "turf-point-on-surface": "^1.0.2",
