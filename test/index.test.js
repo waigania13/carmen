@@ -9,6 +9,27 @@ var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 
+test('index.generateFrequency', function(assert) {
+    var docs = [{_text:'main street'},{_text:'Main Road'}];
+    var geocoder_tokens = {'street':'st','road':'rd'};
+    assert.deepEqual(index.generateFrequency(docs, {}), {
+        0: [ 4 ],           // 4 total
+        1025494160: [ 1 ],  // 1 road
+        1986331696: [ 1 ],  // 1 street
+        3935363584: [ 2 ]   // 2 main
+    });
+    // @TODO should 'main' in this case collapse down to 2?
+    assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
+        0: [ 8 ],           // 8 total
+        1025494160: [ 1 ],  // 1 road
+        1263673920: [ 1 ],  // 1 rd
+        1498707680: [ 1 ],  // 1 st
+        1986331696: [ 1 ],  // 1 street
+        3935363584: [ 4 ]   // 4 main
+    });
+    assert.end();
+});
+
 test('index.update -- error', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var to = new mem(docs, null, function() {});
