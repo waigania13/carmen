@@ -15,6 +15,11 @@
     "tile-cover": "2.4.x",
     "tilebelt": "^0.5.3",
     "tilelive": "5.2.x",
+    "turf-bearing": "^1.0.0",
+    "turf-destination": "^1.2.0",
+    "turf-distance": "^1.0.0",
+    "turf-linestring": "^1.0.1",
+    "turf-point": "^2.0.0",
     "turf-point-on-surface": "^1.0.2",
     "unidecode": "0.1.3"
   },
