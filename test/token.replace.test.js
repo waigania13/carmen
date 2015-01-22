@@ -11,12 +11,12 @@ test('token replacement', function(t) {
             'Northeast': 'ne'
         },'martin luther king jr street northeast, streetsville'));
         q.deepEqual(
-            'sunset blvd, sf',
+            'san ramon blvd, sf',
         token.token_replace({
             'Boulevard': 'blvd',
             'San Francisco': 'sf',
             'Northeast': 'ne'
-        },'san ramon boulevard, san francisco'));
+        },'san ramon boulevard, sàn francisco'));
         q.deepEqual(
             'ZI, 4e av nice',
         token.token_replace({
