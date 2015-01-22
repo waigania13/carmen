@@ -2,64 +2,6 @@ var worker = require('../lib/indexer/indexdocs-worker.js');
 var tape = require('tape');
 var termops = require('../lib/util/termops.js');
 
-tape('worker.getIndexableText', function(assert) {
-    var freq = { 0:[2] };
-    assert.deepEqual(worker.getIndexableText('Main Street', freq, {}), {
-        termsets: [
-            [ 3935363599, 1986331711 ]
-        ],
-        termsmaps: [
-            { '1986331696': 'street', '3935363584': 'main' }
-        ],
-        tokensets: [
-            [ 'main', 'street' ]
-        ]
-    }, 'creates indexableText');
-    assert.deepEqual(worker.getIndexableText('Main Street', freq, termops.tokenizeMapping({'Street':'St'})), {
-        termsets: [
-            [ 3935363599, 1986331711 ],
-            [ 3935363599, 1263673935 ]
-        ],
-        termsmaps: [
-            { '1986331696': 'street', '3935363584': 'main' },
-            { 1263673920: 'st', 3935363584: 'main' }
-        ],
-        tokensets: [
-            [ 'main', 'street' ],
-            [ 'main', 'st' ]
-        ]
-    }, 'creates contracted phrases using geocoder_tokens');
-    assert.deepEqual(worker.getIndexableText('Main Street, main st', freq, termops.tokenizeMapping({'Street':'St'})), {
-        termsets: [
-            [ 3935363599, 1986331711 ],
-            [ 3935363599, 1263673935 ]
-        ],
-        termsmaps: [
-            { '1986331696': 'street', '3935363584': 'main' },
-            { 1263673920: 'st', 3935363584: 'main' }
-        ],
-        tokensets: [
-            [ 'main', 'street' ],
-            [ 'main', 'st' ]
-        ]
-    }, 'dedupes phrases');
-    assert.deepEqual(worker.getIndexableText('Main Street Lane', freq, termops.tokenizeMapping({'Street':'St', 'Lane':'Ln'})), {
-        termsets: [
-            [ 3935363599, 1986331711, 1860843567 ],
-            [ 3935363599, 1263673935, 1127334399 ]
-        ],
-        termsmaps: [
-            { 1860843552: 'lane', 1986331696: 'street', 3935363584: 'main' },
-            { 1127334384: 'ln', 1263673920: 'st', 3935363584: 'main' }
-        ],
-        tokensets: [
-            [ 'main', 'street', 'lane' ],
-            [ 'main', 'st', 'ln' ]
-        ]
-    }, 'dedupes phrases');
-    assert.end();
-});
-
 tape('worker.verifyCenter', function(assert) {
     assert.equal(worker.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
     assert.equal(worker.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
