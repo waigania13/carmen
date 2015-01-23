@@ -2,6 +2,12 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+test('address.lineIntersects', function(assert){
+    assert.deepEqual(address.lineIntersects(0, 0, 5, 5, 5, 0, 0, 5), [2.5, 2.5]);
+    assert.equal(address.lineIntersects(0, 0, 0, 5, 5, 0, 5, 5), false)
+    assert.end();
+});
+
 test('address.standardize', function(assert){
     assert.equal(address.standardize({ _rangetype: 'canvec'}), undefined);
     assert.equal(address.standardize({ _rangetype: 'tiger' }), undefined);
