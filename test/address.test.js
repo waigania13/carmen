@@ -2,10 +2,13 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
-//test('address.det2D', function(assert) {
-    console.log(address.det2D([0,0], [1,2], [3,4]))
-    process.exit();
-//});
+test('address.det2D', function(assert) {
+    assert.equal(address.det2D([0,0], [1,2], [3,4]), -2);
+    assert.equal(address.det2D([0,0], [2,1], [-1,3]), 7);
+    assert.equal(address.det2D([1,1], [0,1], [2,3]), -2);
+    assert.equal(address.det2D([2,2], [0,-1], [-3,1]), -13);
+    assert.end();
+});
 
 test('address.sign', function(assert) {
     assert.equal(address.sign(5), 1);
