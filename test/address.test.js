@@ -2,6 +2,53 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+test('address.standardize', function(assert){
+    assert.equal(address.standardize({ _rangetype: 'canvec'}), undefined);
+    assert.equal(address.standardize({ _rangetype: 'tiger' }), undefined);
+    assert.equal(address.standardize({
+        _rangetype: 'tiger',
+        _geometry: {
+            type: "Point" }
+        }), undefined);
+    assert.deepEqual(address.standardize({
+        _rangetype: 'tiger',
+        _geometry: {
+            type: "LineString",
+            coordinates: [[1,2], [2,3]] }
+        }), { lf: [], lines: [ [ [ 1, 2 ], [ 2, 3 ] ] ], lp: [], lt: [], rf: [], rp: [], rt: [] });
+    assert.deepEqual(address.standardize({
+        _rangetype: 'tiger',
+        _geometry: {
+            type: "MultiLineString",
+            coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
+        }), { lf: [], lines: [ [ [ 1, 2 ], [ 2, 3 ] ], [ [ 5, 6 ], [ 8, 10 ] ] ], lp: [], lt: [], rf: [], rp: [], rt: [] });
+    assert.deepEqual(address.standardize({
+        _rangetype: 'tiger',
+        _parityl: "E",
+        _parityr: "O",
+        _ltohn: 2,
+        _lfromhn: 4,
+        _rtohn: 1,
+        _rfromhn: 3,
+        _geometry: {
+            type: "LineString",
+            coordinates: [[1,2], [2,3]] }
+            }), { lf: [ 4 ], lines: [ [ [ 1, 2 ], [ 2, 3 ] ] ], lp: [ 'E' ], lt: [ 2 ], rf: [ 3 ], rp: [ 'O' ], rt: [ 1 ] });
+    assert.deepEqual(address.standardize({
+        _rangetype: 'tiger',
+        _parityl: ["E", "E"],
+        _parityr: ["O", "O"],
+        _ltohn: [2, 6],
+        _lfromhn: [4, 8],
+        _rtohn: [1, 5],
+        _rfromhn: [3, 7],
+        _geometry: {
+            type: "MultiLineString",
+            coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
+        }), { lf: [ 4, 8 ], lines: [ [ [ 1, 2 ], [ 2, 3 ] ], [ [ 5, 6 ], [ 8, 10 ] ] ], lp: [ 'E', 'E' ], lt: [ 2, 6 ], rf: [ 3, 7 ], rp: [ 'O', 'O' ], rt: [ 1, 5 ] });
+    assert.end();
+});
+
 test('address.det2D', function(assert) {
     assert.equal(address.det2D([0,0], [1,2], [3,4]), -2);
     assert.equal(address.det2D([0,0], [2,1], [-1,3]), 7);
