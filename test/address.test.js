@@ -6,27 +6,35 @@ test('address.getReversePoint', function(assert) {
     assert.deepEquals(
         address.getReversePoint([1,5], [[0,0],[0,10]], 'miles'),
         {
+            along: 691.1503837897545,
             endLine: {
                 geometry: {
-                    coordinates: [ 0, 10 ],
-                    type: 'Point' },
-                    properties: {},
-                    type: 'Feature' },
-                pt: {
-                    geometry: {
-                        coordinates: [ 1.1102230246251565e-16, 4.989053398093076 ],
-                        type: 'Point' },
-                    properties: {
-                        dist: 68.85675979958184,
-                        index: 0 },
-                    type: 'Feature' },
-                route: 691.1503837897545,
-                startLine: {
-                    geometry: {
-                        coordinates: [ 0, 0 ],
-                        type: 'Point' },
-                    properties: {},
-                type: 'Feature' } });
+                    coordinates: [0, 10],
+                    type: 'Point'
+                },
+                properties: {},
+                type: 'Feature'
+            },
+            pt: {
+                geometry: {
+                    coordinates: [1.1102230246251565e-16, 4.989053398093076],
+                    type: 'Point'
+                },
+                properties: {
+                    dist: 68.85675979958184,
+                    index: 0
+                },
+                type: 'Feature'
+            },
+            startLine: {
+                geometry: {
+                    coordinates: [0,0],
+                    type: 'Point'
+                },
+                properties: {},
+                type: 'Feature'
+            }
+        });
     assert.deepEquals(
         address.getReversePoint([1,12], [[0,0],[0,10]], 'miles'),
         {
@@ -44,7 +52,7 @@ test('address.getReversePoint', function(assert) {
                     dist: 153.98052056503332,
                     index: 0 },
                 type: 'Feature' },
-            route: 691.1503837897545,
+            along: 691.1503837897545,
             startLine: {
                 geometry: {
                     coordinates: [ 0, 0 ],
