@@ -10,6 +10,7 @@ var Cache = require('./lib/util/cxxcache'),
     verify = require('./lib/verify'),
     loadall = require('./lib/loadall'),
     termops = require('./lib/util/termops'),
+    token = require('./lib/util/token'),
     wipe = require('./lib/wipe'),
     copy = require('./lib/copy'),
     index = require('./lib/index');
@@ -49,7 +50,7 @@ function Geocoder(options) {
             source._geocoder = source._geocoder || new Cache(name, +info.geocoder_shardlevel || 0);
             source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
-            source._geocoder.geocoder_tokens = termops.tokenizeMapping(info.geocoder_tokens||{});
+            source._geocoder.geocoder_tokens = token.tokenPrep(info.geocoder_tokens||{}); 
             source._geocoder.maxzoom = info.maxzoom;
             source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
             source._geocoder.format = info.format || '';

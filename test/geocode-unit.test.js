@@ -634,7 +634,7 @@ var test = require('tape');
     test('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.8);
+            t.equals(res.features[0].relevance, 0.8, 'token_replace test');
             t.end();
         });
     });
