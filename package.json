@@ -16,6 +16,7 @@
     "tilebelt": "^0.5.3",
     "tilelive": "5.2.x",
     "turf-bearing": "^1.0.0",
+    "turf-center": "^1.0.0",
     "turf-destination": "^1.2.0",
     "turf-distance": "^1.0.0",
     "turf-line-distance": "^1.0.0",
