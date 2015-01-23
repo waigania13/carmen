@@ -28,6 +28,7 @@
         "geocoder_address": false,
         "geocoder_layer": "",
         "geocoder_tokens": {},
+        "token_replacer": [],
         "maxzoom": 6,
         "zoom": 6,
         "format": "",
