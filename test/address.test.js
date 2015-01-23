@@ -3,8 +3,7 @@ var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
 //@TODO
-// point off the start poitn should be traelled 0
-// Point off the end point should be travelled = lineDistance
+
 
 test('address.getReversePoint', function(assert) {
     assert.deepEqual(
