@@ -607,7 +607,7 @@ var test = require('tape');
     test('test address index for relev', function(t) {
         c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 1, 'token replacement test, fake st');
             t.end();
         });
     });
@@ -634,7 +634,7 @@ var test = require('tape');
     test('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.8, 'token_replace test');
+            t.equals(res.features[0].relevance, 0.8, 'token replacement test, avenue du 18e');
             t.end();
         });
     });

@@ -3,7 +3,7 @@ var token = require('../lib/util/token');
 var test = require('tape');
 
 
-var tokens = token.tokenPrep({           
+var tokens = token.createReplacer({           
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -204,6 +204,6 @@ var tokens = token.tokenPrep({
 });
 
 test('token replacement', function(q) {
-        q.deepEqual(token.token_replace(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
+        q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
         q.end();
 });

@@ -203,7 +203,7 @@ var tokens =
 
 
 suite.add('token replace', function() {
-    token.token_replace(tokens, 'kanye west');
+    token.replaceToken(tokens, 'kanye west');
 })
 .on('cycle', function(event) {
     console.log(String(event.target));
