@@ -2,9 +2,61 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+test('address.getReversePoint', function(assert) {
+    assert.deepEquals(
+        address.getReversePoint([1,5], [[0,0],[0,10]], 'miles'),
+        {
+            endLine: {
+                geometry: {
+                    coordinates: [ 0, 10 ],
+                    type: 'Point' },
+                    properties: {},
+                    type: 'Feature' },
+                pt: {
+                    geometry: {
+                        coordinates: [ 1.1102230246251565e-16, 4.989053398093076 ],
+                        type: 'Point' },
+                    properties: {
+                        dist: 68.85675979958184,
+                        index: 0 },
+                    type: 'Feature' },
+                route: 691.1503837897545,
+                startLine: {
+                    geometry: {
+                        coordinates: [ 0, 0 ],
+                        type: 'Point' },
+                    properties: {},
+                type: 'Feature' } });
+    assert.deepEquals(
+        address.getReversePoint([1,12], [[0,0],[0,10]], 'miles'),
+        {
+            endLine: {
+                geometry: {
+                    coordinates: [ 0, 10 ],
+                    type: 'Point' },
+                properties: {},
+                type: 'Feature' },
+            pt: {
+                geometry: {
+                    coordinates: [ 0, 10 ],
+                    type: 'Point' },
+                properties: {
+                    dist: 153.98052056503332,
+                    index: 0 },
+                type: 'Feature' },
+            route: 691.1503837897545,
+            startLine: {
+                geometry: {
+                    coordinates: [ 0, 0 ],
+                    type: 'Point' },
+                properties: {},
+                type: 'Feature' } });
+    assert.end();
+});
+
 test('address.lineIntersects', function(assert){
     assert.deepEqual(address.lineIntersects(0, 0, 5, 5, 5, 0, 0, 5), [2.5, 2.5]);
-    assert.equal(address.lineIntersects(0, 0, 0, 5, 5, 0, 5, 5), false)
+    assert.equal(address.lineIntersects(0, 0, 0, 5, 5, 0, 5, 5), false);
     assert.end();
 });
 
