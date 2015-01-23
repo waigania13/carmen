@@ -1,4 +1,5 @@
 var termops = require('../lib/util/termops');
+var token = require('../lib/util/token');
 var test = require('tape');
 
 test('termops', function(t) {
@@ -51,37 +52,6 @@ test('termops', function(t) {
         q.strictEqual(termops.id(indexes, 'country.a445'), false);
         q.strictEqual(termops.id(indexes, 'place.32f424'), false);
         q.strictEqual(termops.id(indexes, 'country.424k'), false);
-        q.end();
-    });
-    t.test('tokenMap - maps query tokens', function(q) {
-        q.deepEqual([
-            'nw',
-            'broad',
-            'st'
-        ], termops.tokenMap({
-            'street': 'st',
-            'northwest': 'nw'
-        }, [
-            'northwest',
-            'broad',
-            'street'
-        ]));
-        q.end();
-    });
-    t.test('tokenizeMapping', function(q) {
-        q.deepEqual({}, termops.tokenizeMapping({}));
-        q.deepEqual({
-            'street': 'st'
-        }, termops.tokenizeMapping({
-            'Street': 'St'
-        }));
-        q.throws(function() {
-            q.deepEqual({
-                'north west': 'nw'
-            }, termops.tokenizeMapping({
-                'North West': 'NW'
-            }));
-        }, /Invalid mapping token North West/);
         q.end();
     });
     t.test('terms - tokenizes and hashes values', function(q) {
@@ -140,22 +110,22 @@ test('termops', function(t) {
 
 test('termops.getIndexableText', function(assert) {
     var freq = { 0:[2] };
-    assert.deepEqual(termops.getIndexableText({}, 'Main Street'), [
+    assert.deepEqual(termops.getIndexableText(token.tokenPrep({}), 'Main Street'), [
         [ 'main', 'street' ]
     ], 'creates indexableText');
-    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St'}), 'Main Street'), [
+    assert.deepEqual(termops.getIndexableText(token.tokenPrep({'Street':'St'}), 'Main Street'), [
         [ 'main', 'street' ],
         [ 'main', 'st' ]
     ], 'creates contracted phrases using geocoder_tokens');
-    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St'}), 'Main Street, main st'), [
+    assert.deepEqual(termops.getIndexableText(token.tokenPrep({'Street':'St'}), 'Main Street, main st'), [
         [ 'main', 'street' ],
         [ 'main', 'st' ]
     ], 'dedupes phrases');
-    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'Street':'St', 'Lane':'Ln'}), 'Main Street Lane'), [
+    assert.deepEqual(termops.getIndexableText(token.tokenPrep({'Street':'St', 'Lane':'Ln'}), 'Main Street Lane'), [
         [ 'main', 'street', 'lane' ],
         [ 'main', 'st', 'ln' ]
     ], 'dedupes phrases');
-    assert.deepEqual(termops.getIndexableText(termops.tokenizeMapping({'dix-huitième':'18e'}), 'Avenue du dix-huitième régiment'), [
+    assert.deepEqual(termops.getIndexableText(token.tokenPrep({'dix-huitième':'18e'}), 'Avenue du dix-huitième régiment'), [
         [ 'avenue', 'du', 'dix', 'huitieme', 'regiment' ],
         [ 'avenue', 'du', '18e', 'regiment' ]
     ], 'hypenated replacement');
