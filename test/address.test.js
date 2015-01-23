@@ -4,7 +4,7 @@ var test = require('tape');
 
 test('address.getReversePoint', function(assert) {
     assert.deepEquals(
-        address.getReversePoint([1,5], [[0,0],[0,10]], 'miles'),
+        address.getReversePoint([-77.19941765069962,38.94769891171966], [[-77.19998896121979,38.9475549770314],[-77.1988570690155,38.94759252523913]], 'miles'),
         {
             along: 691.1503837897545,
             endLine: {
