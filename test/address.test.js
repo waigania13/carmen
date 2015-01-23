@@ -2,6 +2,18 @@ var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
+//test('address.det2D', function(assert) {
+    console.log(address.det2D([0,0], [1,2], [3,4]))
+    process.exit();
+//});
+
+test('address.sign', function(assert) {
+    assert.equal(address.sign(5), 1);
+    assert.equal(address.sign(-5), -1);
+    assert.equal(address.sign(0), 0);
+    assert.end();
+});
+
 test('address.parseSemiNumber', function(assert) {
     assert.equal(address.parseSemiNumber('5'), 5);
     assert.equal(address.parseSemiNumber('5b'), 5);
@@ -357,4 +369,3 @@ test('nearest', function(t) {
     'outside threshold');
     t.end();
 });
-
