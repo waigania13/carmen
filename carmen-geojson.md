@@ -55,3 +55,8 @@ bbox | Optional. Array bounding box of the form [minx,miny,maxx,maxy].
 center | Array of the form [lon,lat].
 context | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
 
+### Additional notes
+
+- **Forward geocodes** return features ordered by most relevant to least relevant to the input query.
+- **Reverse geocodes** return features in order of index hierarchy, usually ordered from most specific features to least specific features that overlap with the queried `lon,lat` pair.
+
