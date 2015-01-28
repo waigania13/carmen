@@ -55,6 +55,10 @@ bbox | Optional. Array bounding box of the form [minx,miny,maxx,maxy].
 center | Array of the form [lon,lat].
 context | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
 
+### Feature properties
+
+Carmen makes no specifications nor guarantees about the [properties](http://geojson.org/geojson-spec.html#feature-objects) of each feature object. Feature properties are passed directly from indexes and may vary by feature and datasource.
+
 ### Additional notes
 
 - **Forward geocodes** return features ordered by most relevant to least relevant to the input query.
