@@ -180,38 +180,46 @@ test('contextVector ignores negative score', function(assert) {
     });
 });
 
-test('contextVector only negative score', function(assert) {
-    var vtile = new mapnik.VectorTile(0,0,0);
+test('contextVector reverse Cluster', function(assert) {
+    var vtile = new mapnik.VectorTile(14,3640,5670);
+    var address = {
+        _id: 1,
+        _text:'fake street',
+        _center: [-100.00605583190918,48.36314970496242],
+        _cluster: {
+            9: { type: "Point", coordinates: [-100.00605583190918,48.36314970496242] },
+            10: { type: "Point", coordinates: [-100.00185012817383,48.36640011246755] }
+        }
+    };
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "A", "_score": -1 }
-            }
-        ]
-    }),"data");
+            "type": "LineString",
+            "coordinates": [[ -100.00605583190918,48.36314970496242],[-100.00185012817383,48.36640011246755]],
+            "properties": address }
+        ), "address");
+
     zlib.gzip(vtile.getData(), function(err, buffer) {
         assert.ifError(err);
-        var source = {
+
+        var addressSource = {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
+            getGeocoderData: function(index, shard, cb) {
+                return cb(null, address.toString('base64'));
+            },
             _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                id: 'testA'
+                geocoder_shardlevel: 0,
+                geocoder_layer: 'address',
+                minzoom: 14,
+                maxzoom: 14,
+                name: 'address',
+                id: 'address'
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(addressSource, -100.00185012817383, 48.36640011246755, true, function(err, data) {
             assert.ifError(err);
-            assert.equal(data, false);
+            console.log(data);
             assert.end();
         });
     });
 });
-
-
