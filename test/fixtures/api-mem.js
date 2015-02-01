@@ -87,7 +87,7 @@ MemSource.prototype.putGrid = function(z,x,y,grid,callback) {
 MemSource.prototype.getTile = function(z,x,y,callback) {
     var key = z + '/' + x + '/' + y;
     if (this._grids[key]) return callback(null, this._grids[key]);
-    return callback(new Error('Grid does not exist'));
+    return callback(new Error('Tile does not exist'));
 };
 
 MemSource.prototype.putTile= function(z,x,y,callback) {
