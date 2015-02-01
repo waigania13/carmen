@@ -184,7 +184,7 @@ test('contextVector ignores negative score', function(assert) {
 test('contextVector reverse Cluster', function(assert) {
         var address = new mem({
             format: 'pbf',
-            geocoder_layer: 'data',
+            geocoder_layer: 'address',
             geocoder_shardlevel: 0,
             geocoder_address: 1,
             name: 'address',
