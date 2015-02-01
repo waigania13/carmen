@@ -9,6 +9,7 @@ var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
 var mem = require('../lib/api-mem');
+var feature = require('../lib/util/feature');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
@@ -178,7 +179,7 @@ test('contextVector ignores negative score', function(assert) {
             assert.equal(data._text, 'B');
             assert.end();
         });
-    });
+    });''
 });
 
 test('contextVector reverse Cluster', function(assert) {
@@ -186,6 +187,7 @@ test('contextVector reverse Cluster', function(assert) {
             format: 'pbf',
             geocoder_layer: 'address',
             geocoder_shardlevel: 0,
+            shardlevel: 0,
             geocoder_address: 1,
             name: 'address',
             id: 'address',
@@ -194,7 +196,7 @@ test('contextVector reverse Cluster', function(assert) {
         address._geocoder = address._info;
 
     var vtile = new mapnik.VectorTile(14,3640,5670);
-    vtile.addGeoJSON(JSON.stringify({
+    var geojson = {
             "type": "LineString",
             "coordinates": [[ -100.00605583190918,48.36314970496242],[-100.00185012817383,48.36640011246755]],
             "properties": {
@@ -206,17 +208,19 @@ test('contextVector reverse Cluster', function(assert) {
                     10: { type: "Point", coordinates: [-100.00185012817383,48.36640011246755] }
                 }
             }
-        }), "address");
+        }
+    vtile.addGeoJSON(JSON.stringify(geojson), "address");
 
     zlib.gzip(vtile.getData(), function(err, buffer) {
         assert.ifError(err);
-
         address.putTile(14,3640,5670, buffer , function() {
-            context.contextVector(address, -100.00185012817383, 48.36640011246755, true, function(err, data) {
-                assert.ifError(err);
-                console.log(data)
-                assert.end();
+            feature.putFeature(address, 1, geojson, function() {
+                context.contextVector(address, -100.00185012817383, 48.36640011246755, true, function(err, data) {
+                    assert.ifError(err);
+                    console.log(data)
+                    assert.end();
+                });
             });
-        })
+        });
     });
 });
