@@ -77,10 +77,13 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             _text: "fake point"
         }
         vtile.addGeoJSON(JSON.stringify(postcodePoly._geometry), "address");
+        vtile.addGeoJSON(JSON.stringify(postcodePoint._geometry), "address");
         zlib.gzip(vtile.getData(), function(err, buffer) {
             t.ifError(err, 'vtile gzip success');
             conf.postcode.putTile(1,0,0, buffer, function() {
-                index.update(conf.postcode, [postcodePoly], 1, t.end);
+                index.update(conf.postcode, [postcodePoint], 1, function() {
+                    index.update(conf.postcode, [postcodePoly], 1, t.end);
+                });
             });
         });
     });
