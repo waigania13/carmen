@@ -87,6 +87,15 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             });
         });
     });
+
+    test('Ensure allFeatures', function(t) {
+        feature.getAllFeatures(conf.postcode, function(err, feats) {
+            t.ifError(err, 'no feature err');
+            t.equals(feats.length, 2);
+            t.end();
+        })
+    })
+
     test('contextVector reverse polygon', function (t) {
         c.geocode('-125.5078125,64.47279382008166', { limit_verify:1 }, function(err, res) {
             t.ifError(err, 'no geocode err');
