@@ -8,8 +8,6 @@ var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
-var mem = require('../lib/api-mem');
-var feature = require('../lib/util/feature');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
@@ -148,16 +146,16 @@ test('contextVector ignores negative score', function(assert) {
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
-        {
-            "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-            "properties": { "_text": "A", "_score": -1 }
-        },
-        {
-            "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-            "properties": { "_text": "B" }
-        }
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "A", "_score": -1 }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "B" }
+            }
         ]
     }),"data");
     zlib.gzip(vtile.getData(), function(err, buffer) {
@@ -187,11 +185,11 @@ test('contextVector only negative score', function(assert) {
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
-        {
-            "type": "Feature",
-            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-            "properties": { "_text": "A", "_score": -1 }
-        }
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_text": "A", "_score": -1 }
+            }
         ]
     }),"data");
     zlib.gzip(vtile.getData(), function(err, buffer) {
