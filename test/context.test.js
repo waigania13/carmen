@@ -148,16 +148,16 @@ test('contextVector ignores negative score', function(assert) {
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
-            {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "A", "_score": -1 }
-            },
-            {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "B" }
-            }
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+            "properties": { "_text": "A", "_score": -1 }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+            "properties": { "_text": "B" }
+        }
         ]
     }),"data");
     zlib.gzip(vtile.getData(), function(err, buffer) {
@@ -179,5 +179,39 @@ test('contextVector ignores negative score', function(assert) {
             assert.equal(data._text, 'B');
             assert.end();
         });
-    });''
+    });
+});
+
+test('contextVector only negative score', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+            "properties": { "_text": "A", "_score": -1 }
+        }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data, false);
+            assert.end();
+        });
+    });
 });
