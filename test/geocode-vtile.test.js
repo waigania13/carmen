@@ -25,6 +25,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 (function() {
     var conf = { address: new mem({geocoder_address: 1, maxzoom: 14, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
+
     test('Index Cluster', function(t) {
         var vtile = new mapnik.VectorTile(14,3640,5670);
         var address = {
@@ -48,6 +49,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             });
         });
     });
+
     test('contextVector reverse Cluster', function (t) {
         c.geocode('-100.00185012817383,48.36640011246755', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
@@ -55,15 +57,17 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.end();
         });
     });
+
     test('index teardown', function(t){
         index.teardown();
         t.end();
-    })
+    });
 })();
 
 (function() {
     var conf = { postcode: new mem({maxzoom: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
+
     test('Index Poly & Point', function(t) {
         var vtile = new mapnik.VectorTile(1,0,0);
         var postcodePoly = {
@@ -83,7 +87,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             },
             _center: [-99.492,58.263],
             _text: "fake point"
-        }
+        };
         vtile.addGeoJSON(JSON.stringify(postcodePoly._geometry), "address");
         vtile.addGeoJSON(JSON.stringify(postcodePoint._geometry), "address");
         zlib.gzip(vtile.getData(), function(err, buffer) {
@@ -101,8 +105,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.ifError(err, 'no feature err');
             t.equals(feats.length, 2);
             t.end();
-        })
-    })
+        });
+    });
 
     test('contextVector reverse polygon', function (t) {
         c.geocode('-125.5078125,64.47279382008166', { limit_verify:1 }, function(err, res) {
@@ -111,6 +115,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.end();
         });
     });
+
     test('contextVector reverse exact point - return polygon', function (t) {
         c.geocode('-99.492,58.263', { limit_verify:1 }, function(err, res) {
             t.ifError(err, 'no geocode err');
@@ -118,10 +123,11 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.end();
         });
     });
+
     test('index teardown', function(t){
         index.teardown();
         t.end();
-    })
+    });
 })();
 
 //If the layer does not have geocoder_address do not take house number into account
@@ -129,6 +135,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     var conf = { address: new mem({maxzoom: 1}, function() {}) };
     var c = new Carmen(conf);
     var vtile = new mapnik.VectorTile(1,0,0);
+
     test('index address', function(t) {
         var address = {
             _id:1,
@@ -149,6 +156,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             });
         });
     });
+
     test('test address without geocoder_address', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
@@ -156,8 +164,51 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.end();
         });
     });
+
     test('index teardown', function(t){
         index.teardown();
         t.end();
-    })
+    });
+})();
+
+(function() {
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+    var vtile = new mapnik.VectorTile(1,0,0);
+
+    test('index address', function(t) {
+        var address = {
+            _id: 1,
+            _text:'beach street',
+            _geometry: {
+                type: "LineString",
+                coordinates: [[-133.59375,58.07787626787517],[-79.453125,68.91100484562020]]
+            },
+            _center:[-133.59375,58.07787626787517],
+            _rangetype:'tiger',
+            _lfromhn: '23-100',
+            _ltohn: '23-500'
+        };
+        vtile.addGeoJSON(JSON.stringify(address._geometry), "address");
+        zlib.gzip(vtile.getData(), function(err, buffer) {
+            t.ifError(err, 'vtile gzip success');
+            conf.address.putTile(1,0,0, buffer, function() {
+                index.update(conf.address, [address], 1, t.end);
+            });
+        });
+    });
+
+    test('test hyphenated address query with address range', function(t) {
+        c.geocode('23-414 beach street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
 })();
