@@ -803,6 +803,7 @@ function addFeature(conf, zxy, features, layer, t) {
             q = new queue(1);
             features.forEach(function(feature) {
                 feature.properties._geometry = feature.geometry;
+                console.log(feature.properties)
                 q.defer(index.update, conf[layer], [feature.properties], zxy[0]);
             });
             q.awaitAll(function(err, res) {

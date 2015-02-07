@@ -59,7 +59,6 @@ methods (see **Carmen Source API** below). In addition following
 attribute               | description
 ------------------------|------------
 maxzoom                 | The assumed zoom level of the zxy geocoder grid index.
-format                  | Optional. If set to `pbf` context operations will make use of vector tiles rather than utf grids.
 geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
 geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0.
 geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
@@ -426,5 +425,3 @@ sig term | phrase
 The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
 the most significant term (based on IDF of freq index) of a phrase. This scheme
 clusters phrases in shards by the term used to query each phrase.
-
-
