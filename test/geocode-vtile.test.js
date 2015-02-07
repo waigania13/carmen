@@ -11,6 +11,7 @@ var mapnik = require('mapnik');
 var mem = require('../lib/api-mem');
 var feature = require('../lib/util/feature');
 var index = require('../lib/index');
+var queue = require('queue-async');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
@@ -27,27 +28,21 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     var c = new Carmen(conf);
 
     test('Index Cluster', function(t) {
-        var vtile = new mapnik.VectorTile(14,3640,5670);
-        var address = {
-            _id:1,
-            _geometry: {
-                    type: "LineString",
-                    coordinates: [[ -100.00605583190918,48.36314970496242],[-100.00185012817383,48.36640011246755]]
-                },
-            _text:'fake street',
-            _center: [-100.00605583190918,48.36314970496242],
-            _cluster: {
-                9: { type: "Point", coordinates: [-100.00605583190918,48.36314970496242] },
-                10: { type: "Point", coordinates: [-100.00185012817383,48.36640011246755] }
+        addFeature(conf, [14,3640,5670], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _center: [-100.00605583190918,48.36314970496242],
+                _cluster: {
+                    9: { type: "Point", coordinates: [-100.00605583190918,48.36314970496242] },
+                    10: { type: "Point", coordinates: [-100.00185012817383,48.36640011246755] }
+                }
+            },
+            geometry: {
+                type: "LineString",
+                coordinates: [[ -100.00605583190918,48.36314970496242],[-100.00185012817383,48.36640011246755]]
             }
-        };
-        vtile.addGeoJSON(JSON.stringify(address._geometry), "address");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.address.putTile(14,3640,5670, buffer, function() {
-                index.update(conf.address, [address], 14, t.end);
-            });
-        });
+        }], "address", t);
     });
 
     test('contextVector reverse Cluster', function (t) {
@@ -69,35 +64,27 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     var c = new Carmen(conf);
 
     test('Index Poly & Point', function(t) {
-        var vtile = new mapnik.VectorTile(1,0,0);
-        var postcodePoly = {
-            _id:1,
-            _geometry: {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _center: [-97.03125, 57.2327194846687],
+                _text:'fake polygon'
+            },
+            geometry: {
                 type: "Polygon",
                 coordinates: [[[-134.296875,44.08758502824516],[-134.296875,70.37785394109224],[-59.765625,70.37785394109224],[-59.765625,44.08758502824516],[-134.296875,44.08758502824516]]]
+            }
+        },{
+            properties: {
+                _id: 2,
+                _center: [-99.492,58.263],
+                _text: "fake point"
             },
-            _center: [-97.03125, 57.2327194846687],
-            _text:'fake polygon'
-        };
-        var postcodePoint = {
-            _id: 2,
-            _geometry: {
+            geometry: {
                 type: "Point",
                 coordinates: [-99.492,58.263]
-            },
-            _center: [-99.492,58.263],
-            _text: "fake point"
-        };
-        vtile.addGeoJSON(JSON.stringify(postcodePoly._geometry), "address");
-        vtile.addGeoJSON(JSON.stringify(postcodePoint._geometry), "address");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.postcode.putTile(1,0,0, buffer, function() {
-                index.update(conf.postcode, [postcodePoint], 1, function() {
-                    index.update(conf.postcode, [postcodePoly], 1, t.end);
-                });
-            });
-        });
+            }
+        }], "postcode", t);
     });
 
     test('Ensure allFeatures', function(t) {
@@ -132,29 +119,21 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 //If the layer does not have geocoder_address do not take house number into account
 (function() {
-    var conf = { address: new mem({maxzoom: 1}, function() {}) };
+    var conf = { address: new mem({maxzoom: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
-    var vtile = new mapnik.VectorTile(1,0,0);
 
     test('index address', function(t) {
-        var address = {
-            _id:1,
-            _text:'fake street',
-            _center:[-97.031, 57.232],
-            _geometry: {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _center:[-97.031, 57.232],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [-97.031, 57.232]
-              }
-        };
-        vtile.addGeoJSON(JSON.stringify(address._geometry), "address");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.address.putTile(1,0,0, buffer, function() {
-                index.update(conf.address, [address], 1, function() {
-                    index.update(conf.address, [address], 1, t.end);
-                });
-            });
-        });
+            }
+        }], "address", t);
     });
 
     test('test address without geocoder_address', function(t) {
@@ -172,30 +151,24 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
-    var vtile = new mapnik.VectorTile(1,0,0);
 
     test('index address', function(t) {
-        var address = {
-            _id: 1,
-            _text:'beach street',
-            _geometry: {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'beach street',
+                _center:[-133.59375,58.07787626787517],
+                _rangetype:'tiger',
+                _lfromhn: '23-100',
+                _ltohn: '23-500'
+            },
+            geometry: {
                 type: "LineString",
                 coordinates: [[-133.59375,58.07787626787517],[-79.453125,68.91100484562020]]
-            },
-            _center:[-133.59375,58.07787626787517],
-            _rangetype:'tiger',
-            _lfromhn: '23-100',
-            _ltohn: '23-500'
-        };
-        vtile.addGeoJSON(JSON.stringify(address._geometry), "address");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.address.putTile(1,0,0, buffer, function() {
-                index.update(conf.address, [address], 1, t.end);
-            });
-        });
+            }
+        }], "address", t);
     });
 
     test('test hyphenated address query with address range', function(t) {
@@ -218,67 +191,53 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // entry.
 (function() {
     var conf = {
-        place: new mem({maxzoom: 1}, function() {}),
-        address: new mem({maxzoom: 1, geocoder_address: 1}, function() {})
+        place: new mem({maxzoom: 1, format: 'pbf'}, function() {}),
+        address: new mem({maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {})
     };
     var c = new Carmen(conf);
 
     test('index place', function(t) {
-        var vtile = new mapnik.VectorTile(1,0,0);
-        var place = {
-            _id:1,
-            _text:'fakecity',
-            _geometry: {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fakecity',
+                _center:[-110.039,59.712],
+            },
+            geometry: {
                 type:"Polygon",
                 coordinates:[[[-124.8046875,53.12040528310657],[-124.8046875,66.23145747862573],[-96.6796875,66.23145747862573],[-96.6796875,53.12040528310657],[-124.8046875,53.12040528310657]]]
-            },
-            _center:[-110.039,59.712],
-        };
-        vtile.addGeoJSON(JSON.stringify(place._geometry), "place");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.place.putTile(1,0,0, buffer, function() {
-                index.update(conf.place, [place], 1, t.end);
-            });
-        });
+            }
+        }], "place", t);
     });
 
     test('index matching address', function(t) {
-        var vtile = new mapnik.VectorTile(1,0,0);
-        var featureOne = {
-            _id: 2,
-            _text:'fake street',
-            _geometry: {
-                type: "Point",
-                coordinates: [-119.179,64.774]
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 2,
+                _text:'fake street',
+                _center:[-110.039,59.712],
+                _cluster: {
+                    '1': { type: "Point", coordinates: [-110.039,59.712] }
+                }
             },
-            _center:[-119.179,64.774],
-            _cluster: {
-                '1': { type: "Point", coordinates: [-119.179,64.774] }
-            }
-        };
-        var featureTwo = {
-            _id: 3,
-            _text:'fake street',
-            _geometry: {
+            geometry: {
                 type: "Point",
-                coordinates: [-100.546,57.891]
+                coordinates: [-110.039,59.712]
             },
-            _center: [-100.546,57.891],
-            _cluster: {
-                '2': { type: "Point", coordinates: [-100.546,57.891] }
+        }, {
+            properties: {
+                _id: 3,
+                _text:'fake street',
+                _center: [-110.039,59.712],
+                _cluster: {
+                    '2': { type: "Point", coordinates: [-110.039,59.712] }
+                }
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-110.039,59.712]
             }
-        };
-        vtile.addGeoJSON(JSON.stringify(featureOne._geometry), "address");
-        vtile.addGeoJSON(JSON.stringify(featureTwo._geometry), "address");
-        zlib.gzip(vtile.getData(), function(err, buffer) {
-            t.ifError(err, 'vtile gzip success');
-            conf.place.putTile(1,0,0, buffer, function() {
-                index.update(conf.place, [place], 1, function() {
-                    index.update(conf.place, [place], 1, t.end);
-                });
-            });
-        });
+        }], "address", t);
     });
 
     test('test spatialmatch relev', function(t) {
@@ -290,4 +249,33 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.end();
         });
     });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
 })();
+
+function addFeature(conf, zxy, features, layer, t) {
+    var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
+    features.forEach(function(feature) {
+        feature = JSON.parse(JSON.stringify(feature));
+        feature.geometry.properties = feature.properties;
+        vtile.addGeoJSON(JSON.stringify(feature.geometry), layer);
+    });
+
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        t.ifError(err, 'vtile gzip success');
+        conf[layer].putTile(zxy[0],zxy[1],zxy[2], buffer, function() {
+            q = new queue(1);
+            features.forEach(function(feature) {
+                feature.properties._geometry = feature.geometry;
+                q.defer(index.update, conf[layer], [feature.properties], zxy[0]);
+            });
+            q.awaitAll(function(err, res) {
+                t.ifError(err);
+                t.end();
+            });
+        });
+    });
+}
