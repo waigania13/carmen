@@ -528,12 +528,273 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     });
 })();
 
+// Confirm that for equally relevant features across three indexes
+// the one with the highest score beats the others.
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+        province: new mem(null, function() {}),
+        city: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+
+    test('index country', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _score: 5,
+                _text: 'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "country", t);
+    });
+
+    test('index province', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:2,
+                _score: 10,
+                _text: 'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "province", t);
+    });
+
+    test('index city', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 3,
+                _score: 6,
+                _text: 'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "city", t);
+    });
+
+    test('china', function(t) {
+        c.geocode('china', { limit_verify:3 }, function(err, res) {
+            t.ifError(err);
+            t.fail();
+            // t.deepEqual(res.features[0].id, 'province.2');
+            // t.deepEqual(res.features[1].id, 'city.3');
+            // t.deepEqual(res.features[2].id, 'country.1');
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+// Confirm that for equally relevant features across three indexes
+// the first in hierarchy beats the others. (NO SCORES)
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+        province: new mem(null, function() {}),
+        city: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+
+    test('index country', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "country", t);
+    });
+    test('index province', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "province", t);
+    });
+    test('index city', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'china',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "city", t);
+    });
+    test('china', function(t) {
+        c.geocode('china', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.fail();
+            // t.deepEqual(res.features[0].place_name, 'china');
+            // t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+
+(function() {
+    var conf = {
+        province: new mem(null, function() {}),
+        city: new mem({maxzoom: 3}, function() {}),
+        street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index province', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text: 'new york, ny',
+                _centre: [-109.68,56.55]
+            },
+            geometry: {
+                type: "Polygon",
+                coordinates: [[[-168.75,33.72],[-168.75,80.41],[-35.15,80.41],[-35.15,33.72],[-168.75,33.72]]]
+            }
+        }], "province", t);
+    });
+    test('index city 1', function(t) {
+        addFeature(conf, [2,0,0], [{
+            properties: {
+                _id:1,
+                _text:'new york, ny',
+                _center: [-101.95, 57.065]
+            },
+            geometry: {
+                type: "Polygon",
+                coordinates: [[[-148.00,79.87],[-148.00,82.58],[-129.02,82.58],[-129.02,79.87],[-148.00,79.87]]]
+            }
+        },{
+            properties: {
+                _id:2,
+                _text:'tonawanda',
+                _center: [-138.51, 81.225]
+            },
+            geometry: {
+                type: "Polygon",
+                coordinates: [[[-137.10,74.21],[-137.10,78.69],[-117.77,78.69],[-117.77,74.21],[-137.10,74.21]]]
+            }
+        }], "city", t)
+    });
+
+    test('index street 1', function(t) {
+        addFeature(conf, [6,8,9], [{
+            properties: {
+                _id:1,
+                _text:'west st'
+            },
+            geometry: {
+                type: "LineString",
+                coordinates: [[-133.2861328125,77.24477980765316],[-130.49560546875,77.77688992909225]]
+            }
+        }, {
+            properties: {
+                _id:2,
+                _text:'west st',
+            },
+            geometry: {
+                type: "LineString",
+                coordinates: [[-131.7919921875,76.55774293896555],[-128.47412109375,77.28836775031196]]
+            }
+        }], "street", t)
+    });
+
+    test('west st, tonawanda, ny', function(t) {
+        c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'west st, tonawanda, new york');
+            t.end();
+        });
+    });
+    test('west st, new york, ny', function(t) {
+        c.geocode('west st new york ny', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'west st, new york, new york');
+            t.end();
+        });
+    });
+    test('new york', function(t) {
+        c.geocode('new york', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'new york');
+            t.deepEqual(res.features[0].id, 'province.1');
+            t.end();
+        });
+    });
+    test('new york new york', function(t) {
+        c.geocode('new york new york', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'new york, new york');
+            t.deepEqual(res.features[0].id, 'city.1');
+            t.end();
+        });
+    });
+    test('ny ny', function(t) {
+        c.geocode('ny ny', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'new york, new york');
+            t.deepEqual(res.features[0].id, 'city.1');
+            t.end();
+        });
+    });
+    // failing
+    test.skip('new york ny', function(t) {
+        c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'new york, new york');
+            t.deepEqual(res.features[0].id, 'city.1');
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
 function addFeature(conf, zxy, features, layer, t) {
     var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
     features.forEach(function(feature) {
         feature = JSON.parse(JSON.stringify(feature));
         feature.geometry.properties = feature.properties;
-        vtile.addGeoJSON(JSON.stringify(feature.geometry), layer);
+        vtile.addGeoJSON(JSON.stringify({
+            type: "Feature",
+            geometry: feature.geometry
+        }), layer);
     });
 
     zlib.gzip(vtile.getData(), function(err, buffer) {
