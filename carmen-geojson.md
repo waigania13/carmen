@@ -52,6 +52,7 @@ id | Id of the feature of the form `{index}.{id}` where index is the id/handle o
 text | Text representing the feature (e.g. "Austin").
 place_name | Human-readable text representing the full result hierarchy (e.g. "Austin, Texas, United States").
 bbox | Optional. Array bounding box of the form [minx,miny,maxx,maxy].
+address | Where applicable. Contains the housenumber for the returned feature
 center | Array of the form [lon,lat].
 context | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
 
