@@ -14,6 +14,14 @@ var index = require('../lib/index');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
+// limit_verify 1 implies that the correct result must be the very top
+// result prior to context verification. It means even with a long list
+// of competing results the correct candidate is sorted to the top.
+
+// limit_verify 2 implies that there is some ambiguity prior to context
+// verification (e.g. new york (city) vs new york (province)) that is sorted
+// into the correct order after context verification occurs.
+
 (function() {
     var conf = { address: new mem({geocoder_address: 1, maxzoom: 14, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
@@ -107,6 +115,44 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
         c.geocode('-99.492,58.263', { limit_verify:1 }, function(err, res) {
             t.ifError(err, 'no geocode err');
             t.equal(res.features[0].text, 'fake polygon', 'returns polygon');
+            t.end();
+        });
+    });
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    })
+})();
+
+//If the layer does not have geocoder_address do not take house number into account
+(function() {
+    var conf = { address: new mem({maxzoom: 1}, function() {}) };
+    var c = new Carmen(conf);
+    var vtile = new mapnik.VectorTile(1,0,0);
+    test('index address', function(t) {
+        var address = {
+            _id:1,
+            _text:'fake street',
+            _center:[-97.031, 57.232],
+            _geometry: {
+                type: "Point",
+                coordinates: [-97.031, 57.232]
+              }
+        };
+        vtile.addGeoJSON(JSON.stringify(address._geometry), "address");
+        zlib.gzip(vtile.getData(), function(err, buffer) {
+            t.ifError(err, 'vtile gzip success');
+            conf.address.putTile(1,0,0, buffer, function() {
+                index.update(conf.address, [address], 1, function() {
+                    index.update(conf.address, [address], 1, t.end);
+                });
+            });
+        });
+    });
+    test('test address without geocoder_address', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.6666666666666666);
             t.end();
         });
     });

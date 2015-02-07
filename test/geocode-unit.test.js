@@ -8,14 +8,6 @@ var mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
 
-// limit_verify 1 implies that the correct result must be the very top
-// result prior to context verification. It means even with a long list
-// of competing results the correct candidate is sorted to the top.
-
-// limit_verify 2 implies that there is some ambiguity prior to context
-// verification (e.g. new york (city) vs new york (province)) that is sorted
-// into the correct order after context verification occurs.
-
 (function() {
     var conf = {
         province: new mem(null, function() {}),
@@ -529,63 +521,6 @@ var test = require('tape');
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
-    };
-    var c = new Carmen(conf);
-    test('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'beach street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-                _rangetype:'tiger',
-                _lfromhn: '23-100',
-                _ltohn: '23-500',
-                _geometry: {
-                    type:'LineString',
-                    coordinates:[[0,0],[0,100]]
-                }
-            };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
-    });
-    test('test hyphenated address query with address range', function(t) {
-        c.geocode('23-414 beach street', { limit_verify: 1 }, function (err, res) {
-            t.ifError(err);
-            t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
-            t.equals(res.features[0].relevance, 1);
-            t.end();
-        });
-    });
-})();
-
-//If the layer does not have geocoder_address do not take house number into account
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6}, function() {})
-    };
-    var c = new Carmen(conf);
-    test('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-            };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
-    });
-    test('test address index for relev', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
-            t.ifError(err);
-            t.equals(res.features[0].relevance, 0.6666666666666666);
-            t.end();
-        });
-    });
-})();
-
 // spatialmatch test to ensure the highest relev for a stacked zxy cell
 // is used, disallowing a lower scoring cell from overwriting a previous
 // entry.
@@ -642,18 +577,3 @@ var test = require('tape');
         });
     });
 })();
-
-test('index.teardown', function(assert) {
-    index.teardown();
-    assert.end();
-});
-
-function solidGrid(feature) {
-    var grid = [];
-    for (var i = 0; i < 64; i++) grid.push(new Array(65).join(' '));
-    return {
-        "grid": grid,
-        "keys": [ "89" ],
-        "data": { "89": feature }
-    };
-}
