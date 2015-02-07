@@ -220,7 +220,7 @@ test('#unloadall', function(s) {
 (function() {
 
 var Memsource = require('../lib/api-mem');
-var mem = new Memsource({}, function() {});
+var mem = new Memsource(null, {}, function() {});
 var docs = require('./fixtures/docs.json');
 var index = require('../lib/index');
 var stats = { term:0, phrase:0 };

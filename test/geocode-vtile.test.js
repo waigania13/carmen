@@ -24,7 +24,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // into the correct order after context verification occurs.
 
 (function() {
-    var conf = { address: new mem({geocoder_address: 1, maxzoom: 14, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {geocoder_address: 1, maxzoom: 14, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
 
     test('Index Cluster', function(t) {
@@ -60,7 +60,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { postcode: new mem({maxzoom: 1, format: 'pbf'}, function() {}) };
+    var conf = { postcode: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
 
     test('Index Poly & Point', function(t) {
@@ -119,7 +119,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 //If the layer does not have geocoder_address do not take house number into account
 (function() {
-    var conf = { address: new mem({maxzoom: 1, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -151,7 +151,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -191,8 +191,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // entry.
 (function() {
     var conf = {
-        place: new mem({maxzoom: 1, format: 'pbf'}, function() {}),
-        address: new mem({maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {})
+        place: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}),
+        address: new mem(null, {maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {})
     };
     var c = new Carmen(conf);
 
@@ -257,7 +257,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -292,7 +292,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('tiger, between the lines', function(t) {
@@ -328,7 +328,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -363,7 +363,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -400,7 +400,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index alphanum address', function(t) {
@@ -439,7 +439,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 //Ensures that relev takes into house number into consideration
 (function() {
-    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -477,7 +477,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 (function() {
-    var conf = { country: new mem({ maxzoom: 1 }, function() {}) };
+    var conf = { country: new mem(null, { maxzoom: 1 }, function() {}) };
     var c = new Carmen(conf);
 
     test('index country', function(t) {
@@ -532,9 +532,9 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // the one with the highest score beats the others.
 (function() {
     var conf = {
-        country: new mem(null, function() {}),
-        province: new mem(null, function() {}),
-        city: new mem(null, function() {}),
+        country: new mem(null, {}, function() {}),
+        province: new mem(null, {}, function() {}),
+        city: new mem(null, {}, function() {}),
     };
     var c = new Carmen(conf);
 
@@ -604,9 +604,9 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // the first in hierarchy beats the others. (NO SCORES)
 (function() {
     var conf = {
-        country: new mem(null, function() {}),
-        province: new mem(null, function() {}),
-        city: new mem(null, function() {}),
+        country: new mem(null, {}, function() {}),
+        province: new mem(null, {}, function() {}),
+        city: new mem(null, {}, function() {}),
     };
     var c = new Carmen(conf);
 
@@ -668,9 +668,9 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 (function() {
     var conf = {
-        province: new mem(null, function() {}),
-        city: new mem({maxzoom: 3}, function() {}),
-        street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
+        province: new mem(null, {}, function() {}),
+        city: new mem(null, {maxzoom: 3}, function() {}),
+        street: new mem(null, { maxzoom:6, geocoder_address:1 }, function() {})
     };
     var c = new Carmen(conf);
     test('index province', function(t) {
@@ -803,7 +803,6 @@ function addFeature(conf, zxy, features, layer, t) {
             q = new queue(1);
             features.forEach(function(feature) {
                 feature.properties._geometry = feature.geometry;
-                console.log(feature.properties)
                 q.defer(index.update, conf[layer], [feature.properties], zxy[0]);
             });
             q.awaitAll(function(err, res) {

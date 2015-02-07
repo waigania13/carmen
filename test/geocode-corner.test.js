@@ -26,7 +26,7 @@ function okay(type, a, b, margin) {
 
 test('geocode corner cases', function(t) {
 
-    var corner = JSON.parse(fs.readFileSync('./test/fixtures/corner.json'));
+    var corner = JSON.parse(fs.readFileSync(__dirname + '/fixtures/corner.json'));
 
     t.test('geocoder-open?', function(q) {
         carmen._open(function(err) {

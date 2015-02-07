@@ -10,8 +10,8 @@ var docs = require('./fixtures/docs.json');
 var test = require('tape');
 
 test('copy', function(t) {
-    var from = new mem(null, function() {});
-    var to = new mem(null, function() {});
+    var from = new mem(null, {}, function() {});
+    var to = new mem(null, {}, function() {});
     var carmen = new Carmen({
         from: from,
         to: to
@@ -53,6 +53,6 @@ test('copy', function(t) {
             q.end();
         });
     });
-
+    
     t.end();
 });
