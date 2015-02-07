@@ -257,9 +257,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = {
-        address: new mem({maxzoom: 1, geocoder_address: 1}, function() {})
-    };
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -282,6 +280,43 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+(function() {
+    var conf = { address: new mem({maxzoom: 6, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+
+    test('tiger, between the lines', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _rangetype:'tiger',
+                _lfromhn: ['0','104'],
+                _ltohn: ['100','200'],
+            },
+            geometry: {
+                type: 'MultiLineString',
+                coordinates: [[[-132.5390625,62.2679226294176],[-119.88281249999999,62.2679226294176]],[[-114.2578125,61.938950426660604],[-105.46875,59.712097173322924]]]
+            }
+        }], "address", t);
+    });
+
+    test('test tiger interpolation house number', function(t) {
+        c.geocode('102 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
