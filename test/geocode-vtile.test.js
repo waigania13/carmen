@@ -292,16 +292,15 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem({maxzoom: 6, geocoder_address: 1}, function() {}) };
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('tiger, between the lines', function(t) {
         addFeature(conf, [1,0,0], [{
             properties: {
-                _id:1,
+                _id: 1,
                 _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
+                _center:[-132.5390625,62.2679226294176],
                 _rangetype:'tiger',
                 _lfromhn: ['0','104'],
                 _ltohn: ['100','200'],
@@ -318,6 +317,207 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
             t.ifError(err);
             t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
             t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+(function() {
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+
+    test('index address', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'fake street',
+                _center:[-114.2578125,61.938950426660604],
+                _rangetype:'tiger',
+                _lfromhn: '0',
+                _ltohn: '100',
+            },
+            geometry: {
+                type:'LineString',
+                coordinates:[[-114.2578125,61.938950426660604],[-105.46875,59.712097173322924]]
+            }
+        }], "address", t);
+    });
+    test('test address query with address range', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+(function() {
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+
+    test('index address', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _center: [-97.03,64.62],
+                _cluster: {
+                    '9': { type: "Point", coordinates: [-112.85,62.75] },
+                    '10': { type: "Point", coordinates: [-97.03,64.62] },
+                    '7': { type: "Point", coordinates: [-104.76,57.32] }
+                }
+            },
+            geometry: {
+                type: "MultiPoint",
+                coordinates: [[-112.85,62.75],[-97.03,64.62],[-104.76,57.32]]
+            }
+        }], "address", t);
+    });
+    test('test address query with alphanumeric', function(t) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+(function() {
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+
+    test('index alphanum address', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _center: [-97.03,64.62],
+                _cluster: {
+                    '9b': { type: "Point", coordinates: [-112.85,62.75] },
+                    '10c': { type: "Point", coordinates: [-97.03,64.62] },
+                    '7': { type: "Point", coordinates: [-104.76,57.32] }
+                }
+            },
+            geometry: {
+                type: "MultiPoint",
+                coordinates: [[-112.85,62.75],[-97.03,64.62],[-104.76,57.32]]
+            }
+        }], "address", t)
+
+    });
+    test('test address index for alphanumerics', function(t) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+//Ensures that relev takes into house number into consideration
+(function() {
+    var conf = { address: new mem({maxzoom: 1, geocoder_address: 1}, function() {}) };
+    var c = new Carmen(conf);
+
+    test('index address', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text:'fake street',
+                _center:[-97.03,64.62],
+                _cluster: {
+                    '9': { type: "Point", coordinates: [-112.85,62.75] },
+                    '10': { type: "Point", coordinates: [-97.03,64.62] },
+                    '7': { type: "Point", coordinates: [-104.76,57.32] }
+                }
+            },
+            geometry: {
+                type: "MultiPoint",
+                coordinates: [[-112.85,62.75],[-97.03,64.62],[-104.76,57.32]]
+            }
+        }], "address", t);
+    });
+    test('test address index for relev', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
+//Ensure that results that have equal relev in phrasematch
+//are matched against the 0.5 relev bar instead of 0.75
+(function() {
+    var conf = { country: new mem({ maxzoom: 1 }, function() {}) };
+    var c = new Carmen(conf);
+
+    test('index country', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id: 1,
+                _text: 'czech republic',
+                _center: [-112.85,62.75]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-112.85,62.75]
+            }
+        }, {
+            properties: {
+                _id: 2,
+                _text: 'fake country two',
+                _center: [-97.03,64.62]
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [-97.03,64.62]
+            }
+        }], "country", t);
+    });
+
+    test('czech => czech repblic', function(t) {
+        c.geocode('czech', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'czech republic');
+            t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+
+    //Is not above 0.5 relev so should fail.
+    test('fake => [fail]', function(t) {
+        c.geocode('fake', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.notOk(res.features[0]);
             t.end();
         });
     });
