@@ -256,6 +256,43 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     });
 })();
 
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 1, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+
+    test('index address', function(t) {
+        addFeature(conf, [1,0,0], [{
+            properties: {
+                _id:1,
+                _text:'fake street',
+                _center:[-123.3984375,57.89149735271031],
+                _rangetype:'tiger',
+                _lfromhn: '0',
+                _ltohn: '100'
+            },
+            geometry: {
+                type:'LineString',
+                coordinates:[[-123.3984375,57.89149735271031],[-98.7890625,60.413852350464914]]
+            }
+        }], "address", t);
+    });
+    test('test alphanumeric address query with address range', function(t) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('index teardown', function(t){
+        index.teardown();
+        t.end();
+    });
+})();
+
 function addFeature(conf, zxy, features, layer, t) {
     var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
     features.forEach(function(feature) {
