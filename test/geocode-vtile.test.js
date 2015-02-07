@@ -212,3 +212,82 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
         t.end();
     });
 })();
+
+// spatialmatch test to ensure the highest relev for a stacked zxy cell
+// is used, disallowing a lower scoring cell from overwriting a previous
+// entry.
+(function() {
+    var conf = {
+        place: new mem({maxzoom: 1}, function() {}),
+        address: new mem({maxzoom: 1, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+
+    test('index place', function(t) {
+        var vtile = new mapnik.VectorTile(1,0,0);
+        var place = {
+            _id:1,
+            _text:'fakecity',
+            _geometry: {
+                type:"Polygon",
+                coordinates:[[[-124.8046875,53.12040528310657],[-124.8046875,66.23145747862573],[-96.6796875,66.23145747862573],[-96.6796875,53.12040528310657],[-124.8046875,53.12040528310657]]]
+            },
+            _center:[-110.039,59.712],
+        };
+        vtile.addGeoJSON(JSON.stringify(place._geometry), "place");
+        zlib.gzip(vtile.getData(), function(err, buffer) {
+            t.ifError(err, 'vtile gzip success');
+            conf.place.putTile(1,0,0, buffer, function() {
+                index.update(conf.place, [place], 1, t.end);
+            });
+        });
+    });
+
+    test('index matching address', function(t) {
+        var vtile = new mapnik.VectorTile(1,0,0);
+        var featureOne = {
+            _id: 2,
+            _text:'fake street',
+            _geometry: {
+                type: "Point",
+                coordinates: [-119.179,64.774]
+            },
+            _center:[-119.179,64.774],
+            _cluster: {
+                '1': { type: "Point", coordinates: [-119.179,64.774] }
+            }
+        };
+        var featureTwo = {
+            _id: 3,
+            _text:'fake street',
+            _geometry: {
+                type: "Point",
+                coordinates: [-100.546,57.891]
+            },
+            _center: [-100.546,57.891],
+            _cluster: {
+                '2': { type: "Point", coordinates: [-100.546,57.891] }
+            }
+        };
+        vtile.addGeoJSON(JSON.stringify(featureOne._geometry), "address");
+        vtile.addGeoJSON(JSON.stringify(featureTwo._geometry), "address");
+        zlib.gzip(vtile.getData(), function(err, buffer) {
+            t.ifError(err, 'vtile gzip success');
+            conf.place.putTile(1,0,0, buffer, function() {
+                index.update(conf.place, [place], 1, function() {
+                    index.update(conf.place, [place], 1, t.end);
+                });
+            });
+        });
+    });
+
+    test('test spatialmatch relev', function(t) {
+        c.geocode('1 fake street fakecity', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].id, 'address.2');
+            t.end();
+        });
+    });
+})();
