@@ -16,8 +16,8 @@ test('index', function(t) {
     var west = new S3(__dirname + '/fixtures/01-ne.country.west.s3', function(err, source) {
         if (err) t.fail();
     });
-    var eastSource = new mem(null, function() {});
-    var westSource = new mem(null, function() {});
+    var eastSource = new mem(null, null, function() {});
+    var westSource = new mem(null, null, function() {});
     eastSource.getIndexableDocs = function(pointer, callback) {
         mem.prototype.getIndexableDocs.call(this, pointer, function(err, docs, pointer) {
             if (err) return callback(err);
