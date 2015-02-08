@@ -24,7 +24,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // into the correct order after context verification occurs.
 
 (function() {
-    var conf = { address: new mem(null, {geocoder_address: 1, maxzoom: 14, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {geocoder_address: 1, maxzoom: 14}, function() {}) };
     var c = new Carmen(conf);
 
     test('Index Cluster', function(t) {
@@ -60,7 +60,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { postcode: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}) };
+    var conf = { postcode: new mem(null, {maxzoom: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('Index Poly & Point', function(t) {
@@ -119,7 +119,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 //If the layer does not have geocoder_address do not take house number into account
 (function() {
-    var conf = { address: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -151,7 +151,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 (function() {
-    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {}) };
+    var conf = { address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {}) };
     var c = new Carmen(conf);
 
     test('index address', function(t) {
@@ -191,8 +191,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // entry.
 (function() {
     var conf = {
-        place: new mem(null, {maxzoom: 1, format: 'pbf'}, function() {}),
-        address: new mem(null, {maxzoom: 1, geocoder_address: 1, format: 'pbf'}, function() {})
+        place: new mem(null, {maxzoom: 1}, function() {}),
+        address: new mem(null, {maxzoom: 1, geocoder_address: 1}, function() {})
     };
     var c = new Carmen(conf);
 
