@@ -11,7 +11,7 @@ var test = require('tape');
 
 test('copy', function(t) {
     var from = new mem(null, {}, function() {});
-    var to = new mem(null, {}, function() {});
+    var to = new mem(null, {maxzoom: 6}, function() {});
     var carmen = new Carmen({
         from: from,
         to: to
