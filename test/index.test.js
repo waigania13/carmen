@@ -4,8 +4,6 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles');
-
-//var mem = require('./fixtures/api-mem');
 var mem = require('../lib/api-mem');
 
 var UPDATE = process.env.UPDATE;

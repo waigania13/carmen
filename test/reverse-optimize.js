@@ -13,7 +13,7 @@ test('index', function(t) {
     var country = new S3(__dirname + '/fixtures/01-ne.country.bounds.s3', function(err, source) {
         if (err) t.fail();
     });
-    var countrySource = new mem(null, {}, function() {});
+    var countrySource = new mem(null, function() {});
     countrySource.getIndexableDocs = function(pointer, callback) {
         mem.prototype.getIndexableDocs.call(this, pointer, function(err, docs, pointer) {
             if (err) return callback(err);
