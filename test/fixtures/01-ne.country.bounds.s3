@@ -4,6 +4,7 @@
     "geocoder_tokens": {
         "N": "North"
     },
+    "format": "pbf",
     "maxzoom": 6,
     "bounds": [1,1,1,1]
 }
