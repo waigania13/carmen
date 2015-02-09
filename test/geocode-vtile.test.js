@@ -12,6 +12,7 @@ var mem = require('../lib/api-mem');
 var feature = require('../lib/util/feature');
 var index = require('../lib/index');
 var queue = require('queue-async');
+var tilebelt = require('tilebelt');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 
@@ -532,53 +533,38 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // the one with the highest score beats the others.
 (function() {
     var conf = {
-        country: new mem(null, {}, function() {}),
-        province: new mem(null, {}, function() {}),
-        city: new mem(null, {}, function() {}),
+        country: new mem(null, {maxzoom:6}, function() {}),
+        province: new mem(null, {maxzoom:6}, function() {}),
+        city: new mem(null, {maxzoom:6}, function() {}),
     };
     var c = new Carmen(conf);
 
     test('index country', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,32,32], [{
             properties: {
                 _id: 1,
                 _score: 5,
-                _text: 'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text: 'china'
             }
         }], "country", t);
     });
 
     test('index province', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,33,32], [{
             properties: {
                 _id:2,
                 _score: 10,
-                _text: 'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text: 'china'
             }
         }], "province", t);
     });
 
     test('index city', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,34,32], [{
             properties: {
                 _id: 3,
                 _score: 6,
-                _text: 'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text: 'china'
             }
         }], "city", t);
     });
@@ -586,10 +572,9 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
     test('china', function(t) {
         c.geocode('china', { limit_verify:3 }, function(err, res) {
             t.ifError(err);
-            t.fail();
-            // t.deepEqual(res.features[0].id, 'province.2');
-            // t.deepEqual(res.features[1].id, 'city.3');
-            // t.deepEqual(res.features[2].id, 'country.1');
+            t.deepEqual(res.features[0].id, 'province.2');
+            t.deepEqual(res.features[1].id, 'city.3');
+            t.deepEqual(res.features[2].id, 'country.1');
             t.end();
         });
     });
@@ -604,57 +589,41 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 // the first in hierarchy beats the others. (NO SCORES)
 (function() {
     var conf = {
-        country: new mem(null, {}, function() {}),
-        province: new mem(null, {}, function() {}),
-        city: new mem(null, {}, function() {}),
+        country: new mem(null, {maxzoom:6}, function() {}),
+        province: new mem(null, {maxzoom:6}, function() {}),
+        city: new mem(null, {maxzoom:6}, function() {}),
     };
     var c = new Carmen(conf);
 
     test('index country', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,32,32], [{
             properties: {
                 _id: 1,
-                _text:'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text:'china'
             }
         }], "country", t);
     });
     test('index province', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,33,32], [{
             properties: {
                 _id: 1,
-                _text:'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text:'china'
             }
         }], "province", t);
     });
     test('index city', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [6,34,32], [{
             properties: {
                 _id: 1,
-                _text:'china',
-                _center: [-97.03,64.62]
-            },
-            geometry: {
-                type: "Point",
-                coordinates: [-97.03,64.62]
+                _text:'china'
             }
         }], "city", t);
     });
     test('china', function(t) {
         c.geocode('china', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.fail();
-            // t.deepEqual(res.features[0].place_name, 'china');
-            // t.deepEqual(res.features[0].id, 'country.1');
+            t.deepEqual(res.features[0].place_name, 'china');
+            t.deepEqual(res.features[0].id, 'country.1');
             t.end();
         });
     });
@@ -668,68 +637,54 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 
 (function() {
     var conf = {
-        province: new mem(null, {}, function() {}),
-        city: new mem(null, {maxzoom: 3}, function() {}),
+        province: new mem(null, {maxzoom:1}, function() {}),
+        city: new mem(null, {maxzoom:6}, function() {}),
         street: new mem(null, { maxzoom:6, geocoder_address:1 }, function() {})
     };
     var c = new Carmen(conf);
     test('index province', function(t) {
-        addFeature(conf, [1,0,0], [{
+        addFeature(conf, [1,1,1], [{
             properties: {
                 _id: 1,
-                _text: 'new york, ny',
-                _centre: [-109.68,56.55]
-            },
-            geometry: {
-                type: "Polygon",
-                coordinates: [[[-168.75,33.72],[-168.75,80.41],[-35.15,80.41],[-35.15,33.72],[-168.75,33.72]]]
+                _text: 'new york, ny'
             }
         }], "province", t);
     });
+
     test('index city 1', function(t) {
-        addFeature(conf, [2,0,0], [{
+        addFeature(conf, [6,32,32], [{
             properties: {
                 _id:1,
-                _text:'new york, ny',
-                _center: [-101.95, 57.065]
-            },
-            geometry: {
-                type: "Polygon",
-                coordinates: [[[-148.00,79.87],[-148.00,82.58],[-129.02,82.58],[-129.02,79.87],[-148.00,79.87]]]
+                _text:'new york, ny'
             }
-        },{
+        }], "city", t);
+    });
+
+    test('index city 2', function(t) {
+        addFeature(conf, [6,33,32], [{
             properties: {
                 _id:2,
-                _text:'tonawanda',
-                _center: [-138.51, 81.225]
-            },
-            geometry: {
-                type: "Polygon",
-                coordinates: [[[-137.10,74.21],[-137.10,78.69],[-117.77,78.69],[-117.77,74.21],[-137.10,74.21]]]
+                _text:'tonawanda'
             }
-        }], "city", t)
+        }], "city", t);
     });
 
     test('index street 1', function(t) {
-        addFeature(conf, [6,8,9], [{
+        addFeature(conf, [6,32,32], [{
             properties: {
                 _id:1,
                 _text:'west st'
-            },
-            geometry: {
-                type: "LineString",
-                coordinates: [[-133.2861328125,77.24477980765316],[-130.49560546875,77.77688992909225]]
             }
-        }, {
+        }], "street", t);
+    });
+
+    test('index street 2', function(t) {
+        addFeature(conf, [6,33,32], [{
             properties: {
                 _id:2,
-                _text:'west st',
-            },
-            geometry: {
-                type: "LineString",
-                coordinates: [[-131.7919921875,76.55774293896555],[-128.47412109375,77.28836775031196]]
+                _text:'west st'
             }
-        }], "street", t)
+        }], "street", t);
     });
 
     test('west st, tonawanda, ny', function(t) {
@@ -787,15 +742,27 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 })();
 
 function addFeature(conf, zxy, features, layer, t) {
-    var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
-    features.forEach(function(feature) {
+    features = features.map(function(feature) {
         feature = JSON.parse(JSON.stringify(feature));
-        feature.geometry.properties = feature.properties;
-        vtile.addGeoJSON(JSON.stringify({
-            type: "Feature",
-            geometry: feature.geometry
-        }), layer);
+        feature.type = 'Feature';
+        if (feature.geometry) {
+            feature.geometry = feature.geometry;
+        } else {
+            feature.geometry = tilebelt.tileToGeoJSON([zxy[1], zxy[2], zxy[0]]).geometry;
+            var minX = feature.geometry.coordinates[0].reduce(function(memo, c) { return Math.min(memo, c[0]) }, Infinity);
+            var maxX = feature.geometry.coordinates[0].reduce(function(memo, c) { return Math.max(memo, c[0]) }, -Infinity);
+            var minY = feature.geometry.coordinates[0].reduce(function(memo, c) { return Math.min(memo, c[1]) }, Infinity);
+            var maxY = feature.geometry.coordinates[0].reduce(function(memo, c) { return Math.max(memo, c[1]) }, -Infinity);
+            feature.properties._center = feature.properties._center || [ minX + (maxX-minX)*0.5, minY + (maxY-minY)*0.5 ];
+        }
+        return feature;
     });
+
+    var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
+    vtile.addGeoJSON(JSON.stringify({
+        type: 'FeatureCollection',
+        features: features
+    }), layer);
 
     zlib.gzip(vtile.getData(), function(err, buffer) {
         t.ifError(err, 'vtile gzip success');
@@ -812,3 +779,4 @@ function addFeature(conf, zxy, features, layer, t) {
         });
     });
 }
+
