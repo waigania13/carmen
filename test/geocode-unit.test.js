@@ -439,7 +439,7 @@ var test = require('tape');
                 _geometry: {
                     type:'LineString',
                     coordinates:[[0,0],[0,100]]
-                }   
+                }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
             index.update(conf.address, [address], 6, t.end);
@@ -481,12 +481,12 @@ var test = require('tape');
                             [0,20]
                         ],
                     ]
-                }   
+                }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
             index.update(conf.address, [address], 6, t.end);
     });
-    
+
     test('test tiger interpolation house number', function(t) {
         c.geocode('102 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
@@ -514,7 +514,7 @@ var test = require('tape');
                 _geometry: {
                     type:'LineString',
                     coordinates:[[0,0],[0,100]]
-                }   
+                }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
             index.update(conf.address, [address], 6, t.end);
@@ -546,7 +546,7 @@ var test = require('tape');
                 _geometry: {
                     type:'LineString',
                     coordinates:[[0,0],[0,100]]
-                }   
+                }
             };
             conf.address.putGrid(6, 32, 32, solidGrid(address));
             index.update(conf.address, [address], 6, t.end);
@@ -710,5 +710,4 @@ function solidGrid(feature) {
         "keys": [ "89" ],
         "data": { "89": feature }
     };
-};
-
+}
