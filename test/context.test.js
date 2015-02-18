@@ -10,6 +10,7 @@ var path = require('path');
 var mapnik = require('mapnik');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
 test('context vector', function(t) {
     var geocoder = new Carmen({
