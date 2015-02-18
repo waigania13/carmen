@@ -10,6 +10,7 @@ var path = require('path');
 var mapnik = require('mapnik');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
 test('context vector', function(t) {
     var geocoder = new Carmen({
@@ -111,6 +112,33 @@ test('contextVector badbuffer', function(t) {
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
+    });
+});
+
+test('contextVector ignores negative score', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": []
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 0, 0, false, function(err, data) {
+            assert.ok(err, 'Error: cannot accept empty buffer as protobuf'); 
+            assert.end();
+        });
     });
 });
 
