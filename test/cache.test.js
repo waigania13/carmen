@@ -228,6 +228,7 @@ var cache = new Cache('a', 1);
 var zoom = 6;
 mem._geocoder = cache;
 mem._geocoder.geocoder_tokens = {};
+mem._geocoder.token_replacer = [];
 
 function getter(type, shard, callback) {
     stats[type]++;

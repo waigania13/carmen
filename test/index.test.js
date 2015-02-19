@@ -8,10 +8,11 @@ var mem = require('./fixtures/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
+var token = require('../lib/util/token');
 
 test('index.generateFrequency', function(assert) {
     var docs = [{_text:'main street'},{_text:'Main Road'}];
-    var geocoder_tokens = {'street':'st','road':'rd'};
+    var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
         0: [ 4 ],           // 4 total
         1025494160: [ 1 ],  // 1 road

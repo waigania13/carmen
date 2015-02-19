@@ -586,6 +586,60 @@ var test = require('tape');
     });
 })();
 
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6, 
+            geocoder_tokens: {"Street": "St"} 
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+    test('geocoder token test', function(t) {
+            var address = {
+                _id:1,
+                _text:'fake street',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+            };
+            conf.address.putGrid(6, 32, 32, solidGrid(address));
+            index.update(conf.address, [address], 6, t.end);
+    });
+    test('test address index for relev', function(t) {
+        c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1, 'token replacement test, fake st');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6, 
+            geocoder_tokens: {"dix-huitième": "18e"} 
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+    test('geocoder token test', function(t) {
+            var address = {
+                _id:1,
+                _text:'avenue du 18e régiment',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+            };
+            conf.address.putGrid(6, 32, 32, solidGrid(address));
+            index.update(conf.address, [address], 6, t.end);
+    });
+    test('test address index for relev', function(t) {
+        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.8, 'token replacement test, avenue du 18e');
+            t.end();
+        });
+    });
+})();
+
 // spatialmatch test to ensure the highest relev for a stacked zxy cell
 // is used, disallowing a lower scoring cell from overwriting a previous
 // entry.
