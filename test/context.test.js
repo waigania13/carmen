@@ -215,4 +215,44 @@ test('contextVector only negative score', function(assert) {
     });
 });
 
+test('contextVector restricts distance', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    // o-----x <-- query
+    // |\    |     the distance in this case is millions of miles
+    // | \   |     (24364904ish)
+    // |  \  |
+    // |   \ |
+    // |    \|
+    // +-----o
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "LineString", "coordinates": [ [-180,85],[180,-85] ] },
+                "properties": { "_text": "A" }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 170, 80, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data, false);
+            assert.end();
+        });
+    });
+});
 
