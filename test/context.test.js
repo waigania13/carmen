@@ -115,7 +115,8 @@ test('contextVector badbuffer', function(t) {
     });
 });
 
-test('contextVector ignores negative score', function(assert) {
+//Carmen should gracefully ignore empty VT buffers
+test('contextVector empty VT buffer', function(assert) {
     var vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
@@ -136,7 +137,7 @@ test('contextVector ignores negative score', function(assert) {
             }
         };
         context.contextVector(source, 0, 0, false, function(err, data) {
-            assert.ok(err, 'Error: cannot accept empty buffer as protobuf'); 
+            assert.ifError(err);
             assert.end();
         });
     });
