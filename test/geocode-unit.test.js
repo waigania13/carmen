@@ -13,6 +13,7 @@ var path = require('path');
 var zlib = require('zlib');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
 // limit_verify 1 implies that the correct result must be the very top
 // result prior to context verification. It means even with a long list
@@ -554,7 +555,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
                 _id:1,
                 _text:'fake street',
                 _zxy:['6/32/32'],
-                _center:[0,0],
+                _center:[0,0]
             };
             addFeature(conf.address, address, t.end);
     });
@@ -570,8 +571,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 (function() {
     var conf = {
         address: new mem({
-            maxzoom: 6, 
-            geocoder_tokens: {"Street": "St"} 
+            maxzoom: 6,
+            geocoder_tokens: {"Street": "St"}
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -581,9 +582,12 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
                 _text:'fake street',
                 _zxy:['6/32/32'],
                 _center:[0,0],
+                _geometry: {
+                    type: "Point",
+                    coordinates: [0,0]
+                }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
@@ -597,8 +601,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
 (function() {
     var conf = {
         address: new mem({
-            maxzoom: 6, 
-            geocoder_tokens: {"dix-huitième": "18e"} 
+            maxzoom: 6,
+            geocoder_tokens: {"dix-huitième": "18e"}
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -608,9 +612,12 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.in
                 _text:'avenue du 18e régiment',
                 _zxy:['6/32/32'],
                 _center:[0,0],
+                _geometry: {
+                    type: "Point",
+                    coordinates: [0,0]
+                }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
@@ -721,4 +728,3 @@ function addFeature(source, doc, callback) {
         index.update(source, [doc], zxys[0][0], callback);
     });
 }
-
