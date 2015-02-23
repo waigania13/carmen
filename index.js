@@ -54,7 +54,6 @@ function Geocoder(options) {
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
             source._geocoder.maxzoom = info.maxzoom;
             source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
-            source._geocoder.format = info.format || '';
             source._geocoder.group = info.geocoder_group || '';
             source._geocoder.name = name;
             source._geocoder.id = id;

@@ -14,7 +14,7 @@ test('geocode', function(t) {
         geocoder.geocode('czech', {}, function(err, res) {
             q.ifError(err);
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-phraserelev.json', JSON.stringify(res, null, 4));
-            q.deepEqual(require(__dirname + '/fixtures/geocode-phraserelev.json'), res);
+            q.deepEqual(res, require(__dirname + '/fixtures/geocode-phraserelev.json'));
             q.end();
         });
     });
@@ -23,7 +23,7 @@ test('geocode', function(t) {
         geocoder.geocode('georgia', {}, function(err, res) {
             q.ifError(err);
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-forward.json', JSON.stringify(res, null, 4));
-            q.deepEqual(require(__dirname + '/fixtures/geocode-forward.json'), res);
+            q.deepEqual(res, require(__dirname + '/fixtures/geocode-forward.json'));
             q.end();
         });
     });
@@ -31,7 +31,7 @@ test('geocode', function(t) {
         geocoder.geocode('country.38', {}, function(err, res) {
             q.ifError(err);
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/search-ident.json', JSON.stringify(res, null, 4));
-            q.deepEqual(require(__dirname + '/fixtures/search-ident.json'), res);
+            q.deepEqual(res, require(__dirname + '/fixtures/search-ident.json'));
             q.end();
         });
     });
@@ -39,7 +39,7 @@ test('geocode', function(t) {
         geocoder.geocode('n korea', {}, function(err, res) {
             q.ifError(err);
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/geocode-forward-tokens.json', JSON.stringify(res, null, 4));
-            q.deepEqual(require(__dirname + '/fixtures/geocode-forward-tokens.json'), res);
+            q.deepEqual(res, require(__dirname + '/fixtures/geocode-forward-tokens.json'));
             q.end();
         });
     });

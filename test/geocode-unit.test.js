@@ -7,6 +7,13 @@ var feature = require('../lib/util/feature');
 var mem = require('../lib/api-mem');
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
+var tilebelt = require('tilebelt');
+var mapnik = require('mapnik');
+var path = require('path');
+var zlib = require('zlib');
+
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
 // limit_verify 1 implies that the correct result must be the very top
 // result prior to context verification. It means even with a long list
@@ -30,9 +37,7 @@ var test = require('tape');
             _zxy:['6/32/32','6/33/32'],
             _center:[0,0]
         };
-        conf.province.putGrid(6, 32, 32, solidGrid(province));
-        conf.province.putGrid(6, 33, 32, solidGrid(province));
-        index.update(conf.province, [province], 6, t.end);
+        addFeature(conf.province, province, t.end);
     });
     test('index city 1', function(t) {
         var city = {
@@ -41,18 +46,16 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.city.putGrid(6, 32, 32, solidGrid(city));
-        index.update(conf.city, [city], 6, t.end);
+        addFeature(conf.city, city, t.end);
     });
     test('index city 2', function(t) {
         var city = {
             _id:2,
             _text:'tonawanda',
             _zxy:['6/33/32'],
-            _center:[360/64,0]
+            _center:[360/64+0.001,0]
         };
-        conf.city.putGrid(6, 33, 32, solidGrid(city));
-        index.update(conf.city, [city], 6, t.end);
+        addFeature(conf.city, city, t.end);
     });
     test('index street 1', function(t) {
         var street = {
@@ -61,18 +64,16 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.street.putGrid(6, 32, 32, solidGrid(street));
-        index.update(conf.street, [street], 6, t.end);
+        addFeature(conf.street, street, t.end);
     });
     test('index street 2', function(t) {
         var street = {
             _id:2,
             _text:'west st',
             _zxy:['6/33/32'],
-            _center:[360/64,0]
+            _center:[360/64+0.001,0]
         };
-        conf.street.putGrid(6, 33, 32, solidGrid(street));
-        index.update(conf.street, [street], 6, t.end);
+        addFeature(conf.street, street, t.end);
     });
     test('west st, tonawanda, ny', function(t) {
         c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
@@ -139,8 +140,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.country.putGrid(6, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], 6, t.end);
+        addFeature(conf.country, country, t.end);
     });
     test('index province', function(t) {
         var province = {
@@ -149,8 +149,7 @@ var test = require('tape');
             _zxy:['6/33/32'],
             _center:[360/64,0]
         };
-        conf.province.putGrid(6, 33, 32, solidGrid(province));
-        index.update(conf.province, [province], 6, t.end);
+        addFeature(conf.province, province, t.end);
     });
     test('index city', function(t) {
         var city = {
@@ -159,8 +158,7 @@ var test = require('tape');
             _zxy:['6/34/32'],
             _center:[360/64*2,0]
         };
-        conf.city.putGrid(6, 34, 32, solidGrid(city));
-        index.update(conf.city, [city], 6, t.end);
+        addFeature(conf.city, city, t.end);
     });
     test('china', function(t) {
         c.geocode('china', { limit_verify:1 }, function(err, res) {
@@ -189,8 +187,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.country.putGrid(6, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], 6, t.end);
+        addFeature(conf.country, country, t.end);
     });
     test('index province', function(t) {
         var province = {
@@ -200,8 +197,7 @@ var test = require('tape');
             _zxy:['6/33/32'],
             _center:[360/64,0]
         };
-        conf.province.putGrid(6, 33, 32, solidGrid(province));
-        index.update(conf.province, [province], 6, t.end);
+        addFeature(conf.province, province, t.end);
     });
     test('index city', function(t) {
         var city = {
@@ -211,8 +207,7 @@ var test = require('tape');
             _zxy:['6/34/32'],
             _center:[360/64*2,0]
         };
-        conf.city.putGrid(6, 34, 32, solidGrid(city));
-        index.update(conf.city, [city], 6, t.end);
+        addFeature(conf.city, city, t.end);
     });
     test('china', function(t) {
         c.geocode('china', { limit_verify:3 }, function(err, res) {
@@ -240,8 +235,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.province.putGrid(6, 32, 32, solidGrid(province));
-        index.update(conf.province, [province], 6, t.end);
+        addFeature(conf.province, province, t.end);
     });
     test('index city', function(t) {
         var city = {
@@ -250,8 +244,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.city.putGrid(6, 32, 32, solidGrid(city));
-        index.update(conf.city, [city], 6, t.end);
+        addFeature(conf.city, city, t.end);
     });
     test('index street', function(t) {
         var street = {
@@ -260,8 +253,7 @@ var test = require('tape');
             _zxy:['6/33/32'],
             _center:[360/64,0]
         };
-        conf.street.putGrid(6, 33, 32, solidGrid(street));
-        index.update(conf.street, [street], 6, t.end);
+        addFeature(conf.street, street, t.end);
     });
     // failing
     // city beats street at spatialmatch
@@ -300,8 +292,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0]
         };
-        conf.country.putGrid(6, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], 6, t.end);
+        addFeature(conf.country, country, t.end);
     });
     test('index country2', function(t) {
         var country = {
@@ -310,8 +301,7 @@ var test = require('tape');
             _zxy:['7/32/32'],
             _center:[0,0]
         };
-        conf.country.putGrid(7, 32, 32, solidGrid(country));
-        index.update(conf.country, [country], 7, t.end);
+        addFeature(conf.country, country, t.end);
     });
     test('czech => czech repblic', function(t) {
         c.geocode('czech', { limit_verify:1 }, function(err, res) {
@@ -350,8 +340,7 @@ var test = require('tape');
                     7: { type: "Point", coordinates: [0,0] }
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
@@ -379,8 +368,7 @@ var test = require('tape');
                     '7': { type: "Point", coordinates: [0,0] }
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for alphanumerics', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
@@ -409,8 +397,7 @@ var test = require('tape');
                     '7': { type: "Point", coordinates: [0,0] }
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address query with alphanumeric', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
@@ -441,8 +428,7 @@ var test = require('tape');
                     coordinates:[[0,0],[0,100]]
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address query with address range', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
@@ -483,8 +469,7 @@ var test = require('tape');
                     ]
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
 
     test('test tiger interpolation house number', function(t) {
@@ -516,8 +501,7 @@ var test = require('tape');
                     coordinates:[[0,0],[0,100]]
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test alphanumeric address query with address range', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
@@ -548,8 +532,7 @@ var test = require('tape');
                     coordinates:[[0,0],[0,100]]
                 }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test hyphenated address query with address range', function(t) {
         c.geocode('23-414 beach street', { limit_verify: 1 }, function (err, res) {
@@ -572,10 +555,9 @@ var test = require('tape');
                 _id:1,
                 _text:'fake street',
                 _zxy:['6/32/32'],
-                _center:[0,0],
+                _center:[0,0]
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
@@ -589,8 +571,8 @@ var test = require('tape');
 (function() {
     var conf = {
         address: new mem({
-            maxzoom: 6, 
-            geocoder_tokens: {"Street": "St"} 
+            maxzoom: 6,
+            geocoder_tokens: {"Street": "St"}
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -600,9 +582,12 @@ var test = require('tape');
                 _text:'fake street',
                 _zxy:['6/32/32'],
                 _center:[0,0],
+                _geometry: {
+                    type: "Point",
+                    coordinates: [0,0]
+                }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
@@ -616,8 +601,8 @@ var test = require('tape');
 (function() {
     var conf = {
         address: new mem({
-            maxzoom: 6, 
-            geocoder_tokens: {"dix-huitième": "18e"} 
+            maxzoom: 6,
+            geocoder_tokens: {"dix-huitième": "18e"}
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -627,9 +612,12 @@ var test = require('tape');
                 _text:'avenue du 18e régiment',
                 _zxy:['6/32/32'],
                 _center:[0,0],
+                _geometry: {
+                    type: "Point",
+                    coordinates: [0,0]
+                }
             };
-            conf.address.putGrid(6, 32, 32, solidGrid(address));
-            index.update(conf.address, [address], 6, t.end);
+            addFeature(conf.address, address, t.end);
     });
     test('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
@@ -656,8 +644,7 @@ var test = require('tape');
             _zxy:['6/32/32'],
             _center:[0,0],
         };
-        conf.place.putGrid(6, 32, 32, solidGrid(feature));
-        index.update(conf.place, [feature], 6, t.end);
+        addFeature(conf.place, feature, t.end);
     });
     test('index matching address', function(t) {
         var feature = {
@@ -669,9 +656,7 @@ var test = require('tape');
                 '1': { type: "Point", coordinates: [0,0] }
             }
         };
-        conf.address.putGrid(6, 32, 32, solidGrid(feature));
-        conf.address.putGrid(6, 32, 33, solidGrid(feature));
-        index.update(conf.address, [feature], 6, t.end);
+        addFeature(conf.address, feature, t.end);
     });
     test('index other address', function(t) {
         var feature = {
@@ -683,8 +668,7 @@ var test = require('tape');
                 '2': { type: "Point", coordinates: [0,0] }
             }
         };
-        conf.address.putGrid(6, 32, 32, solidGrid(feature));
-        index.update(conf.address, [feature], 6, t.end);
+        addFeature(conf.address, feature, t.end);
     });
     test('test spatialmatch relev', function(t) {
         c.geocode('1 fake street fakecity', { limit_verify: 2 }, function (err, res) {
@@ -702,12 +686,45 @@ test('index.teardown', function(assert) {
     assert.end();
 });
 
-function solidGrid(feature) {
-    var grid = [];
-    for (var i = 0; i < 64; i++) grid.push(new Array(65).join(' '));
-    return {
-        "grid": grid,
-        "keys": [ "89" ],
-        "data": { "89": feature }
-    };
+function addFeature(source, doc, callback) {
+    var zxys = doc._zxy.map(function(zxy) {
+        zxy = zxy.split('/');
+        zxy[0] = parseInt(zxy[0],10);
+        zxy[1] = parseInt(zxy[1],10);
+        zxy[2] = parseInt(zxy[2],10);
+        return zxy
+    });
+
+    var feature = { type:'Feature', properties:doc };
+    if (doc._geometry) {
+        feature.geometry = doc._geometry;
+    } else {
+        feature.geometry = {
+            type: 'MultiPolygon',
+            coordinates: zxys.map(function(zxy) {
+                return tilebelt.tileToGeoJSON([zxy[1], zxy[2], zxy[0]]).geometry.coordinates;
+            })
+        };
+    }
+
+    var q = queue();
+    for (var i = 0; i < zxys.length; i++) q.defer(function(zxy, done) {
+        var vtile = new mapnik.VectorTile(zxy[0],zxy[1],zxy[2]);
+        vtile.addGeoJSON(JSON.stringify({
+            type: 'FeatureCollection',
+            features: [feature]
+        }, null, 2), 'data');
+        zlib.gzip(vtile.getData(), function(err, buffer) {
+            if (err) return done(err);
+            source.putTile(zxy[0],zxy[1],zxy[2], buffer, function(err) {
+                if (err) return done(err);
+                done();
+            });
+        });
+    }, zxys[i]);
+
+    q.awaitAll(function(err) {
+        if (err) return callback(err);
+        index.update(source, [doc], zxys[0][0], callback);
+    });
 }

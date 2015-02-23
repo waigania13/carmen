@@ -22,45 +22,18 @@ test('context vector', function(t) {
         t.test('context vt full', function(q) {
             context(geocoder, 0, 40, null, true, function(err, contexts) {
                 q.ifError(err);
-                q.equal(2, contexts.length);
+                q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(require(__dirname + '/fixtures/context-vt-full.json'), contexts);
+                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-full.json'));
                 q.end();
             });
         });
         t.test('context vt light', function(q) {
             context(geocoder, 0, 40, null, false, function(err, contexts) {
                 q.ifError(err);
-                q.equal(2, contexts.length);
+                q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(require(__dirname + '/fixtures/context-vt-light.json'), contexts);
-                q.end();
-            });
-        });
-    });
-});
-
-test('context utf', function(t) {
-    var geocoder = new Carmen({
-        country: Carmen.auto(__dirname + '/fixtures/01-ne.country.utf.s3')
-    });
-
-    geocoder._open(function() {
-        t.test('context utf full', function(q) {
-            context(geocoder, 0, 40, null, true, function(err, contexts) {
-                q.ifError(err);
-                q.equal(1, contexts.length);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-utf-full.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(require(__dirname + '/fixtures/context-utf-full.json'), contexts);
-                q.end();
-            });
-        });
-        t.test('context utf light', function(q) {
-            context(geocoder, 0, 40, null, false, function(err, contexts) {
-                q.ifError(err);
-                q.equal(1, contexts.length);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-utf-light.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(require(__dirname + '/fixtures/context-utf-light.json'), contexts);
+                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-light.json'));
                 q.end();
             });
         });
@@ -139,6 +112,34 @@ test('contextVector badbuffer', function(t) {
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
+    });
+});
+
+//Carmen should gracefully ignore empty VT buffers
+test('contextVector empty VT buffer', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": []
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA'
+            }
+        };
+        context.contextVector(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.end();
+        });
     });
 });
 
@@ -255,4 +256,3 @@ test('contextVector restricts distance', function(assert) {
         });
     });
 });
-
