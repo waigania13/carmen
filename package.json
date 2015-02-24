@@ -7,7 +7,7 @@
   "license": "BSD",
   "dependencies": {
     "carmen-cache": "0.2.1",
-    "mapnik": "~3.1.0",
+    "mapnik": "https://github.com/mapnik/node-mapnik/tarball/master",
     "minimist": "0.0.5",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
