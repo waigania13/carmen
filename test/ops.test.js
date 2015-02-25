@@ -12,5 +12,11 @@ test('ops', function(t) {
         q.deepEqual(ops.zxy(20, '4/3/3'), 1649368104980);
         q.end();
     });
+
+    t.test('grid', function(q) {
+        q.deepEqual(ops.grid(0), {id: 0, x: 0, y: 0});
+        q.deepEqual(ops.grid(1649368104980), {id: 20, x: 3, y:3});
+        q.end();
+    });
     t.end();
 });

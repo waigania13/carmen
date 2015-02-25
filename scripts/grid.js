@@ -33,7 +33,7 @@ function to() {
         console.error('query must be in the form "id/x/y"');
         process.exit(1);
     }
-    id = zxy.shift();
+    id = parseInt(zxy.shift());
     console.log(opts.zxy(id, '0/'+ zxy[0]+ '/' +zxy[1] ));
 }
 
