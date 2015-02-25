@@ -77,7 +77,7 @@ carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug },
         }
 
         if (argv.debug) {
-            console.log('Debug\n-----')
+            console.log('Debug\n-----');
             console.log(data.debug);
             console.log();
         }
