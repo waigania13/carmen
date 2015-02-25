@@ -9,12 +9,8 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
-    string: 'config',
-    string: 'proximity',
-    string: 'query',
-    boolean: 'geojson',
-    boolean: 'stats',
-    boolean: 'help'
+    string: [ 'config', 'proximity', 'query', 'debug' ],
+    boolean: [ 'geojson', 'stats', 'help' ]
 });
 
 if (argv.help) {
@@ -24,6 +20,7 @@ if (argv.help) {
     console.log('  --proximity="lat,lng"   Favour results by proximity');
     console.log('  --geojson               Return a geojson object');
     console.log('  --stats                 Generate Stats on the query');
+    console.log('  --debug="feat id"       Follows a feature through geocode"');
     console.log('  --help                  Print this report');
     process.exit(0);
 }
@@ -47,18 +44,21 @@ if (argv.config) {
 
 var carmen = new Carmen(opts);
 
+//CURRENTLY DISABLED
 if (argv.proximity) {
     if (argv.proximity.indexOf(',') === -1)
         throw new Error("Proximity must be lat,lon");
     argv.proximity = [ Number(argv.proximity.split(',')[0]), Number(argv.proximity.split(',')[1]) ];
 }
 
+if (argv.debug) argv.debug = parseInt(argv.debug)
+
 var load = +new Date();
-carmen.geocode(argv.query, { 'proximity': argv.proximity }, function(err, data) {
+carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'proximity': argv.proximity, stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
@@ -75,6 +75,13 @@ carmen.geocode(argv.query, { 'proximity': argv.proximity }, function(err, data) 
         if (data.features.length && argv.geojson) {
             console.log(JSON.stringify(data, null, 2));
         }
+
+        if (argv.debug) {
+            console.log('Debug\n-----')
+            console.log(data.debug);
+            console.log();
+        }
+
         if (!argv.stats) return;
         console.log('Stats');
         console.log('-----');
