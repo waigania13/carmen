@@ -708,7 +708,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech debug:1', function(t) {
         c.geocode('czech', { debug: 1, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { grid: 17593259786241, id: 1, phrasematch: { count: 1, relev: 0.4838709677419355 }, spatialmatch: { count: 1, relev: 0.4838709677419355 }, verifymatch: { count: 1, relev: 0.4838709677419355 } }, 'debug matches');
+            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 0.4838709677419355 }, spatialmatch: { count: 1, relev: 0.4838709677419355 }, verifymatch: { count: 1, relev: 0.4838709677419355 } }, 'debug matches');
             t.end();
         });
     });
@@ -716,7 +716,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech republic debug:1', function(t) {
         c.geocode('czech republic', { debug: 1, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { grid: 17593259786241, id: 1, phrasematch: { count: 1, relev: 1 }, spatialmatch: { count: 1, relev: 1 }, verifymatch: { count: 1, relev: 1 } }, 'debug matches');
+            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 1 }, spatialmatch: { count: 1, relev: 1 }, verifymatch: { count: 1, relev: 1 } }, 'debug matches');
             t.end();
         });
     });
@@ -724,7 +724,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech republic debug:3', function(t) {
         c.geocode('czech republic', { debug: 3, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { id: 3, phrasematch: { count: 0, relev: 0 }, spatialmatch: { count: 0, relev: 0 }, verifymatch: { count: 0, relev: 0 } }, 'debug matches');
+            t.deepEqual(res.debug, { grids: [], id: 3, phrasematch: { count: 0, relev: 0 }, spatialmatch: { count: 0, relev: 0 }, verifymatch: { count: 0, relev: 0 } }, 'debug matches');
             t.end();
         });
     });
