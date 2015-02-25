@@ -6,6 +6,16 @@ var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
 var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
+tape('bin/carmen DEBUG', function(t){
+    exec(bin + '/carmen.js --query="canada"', {env: {"DEBUG": "38"}}, function(err, stdout, stderr) {
+        t.ifError(err);
+        t.ok(stdout.indexOf('DEBUG: PhraseMatch  grid: 9896376401958 contains id: 38 count: 283') !== -1, 'debug phrase match');
+        t.ok(stdout.indexOf('DEBUG: SpatialMatch grid: 9896376401958 contains id: 38') !== -1, 'debug spatial match');
+        t.ok(stdout.indexOf('DEBUG: VerfyMatch   grid: 9896376401958 contains id: 38 relev: 1') !== -1, 'debug erify match');
+        t.end();
+    });
+});
+
 tape('bin/carmen', function(t) {
     exec(bin + '/carmen.js', function(err, stdout, stderr) {
         t.equal(1, err.code);
@@ -55,4 +65,3 @@ tape('bin/carmen-copy', function(t) {
         t.end();
     });
 });
-
