@@ -6,6 +6,22 @@ var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
 var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
+tape('bin/grid --from', function(t){
+    exec(bin + '/grid.js --from --query="2199191027712124"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(stdout, '{ x: 400, y: 500, id: 124 }\n' , 'grid => id/x/y');
+        t.end();
+    });
+});
+
+tape('bin/grid --to', function(t){
+    exec(bin + '/grid.js --to --query="124/4/5"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(stdout, '2199191027712124\n', 'id/x/y => grid');
+        t.end();
+    });
+});
+
 tape('bin/carmen DEBUG', function(t){
     exec(bin + '/carmen.js --query="canada" --debug="38"', function(err, stdout, stderr) {
         t.ifError(err);
