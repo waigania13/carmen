@@ -6,6 +6,33 @@ var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
 var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
+tape('bin/grid --from', function(t){
+    exec(bin + '/grid.js --from --query="2199191027836"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(stdout, '{ x: 4, y: 5, id: 124 }\n' , 'grid => id/x/y');
+        t.end();
+    });
+});
+
+tape('bin/grid --to', function(t){
+    exec(bin + '/grid.js --to --query="124/4/5"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(stdout, '2199191027836\n', 'id/x/y => grid');
+        t.end();
+    });
+});
+
+tape('bin/carmen DEBUG', function(t){
+    exec(bin + '/carmen.js --query="canada" --debug="38"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.ok(stdout.indexOf('{ grid: 9896107966502, x: 18, y: 15 }') !== -1, 'single grid feature');
+        t.ok(stdout.indexOf('phrasematch: { count: 283, relev: 1 }') !== -1, 'debug phrase match');
+        t.ok(stdout.indexOf('spatialmatch: { count: 1, relev: 1 }') !== -1, 'debug spatial match');
+        t.ok(stdout.indexOf('verifymatch: { relev: 1, count: 1 }') !== -1, 'debug erify match');
+        t.end();
+    });
+});
+
 tape('bin/carmen', function(t) {
     exec(bin + '/carmen.js', function(err, stdout, stderr) {
         t.equal(1, err.code);
@@ -55,4 +82,3 @@ tape('bin/carmen-copy', function(t) {
         t.end();
     });
 });
-
