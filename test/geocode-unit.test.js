@@ -681,6 +681,55 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
+//Test Carmen options.debug
+(function() {
+    var conf = {
+        country: new mem({ maxzoom:6 }, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _text:'czech republic',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+    test('index country2', function(t) {
+        var country = {
+            _id:2,
+            _text:'fake country two',
+            _zxy:['7/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+    test('czech debug:1', function(t) {
+        c.geocode('czech', { debug: 1, limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 0.4838709677419355 }, spatialmatch: { count: 1, relev: 0.4838709677419355 }, verifymatch: { count: 1, relev: 0.4838709677419355 } }, 'debug matches');
+            t.end();
+        });
+    });
+
+    test('czech republic debug:1', function(t) {
+        c.geocode('czech republic', { debug: 1, limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 1 }, spatialmatch: { count: 1, relev: 1 }, verifymatch: { count: 1, relev: 1 } }, 'debug matches');
+            t.end();
+        });
+    });
+
+    test('czech republic debug:3', function(t) {
+        c.geocode('czech republic', { debug: 3, limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.debug, { grids: [], id: 3, phrasematch: { count: 0, relev: 0 }, spatialmatch: { count: 0, relev: 0 }, verifymatch: { count: 0, relev: 0 } }, 'debug matches');
+            t.end();
+        });
+    });
+})();
+
 test('index.teardown', function(assert) {
     index.teardown();
     assert.end();
