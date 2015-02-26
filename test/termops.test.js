@@ -96,16 +96,16 @@ test('termops', function(t) {
     });
 
     t.test('address', function(q) {
-        q.deepEqual(termops.queryAddress('500 baker st'), '500', 'full address');
-        q.deepEqual(termops.queryAddress('baker st 500'), '500', 'full address');
-        q.deepEqual(termops.queryAddress(['500', 'baker', 'st']), '500', 'full address');
+        q.deepEqual(termops.queryAddress('500 baker st'), { addr: '500', pos: 0 }, 'full address');
+        q.deepEqual(termops.queryAddress('baker st 500'), { addr: '500', pos: 2 }, 'full address');
+        q.deepEqual(termops.queryAddress(['500', 'baker', 'st']), { addr: '500', pos: 0 }, 'full address');
         q.deepEqual(termops.queryAddress('baker st'), null, 'no housenum');
         q.deepEqual(termops.queryAddress(['baker', 'st']), null, 'no housenum');
         q.deepEqual(termops.queryAddress('500'), null, 'only number');
-        q.deepEqual(termops.queryAddress('500b baker st'), '500b', 'alphanumeric');
-        q.deepEqual(termops.queryAddress('baker st 500b'), '500b', 'alphanumeric');
+        q.deepEqual(termops.queryAddress('500b baker st'), { addr: '500b', pos: 0 }, 'alphanumeric');
+        q.deepEqual(termops.queryAddress('baker st 500b'), { addr: '500b', pos: 2 }, 'alphanumeric');
         q.deepEqual(termops.queryAddress('15th st'), null, 'numbered st');
-        q.deepEqual(termops.queryAddress('15 st francis drive'), '15', 'ambiguous abbr');
+        q.deepEqual(termops.queryAddress('15 st francis drive'), { addr: '15', pos: 0 }, 'ambiguous abbr');
         q.end();
     });
 
