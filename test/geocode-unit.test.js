@@ -323,6 +323,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
 })();
 
 //Ensures that relev takes into house number into consideration
+// Also ensure relev is applied to US & Non-US Style addresses
 (function() {
     var conf = {
         address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
@@ -342,10 +343,29 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             };
             addFeature(conf.address, address, t.end);
     });
-    test('test address index for relev', function(t) {
+
+    test('test address index for US relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('test address index for DE relev', function(t) {
+        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    //This test should have a very poor relev as the number
+    // is found within the street name
+    test('test address index for random relev', function(t) {
+        c.geocode('fake 9 street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.3225806451612903);
             t.end();
         });
     });
