@@ -38,15 +38,12 @@ test('ops#toFeature', function(t) {
             properties: {}
     });
 
-    t.deepEqual(ops.toFeature([
-        {
+    t.deepEqual(ops.toFeature([{
             "_center": [-99.392855,63.004759],
             "_address": 9,
             "_text": "Fake Street",
             "_extid": "country.1833980151",
-            "_relevance": 1,
-            "_format": "{name} {num}"
-        }
-        ]), { address: 9, center: [ -99.392855, 63.004759 ], geometry: { coordinates: [ -99.392855, 63.004759 ], type: 'Point' }, id: 'country.1833980151', place_name: 'Fake Street 9', properties: {}, relevance: undefined, text: 'Fake Street', type: 'Feature' });
+            "_relevance": 1
+        }], "{name} {num}"), { address: 9, center: [ -99.392855, 63.004759 ], geometry: { coordinates: [ -99.392855, 63.004759 ], type: 'Point' }, id: 'country.1833980151', place_name: 'Fake Street 9', properties: {}, relevance: undefined, text: 'Fake Street', type: 'Feature' });
     t.end();
 });
