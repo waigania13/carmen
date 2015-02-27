@@ -110,8 +110,7 @@ test('contextVector badbuffer', function(t) {
         }
     };
     context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
-        t.ifError(err);
-        t.notok(data);
+        t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
 });
