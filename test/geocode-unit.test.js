@@ -741,7 +741,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('index place_a', function(t) {
         addFeature(conf.place_a, {
             _id:1,
-            _text:'funtown',
+            _text:'sadtown',
             _zxy:['6/32/32'],
             _center:[0,0]
         }, t.end);
@@ -749,7 +749,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('index place_b', function(t) {
         addFeature(conf.place_b, {
             _id:2,
-            _text:'sadtown',
+            _text:'funtown',
             _zxy:['6/32/32'],
             _center:[0,0]
         }, t.end);
