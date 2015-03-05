@@ -735,7 +735,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     var conf = {
         place_a: new mem({maxzoom:6, geocoder_name:'place'}, function() {}),
         place_b: new mem({maxzoom:6, geocoder_name:'place'}, function() {}),
-        street: new mem(null, function() {})
+        street_a: new mem({maxzoom:6, geocoder_name:'street'}, function() {}),
+        street_b: new mem({maxzoom:6, geocoder_name:'street'}, function() {})
     };
     var c = new Carmen(conf);
     test('index place_a', function(t) {
@@ -754,8 +755,16 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             _center:[0,0]
         }, t.end);
     });
-    test('index street', function(t) {
-        addFeature(conf.street, {
+    test('index street_a', function(t) {
+        addFeature(conf.street_a, {
+            _id:2,
+            _text:'wall street',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        }, t.end);
+    });
+    test('index street_b', function(t) {
+        addFeature(conf.street_b, {
             _id:1,
             _text:'main street',
             _zxy:['6/32/32'],
