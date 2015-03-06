@@ -2,11 +2,13 @@
     {
         "_extid": "province.3427",
         "_tmpid": 100003427,
+        "_dbidx": 1,
         "_text": "Comunidad Valenciana,VC"
     },
     {
         "_extid": "country.33",
         "_tmpid": 33,
+        "_dbidx": 0,
         "_text": "Spain"
     }
 ]
