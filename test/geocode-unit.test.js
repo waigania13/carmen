@@ -360,6 +360,56 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
+//Test geocoder_address formatting for multiple layers
+(function() {
+    var conf = {
+        country: new mem({ maxzoom:6 }, function() {}),
+        address: new mem({maxzoom: 6, geocoder_address: '{name} {num}'}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _text:'czech republic',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+
+    test('index address', function(t) {
+            var address = {
+                _id:1,
+                _text:'fake street',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _cluster: {
+                    9: { type: "Point", coordinates: [0,0] },
+                    10: { type: "Point", coordinates: [0,0] },
+                    7: { type: "Point", coordinates: [0,0] }
+                }
+            };
+            addFeature(conf.address, address, t.end);
+    });
+
+    test('Search for germany style address - multiple layers', function(t) {
+        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.end();
+        });
+    });
+
+    test('Search for us style address with german formatting - multiple layers', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.end();
+        });
+    });
+})();
+
+
 //Ensures that relev takes into house number into consideration
 // Also ensure relev is applied to US & Non-US Style addresses
 (function() {
