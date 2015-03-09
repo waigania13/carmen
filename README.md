@@ -3,7 +3,7 @@
 [Mapnik vector tile](https://github.com/mapbox/mapnik-vector-tile)-based geocoder with support for swappable data sources.
 This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
-[![Build Status](https://secure.travis-ci.org/mapbox/carmen.png)](https://travis-ci.org/mapbox/carmen)
+[![Build Status](https://travis-ci.org/mapbox/carmen.svg?branch=master)](https://travis-ci.org/mapbox/carmen)
 
 ## Depends
 
