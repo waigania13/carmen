@@ -98,7 +98,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         });
     });
     test('new york new york', function(t) {
-        c.geocode('new york new york', { limit_verify:1 }, function(err, res) {
+        c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
@@ -106,7 +106,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         });
     });
     test('ny ny', function(t) {
-        c.geocode('ny ny', { limit_verify:1 }, function(err, res) {
+        c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'new york, new york');
             t.deepEqual(res.features[0].id, 'city.1');
