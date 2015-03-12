@@ -215,6 +215,15 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             t.deepEqual(res.features[0].id, 'province.2');
             t.deepEqual(res.features[1].id, 'city.3');
             t.deepEqual(res.features[2].id, 'country.1');
+            t.deepEqual(res.features.length, 3);
+            t.end();
+        });
+    });
+    test('china (dedupe)', function(t) {
+        c.geocode('china', { limit_verify:3 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].id, 'province.2');
+            t.deepEqual(res.features.length, 1);
             t.end();
         });
     });
