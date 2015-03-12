@@ -210,7 +210,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         addFeature(conf.city, city, t.end);
     });
     test('china', function(t) {
-        c.geocode('china', { limit_verify:3 }, function(err, res) {
+        c.geocode('china', { limit_verify:3, allow_dupes: true }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].id, 'province.2');
             t.deepEqual(res.features[1].id, 'city.3');
