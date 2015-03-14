@@ -825,7 +825,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech debug:1', function(t) {
         c.geocode('czech', { debug: 1, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 0.4838709677419355 }, spatialmatch: { count: 1, relev: 0.4838709677419355 }, verifymatch: { count: 1, relev: 0.4838709677419355 } }, 'debug matches');
+            if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-1a.json', JSON.stringify(res.debug, null, 2));
+            t.deepEqual(res.debug, require('./fixtures/debug-1a.json'), 'debug matches');
             t.end();
         });
     });
@@ -833,7 +834,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech republic debug:1', function(t) {
         c.geocode('czech republic', { debug: 1, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { grids: [ { grid: 17593259786241, x: 32, y: 32 } ], id: 1, phrasematch: { count: 1, relev: 1 }, spatialmatch: { count: 1, relev: 1 }, verifymatch: { count: 1, relev: 1 } }, 'debug matches');
+            if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-1b.json', JSON.stringify(res.debug, null, 2));
+            t.deepEqual(res.debug, require('./fixtures/debug-1b.json'), 'debug matches');
             t.end();
         });
     });
@@ -841,7 +843,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('czech republic debug:3', function(t) {
         c.geocode('czech republic', { debug: 3, limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.debug, { grids: [], id: 3, phrasematch: { count: 0, relev: 0 }, spatialmatch: { count: 0, relev: 0 }, verifymatch: { count: 0, relev: 0 } }, 'debug matches');
+            if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-3a.json', JSON.stringify(res.debug, null, 2));
+            t.deepEqual(res.debug, require('./fixtures/debug-3a.json'), 'debug matches');
             t.end();
         });
     });

@@ -1,0 +1,46 @@
+{
+  "extid": 1,
+  "id": 1,
+  "grids": [
+    {
+      "grid": 17593259786241,
+      "x": 32,
+      "y": 32
+    }
+  ],
+  "phrasematch": {
+    "id": 1,
+    "idx": 0,
+    "tmpid": 1,
+    "reason": 1,
+    "count": 1,
+    "relev": 0.4838709677419355,
+    "check": true
+  },
+  "spatialmatch_position": 0,
+  "spatialmatch_toprelev": 0.4838709677419355,
+  "spatialmatch_relev": {
+    "id": 1,
+    "idx": 0,
+    "tmpid": 1,
+    "reason": 1,
+    "count": 1,
+    "relev": 0.4838709677419355,
+    "check": true
+  },
+  "spatialmatch_stack": [
+    {
+      "id": 1,
+      "idx": 0,
+      "tmpid": 1,
+      "reason": 1,
+      "count": 1,
+      "relev": 0.4838709677419355,
+      "check": true
+    }
+  ],
+  "verifymatch": {
+    "relev": 0.4838709677419355,
+    "count": 1
+  }
+}

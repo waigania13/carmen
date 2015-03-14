@@ -26,9 +26,9 @@ tape('bin/carmen DEBUG', function(t){
     exec(bin + '/carmen.js --query="canada" --debug="38"', function(err, stdout, stderr) {
         t.ifError(err);
         t.ok(stdout.indexOf('{ grid: 9896107966502, x: 18, y: 15 }') !== -1, 'single grid feature');
-        t.ok(stdout.indexOf('phrasematch: { count: 283, relev: 1 }') !== -1, 'debug phrase match');
-        t.ok(stdout.indexOf('spatialmatch: { count: 1, relev: 1 }') !== -1, 'debug spatial match');
-        t.ok(stdout.indexOf('verifymatch: { relev: 1, count: 1 }') !== -1, 'debug erify match');
+        t.ok(stdout.indexOf('phrasematch:') !== -1, 'debug phrase match');
+        t.ok(stdout.indexOf('spatialmatch_position:') !== -1, 'debug spatial');
+        t.ok(stdout.indexOf('verifymatch:') !== -1, 'debug verify match');
         t.end();
     });
 });
