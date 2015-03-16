@@ -903,6 +903,53 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
+// Test that cluster results are prioritized over itp results when
+// present and otherwise equal.
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
+        addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index address', function(t) {
+        var address = {
+            _id:2,
+            _text:'fake street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                100: { type: "Point", coordinates: [0,0] }
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    test('index addressitp', function(t) {
+        var addressitp = {
+            _id:1,
+            _text:'fake street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _rangetype:'tiger',
+            _lfromhn: '0',
+            _ltohn: '100',
+            _geometry: {
+                type:'LineString',
+                coordinates:[[0,0],[0,1]]
+            }
+        };
+        addFeature(conf.addressitp, addressitp, t.end);
+    });
+    test('test address query with address range', function(t) {
+        c.geocode('100 fake street', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
+            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].id, 'address.2', 'found cluster result');
+            t.end();
+        });
+    });
+})();
+
 test('index.teardown', function(assert) {
     index.teardown();
     assert.end();
