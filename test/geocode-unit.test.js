@@ -913,7 +913,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     var c = new Carmen(conf);
     test('index address', function(t) {
         var address = {
-            _id:2,
+            _id:1,
             _text:'fake street',
             _zxy:['6/32/32'],
             _center:[0,0],
@@ -932,10 +932,10 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             _rangetype:'tiger',
             _parityr: 'O',
             _rfromhn: '1',
-            _rtohn: '101',
+            _rtohn: '91',
             _parityl: 'E',
             _lfromhn: '0',
-            _ltohn: '100',
+            _ltohn: '90',
             _geometry: {
                 type:'LineString',
                 coordinates:[[0,0],[0,1]]
@@ -948,7 +948,6 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
             t.equals(res.features[0].relevance, 1);
-            t.equals(res.features[0].id, 'address.2', 'found cluster result');
             t.end();
         });
     });
@@ -957,7 +956,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('test reverse address query with address range', function(t) {
         c.geocode('0,0', { limit_verify: 2 }, function (err, res) {
             t.ifError(err);
-            t.equal(res.features[0].id, 'address.2');
+            t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
+            t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
