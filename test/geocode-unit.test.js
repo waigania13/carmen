@@ -907,8 +907,8 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
 // present and otherwise equal.
 (function() {
     var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
-        addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+        addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
+        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
     };
     var c = new Carmen(conf);
     test('index address', function(t) {
@@ -952,7 +952,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         });
     });
 
-    //Reverse geocode should return point if avaliable not itp
+    //Reverse geocode will return a pt since it is futher down in the stack than itp
     test('test reverse address query with address range', function(t) {
         c.geocode('0,0', { limit_verify: 2 }, function (err, res) {
             t.ifError(err);
