@@ -930,6 +930,10 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             _zxy:['6/32/32'],
             _center:[0,0],
             _rangetype:'tiger',
+            _parityr: 'O',
+            _rfromhn: '1',
+            _rtohn: '101',
+            _parityl: 'E',
             _lfromhn: '0',
             _ltohn: '100',
             _geometry: {
@@ -945,6 +949,15 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
             t.equals(res.features[0].relevance, 1);
             t.equals(res.features[0].id, 'address.2', 'found cluster result');
+            t.end();
+        });
+    });
+
+    //Reverse geocode should return point if avaliable not itp
+    test('test reverse address query with address range', function(t) {
+        c.geocode('0,0', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equal(res.features[0].id, 'address.2');
             t.end();
         });
     });
