@@ -907,13 +907,13 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
 // present and otherwise equal.
 (function() {
     var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
-        addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+        addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
+        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
     };
     var c = new Carmen(conf);
     test('index address', function(t) {
         var address = {
-            _id:2,
+            _id:1,
             _text:'fake street',
             _zxy:['6/32/32'],
             _center:[0,0],
@@ -930,8 +930,12 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             _zxy:['6/32/32'],
             _center:[0,0],
             _rangetype:'tiger',
+            _parityr: 'O',
+            _rfromhn: '1',
+            _rtohn: '91',
+            _parityl: 'E',
             _lfromhn: '0',
-            _ltohn: '100',
+            _ltohn: '90',
             _geometry: {
                 type:'LineString',
                 coordinates:[[0,0],[0,1]]
@@ -944,7 +948,16 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
             t.equals(res.features[0].relevance, 1);
-            t.equals(res.features[0].id, 'address.2', 'found cluster result');
+            t.end();
+        });
+    });
+
+    //Reverse geocode will return a pt since it is futher down in the stack than itp
+    test('test reverse address query with address range', function(t) {
+        c.geocode('0,0', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
+            t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
