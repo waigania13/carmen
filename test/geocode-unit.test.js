@@ -137,7 +137,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
             _zxy:['6/32/32'],
             _center:[0,0],
             _cluster: {
-                100: { type: "Point", coordinates: [0,0] },
+                100: { type: "Point", coordinates: [0,0] }
             }
         };
         addFeature(conf.address, address, t.end);
