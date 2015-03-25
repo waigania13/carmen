@@ -124,10 +124,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
-//At the moment carmen assumes the first number in a query is the house number
-//here are a few tests where this assumption is false
-//This could potentially be solved by using the bitmask to determine the first
-// unmatched number
+//Test bitmask based address determination (See lib/verifymatch)
 (function() {
     var conf = {
         address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
@@ -136,30 +133,104 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     test('index address', function(t) {
         var address = {
             _id:1,
-            _text:'1 street',
+            _text:'1 test street',
             _zxy:['6/32/32'],
             _center:[0,0],
             _cluster: {
-                100: { type: "Point", coordinates: [0,0] }
+                100: { type: "Point", coordinates: [0,0] },
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    test('index address', function(t) {
+        var address = {
+            _id:2,
+            _text:'baker street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                '500': { type: "Point", coordinates: [0,0] },
+                '500b': { type: "Point", coordinates: [0,0] }
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    test('index address', function(t) {
+        var address = {
+            _id:3,
+            _text:'15th street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                '500': { type: "Point", coordinates: [0,0] },
+                '500b': { type: "Point", coordinates: [0,0] }
             }
         };
         addFeature(conf.address, address, t.end);
     });
 
-    //Germany Style address will fail
-    test('test germany style address', function(t) {
-        c.geocode('1 street 100', { limit_verify: 2 }, function (err, res) {
+    test('full address', function(t) {
+        c.geocode('500 baker street', { limit_verify: 2 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features.length, 0, 'no features returned');
+            t.equals(res.features[0].address, '500', '500');
             t.end();
         });
     });
 
-    //US Style address will pass
-    test('test us style address', function(t) {
-        c.geocode('100 1 street', { limit_verify: 2 }, function (err, res) {
+    test('no address', function(t) {
+        c.geocode('baker street', { limit_verify: 2 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '100 1 street', '100 1 street');
+            t.notok(res.features[0].address);
+            t.end();
+        });
+    });
+
+    test('only number', function(t) {
+        c.geocode('500', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.notok(res.features.length);
+            t.end();
+        });
+    });
+
+    test('lettered address', function(t) {
+        c.geocode('500b baker st', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].address, '500b');
+            t.end();
+        });
+    });
+
+    test('lettered address', function(t) {
+        c.geocode('baker st 500b', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].address, '500b');
+            t.end();
+        });
+    });
+
+    test('numbered street address', function(t) {
+        c.geocode('15th st st 500b', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].address, '500b');
+            t.end();
+        });
+    });
+
+    test('test de - number street with address', function(t) {
+        c.geocode('1 test street 100', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '100 1 test street', '100 1 test street');
+            t.equals(res.features[0].address, '100');
+            t.end();
+        });
+    });
+
+    test('test us number street with address', function(t) {
+        c.geocode('100 1 test street', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '100 1 test street', '100 1 test street');
+            t.equals(res.features[0].address, '100');
             t.end();
         });
     });
