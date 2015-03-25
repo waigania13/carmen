@@ -124,6 +124,47 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
+//At the moment carmen assumes the first number in a query is the house number
+//here are a few tests where this assumption is false
+//This could potentially be solved by using the bitmask to determine the first
+// unmatched number
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index address', function(t) {
+        var address = {
+            _id:1,
+            _text:'1 street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                100: { type: "Point", coordinates: [0,0] }
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+
+    //Germany Style address will fail
+    test('test germany style address', function(t) {
+        c.geocode('1 street 100', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 0, 'no features returned');
+            t.end();
+        });
+    });
+
+    //US Style address will pass
+    test('test us style address', function(t) {
+        c.geocode('100 1 street', { limit_verify: 2 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '100 1 street', '100 1 street');
+            t.end();
+        });
+    });
+})();
+
 // Confirm that for equally relevant features across three indexes
 // the first in hierarchy beats the others. (NO SCORES)
 (function() {
