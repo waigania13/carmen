@@ -28,10 +28,11 @@ test('termops', function(t) {
         });
         q.test('edge cases - empty string', function(r) {
             r.deepEqual(termops.tokenize(''), []);
-            r.end()
+            r.end();
         });
         q.end();
     });
+
     t.test('id - tests if searching by id', function(q) {
         var indexes = {
             country: {},
@@ -95,17 +96,12 @@ test('termops', function(t) {
         q.end();
     });
 
-    t.test('address', function(q) {
-        q.deepEqual(termops.queryAddress('500 baker st'), { addr: '500', pos: 0 }, 'full address');
-        q.deepEqual(termops.queryAddress('baker st 500'), { addr: '500', pos: 2 }, 'full address');
-        q.deepEqual(termops.queryAddress(['500', 'baker', 'st']), { addr: '500', pos: 0 }, 'full address');
-        q.deepEqual(termops.queryAddress('baker st'), null, 'no housenum');
-        q.deepEqual(termops.queryAddress(['baker', 'st']), null, 'no housenum');
-        q.deepEqual(termops.queryAddress('500'), null, 'only number');
-        q.deepEqual(termops.queryAddress('500b baker st'), { addr: '500b', pos: 0 }, 'alphanumeric');
-        q.deepEqual(termops.queryAddress('baker st 500b'), { addr: '500b', pos: 2 }, 'alphanumeric');
-        q.deepEqual(termops.queryAddress('15th st'), null, 'numbered st');
-        q.deepEqual(termops.queryAddress('15 st francis drive'), { addr: '15', pos: 0 }, 'ambiguous abbr');
+    t.test('maskAddress', function(q) {
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], 7), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], 6), {addr: '100', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], 7), {addr: '100b', pos: 3});
+        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], 6), {addr: '100b', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], 7), {addr: '100', pos: 3});
         q.end();
     });
 
