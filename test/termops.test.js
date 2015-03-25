@@ -28,10 +28,11 @@ test('termops', function(t) {
         });
         q.test('edge cases - empty string', function(r) {
             r.deepEqual(termops.tokenize(''), []);
-            r.end()
+            r.end();
         });
         q.end();
     });
+
     t.test('id - tests if searching by id', function(q) {
         var indexes = {
             country: {},
@@ -92,6 +93,15 @@ test('termops', function(t) {
         q.deepEqual(termops.phrase(['foo'], 'foo') >>> 24, 169);
         q.deepEqual(termops.phrase(['foo','street'], 'foo') >>> 24, 169);
         q.deepEqual(termops.phrase(['foo','lane'], 'foo') >>> 24, 169);
+        q.end();
+    });
+
+    t.test('maskAddress', function(q) {
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], 7), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], 6), {addr: '100', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], 7), {addr: '100b', pos: 3});
+        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], 6), {addr: '100b', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], 7), {addr: '100', pos: 3});
         q.end();
     });
 
