@@ -22,12 +22,10 @@ test('index.generateFrequency', function(assert) {
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
-        0: [ 8 ],           // 8 total
-        1025494160: [ 1 ],  // 1 road
+        0: [ 4 ],           // 8 total
         1263673920: [ 1 ],  // 1 rd
         1498707680: [ 1 ],  // 1 st
-        1986331696: [ 1 ],  // 1 street
-        3935363584: [ 4 ]   // 4 main
+        3935363584: [ 2 ]   // 2 main
     });
     assert.end();
 });

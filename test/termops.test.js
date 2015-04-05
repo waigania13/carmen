@@ -122,30 +122,34 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({'Street':'St'});
     doc = {_text:'Main Street'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'main', 'street' ],
         [ 'main', 'st' ]
     ], 'creates contracted phrases using geocoder_tokens');
 
     replacer = token.createReplacer({'Street':'St'});
     doc = {_text:'Main Street, main st'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'main', 'street' ],
         [ 'main', 'st' ]
     ], 'dedupes phrases');
 
     replacer = token.createReplacer({'Street':'St', 'Lane':'Ln'});
     doc = {_text:'Main Street Lane'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'main', 'street', 'lane' ],
         [ 'main', 'st', 'ln' ]
     ], 'dedupes phrases');
 
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = {_text:'Avenue du dix-huitième régiment'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'avenue', 'du', 'dix', 'huitieme', 'regiment' ],
         [ 'avenue', 'du', '18e', 'regiment' ]
     ], 'hypenated replacement');
+
+    replacer = token.createReplacer({});
+    doc = {_text:'Main Street', _cluster:{1:{}, 10:{}}};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
+        ['main', 'street' ],
+        ['{"type":"range","min":1,"max":10}', 'main', 'street' ]
+    ], 'with range');
+
 
     assert.end();
 });
