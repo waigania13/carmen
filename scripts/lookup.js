@@ -3,7 +3,7 @@
 var fs = require('fs');
 var split = require('split');
 var termops = require('../lib/util/termops.js');
-var fnv = require('../lib/util/fnv.js');
+var fnv = require('../lib/util/dataint.js').fnv1a;
 var feature = require('../lib/util/feature.js');
 
 if (!process.argv[2]) {

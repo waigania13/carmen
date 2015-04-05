@@ -5,7 +5,7 @@
 var fs = require('fs');
 var split = require('split');
 var termops = require('../lib/util/termops.js');
-var fnv = require('../lib/util/fnv.js');
+var fnv = require('../lib/util/dataint.js').fnv1a;
 var type = process.argv[2];
 var phrasematch = require('../lib/phrasematch.js');
 

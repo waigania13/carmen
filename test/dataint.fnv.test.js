@@ -1,4 +1,4 @@
-var fnv1a = require('../lib/util/fnv');
+var fnv1a = require('../lib/util/dataint').fnv1a;
 var test = require('tape');
 
 test('fnv1a', function(t) {
