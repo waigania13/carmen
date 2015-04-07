@@ -4,13 +4,13 @@ var test = require('tape');
 
 test('termops.encodeTerm', function(assert) {
     assert.deepEqual(termops.encodeTerm('main'), 3935363584, 'encodes term');
-    assert.deepEqual(termops.encodeTerm('{"type":"range","min":539,"max":550}'), 147639638784 + 1, 'encodes dataterm with weight 1');
+    assert.deepEqual(termops.encodeTerm('{"type":"range","min":539,"max":550}'), 4503747267009280 + 1, 'encodes dataterm with weight 1');
     assert.end();
 });
 
 test('termops.encodeData, termops.decodeData', function(assert) {
     var data = { type: 'range', min: 539, max: 550 };
-    var encoded = 147639638784;
+    var encoded = 4503747267009280;
     assert.deepEqual(termops.encodeData(data), encoded, 'encodes');
     assert.deepEqual(termops.decodeData(encoded), data, 'decodes');
 
