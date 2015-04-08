@@ -195,7 +195,7 @@ test('index phrase collection', function(assert) {
         assert.deepEqual(conf.test._geocoder.list('term',0), ['559417680'], '1 term (significant)');
         assert.deepEqual(conf.test._geocoder.get('term',559417680), [ 559741915, 559741915 ], 'term => phrase is not deduped (yet)');
 
-        assert.deepEqual(conf.test._geocoder.list('degen',0), [ '559417680', '1986331696', '2784490928', '3259748752', '3529213088', '4027714032' ], '6 degens');
+        assert.deepEqual(conf.test._geocoder.list('degen',0), [ '559417680', '1263673920', '1680010080', '1986331696', '2784490928', '3259748752', '3529213088', '4027714032' ], '8 degens');
         assert.deepEqual(conf.test._geocoder.get('degen',559417680), [ 559417680 ], 'degen => term is not deduped (yet)');
         assert.deepEqual(conf.test._geocoder.get('degen',2784490928), [ 559417681 ], 'degen => term is not deduped (yet)');
 
