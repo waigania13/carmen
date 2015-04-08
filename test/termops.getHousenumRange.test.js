@@ -11,6 +11,10 @@ test('termops.getHousenumRange', function(assert) {
     }), { type:'range', min:0, max:10 }, '_cluster => 0,10');
 
     assert.deepEqual(termops.getHousenumRange({
+        _cluster:{ 0: {}, 10000000000: {} }
+    }), { type:'range', min:0, max:1048575 }, 'limits range to 0-1048575');
+
+    assert.deepEqual(termops.getHousenumRange({
         _cluster:{ 5: {}, 10: {}, 1: {}, 13: {} }
     }), { type:'range', min:1, max:13 }, '_cluster => [1,13]');
 
