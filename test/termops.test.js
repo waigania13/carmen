@@ -97,11 +97,11 @@ test('termops', function(t) {
     });
 
     t.test('maskAddress', function(q) {
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], 7), {addr: '100', pos: 3});
-        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], 6), {addr: '100', pos: 0});
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], 7), {addr: '100b', pos: 3});
-        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], 6), {addr: '100b', pos: 0});
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], 7), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], parseInt('1110',2)), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], parseInt('1111',2)), {addr: '100', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], parseInt('1110',2)), {addr: '100b', pos: 3});
+        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], parseInt('1111',2)), {addr: '100b', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], parseInt('1110',2)), {addr: '100', pos: 3});
         q.end();
     });
 
@@ -146,8 +146,8 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({});
     doc = {_text:'Main Street', _cluster:{1:{}, 10:{}}};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        ['main', 'street' ],
-        ['{"type":"range","min":1,"max":10}', 'main', 'street' ]
+        ['{"type":"range","min":1,"max":10}', 'main', 'street' ],
+        ['main', 'street', '{"type":"range","min":1,"max":10}' ]
     ], 'with range');
 
 

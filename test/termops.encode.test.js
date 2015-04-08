@@ -17,7 +17,7 @@ test('termops.encodeDegen', function(assert) {
 
 test('termops.encodeTerm', function(assert) {
     assert.deepEqual(termops.encodeTerm('main'), 3935363584, 'encodes term');
-    assert.deepEqual(termops.encodeTerm('{"type":"range","min":539,"max":550}'), 4503747267009280 + 1, 'encodes dataterm with weight 1');
+    assert.deepEqual(termops.encodeTerm('{"type":"range","min":539,"max":550}'), 4503747267009280 + 4, 'encodes dataterm with weight 4');
 
     assert.deepEqual(termops.encodeTerm('1234'), 1234 * 16, 'encodes numeric term');
     assert.deepEqual(termops.encodeTerm('1234', 1), 1234 * 16 + 1, 'encodes numeric term');
