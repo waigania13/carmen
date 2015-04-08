@@ -84,6 +84,11 @@ test('termops', function(t) {
             // Encodes degen distance (max: 15) from foobarbaz.
             q.ok(degens[i+1] % 16 <= 15);
         }
+
+        // Does not generate degens for numeric terms.
+        q.deepEqual(termops.degens('1000'), [1000*16,1000*16]);
+        q.deepEqual(termops.degens('1000e'), [1000*16,1000*16]);
+
         q.end();
     });
     t.test('phrase - generates a name id', function(q) {
