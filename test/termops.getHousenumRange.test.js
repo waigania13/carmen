@@ -7,6 +7,10 @@ test('termops.getHousenumRange', function(assert) {
     assert.deepEqual(termops.getHousenumRange({_cluster:{}}), false, 'empty _cluster => false');
 
     assert.deepEqual(termops.getHousenumRange({
+        _cluster: JSON.stringify({0:{},10:{}})
+    }), { type:'range', min:0, max:10 }, 'parses JSON _cluster');
+
+    assert.deepEqual(termops.getHousenumRange({
         _cluster:{ 0: {}, 10: {} }
     }), { type:'range', min:0, max:10 }, '_cluster => 0,10');
 
