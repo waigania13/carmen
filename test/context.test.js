@@ -62,7 +62,7 @@ test('contextVector deflate', function(t) {
         t.deepEqual(data, {
             _extid: 'test.5',
             _dbidx: 1,
-            _tmpid: 100000005,
+            _tmpid: Math.pow(2,25) + 5,
             _text: 'United States of America, United States, America, USA, US'
         });
         t.end();
@@ -91,7 +91,7 @@ test('contextVector gzip', function(t) {
         t.deepEqual(data, {
             _dbidx: 1,
             _extid: 'test.5',
-            _tmpid: 100000005,
+            _tmpid: Math.pow(2,25) + 5,
             _text: 'United States of America, United States, America, USA, US'
         });
         t.end();
