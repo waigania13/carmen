@@ -8,7 +8,7 @@ test('relev', function(t) {
     t.equal(r.reason, 3);
     t.equal(r.count, 2);
     t.equal(r.idx, 2);
-    t.equal(r.tmpid, 200000002);
+    t.equal(r.tmpid, Math.pow(2,25)*2 + 2);
     t.end();
 });
 
