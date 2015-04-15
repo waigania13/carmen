@@ -1138,7 +1138,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         c.geocode('country', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
-            t.equals(res.features[0].id, 'country.1', 'found country.1')
+            t.equals(res.features[0].id, 'country.1', 'found country.1');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
@@ -1148,7 +1148,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         c.geocode('country', { limit_verify: 1, proximity: [-60,-20] }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
-            t.equals(res.features[0].id, 'country.2', 'found country.2')
+            t.equals(res.features[0].id, 'country.2', 'found country.2');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
