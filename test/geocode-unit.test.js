@@ -1111,6 +1111,51 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
     });
 })();
 
+//Proximity flag
+(function() {
+    var conf = { country: new mem({maxzoom: 1}, function() {}) };
+    var c = new Carmen(conf);
+    test('index country', function(t) {
+        var country = {
+            _id:1,
+            _text:'country',
+            _zxy:['1/0/0'],
+            _center:[-100,60]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+    test('index country', function(t) {
+        var country = {
+            _id:2,
+            _text:'country',
+            _zxy:['1/0/1'],
+            _center:[-60,-20]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+
+    test('forward country', function(t) {
+        c.geocode('country', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'country', 'found country');
+            t.equals(res.features[0].id, 'country.1', 'found country.1')
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('forward country - proximity', function(t) {
+        c.geocode('country', { limit_verify: 1, proximity: [-60,-20] }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'country', 'found country');
+            t.equals(res.features[0].id, 'country.2', 'found country.2')
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+})();
+
+
 test('index.teardown', function(assert) {
     index.teardown();
     assert.end();
