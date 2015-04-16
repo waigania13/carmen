@@ -1113,7 +1113,10 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
 
 //Proximity flag
 (function() {
-    var conf = { country: new mem({maxzoom: 1}, function() {}) };
+    var conf = {
+        country: new mem({maxzoom: 1}, function() {}),
+        province: new mem({maxzoom: 6}, function() {})
+    };
     var c = new Carmen(conf);
     test('index country', function(t) {
         var country = {
@@ -1134,7 +1137,27 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         addFeature(conf.country, country, t.end);
     });
 
-    test('forward country', function(t) {
+    //Across layers
+    test('index province', function(t) {
+        var province = {
+            _id:1,
+            _text:'province',
+            _zxy:['6/17/24'],
+            _center:[-80,40]
+        };
+        addFeature(conf.province, province, t.end);
+    });
+    test('index province', function(t) {
+        var country = {
+            _id:3,
+            _text:'province',
+            _zxy:['1/1/0'],
+            _center:[145,70]
+        };
+        addFeature(conf.country, country, t.end);
+    });
+
+    test('forward country - single layer', function(t) {
         c.geocode('country', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
@@ -1144,11 +1167,31 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         });
     });
 
-    test('forward country - proximity', function(t) {
+    test('forward country - proximity - single layer', function(t) {
         c.geocode('country', { limit_verify: 1, proximity: [-60,-20] }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.2', 'found country.2');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('forward country - multi layer', function(t) {
+        c.geocode('province', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'province', 'found province');
+            t.equals(res.features[0].id, 'country.3', 'found country.3');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+
+    test('forward country - proximity - multi layer', function(t) {
+        c.geocode('province', { limit_verify: 1, proximity: [-80,40] }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'province, country', 'found province');
+            t.equals(res.features[0].id, 'province.1', 'found province.1');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
