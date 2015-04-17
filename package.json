@@ -21,7 +21,7 @@
     "turf-distance": "1.0.x",
     "turf-line-distance": "1.0.x",
     "turf-linestring": "1.0.x",
-    "turf-point": "^2.0.1",
+    "turf-point": "2.0.x",
     "turf-point-on-surface": "1.0.x",
     "unidecode": "0.1.3"
   },
