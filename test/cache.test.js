@@ -17,21 +17,8 @@ test('.shard', function(s) {
     s.end();
 });
 
-test('.shardsort', function(s) {
-    var arr;
-
-    arr = [0,1,2,3,4,5];
-    Cache.shardsort(0, arr);
-    s.deepEqual([0,1,2,3,4,5], arr);
-
-    arr = [0,1,Cache.mp[24],2,Cache.mp[23],3];
-    Cache.shardsort(1, arr);
-    s.deepEqual([0,1,2,3,Cache.mp[23],Cache.mp[24]], arr);
-    s.end();
-});
-
 test('.uniq', function(s) {
-    s.deepEqual([1,2,3,4,5], Cache.uniq([5,3,1,2,5,4,3,1,4,2]));
+    s.deepEqual([5,4,3,2,1], Cache.uniq([5,3,1,2,5,4,3,1,4,2]));
     s.end();
 });
 
