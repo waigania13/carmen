@@ -25,6 +25,9 @@ test('termops.encodeTerm', function(assert) {
     assert.deepEqual(termops.encodeTerm('2345b'), 2345 * 16, 'encodes seminumeric term');
     assert.deepEqual(termops.encodeTerm('2345b', 1), 2345 * 16 + 1, 'encodes seminumeric term');
 
+    assert.deepEqual(termops.encodeTerm('LS24'), 1148733792, 'encodes non-address numeric term with fnv1a');
+    assert.deepEqual(termops.encodeTerm('LS24', 1), 1148733792 + 1, 'encodes non-address numeric term with fnv1a');
+
     assert.end();
 });
 
