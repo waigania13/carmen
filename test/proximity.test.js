@@ -4,8 +4,8 @@ var test = require('tape');
 test('proximity#toCenter', function(t) {
     t.deepEquals(proximity.toCenter([ -180, 0, 0, 85 ]), [ -20037508.342789244, -19971868.88040857 ]);
     t.deepEquals(proximity.toCenter([ -180, -85, 0, 0 ]), [ -20037508.342789244, -19971868.88040857 ]);
-    t.deepEquals(proximity.toCenter([ 0, 0, 180, 85 ]), [ -9462156.717428254, -19971868.88040857 ]);
-    t.deepEquals(proximity.toCenter([ -84, 40, -80, 40 ]), [ -13803616.858365923, -7.081154551613622e-10 ]);
+    t.deepEquals(proximity.toCenter([ 0, 0, 180, 85 ]), [ -20037508.342789244, -19971868.88040857 ]);
+    t.deepEquals(proximity.toCenter([ -84, 40, -80, 40 ]), [ -445277.96317309426, -7.081154551613622e-10 ]);
     t.end();
 });
 
