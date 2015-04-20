@@ -1197,17 +1197,6 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
         });
     });
 
-    //If two results are returned prox will only sort if the relev and idx are the same
-    test('forward country - repect layer presidence - limit', function(t) {
-        c.geocode('province', { limit_verify: 1, proximity: [-80,40] }, function (err, res) {
-            t.ifError(err);
-            t.equals(res.features[0].place_name, 'province', 'found province');
-            t.equals(res.features[0].id, 'country.3', 'found country.3');
-            t.equals(res.features[0].relevance, 1);
-            t.end();
-        });
-    });
-
     test('forward country - single layer', function(t) {
         c.geocode('country', { }, function (err, res) {
             t.ifError(err);
