@@ -2,10 +2,10 @@ var proximity = require('../lib/util/proximity');
 var test = require('tape');
 
 test('proximity#toCenter', function(t) {
-    t.deepEquals(proximity.toCenter([ -180, 0, 0, 85 ]), [ -20037508.342789244, -19971868.88040857 ]);
-    t.deepEquals(proximity.toCenter([ -180, -85, 0, 0 ]), [ -20037508.342789244, -19971868.88040857 ]);
-    t.deepEquals(proximity.toCenter([ 0, 0, 180, 85 ]), [ -20037508.342789244, -19971868.88040857 ]);
-    t.deepEquals(proximity.toCenter([ -84, 40, -80, 40 ]), [ -445277.96317309426, -7.081154551613622e-10 ]);
+    t.deepEquals(proximity.toCenter([ -180, 0, 0, 85 ]), [ -10018754.171394622, 5236173.783920941 ]);
+    t.deepEquals(proximity.toCenter([ -180, -85, 0, 0 ]), [ -10018754.171394622, -5236173.783920941 ]);
+    t.deepEquals(proximity.toCenter([ 0, 0, 180, 85 ]), [ 10018754.171394622, 5236173.783920941 ]);
+    t.deepEquals(proximity.toCenter([ -84, 40, -80, 40 ]), [ -9128198.245048434, 4865942.279503176 ]);
     t.end();
 });
 
