@@ -47,9 +47,10 @@ test('nearest', function(t) {
 });
 
 test('nearest stability', function(assert) {
-    var a = require('./fixtures/range-feature-1a.json');
-    var b = require('./fixtures/range-feature-1b.json');
-    assert.deepEqual(address(a, 25), address(b, 25));
+    var a = address(require('./fixtures/range-feature-1a.json'), 25);
+    var b = address(require('./fixtures/range-feature-1b.json'), 25);
+    assert.deepEqual(a, b);
+    assert.deepEqual(a.omitted, undefined);
     assert.end();
 });
 
