@@ -41,13 +41,16 @@ test('proximity#fine', function(t) {
               features: [
                 {
                     id: 'layer.1',
-                    relevance: 1
+                    relevance: 1,
+                    center: [0,0]
                 },{
                     id: 'layer.2',
-                    relevance: 0
-                }] }
+                    relevance: 0,
+                    center: [0,0]
+                }] },
+            { proximity: [1,1] }
         ),
-        { features: [ { id: 'layer.1', relevance: 1 }, { id: 'layer.2', relevance: 0 } ], type: 'FeatureCollection' },
+        { features: [ { center: [ 0, 0 ], id: 'layer.1', relevance: 1 }, { center: [ 0, 0 ], id: 'layer.2', relevance: 0 } ], type: 'FeatureCollection' },
         'short circuit different relev'
     );
 
@@ -57,13 +60,16 @@ test('proximity#fine', function(t) {
               features: [
                 {
                     id: 'layer.1',
-                    relevance: 1
+                    relevance: 1,
+                    center: [0,0]
                 },{
                     id: 'test.1',
-                    relevance: 1
-                }] }
+                    relevance: 1,
+                    center: [0,0]
+                }]},
+            { proximity: [1,1] }
         ),
-        { features: [ { id: 'layer.1', relevance: 1 }, { id: 'test.1', relevance: 1 } ], type: 'FeatureCollection' },
+        { features: [ { center: [ 0, 0 ], id: 'layer.1', relevance: 1 }, { center: [ 0, 0 ], id: 'test.1', relevance: 1 } ], type: 'FeatureCollection' },
         'short circuit different layers'
     );
 
