@@ -56,13 +56,13 @@ test('geocode', function(t) {
             });
     });
     t.test ('invalid proximity lat', function(q) {
-            geocoder.geocode('n korea', { proximity: [98.177876,-59.504401]}, function(err, res) {
+            geocoder.geocode('n korea', { proximity: [-59.504401,98.177876]}, function(err, res) {
                 q.ifError(!err);
                 q.end();
             });
     });
     t.test ('invalid proximity lon', function(q) {
-            geocoder.geocode('new york', { proximity: [58.177876,-200.504401]}, function(err, res) {
+            geocoder.geocode('new york', { proximity: [-200.504401, 58.177876]}, function(err, res) {
                 q.ifError(!err);
                 q.end();
             });
