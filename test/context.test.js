@@ -20,7 +20,7 @@ test('context vector', function(t) {
 
     geocoder._open(function() {
         t.test('context vt full', function(q) {
-            context(geocoder, 0, 40, null, true, function(err, contexts) {
+            context(geocoder, 0, 40, { full: true }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
@@ -29,7 +29,7 @@ test('context vector', function(t) {
             });
         });
         t.test('context vt light', function(q) {
-            context(geocoder, 0, 40, null, false, function(err, contexts) {
+            context(geocoder, 0, 40, { full: false }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
@@ -57,7 +57,7 @@ test('contextVector deflate', function(t) {
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _extid: 'test.5',
@@ -86,7 +86,7 @@ test('contextVector gzip', function(t) {
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _dbidx: 1,
@@ -111,7 +111,7 @@ test('contextVector badbuffer', function(t) {
             id: 'testA'
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -138,7 +138,7 @@ test('contextVector empty VT buffer', function(assert) {
                 id: 'testA'
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -176,7 +176,7 @@ test('contextVector ignores negative score', function(assert) {
                 id: 'testA'
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data._text, 'B');
             assert.end();
@@ -210,7 +210,7 @@ test('contextVector only negative score', function(assert) {
                 id: 'testA'
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -251,7 +251,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA'
             }
         };
-        context.contextVector(source, 170, 80, false, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
