@@ -17,11 +17,6 @@ test('.shard', function(s) {
     s.end();
 });
 
-test('.uniq', function(s) {
-    s.deepEqual([5,4,3,2,1], Cache.uniq([5,3,1,2,5,4,3,1,4,2]));
-    s.end();
-});
-
 test('#get', function(r) {
     var cache = new Cache('a', 1);
     cache.set('term', 5, [0,1,2]);
