@@ -20,7 +20,7 @@ test('context vector', function(t) {
 
     geocoder._open(function() {
         t.test('context vt full', function(q) {
-            context(geocoder, 0, 40, null, true, function(err, contexts) {
+            context(geocoder, 0, 40, { full: true }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
@@ -29,7 +29,7 @@ test('context vector', function(t) {
             });
         });
         t.test('context vt light', function(q) {
-            context(geocoder, 0, 40, null, false, function(err, contexts) {
+            context(geocoder, 0, 40, { full: false }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
@@ -57,7 +57,7 @@ test('contextVector deflate', function(t) {
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _extid: 'test.5',
@@ -86,7 +86,7 @@ test('contextVector gzip', function(t) {
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             _dbidx: 1,
@@ -108,10 +108,11 @@ test('contextVector badbuffer', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
-            id: 'testA'
+            id: 'testA',
+            idx: 0
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -135,10 +136,11 @@ test('contextVector empty VT buffer', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
-                id: 'testA'
+                id: 'testA',
+                idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -173,10 +175,11 @@ test('contextVector ignores negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
-                id: 'testA'
+                id: 'testA',
+                idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data._text, 'B');
             assert.end();
@@ -207,12 +210,48 @@ test('contextVector only negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
-                id: 'testA'
+                id: 'testA',
+                idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
+            assert.end();
+        });
+    });
+});
+
+test('contextVector matched negative score', function(assert) {
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { "_id": 1, "_text": "A", "_score": -1 }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA',
+                idx: 0
+            }
+        };
+        context.contextVector(source, 0, 0, false, { 1:{} }, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data._text, 'A');
             assert.end();
         });
     });
@@ -248,10 +287,11 @@ test('contextVector restricts distance', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
-                id: 'testA'
+                id: 'testA',
+                idx: 0
             }
         };
-        context.contextVector(source, 170, 80, false, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();

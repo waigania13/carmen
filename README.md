@@ -143,7 +143,7 @@ _geometry | A geojson geometry object. Required if no _zxy provided.
 _zxy      | An array of xyz tile coordinates covered by this feature. Required if no _geometry provided.
 _center   | An array in the form [lon,lat]. _center must be on the _geometry surface, or the _center will be recalculated. Required only if no _geometry provided.
 _bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
-_score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are never returned directly in results.
+_score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
 _cluster  | Optional. Used with `geocoder_address`. A json object of clustered addresses in the format `{ number: { geojson point geom } }`
 
 ### TIGER address interpolation
