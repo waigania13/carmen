@@ -428,8 +428,8 @@ var addFeature = require('./util/addfeature');
     });
 
     //Is not above 0.5 relev so should fail.
-    test('fake => [fail]', function(t) {
-        c.geocode('fake', { limit_verify:1 }, function(err, res) {
+    test('fake blah blah => [fail]', function(t) {
+        c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.notOk(res.features[0]);
             t.end();

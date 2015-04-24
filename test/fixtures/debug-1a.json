@@ -14,18 +14,18 @@
     "tmpid": 1,
     "reason": 1,
     "count": 1,
-    "relev": 0.4838709677419355,
+    "relev": 1,
     "check": true
   },
   "spatialmatch_position": 0,
-  "spatialmatch_toprelev": 0.4838709677419355,
+  "spatialmatch_toprelev": 1,
   "spatialmatch_relev": {
     "id": 1,
     "idx": 0,
     "tmpid": 1,
     "reason": 1,
     "count": 1,
-    "relev": 0.4838709677419355,
+    "relev": 1,
     "check": true
   },
   "spatialmatch_stack": [
@@ -35,12 +35,12 @@
       "tmpid": 1,
       "reason": 1,
       "count": 1,
-      "relev": 0.4838709677419355,
+      "relev": 1,
       "check": true
     }
   ],
   "verifymatch": {
-    "relev": 0.4838709677419355,
+    "relev": 1,
     "count": 1
   }
 }
