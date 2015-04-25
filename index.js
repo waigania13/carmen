@@ -185,10 +185,20 @@ Geocoder.prototype.loadall = function(source, concurrency, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            loadall(source, concurrency, callback);
+            loadall.loadall(source, concurrency, callback);
         }.bind(this));
     }
-    return loadall(source, concurrency, callback);
+    return loadall.loadall(source, concurrency, callback);
+};
+
+Geocoder.prototype.unloadall = function(source, callback) {
+    if (!this._opened) {
+        return this._open(function(err) {
+            if (err) return callback(err);
+            loadall.unloadall(source, callback);
+        }.bind(this));
+    }
+    return loadall.unloadall(source, callback);
 };
 
 // Copy a source's index to another.
