@@ -121,6 +121,16 @@ test('index', function(t) {
             q.end();
         });
     });
+    t.test('unloadall index', function(q) {
+        carmen.unloadall(to, function(err) {
+            q.ifError(err);
+            q.equal(to._geocoder.has('degen', 0), false);
+            q.equal(to._geocoder.has('term', 0), false);
+            q.equal(to._geocoder.has('phrase', 0), false);
+            q.equal(to._geocoder.has('grid', 0), false);
+            q.end();
+        });
+    });
     t.test('wipes index', function(q) {
         carmen.wipe(to, function(err) {
             q.ifError(err);
