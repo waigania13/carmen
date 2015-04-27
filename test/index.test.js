@@ -121,6 +121,42 @@ test('index', function(t) {
             q.end();
         });
     });
+    t.test('loadall (concurrency 10)', function(q) {
+        to._geocoder.unloadall('degen');
+        to._geocoder.unloadall('term');
+        to._geocoder.unloadall('phrase');
+        to._geocoder.unloadall('grid');
+        q.ok(!to._geocoder.has('degen', 0));
+        q.ok(!to._geocoder.has('term', 0));
+        q.ok(!to._geocoder.has('phrase', 0));
+        q.ok(!to._geocoder.has('grid', 0));
+        carmen.loadall(to, 10, function(err) {
+            q.ifError(err);
+            q.ok(to._geocoder.has('degen', 0));
+            q.ok(to._geocoder.has('term', 0));
+            q.ok(to._geocoder.has('phrase', 0));
+            q.ok(to._geocoder.has('grid', 0));
+            q.end();
+        });
+    });
+    t.test('loadall (concurrency 0.01)', function(q) {
+        to._geocoder.unloadall('degen');
+        to._geocoder.unloadall('term');
+        to._geocoder.unloadall('phrase');
+        to._geocoder.unloadall('grid');
+        q.ok(!to._geocoder.has('degen', 0));
+        q.ok(!to._geocoder.has('term', 0));
+        q.ok(!to._geocoder.has('phrase', 0));
+        q.ok(!to._geocoder.has('grid', 0));
+        carmen.loadall(to, 0.01, function(err) {
+            q.ifError(err);
+            q.ok(to._geocoder.has('degen', 0));
+            q.ok(to._geocoder.has('term', 0));
+            q.ok(to._geocoder.has('phrase', 0));
+            q.ok(to._geocoder.has('grid', 0));
+            q.end();
+        });
+    });
     t.test('unloadall index', function(q) {
         carmen.unloadall(to, function(err) {
             q.ifError(err);
