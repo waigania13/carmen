@@ -18,14 +18,14 @@
     "check": true
   },
   "spatialmatch_position": 0,
-  "spatialmatch_toprelev": 1,
+  "spatialmatch_toprelev": 0.967741935483871,
   "spatialmatch_relev": {
     "id": 1,
     "idx": 0,
     "tmpid": 1,
     "reason": 1,
     "count": 1,
-    "relev": 1,
+    "relev": 0.967741935483871,
     "check": true
   },
   "spatialmatch_stack": [
@@ -40,7 +40,7 @@
     }
   ],
   "verifymatch": {
-    "relev": 1,
+    "relev": 0.967741935483871,
     "count": 1
   }
 }

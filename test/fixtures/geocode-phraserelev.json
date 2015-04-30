@@ -9,7 +9,7 @@
             "type": "Feature",
             "text": "Czech Republic",
             "place_name": "Czech Republic",
-            "relevance": 1,
+            "relevance": 0.99,
             "center": [
                 15.512998,
                 49.798964

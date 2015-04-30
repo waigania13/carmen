@@ -461,7 +461,7 @@ var addFeature = require('./util/addfeature');
     test('Search for germany style address', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -469,7 +469,7 @@ var addFeature = require('./util/addfeature');
     test('Search for us style address with german formatting', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -510,7 +510,7 @@ var addFeature = require('./util/addfeature');
     test('Search for germany style address - multiple layers', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -518,7 +518,7 @@ var addFeature = require('./util/addfeature');
     test('Search for us style address with german formatting - multiple layers', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 1, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -550,7 +550,7 @@ var addFeature = require('./util/addfeature');
     test('test address index for US relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -558,7 +558,7 @@ var addFeature = require('./util/addfeature');
     test('test address index for DE relev', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -598,7 +598,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -627,7 +627,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -658,7 +658,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -700,7 +700,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('102 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -731,7 +731,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -762,7 +762,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('23-414 beach street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -786,7 +786,7 @@ var addFeature = require('./util/addfeature');
     test('test address index for relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.6666666666666666);
+            t.equals(res.features[0].relevance, 0.6566666666666666);
             t.end();
         });
     });
@@ -816,7 +816,7 @@ var addFeature = require('./util/addfeature');
     test('test address index for relev', function(t) {
         c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 1, 'token replacement test, fake st');
+            t.equals(res.features[0].relevance, 0.99, 'token replacement test, fake st');
             t.end();
         });
     });
@@ -846,7 +846,7 @@ var addFeature = require('./util/addfeature');
     test('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.8, 'token replacement test, avenue du 18e');
+            t.equals(res.features[0].relevance, 0.79, 'token replacement test, avenue du 18e');
             t.end();
         });
     });
@@ -1054,7 +1054,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('100 fake street', { limit_verify: 2 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1092,7 +1092,7 @@ var addFeature = require('./util/addfeature');
         c.geocode('Chicago', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1157,7 +1157,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.1', 'found country.1');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1167,7 +1167,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.2', 'found country.2');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1177,7 +1177,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.1', 'found country.1');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1187,7 +1187,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'province', 'found province');
             t.equals(res.features[0].id, 'country.3', 'found country.3');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1197,7 +1197,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.1', 'found country.1');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1207,7 +1207,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.2', 'found country.2');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1217,7 +1217,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'country', 'found country');
             t.equals(res.features[0].id, 'country.1', 'found country.1');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1227,7 +1227,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'province', 'found province');
             t.equals(res.features[0].id, 'country.3', 'found country.3');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });
@@ -1238,7 +1238,7 @@ var addFeature = require('./util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, 'province', 'found province');
             t.equals(res.features[0].id, 'country.3', 'found country.3');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features[0].relevance, 0.99);
             t.end();
         });
     });

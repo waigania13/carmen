@@ -10,7 +10,7 @@
             "type": "Feature",
             "text": "North Korea",
             "place_name": "North Korea",
-            "relevance": 1,
+            "relevance": 0.99,
             "center": [
                 126.76877,
                 40.342849
@@ -39,7 +39,7 @@
             "type": "Feature",
             "text": "South Korea",
             "place_name": "South Korea",
-            "relevance": 0.5,
+            "relevance": 0.49,
             "center": [
                 127.998542,
                 36.435141

@@ -9,7 +9,7 @@
             "type": "Feature",
             "text": "Georgia",
             "place_name": "Georgia, United States of America",
-            "relevance": 1,
+            "relevance": 0.99,
             "center": [
                 -83.250339,
                 32.681571
@@ -43,7 +43,7 @@
             "type": "Feature",
             "text": "Georgia",
             "place_name": "Georgia",
-            "relevance": 1,
+            "relevance": 0.99,
             "center": [
                 43.638684,
                 42.309977

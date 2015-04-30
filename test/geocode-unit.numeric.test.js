@@ -31,7 +31,7 @@ tape('query', function(t) {
     c.geocode('22209', { limit_verify: 1 }, function (err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '22209', 'found 22209');
-        t.equals(res.features[0].relevance, 1);
+        t.equals(res.features[0].relevance, 0.99);
         t.end();
     });
 });
