@@ -1244,6 +1244,31 @@ var addFeature = require('./util/addfeature');
     });
 })();
 
+// Feature @ tile edge
+(function() {
+    var conf = {
+        test: new mem({maxzoom:14}, function() {})
+    };
+    var c = new Carmen(conf);
+    test('index test', function(t) {
+        var feature = {
+            _id:1,
+            _text:'test',
+            _zxy:['14/8093/5301'],
+            _center:[-2.17405858745506,53.4619151830114]
+        };
+        addFeature(conf.test, feature, t.end);
+    });
+    test('forward between tiles', function(t) {
+        c.geocode('test', { limit_verify: 1, }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'test', 'found feature');
+            t.equals(res.features[0].id, 'test.1', 'found feature');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+})();
 
 test('index.teardown', function(assert) {
     index.teardown();
