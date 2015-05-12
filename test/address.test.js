@@ -71,25 +71,52 @@ test('address.lineIntersects', function(assert){
 });
 
 test('address.standardize', function(assert){
-    assert.equal(address.standardize({ _rangetype: 'canvec'}), undefined);
-    assert.equal(address.standardize({ _rangetype: 'tiger' }), undefined);
-    assert.equal(address.standardize({
+    assert.deepEqual(address.standardize({ _rangetype: 'canvec'}), []);
+    assert.deepEqual(address.standardize({ _rangetype: 'tiger' }), []);
+    assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _geometry: {
             type: "Point" }
-        }), undefined);
+        }), []);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _geometry: {
             type: "LineString",
             coordinates: [[1,2], [2,3]] }
-        }), { lf: [], lines: [ [ [ 1, 2 ], [ 2, 3 ] ] ], lp: [], lt: [], rf: [], rp: [], rt: [] });
+        }), [{
+            i: 0,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[1,2], [2,3]]
+        }]);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _geometry: {
             type: "MultiLineString",
             coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
-        }), { lf: [], lines: [ [ [ 1, 2 ], [ 2, 3 ] ], [ [ 5, 6 ], [ 8, 10 ] ] ], lp: [], lt: [], rf: [], rp: [], rt: [] });
+        }), [{
+            i: 0,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[1,2], [2,3]]
+        }, {
+            i: 1,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[5,6], [8,10]]
+        }]);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _parityl: "E",
@@ -101,7 +128,16 @@ test('address.standardize', function(assert){
         _geometry: {
             type: "LineString",
             coordinates: [[1,2], [2,3]] }
-            }), { lf: [ 4 ], lines: [ [ [ 1, 2 ], [ 2, 3 ] ] ], lp: [ 'E' ], lt: [ 2 ], rf: [ 3 ], rp: [ 'O' ], rt: [ 1 ] });
+        }), [{
+            i: 0,
+            lf: 4,
+            lt: 2,
+            rf: 3,
+            rt: 1,
+            lp: 'E',
+            rp: 'O',
+            lines: [[1,2], [2,3]]
+        }]);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _parityl: ["E", "E"],
@@ -113,7 +149,25 @@ test('address.standardize', function(assert){
         _geometry: {
             type: "MultiLineString",
             coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
-        }), { lf: [ 4, 8 ], lines: [ [ [ 1, 2 ], [ 2, 3 ] ], [ [ 5, 6 ], [ 8, 10 ] ] ], lp: [ 'E', 'E' ], lt: [ 2, 6 ], rf: [ 3, 7 ], rp: [ 'O', 'O' ], rt: [ 1, 5 ] });
+        }), [{
+            i: 0,
+            lf: 4,
+            lt: 2,
+            rf: 3,
+            rt: 1,
+            lp: 'E',
+            rp: 'O',
+            lines: [[1,2], [2,3]]
+        }, {
+            i: 1,
+            lf: 8,
+            lt: 6,
+            rf: 7,
+            rt: 5,
+            lp: 'E',
+            rp: 'O',
+            lines: [[5,6], [8,10]]
+        }]);
     assert.end();
 });
 
