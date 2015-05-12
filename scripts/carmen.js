@@ -67,7 +67,7 @@ carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug },
             console.log('Features');
             console.log('--------');
             data.features.forEach(function(f) {
-                console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id.split('.')[0]);
+                console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id);
             });
             console.log('');
         }
