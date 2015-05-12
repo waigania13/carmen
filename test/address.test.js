@@ -83,13 +83,40 @@ test('address.standardize', function(assert){
         _geometry: {
             type: "LineString",
             coordinates: [[1,2], [2,3]] }
-        }), []);
+        }), [{
+            i: 0,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[1,2], [2,3]]
+        }]);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _geometry: {
             type: "MultiLineString",
             coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
-        }), []);
+        }), [{
+            i: 0,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[1,2], [2,3]]
+        }, {
+            i: 1,
+            lf: null,
+            lt: null,
+            rf: null,
+            rt: null,
+            lp: '',
+            rp: '',
+            lines: [[5,6], [8,10]]
+        }]);
     assert.deepEqual(address.standardize({
         _rangetype: 'tiger',
         _parityl: "E",
