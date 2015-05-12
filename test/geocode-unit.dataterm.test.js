@@ -19,7 +19,7 @@ tape('index address (noise)', function(t) {
             _zxy:['6/32/32'],
             _center:[0,0],
             _cluster: {
-                200: { type: "Point", coordinates: [0,0] }
+                600: { type: "Point", coordinates: [0,0] }
             }
         };
         addFeature(conf.address, address, done);
