@@ -298,3 +298,83 @@ test('contextVector restricts distance', function(assert) {
         });
     });
 });
+
+(function() {
+    // +-----+ <-- query is equidistant from two features
+    // |     |
+    // | o o |
+    // |  x  |
+    // |     |
+    // |     |
+    // +-----+
+
+    var geojson = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [-0.001,0.001] },
+                "properties": { "_id":1, "_text": "A" }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [0.001,0.001] },
+                "properties": { "_id":2, "_text": "B" }
+            }
+        ]
+    };
+    var vtileA = new mapnik.VectorTile(0,0,0);
+    vtileA.addGeoJSON(JSON.stringify(geojson),"data");
+
+    geojson.features.reverse();
+    var vtileB = new mapnik.VectorTile(0,0,0);
+    vtileB.addGeoJSON(JSON.stringify(geojson),"data");
+
+    test('contextVector sorts ties A', function(assert) {
+        zlib.gzip(vtileA.getData(), function(err, buffer) {
+            assert.ifError(err);
+            var source = {
+                getTile: function(z,x,y,callback) {
+                    return callback(null, buffer);
+                },
+                _geocoder: {
+                    geocoder_layer: 'data',
+                    maxzoom: 0,
+                    minzoom: 0,
+                    name: 'test',
+                    id: 'testA',
+                    idx: 0
+                }
+            };
+            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+                assert.ifError(err);
+                assert.equal(data._text, 'A');
+                assert.end();
+            });
+        });
+    });
+
+    test('contextVector sorts ties A', function(assert) {
+        zlib.gzip(vtileB.getData(), function(err, buffer) {
+            assert.ifError(err);
+            var source = {
+                getTile: function(z,x,y,callback) {
+                    return callback(null, buffer);
+                },
+                _geocoder: {
+                    geocoder_layer: 'data',
+                    maxzoom: 0,
+                    minzoom: 0,
+                    name: 'test',
+                    id: 'testA',
+                    idx: 0
+                }
+            };
+            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+                assert.ifError(err);
+                assert.equal(data._text, 'A');
+                assert.end();
+            });
+        });
+    });
+})();
