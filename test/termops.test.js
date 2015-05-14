@@ -75,7 +75,8 @@ test('termops', function(t) {
             3214735712, 1617781331,
             967483776, 1617781332,
             1062237920, 1617781333,
-            2851307216, 1617781334
+            2851307216, 1617781334,
+            1646454848, 1617781335
         ]);
         for (var i = 0; i < degens.length/2; i = i + 2) {
             // Encodes ID for 'foobarbaz'.
@@ -83,6 +84,11 @@ test('termops', function(t) {
             // Encodes degen distance (max: 15) from foobarbaz.
             q.ok(degens[i+1] % 16 <= 15);
         }
+
+        // Does not generate degens for numeric terms.
+        q.deepEqual(termops.degens('1000'), [1000*16,1000*16]);
+        q.deepEqual(termops.degens('1000e'), [1000*16,1000*16]);
+
         q.end();
     });
     t.test('phrase - generates a name id', function(q) {
@@ -97,11 +103,11 @@ test('termops', function(t) {
     });
 
     t.test('maskAddress', function(q) {
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], 7), {addr: '100', pos: 3});
-        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], 6), {addr: '100', pos: 0});
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], 7), {addr: '100b', pos: 3});
-        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], 6), {addr: '100b', pos: 0});
-        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], 7), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100'], parseInt('1110',2)), {addr: '100', pos: 3});
+        q.deepEqual(termops.maskAddress(['100', '1', 'fake', 'street'], parseInt('1111',2)), {addr: '100', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100b'], parseInt('1110',2)), {addr: '100b', pos: 3});
+        q.deepEqual(termops.maskAddress(['100b', '1', 'fake', 'street'], parseInt('1111',2)), {addr: '100b', pos: 0});
+        q.deepEqual(termops.maskAddress(['1', 'fake', 'street', '100', '200'], parseInt('1110',2)), {addr: '100', pos: 3});
         q.end();
     });
 
@@ -110,24 +116,46 @@ test('termops', function(t) {
 
 test('termops.getIndexableText', function(assert) {
     var freq = { 0:[2] };
-    assert.deepEqual(termops.getIndexableText(token.createReplacer({}), 'Main Street'), [
+    var replacer;
+    var doc;
+
+    replacer = token.createReplacer({});
+    doc = {_text:'Main Street'};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
         [ 'main', 'street' ]
     ], 'creates indexableText');
-    assert.deepEqual(termops.getIndexableText(token.createReplacer({'Street':'St'}), 'Main Street'), [
-        [ 'main', 'street' ],
+
+    replacer = token.createReplacer({'Street':'St'});
+    doc = {_text:'Main Street'};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
         [ 'main', 'st' ]
     ], 'creates contracted phrases using geocoder_tokens');
-    assert.deepEqual(termops.getIndexableText(token.createReplacer({'Street':'St'}), 'Main Street, main st'), [
-        [ 'main', 'street' ],
+
+    replacer = token.createReplacer({'Street':'St'});
+    doc = {_text:'Main Street, main st'};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
         [ 'main', 'st' ]
     ], 'dedupes phrases');
-    assert.deepEqual(termops.getIndexableText(token.createReplacer({'Street':'St', 'Lane':'Ln'}), 'Main Street Lane'), [
-        [ 'main', 'street', 'lane' ],
+
+    replacer = token.createReplacer({'Street':'St', 'Lane':'Ln'});
+    doc = {_text:'Main Street Lane'};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
         [ 'main', 'st', 'ln' ]
     ], 'dedupes phrases');
-    assert.deepEqual(termops.getIndexableText(token.createReplacer({'dix-huitième':'18e'}), 'Avenue du dix-huitième régiment'), [
-        [ 'avenue', 'du', 'dix', 'huitieme', 'regiment' ],
+
+    replacer = token.createReplacer({'dix-huitième':'18e'});
+    doc = {_text:'Avenue du dix-huitième régiment'};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
         [ 'avenue', 'du', '18e', 'regiment' ]
     ], 'hypenated replacement');
+
+    replacer = token.createReplacer({});
+    doc = {_text:'Main Street', _cluster:{1:{}, 10:{}}};
+    assert.deepEqual(termops.getIndexableText(replacer, doc), [
+        ['{"type":"range","min":1,"max":10}', 'main', 'street' ],
+        ['main', 'street', '{"type":"range","min":1,"max":10}' ]
+    ], 'with range');
+
+
     assert.end();
 });

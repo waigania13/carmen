@@ -403,7 +403,7 @@ truncated to make room for additional encoded data.
 
 term | extra
 -----|------
-0-27 | 28-31
+31-4 | 3-0
 
 The first 28 bits of a term hash determine the canonical ID of a term. The
 remaining 4 bits can be used for additional data.
@@ -415,6 +415,31 @@ remaining 4 bits can be used for additional data.
   in the same phrase. The weights are only relevant in the context of the phrase
   being considered. A weight of 15 signifies the most significant term in the
   phrase with other terms being <= 15.
+
+### term (numeric)
+
+term | extra
+-----|------
+31-4 | 3-0
+
+The first 28 bits of a numeric term are based on the parsed number value of the
+term text (e.g. "2801" => 2801). The remaining 4 bits can be used for
+additional data.
+
+- **Degenerates** for numeric terms are currently not calculated.
+- **Weights** for numeric terms are encoded in the same way as normal text terms.
+
+### dataterm (min/max range)
+
+dataterm | max   | min  | type | extra
+---------|-------|------|------|------
+52       | 47-28 | 27-8 | 7-4  | 3-0
+
+The 52-bit of a dataterm flags it as dataterm. Currently the only `type` of
+dataterm is the `0 => range` type whereby the next 40 bits are used to encode
+the min/max housenum range of a feature. Future types may encode different data
+in this space. Like any normal term there is an extra 4 bits for encoding a
+**weight**.
 
 ### phrase
 
