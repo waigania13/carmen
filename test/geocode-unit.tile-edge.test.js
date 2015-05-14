@@ -1,0 +1,38 @@
+// Test that a feature at a tile's edge can be found.
+
+var tape = require('tape');
+var Carmen = require('..');
+var index = require('../lib/index');
+var mem = require('../lib/api-mem');
+var addFeature = require('./util/addfeature');
+
+var conf = {
+    test: new mem({maxzoom:14}, function() {})
+};
+var c = new Carmen(conf);
+
+tape('index test', function(t) {
+    var feature = {
+        _id:1,
+        _text:'test',
+        _zxy:['14/8093/5301'],
+        _center:[-2.17405858745506,53.4619151830114]
+    };
+    addFeature(conf.test, feature, t.end);
+});
+
+tape('forward between tiles', function(t) {
+    c.geocode('test', { limit_verify: 1, }, function (err, res) {
+        t.ifError(err);
+        t.equals(res.features[0].place_name, 'test', 'found feature');
+        t.equals(res.features[0].id, 'test.1', 'found feature');
+        t.equals(res.features[0].relevance, 0.99);
+        t.end();
+    });
+});
+
+tape('index.teardown', function(assert) {
+    index.teardown();
+    assert.end();
+});
+
