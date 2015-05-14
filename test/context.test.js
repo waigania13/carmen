@@ -377,4 +377,29 @@ test('contextVector restricts distance', function(assert) {
             });
         });
     });
+
+    test('contextVector sorts ties B (matched)', function(assert) {
+        zlib.gzip(vtileB.getData(), function(err, buffer) {
+            assert.ifError(err);
+            var source = {
+                getTile: function(z,x,y,callback) {
+                    return callback(null, buffer);
+                },
+                _geocoder: {
+                    geocoder_layer: 'data',
+                    maxzoom: 0,
+                    minzoom: 0,
+                    name: 'test',
+                    id: 'testA',
+                    idx: 0
+                }
+            };
+            context.contextVector(source, 0, 0, false, { 2:true }, function(err, data) {
+                assert.ifError(err);
+                assert.equal(data._text, 'B');
+                assert.end();
+            });
+        });
+    });
 })();
+
