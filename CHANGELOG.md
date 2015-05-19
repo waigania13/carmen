@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.2
+
+- Use cache#loadall when indexing.
+
 ## 3.0.1
 
 - Added cache#loadall for loading shards without retrieving results.
