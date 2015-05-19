@@ -34,16 +34,16 @@ tape('index address (signal)', function(t) {
         _zxy:['6/32/32'],
         _center:[0,0],
         _cluster: {
-            100: { type: "Point", coordinates: [0,0] }
+            1500: { type: "Point", coordinates: [0,0] }
         }
     };
     addFeature(conf.address, address, t.end);
 });
 
 tape('test address', function(t) {
-    c.geocode('100 fake street', { limit_verify: 1 }, function (err, res) {
+    c.geocode('1500 fake street', { limit_verify: 1 }, function (err, res) {
         t.ifError(err);
-        t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
+        t.equals(res.features[0].place_name, '1500 fake street', 'found 1500 fake street');
         t.equals(res.features[0].relevance, 0.99);
         t.end();
     });

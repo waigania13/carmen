@@ -40,8 +40,8 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({});
     doc = {_text:'Main Street', _cluster:{1:{}, 10:{}}};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        ['{"type":"range","min":1,"max":10}', 'main', 'street' ],
-        ['main', 'street', '{"type":"range","min":1,"max":10}' ]
+        ['{"type":"range","min":0,"max":1000}', 'main', 'street' ],
+        ['main', 'street', '{"type":"range","min":0,"max":1000}' ]
     ], 'with range');
 
 
