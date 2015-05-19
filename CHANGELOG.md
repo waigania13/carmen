@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+- Added cache#loadall for loading shards without retrieving results.
+
 ## 3.0.0
 
 - Improved suggestion/autocomplete support for partial queries.
