@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.3
+
+- Snap dataterm min/max values to nearest thousand. Reduces cardinality of phrase index with minimal affect on dataterm accuracy at querytime.
+
 ## 3.0.2
 
 - Use cache#loadall when indexing.
