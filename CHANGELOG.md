@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.5
+
+- Improvements to result stability in proximity mode.
+
 ## 3.0.4
 
 - Use single closest degen for non-terminal terms.
