@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.6
+
+- Additional sort stabilization at verifymatch stage.
+
 ## 3.0.5
 
 - Improvements to result stability in proximity mode.
