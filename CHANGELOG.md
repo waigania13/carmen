@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.7
+
+- Prioritizes layer type + score consistently across proximity/non-proximity mode.
+
 ## 3.0.6
 
 - Additional sort stabilization at verifymatch stage.
