@@ -115,3 +115,26 @@ tape('verifymatch.sortContext (with distance)', function(assert) {
     assert.end();
 });
 
+tape('verifymatch.sortContext (distance vs addresstype)', function(assert) {
+    var c;
+    var arr = [];
+
+    c = [{ _id: 3 }];
+    c._relevance = 0.9;
+    arr.push(c);
+
+    c = [{ _id: 2, _address:'26', _distance: 2, _cluster:{} }];
+    c._relevance = 1.0;
+    arr.push(c);
+
+    c = [{ _id: 1, _address:'26', _distance: 1 }];
+    c._relevance = 1.0;
+    arr.push(c);
+
+
+    arr.sort(verifymatch.sortContext);
+    assert.deepEqual(arr.map(function(c) { return c[0]._id }), [1,2,3]);
+
+    assert.end();
+});
+
