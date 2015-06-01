@@ -202,34 +202,42 @@ test('address.calculateDistance', function(assert) {
 test('address.setPoint', function(assert) {
     assert.deepEqual(address.setPoint(2,0,8,[[0,0],[1,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0.25,0]
     }, 'x2, forward');
     assert.deepEqual(address.setPoint(2,8,0,[[0,0],[1,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0.75,0]
     }, 'x2, reverse');
     assert.deepEqual(address.setPoint(2,8,0,[[0,0],[0,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0,0]
     }, 'x2, identity (line)');
     assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0,0]
     }, 'x2, identity (address)');
    assert.deepEqual(address.setPoint(3,0,12,[[0,0],[1,0],[2,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0.5,0]
     }, 'x3, forward');
     assert.deepEqual(address.setPoint(9,0,12,[[0,0],[1,0],[2,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[1.5,0]
     }, 'x3, reverse');
     assert.deepEqual(address.setPoint(9,0,12,[[0,0],[0,0],[0,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0,0]
     }, 'x3, identity (line)');
     assert.deepEqual(address.setPoint(0,0,0,[[0,0],[1,0],[2,0]],false), {
         type: 'Point',
+        interpolated: true,
         coordinates:[0,0]
     }, 'x3, identity (address)');
     assert.end();
@@ -245,6 +253,7 @@ test('address interpolation - noop', function(t) {
  test('address interpolation - parity: even + both', function(t) {
     t.deepEqual({
         type:'Point',
+        interpolated: true,
         coordinates:[0,9]
     }, address({
         _rangetype:'tiger',
@@ -358,6 +367,7 @@ test('address point clustering fail', function(t) {
 test('parity: even + even', function(t) {
     t.deepEqual({
         type:'Point',
+        interpolated: true,
         coordinates:[0,10]
     }, address({
         _rangetype:'tiger',
@@ -375,6 +385,7 @@ test('parity: even + even', function(t) {
 test('parity: even + odd', function(t) {
     t.deepEqual({
         coordinates: [ 0, 9 ],
+        interpolated: true,
         omitted: true, // because parity does not match
         type: 'Point'
     }, address({
@@ -393,6 +404,7 @@ test('parity: even + odd', function(t) {
 test('parity: odd + both', function(t) {
     t.deepEqual({
         type:'Point',
+        interpolated: true,
         coordinates:[0,9]
     }, address({
         _rangetype:'tiger',
@@ -410,6 +422,7 @@ test('parity: odd + both', function(t) {
 test('parity: odd + odd', function(t) {
     t.deepEqual({
         type:'Point',
+        interpolated: true,
         coordinates:[0,9]
     }, address({
         _rangetype:'tiger',
@@ -427,6 +440,7 @@ test('parity: odd + odd', function(t) {
 test('parity: odd + even', function(t) {
     t.deepEqual({
         coordinates: [ 0, 9 ],
+        interpolated: true,
         omitted: true, // because parity does not match
         type: 'Point'
     }, address({
@@ -445,6 +459,7 @@ test('parity: odd + even', function(t) {
 test('reverse', function(t) {
     t.deepEqual({
         type: 'Point',
+        interpolated: true,
         coordinates: [0,90]
     }, address({
         _rangetype:'tiger',
@@ -462,6 +477,7 @@ test('reverse', function(t) {
 test('seminumber', function(t) {
     t.deepEqual({
         type: 'Point',
+        interpolated: true,
         coordinates: [0,10]
     }, address({
         _rangetype:'tiger',

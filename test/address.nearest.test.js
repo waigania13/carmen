@@ -14,6 +14,7 @@ test('nearest', function(t) {
         }
     }, 900), {
         coordinates: [ 0, 0 ],
+        interpolated: true,
         omitted: true, // because nearest endpoint match
         type: 'Point'
     }, 'nearest startpoint');
@@ -28,6 +29,7 @@ test('nearest', function(t) {
         }
     }, 1200), {
         coordinates: [ 0, 100 ],
+        interpolated: true,
         omitted: true, // because nearest endpoint match
         type: 'Point'
     }, 'nearest endpoint');
