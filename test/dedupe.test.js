@@ -98,6 +98,42 @@ tape('dedupe', function(assert) {
             text: 'main st',
             center:[0.000,0],
             geometry: {
+                type:'Point',
+                coordinates:[0.000,0]
+            }
+        },
+        {
+            place_name: '100 main st springfield 00002',
+            address:100,
+            text: 'main st',
+            center:[0.001,0],
+            geometry: {
+                type:'Point',
+                coordinates:[0.001,0]
+            }
+        },
+        {
+            place_name: '100 main st springfield 00001',
+            address:100,
+            text: 'main st',
+            center:[1,0],
+            geometry: {
+                type:'Point',
+                coordinates:[1,0]
+            }
+        }
+    ];
+    assert.deepEqual(dedupe(features), [
+        features[0]
+    ], 'dedupes identical addresses + placenames when dist < 10km');
+
+    features = [
+        {
+            place_name: '100 main st springfield 00001',
+            address:100,
+            text: 'main st',
+            center:[0.000,0],
+            geometry: {
                 interpolated: true,
                 omitted: true,
                 type:'Point',
