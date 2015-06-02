@@ -63,7 +63,7 @@ tape('dedupe', function(assert) {
     assert.deepEqual(dedupe(features), [
         features[0],
         features[1],
-    ], 'dupe identical addresses when dist >= 10km');
+    ], 'dupe identical addresses when dist >= 5km');
 
     features = [
         {
@@ -89,7 +89,7 @@ tape('dedupe', function(assert) {
     ];
     assert.deepEqual(dedupe(features), [
         features[0]
-    ], 'dedupes identical addresses when dist < 10km');
+    ], 'dedupes identical addresses when dist < 5km');
 
     features = [
         {
@@ -125,7 +125,7 @@ tape('dedupe', function(assert) {
     ];
     assert.deepEqual(dedupe(features), [
         features[0]
-    ], 'dedupes identical addresses + placenames when dist < 10km');
+    ], 'dedupes identical addresses + placenames when dist < 5km');
 
     features = [
         {
