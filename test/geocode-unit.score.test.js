@@ -7,6 +7,95 @@ var mem = require('../lib/api-mem');
 var queue = require('queue-async');
 var addFeature = require('./util/addfeature');
 
+// Confirms that you can forward search a ghost feature and that a scored featre will always win
+(function() {
+    var conf = { place: new mem(null, function() {}) };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        var place = { 
+            _id:1,
+            _score: 100,
+            _text:'fairfax',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index ghost place', function(t) {
+        var place = { 
+            _id:2,
+            _score: -1,
+            _text:'mclean',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };  
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index zip+4', function(t) {
+        var place = { 
+            _id:3,
+            _score: -1,
+            _text:'20009-2004',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };  
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index zip', function(t) {
+        var place = { 
+            _id:4,
+            _score: 100,
+            _text:'20009',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };  
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index ghost zip', function(t) {
+        var place = { 
+            _id:5,
+            _score: -1,
+            _text:'20009',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };  
+        addFeature(conf.place, place, t.end);
+    });
+    tape('fairfax', function(t) {
+        c.geocode('fairfax', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'fairfax');
+            t.deepEqual(res.features[0].id, 'place.1');
+            t.end();
+        }); 
+    }); 
+    tape('mclean', function(t) {
+        c.geocode('mclean', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'mclean');
+            t.deepEqual(res.features[0].id, 'place.2');
+            t.end();
+        }); 
+    }); 
+    tape('scored feature beats ghost', function(t) {
+        c.geocode('20009', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, '20009');
+            t.deepEqual(res.features[0].id, 'place.4');
+            t.end();
+        }); 
+    }); 
+    tape('exact match bests score', function(t) {
+        c.geocode('20009-2004', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, '20009-2004');
+            t.deepEqual(res.features[0].id, 'place.3');
+            t.end();
+        }); 
+    }); 
+})();
+
+
 // Confirm that for equally relevant features across three indexes
 // the first in hierarchy beats the others. (NO SCORES)
 (function() {
