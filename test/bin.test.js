@@ -43,7 +43,7 @@ tape('bin/carmen', function(t) {
 tape('bin/carmen query', function(t) {
     exec(bin + '/carmen.js ' + path.resolve(path.join(__dirname, 'fixtures', '01-ne.country.s3')) + ' --query=brazil', function(err, stdout, stderr) {
         t.ifError(err);
-        t.equal(/1\.00 Brazil/.test(stdout), true, 'finds brazil');
+        t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
         t.end();
     });
 });

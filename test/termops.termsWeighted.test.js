@@ -37,6 +37,15 @@ test('termops.termsWeighted', function(assert) {
         3859557456 + 15
     ], 'weights > 0 even if freq drops below total');
 
+    res = termops.termsWeighted([
+        'a'
+    ], {
+        0:[0]
+    });
+    assert.deepEqual(res, [
+        3826002208 + 15
+    ], 'weights > 0 even if freq == 0');
+
     assert.end();
 });
 
