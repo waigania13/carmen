@@ -91,7 +91,6 @@ var addFeature = require('./util/addfeature');
     tape('test token replacement', function(t) {
         c.geocode('qabc', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            console.log(res);
             t.equals(res.features[0].relevance, 0.99, 'token regex named group test, a-b-c => cba');
             t.end();
         });
