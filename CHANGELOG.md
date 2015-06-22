@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.1.5
+
+- Move `addfeature.js` from test directory to lib for external testing use.
+
+## 3.1.4
+
+- Fix for max call stack errors when using grid indexes with high cardinality.
+
+## 3.1.3
+
+- Extend geocoder_tokens to use XRegExp.
+
+## 3.1.2
+
+- Pin to node-mapnik 3.2.x until mapnik 3.3.x is ready.
+
+## 3.1.1
+
+- Allow geocoder_tokens to be expressed as explicit regex patterns.
+
+## 3.1.0
+
+- Include ghost features if queried for explicitly.
+
+## 3.0.9
+
+- Proximity fixes.
+
+## 3.0.8
+
+- Proximity fixes.
+
 ## 3.0.7
 
 - Prioritizes layer type + score consistently across proximity/non-proximity mode.
