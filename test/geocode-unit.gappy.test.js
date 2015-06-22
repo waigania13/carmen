@@ -5,7 +5,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
 var queue = require('queue-async');
-var addFeature = require('./util/addfeature');
+var addFeature = require('../lib/util/addfeature');
 
 // limit_verify 1 implies that the correct result must be the very top
 // result prior to context verification. It means even with a long list

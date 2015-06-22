@@ -5,7 +5,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
 var queue = require('queue-async');
-var addFeature = require('./util/addfeature');
+var addFeature = require('../lib/util/addfeature');
 
 // Confirms that you can forward search a ghost feature and that a scored featre will always win
 (function() {

@@ -5,7 +5,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var addFeature = require('./util/addfeature');
+var addFeature = require('../lib/util/addfeature');
 
 var conf = {
     addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
