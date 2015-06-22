@@ -6,7 +6,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var addFeature = require('./util/addfeature');
+var addFeature = require('../lib/util/addfeature');
 
 var conf = {
     place: new mem({maxzoom: 6}, function() {}),

@@ -3,7 +3,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
 var queue = require('queue-async');
-var addFeature = require('./util/addfeature');
+var addFeature = require('../lib/util/addfeature');
 
 var conf = {
     country: new mem({maxzoom: 6, geocoder_name:'country'}, function() {}),
