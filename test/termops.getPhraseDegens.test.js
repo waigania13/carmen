@@ -6,6 +6,7 @@ test('termops.getPhraseDegens', function(assert) {
         'm',
         'ma',
         'mai',
+        'main',
     ], 'degens for main');
 
     assert.deepEqual(termops.getPhraseDegens(['main', 'st']), [
@@ -14,6 +15,7 @@ test('termops.getPhraseDegens', function(assert) {
         'mai',
         'main',
         'main s',
+        'main st',
     ], 'degens for main st - skip "main "');
 
     assert.deepEqual(termops.getPhraseDegens(['20009']), [
@@ -21,6 +23,7 @@ test('termops.getPhraseDegens', function(assert) {
         '20',
         '200',
         '2000',
+        '20009',
     ], 'degens for 20009');
 
     assert.end();

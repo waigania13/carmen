@@ -43,6 +43,12 @@ test('termops.getIndexablePhrases', function(assert) {
             "phrase": 142812882
         },
         {
+            "degen": true,
+            "relev": 1,
+            "text": "main st",
+            "phrase": 192271808
+        },
+        {
             "degen": false,
             "relev": 1,
             "text": "main st",
