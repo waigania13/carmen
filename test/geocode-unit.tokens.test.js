@@ -59,9 +59,16 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
+        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.99, 'avenue du 18e');
+            t.end();
+        });
+    });
+    tape('test address index for relev', function(t) {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.79, 'token replacement test, avenue du 18e');
+            t.equals(res.features[0].relevance, 0.99, 'avenue du dix-huitième régiment');
             t.end();
         });
     });
