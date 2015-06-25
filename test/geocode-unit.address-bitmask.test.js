@@ -69,7 +69,7 @@ tape('no address', function(t) {
 tape('only number', function(t) {
     c.geocode('500', { limit_verify: 2 }, function (err, res) {
         t.ifError(err);
-        t.equals(res.features[0].address, '500', '500');
+        t.notok(res.features.length);
         t.end();
     });
 });

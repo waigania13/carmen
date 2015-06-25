@@ -26,6 +26,9 @@ test('termops.getPhraseDegens', function(assert) {
         '20009',
     ], 'degens for 20009');
 
+    assert.deepEqual(termops.getPhraseDegens(['###']), [
+    ], 'no degens for numToken');
+
     assert.end();
 });
 
