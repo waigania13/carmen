@@ -28,7 +28,7 @@ tape('index city', function(t) {
     var city = {
         _id:1,
         _text:'windsor',
-        _zxy:['6/32/32'],
+        _zxy:['6/32/32','6/33/32'],
         _center:[0,0]
     };
     addFeature(conf.city, city, t.end);
@@ -42,21 +42,22 @@ tape('index street', function(t) {
     };
     addFeature(conf.street, street, t.end);
 });
-// city beats street at spatialmatch
-tape('windsor ct (limit 1)', function(t) {
-    c.geocode('windsor ct', { limit_verify:1 }, function(err, res) {
-        t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
-        t.deepEqual(res.features[0].id, 'city.1');
-        t.end();
-    });
-});
 // city beats street at context sort
 tape('windsor ct (limit 2)', function(t) {
     c.geocode('windsor ct', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
         t.deepEqual(res.features[0].id, 'city.1');
+        t.end();
+    });
+});
+// street beats city
+tape('windsor ct windsor', function(t) {
+    c.geocode('windsor ct windsor', { limit_verify:2 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'windsor ct, windsor');
+        t.deepEqual(res.features[0].id, 'street.1');
+        t.deepEqual(res.features[0].relevance, 1);
         t.end();
     });
 });
