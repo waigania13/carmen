@@ -16,16 +16,16 @@ test('index.generateFrequency', function(assert) {
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
         0: [ 4 ],           // 4 total
-        1025494160: [ 1 ],  // 1 road
-        1986331696: [ 1 ],  // 1 street
-        3935363584: [ 2 ]   // 2 main
+        1025494171: [ 1 ],  // 1 road
+        1986331710: [ 1 ],  // 1 street
+        3935363592: [ 2 ]   // 2 main
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
         0: [ 4 ],           // 8 total
-        1263673920: [ 1 ],  // 1 rd
-        1498707680: [ 1 ],  // 1 st
-        3935363584: [ 2 ]   // 2 main
+        1263673922: [ 1 ],  // 1 road
+        1498707683: [ 1 ],  // 1 street
+        3935363592: [ 2 ]   // 2 main
     });
     assert.end();
 });
@@ -95,55 +95,28 @@ test('index', function(t) {
         });
     });
     t.test('loadall index', function(q) {
-        to._geocoder.unloadall('degen');
-        to._geocoder.unloadall('term');
-        to._geocoder.unloadall('phrase');
         to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('degen', 0));
-        q.ok(!to._geocoder.has('term', 0));
-        q.ok(!to._geocoder.has('phrase', 0));
         q.ok(!to._geocoder.has('grid', 0));
         carmen.loadall(to, 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('degen', 0));
-            q.ok(to._geocoder.has('term', 0));
-            q.ok(to._geocoder.has('phrase', 0));
             q.ok(to._geocoder.has('grid', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
-        to._geocoder.unloadall('degen');
-        to._geocoder.unloadall('term');
-        to._geocoder.unloadall('phrase');
         to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('degen', 0));
-        q.ok(!to._geocoder.has('term', 0));
-        q.ok(!to._geocoder.has('phrase', 0));
         q.ok(!to._geocoder.has('grid', 0));
         carmen.loadall(to, 10, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('degen', 0));
-            q.ok(to._geocoder.has('term', 0));
-            q.ok(to._geocoder.has('phrase', 0));
             q.ok(to._geocoder.has('grid', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 0.01)', function(q) {
-        to._geocoder.unloadall('degen');
-        to._geocoder.unloadall('term');
-        to._geocoder.unloadall('phrase');
         to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('degen', 0));
-        q.ok(!to._geocoder.has('term', 0));
-        q.ok(!to._geocoder.has('phrase', 0));
         q.ok(!to._geocoder.has('grid', 0));
         carmen.loadall(to, 0.01, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('degen', 0));
-            q.ok(to._geocoder.has('term', 0));
-            q.ok(to._geocoder.has('phrase', 0));
             q.ok(to._geocoder.has('grid', 0));
             q.end();
         });
@@ -151,9 +124,6 @@ test('index', function(t) {
     t.test('unloadall index', function(q) {
         carmen.unloadall(to, function(err) {
             q.ifError(err);
-            q.equal(to._geocoder.has('degen', 0), false);
-            q.equal(to._geocoder.has('term', 0), false);
-            q.equal(to._geocoder.has('phrase', 0), false);
             q.equal(to._geocoder.has('grid', 0), false);
             q.end();
         });
@@ -161,17 +131,12 @@ test('index', function(t) {
     t.test('wipes index', function(q) {
         carmen.wipe(to, function(err) {
             q.ifError(err);
-            carmen.verify(to, function(err, stats) {
-                q.deepEqual({
-                    freq: { '0': '' },
-                    term: { '0': '' },
-                    phrase: { '0': '' },
-                    grid: { '0': '' },
-                    degen: { '0': '' },
-                    feature: { '0': '{}', '1':'{}', '2':'{}', '3':'{}' }
-                }, to.serialize().shards);
-                q.end();
-            });
+            q.deepEqual({
+                freq: { '0': '' },
+                grid: { '0': '' },
+                feature: { '0': '{}', '1':'{}', '2':'{}', '3':'{}' }
+            }, to.serialize().shards);
+            q.end();
         });
     });
     t.end();
@@ -206,36 +171,25 @@ test('error -- zoom too low', function(t) {
 });
 
 test('index phrase collection', function(assert) {
-    var memDocs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var conf = { test:new mem(memDocs, {maxzoom:6}, function() {}) };
+    var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
     var docs = [{
         _id:1,
-        _text:'fake street',
+        _text:'a',
         _zxy:['6/32/32'],
         _center:[0,0]
     }, {
         _id:2,
-        _text:'fake street',
+        _text:'a',
         _zxy:['6/32/32'],
         _center:[0,0]
     }];
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        assert.deepEqual(conf.test._geocoder.list('phrase',0), ['559741915'], '1 phrase');
-        assert.deepEqual(conf.test._geocoder.get('phrase',559741915), [ 559417695, 1986331711 ], 'phrase has 2 terms');
-
-        assert.deepEqual(conf.test._geocoder.list('grid',0), [ '559741915' ], '1 grid');
-        assert.deepEqual(conf.test._geocoder.get('grid',559741915).sort(), [ 17593259786241, 17593259786242 ], 'grid has 2 zxy+feature ids');
-
-        assert.deepEqual(conf.test._geocoder.list('term',0), ['559417680'], '1 term (significant)');
-        assert.deepEqual(conf.test._geocoder.get('term',559417680), [ 559741915, 559741915 ], 'term => phrase is not deduped (yet)');
-
-        assert.deepEqual(conf.test._geocoder.list('degen',0), [ '559417680', '1263673920', '1680010080', '1986331696', '2784490928', '3259748752', '3529213088', '4027714032' ], '8 degens');
-        assert.deepEqual(conf.test._geocoder.get('degen',559417680), [ 559417680 ], 'degen => term is not deduped (yet)');
-        assert.deepEqual(conf.test._geocoder.get('degen',2784490928), [ 559417681 ], 'degen => term is not deduped (yet)');
-
+        assert.deepEqual(conf.test._geocoder.list('grid',0), [ '1678518572', '1678518573' ], '2 phrases');
+        assert.deepEqual(conf.test._geocoder.get('grid',1678518572), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.get('grid',1678518573), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });
