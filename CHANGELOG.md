@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.6
+
+- Rollback XRegExp use.
+
 ## 3.1.5
 
 - Move `addfeature.js` from test directory to lib for external testing use.

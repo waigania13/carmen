@@ -74,11 +74,13 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// RegExp captures have been put on hiatus per https://github.com/mapbox/carmen/pull/283.
+/*
 (function() {
     var conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: {'q(?<x>[a-z])(?<y>[a-z])(?<z>[a-z])': "${z}${y}${x}"}
+            geocoder_tokens: {'q([a-z])([a-z])([a-z])': "$3$2$1"}
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -103,6 +105,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
 })();
+*/
 
 tape('index.teardown', function(assert) {
     index.teardown();
