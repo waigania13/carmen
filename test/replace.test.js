@@ -204,6 +204,8 @@ var tokens = token.createReplacer({
 });
 
 test('token replacement', function(q) {
-        q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
-        q.end();
+    q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
+    q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
+    q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
+    q.end();
 });
