@@ -85,15 +85,6 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('verifies index', function(q) {
-        carmen.verify(to, function(err, stats) {
-            q.ifError(err);
-            q.deepEqual({ relation: [ 'term', 'phrase' ], count: [ 261, 265 ] }, stats[0]);
-            q.deepEqual({ relation: [ 'term', 'grid' ], count: [ 261, 265 ] }, stats[1]);
-            q.deepEqual({ relation: [ 'phrase', 'freq' ], count: [ 265, 410 ] }, stats[2]);
-            q.end();
-        });
-    });
     t.test('analyzes index', function(q) {
         carmen.analyze(to, function(err, stats) {
             q.ifError(err);

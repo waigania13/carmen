@@ -7,7 +7,6 @@ var Cache = require('./lib/util/cxxcache'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
     analyze = require('./lib/analyze'),
-    verify = require('./lib/verify'),
     loadall = require('./lib/loadall'),
     termops = require('./lib/util/termops'),
     token = require('./lib/util/token'),
@@ -145,18 +144,6 @@ Geocoder.prototype.index = function(from, to, pointer, callback) {
     }
     return index(this, from, to, pointer, callback);
 };
-
-// Verify the integrity of a source's index.
-Geocoder.prototype.verify = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            verify(source, callback);
-        }.bind(this));
-    }
-    return verify(source, callback);
-};
-
 
 // Analyze a source's index.
 Geocoder.prototype.analyze = function(source, callback) {
