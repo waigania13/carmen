@@ -11,18 +11,18 @@ var test = require('tape');
 var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
-test('index.generateFrequency', function(assert) {
-    var docs = [{_text:'main street'},{_text:'Main Road'}];
+test('index.generateStats', function(assert) {
+    var docs = [{_text:'main street', _score:2},{_text:'Main Road', _score:1}];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
-        0: [ 4 ],           // 4 total
+        0: [ 4, 2 ],        // 4 total
         1025494171: [ 1 ],  // 1 road
         1986331710: [ 1 ],  // 1 street
         3935363592: [ 2 ]   // 2 main
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
-        0: [ 4 ],           // 8 total
+        0: [ 4, 2 ],        // 4 total
         1263673922: [ 1 ],  // 1 road
         1498707683: [ 1 ],  // 1 street
         3935363592: [ 2 ]   // 2 main
