@@ -10,11 +10,10 @@ test('tokenizes basic strings', function(assert) {
     assert.deepEqual(termops.tokenize('4-10'), ['4-10']);
     assert.deepEqual(termops.tokenize('5-02A'), ['5-02a']);
     assert.deepEqual(termops.tokenize('23-'), ['23']);
-    assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
-    assert.deepEqual(termops.tokenize('San José'), ['san', 'jose']);
+    assert.deepEqual(termops.tokenize('San José'), ['san', 'josé']);
     assert.deepEqual(termops.tokenize('Chamonix-Mont-Blanc'), ['chamonix','mont','blanc']);
-    assert.deepEqual(termops.tokenize('Москва'), ['moskva']);
-    assert.deepEqual(termops.tokenize('京都市'), ['jing','du','shi']);
+    assert.deepEqual(termops.tokenize('Москва'), ['москва']);
+    assert.deepEqual(termops.tokenize('京都市'), ['京都市']);
     assert.end();
 });
 test('tokenizes lonlat', function(assert) {
