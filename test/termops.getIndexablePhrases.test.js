@@ -16,49 +16,49 @@ test('termops.getIndexablePhrases', function(assert) {
             "degen": true,
             "relev": 1,
             "text": "m",
-            "phrase": 1745629049
+            "phrase": 3893112696,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "ma",
-            "phrase": 1680745564
+            "phrase": 1680745562,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "mai",
-            "phrase": 1721957047
+            "phrase": 3869440694,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "main",
-            "phrase": 1787879945
+            "phrase": 3935363592,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "main s",
-            "phrase": 142812882
+            "phrase": 2290296528,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "main st",
-            "phrase": 192271808
+            "phrase": 2339755454,
         },
         {
             "degen": false,
             "relev": 1,
             "text": "main st",
-            "phrase": 192271807
+            "phrase": 2339755455,
         },
         {
             "degen": false,
             "relev": 0.8,
             "text": "main",
-            "phrase": 1787879944
+            "phrase": 3935363593,
         }
     ]);
 
