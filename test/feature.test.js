@@ -14,3 +14,15 @@ tape('seek', function(assert) {
     assert.end();
 });
 
+tape('shard', function(assert) {
+    for (var level = 0; level < 5; level++) {
+        var shards = {};
+        for (var i = 0; i < Math.pow(2,20); i++) {
+            var shard = feature.shard(level, i);
+            shards[shard] = shards[shard] || 0;
+            shards[shard]++;
+        }
+        assert.equal(Object.keys(shards).length, Math.pow(16, level + 1), 'shardlevel=' + level + ', shards=' + Math.pow(16, level + 1));
+    }
+    assert.end();
+});
