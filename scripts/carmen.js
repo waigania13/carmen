@@ -84,11 +84,11 @@ carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug },
         if (!argv.stats) return;
         console.log('Stats');
         console.log('-----');
-        console.log('- warmup:    %sms', load);
-        console.log('- search:    %s @ %sms', data.stats.searchCount||0, data.stats.searchTime||0);
-        console.log('- relev:     %s @ %sms', data.stats.relevCount||0, data.stats.relevTime||0);
-        console.log('- results:   %s @ %sms', data.stats.contextCount||0, data.stats.contextTime||0);
-        console.log('- totaltime: %sms', data.stats.totalTime||0);
+        console.log('- warmup:       %sms', load);
+        console.log('- phrasematch:  %sms', data.stats.phrasematch.time);
+        console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
+        console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
+        console.log('- totaltime:    %sms', data.stats.time);
 
         console.log('Cache');
         console.log('-----');
