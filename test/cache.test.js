@@ -199,113 +199,53 @@ test('#unloadall', function(s) {
     s.end();
 });
 
-(function() {
+test('#loadall', function(assert) {
+    var cache = new Cache('a', 1);
+    cache.set('grid', 1, [0]);
+    cache.set('grid', Math.pow(2,28), [1]);
 
-var Memsource = require('../lib/api-mem');
-var mem = new Memsource({}, function() {});
-var docs = require('./fixtures/docs.json');
-var index = require('../lib/index');
-var stats = { term:0, phrase:0 };
-var cache = new Cache('a', 1);
-var zoom = 6;
-mem._geocoder = cache;
-mem._geocoder.geocoder_tokens = {};
-mem._geocoder.token_replacer = [];
+    var packs = [];
+    packs[0] = cache.pack('grid', 0);
+    packs[1] = cache.pack('grid', 1);
 
-function getter(type, shard, callback) {
-    stats[type]++;
-    mem.getGeocoderData(type, shard, callback);
-}
+    function getter(type, shard, callback) {
+        return callback(null, packs[shard]);
+    }
 
-test('#getall setup', function(q) {
-    index.update(mem, docs, zoom, function(err) {
-        q.ifError(err);
-        index.store(mem, q.end);
-    });
-});
+    var loader = new Cache('b', 1);
+    assert.equal(loader.has('grid', 0), false);
+    assert.equal(loader.has('grid', 1), false);
+    load1();
 
-test('term', function(r) {
-    var ids = [
-        238637120, // shard0
-        474088544, // shard1
-        268231120, // shard0
-        546393072, // shard2
-        515671616, // shard1
-    ];
-    var check = function(err, result) {
-        r.ifError(err);
-
-        // Returns ids mapped to input ids.
-        result.sort();
-        r.deepEqual([238233187,267425555,474088545,515671625,546393074], result);
-
-        // Has loaded shards into cache -- other ids in same shards
-        // can be retrieved without additional IO.
-        r.deepEqual([4835448], cache.get('term', 4835440), 'shard 0 in memory');
-        r.deepEqual([283379720], cache.get('term', 284048608), 'shard 1 in memory');
-
-        // Check IO counter.
-        r.equal(3, stats.term);
-    };
-    // x2 runs and check ensures that
-    // - IO does not occur beyond first run.
-    // - result is identical with/without IO.
-    cache.getall(getter, 'term', ids, function(err, result) {
-        check(err, result);
-        cache.getall(getter, 'term', ids, function(err, result) {
-            check(err, result);
-            r.end();
+    function load1() {
+        loader.loadall(getter, 'grid', [1,Math.pow(2,28)], function(err, shards, queue) {
+            assert.ifError(err);
+            assert.deepEqual(loader.get('grid', 1), [0]);
+            assert.deepEqual(loader.get('grid', Math.pow(2,28)), [1]);
+            load2();
         });
-    });
-});
-
-test('term empty', function(r) {
-    cache.getall(getter, 'term', [556780291], function(err, result) {
-        r.deepEqual([], result);
-        r.end();
-    });
-});
-
-test('phrase', function(r) {
-    var ids = [
-        733221362, // shard2
-        4835448,   // shard0
-        619528441, // shard2
-        579414696, // shard2
-        184073316, // shard0
-    ];
-    var check = function(err, result) {
-        r.ifError(err);
-
-        // Returns ids mapped to input ids.
-        result.sort();
-        r.deepEqual([184073327,4835455,733221375], result);
-
-        // Has loaded shards into cache -- other ids in same shards
-        // can be retrieved without additional IO.
-        r.deepEqual([ 7592655 ], cache.get('phrase', 7592655), 'shard 0 in memory');
-        r.deepEqual([ 546393087 ], cache.get('phrase', 546393074), 'shard 2 in memory');
-
-        // Check IO counter.
-        r.equal(2, stats.phrase);
-    };
-
-    // x2 runs and check ensures that
-    // - IO does not occur beyond first run.
-    // - result is identical with/without IO.
-    cache.getall(getter, 'phrase', ids, function(err, result) {
-        check(err, result);
-        cache.getall(getter, 'phrase', ids, function(err, result) {
-            check(err, result);
-            r.end();
+    }
+    function load2() {
+        loader.loadall(getter, 'grid', [1,Math.pow(2,28)], function(err, shards, queue) {
+            assert.ifError(err);
+            assert.deepEqual(loader.get('grid', 1), [0]);
+            assert.deepEqual(loader.get('grid', Math.pow(2,28)), [1]);
+            get1();
         });
-    });
+    }
+    function get1() {
+        loader.getall(getter, 'grid', [1,Math.pow(2,28)], function(err, loaded) {
+            assert.ifError(err);
+            assert.deepEqual(loaded, [1,0]);
+            get2();
+        });
+    }
+    function get2() {
+        loader.getall(getter, 'grid', [1,Math.pow(2,28)], function(err, loaded) {
+            assert.ifError(err);
+            assert.deepEqual(loaded, [1,0]);
+            assert.end();
+        });
+    }
 });
-
-test('index.teardown', function(assert) {
-    index.teardown();
-    assert.end();
-});
-
-})();
 
