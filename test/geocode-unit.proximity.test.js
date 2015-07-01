@@ -50,6 +50,25 @@ tape('index province', function(t) {
     };
     addFeature(conf.country, country, t.end);
 });
+tape('index province', function(t) {
+    var province = {
+        _id:2,
+        _text:'fakeprov',
+        _zxy:['6/14/18'],
+        _center:[-100,60]
+    };
+    addFeature(conf.province, province, t.end);
+});
+tape('index province', function(t) {
+    var province = {
+        _id:3,
+        _text:'fakeprov',
+        _zxy:['6/21/35'],
+        _center:[-60,-20]
+    };
+    addFeature(conf.province, province, t.end);
+});
+
 
 tape('forward country - single layer - limit', function(t) {
     c.geocode('country', { limit_verify: 1, }, function (err, res) {
@@ -138,6 +157,28 @@ tape('forward country - repect layer presidence', function(t) {
         t.equals(res.features[0].place_name, 'province', 'found province');
         t.equals(res.features[0].id, 'country.3', 'found country.3');
         t.equals(res.features[0].relevance, 0.99);
+        t.end();
+    });
+});
+
+// Test proximity with multi-part query
+tape('forward province - multilayer', function(t) {
+    c.geocode('fakeprov country', { proximity: [-100,60], limit_verify:1 }, function (err, res) {
+        t.ifError(err);
+        t.equals(res.features[0].place_name, 'fakeprov, country', 'found province');
+        t.equals(res.features[0].id, 'province.2', 'found province.2');
+        t.equals(res.features[0].relevance, 1);
+        t.end();
+    });
+});
+
+// Test proximity with multi-part query
+tape('forward province - multilayer', function(t) {
+    c.geocode('fakeprov country', { proximity: [-60,-20], limit_verify:1 }, function (err, res) {
+        t.ifError(err);
+        t.equals(res.features[0].place_name, 'fakeprov, country', 'found province');
+        t.equals(res.features[0].id, 'province.3', 'found province.3');
+        t.equals(res.features[0].relevance, 1);
         t.end();
     });
 });
