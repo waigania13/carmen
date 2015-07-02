@@ -5,7 +5,7 @@ var index = require('../lib/index');
 var docs = require('../test/fixtures/docs.json');
 
 suite.add('index', function() {
-    index.generateFrequency(docs);
+    index.generateFrequency(docs, {});
 })
 .on('cycle', function(event) {
     console.log(String(event.target));

@@ -4,50 +4,49 @@ var index = require('../lib/index');
 var indexdocs = require('../lib/indexer/indexdocs');
 var docs = require('../test/fixtures/docs.json');
 var pointDoc = require('./fixtures/point-doc.json')
-var freq = index.generateFrequency(docs);
-var patch = { grid: {}, term: {}, phrase: {}, degen: {}, feature: {} };
-var known = { term: {} };
+var freq = index.generateFrequency(docs, {});
 var zoom = 6;
 var suite = new Benchmark.Suite()
 var pointDocs = [];
 
 for(var i = 0; i < 500; i++) {
-	pointDocs.push(pointDoc);
+    pointDocs.push(pointDoc);
 }
 
 suite.add('index many', {
   'defer': true,
   'fn': function(deferred) {
-  	indexdocs(docs, freq, zoom, function(err, res){
+    indexdocs(docs, freq, zoom, {}, function(err, res){
     	deferred.resolve();
     });
   }
 }).add('index large polygon', {
   'defer': true,
   'fn': function(deferred) {
-  	indexdocs([docs[4]], freq, zoom, function(err, res){
+    indexdocs([docs[4]], freq, zoom, {}, function(err, res){
     	deferred.resolve();
     });
   }
 }).add('index small polygon', {
   'defer': true,
   'fn': function(deferred) {
-  	indexdocs([docs[16]], freq, zoom, function(err, res){
+    indexdocs([docs[16]], freq, zoom, {}, function(err, res){
     	deferred.resolve();
     });
   }
 }).add('index point doc', {
   'defer': true,
   'fn': function(deferred) {
-  	indexdocs([pointDoc], freq, zoom, function(err, res){
+    indexdocs([pointDoc], freq, zoom, {}, function(err, res){
     	deferred.resolve();
     });
   }
 }).add('index many point docs', {
   'defer': true,
   'fn': function(deferred) {
-  	indexdocs(pointDocs, freq, zoom, function(err, res){
+    indexdocs(pointDocs, freq, zoom, {}, function(err, res){
     	deferred.resolve();
+        indexdocs.teardown();
     });
   }
 }).on('cycle', function(event) {

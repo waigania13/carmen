@@ -16,12 +16,12 @@ var tape = require('tape');
         var docs = require('fs').readFileSync(__dirname + '/fixtures/lake-streetnames.txt', 'utf8')
             .split('\n')
             .filter(function(text) { return !!text; })
-            .slice(0,10000)
+            .slice(0,100)
             .reduce(function(memo, text) {
                 // generate between 1-100 features with this text.
-                var seed = Math.ceil(Math.random() * 100);
+                var seed = 2000;
                 for (var i = 0; i < seed; i++) {
-                    var lat = Math.random() * 180 - 90;
+                    var lat = Math.random() * 170 - 85;
                     var lon = Math.random() * 360 - 180;
                     memo.push({
                         _id: ++seq,
@@ -44,7 +44,7 @@ var tape = require('tape');
         var q = queue(10);
         for (var i = 0; i < runs; i++) q.defer(doit);
         function doit(done) {
-            phrasematch(conf.street, 0, 'Lake View Rd', function(err, features, result) {
+            phrasematch(conf.street, 'Westside Lake Rd', function(err, result) {
                 if (!result.length) {
                     done(new Error('No results'));
                 } else {
