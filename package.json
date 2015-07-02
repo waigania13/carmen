@@ -44,7 +44,6 @@
   },
   "main": "./index.js",
   "scripts": {
-    "pretest": "./scripts/install-dbs.sh",
     "test": "retire -n && tape ./test/*.js",
     "cov": "istanbul cover test/*.js",
     "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info"
