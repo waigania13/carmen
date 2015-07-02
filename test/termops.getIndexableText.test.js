@@ -34,7 +34,7 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = {_text:'Avenue du dix-huitième régiment'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'avenue', 'du', '18e', 'regiment' ]
+        [ 'avenue', 'du', '18e', 'régiment' ]
     ], 'hypenated replacement');
 
     replacer = token.createReplacer({});

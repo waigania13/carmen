@@ -75,10 +75,10 @@ test('termops.getIndexablePhrases (京都市)', function(assert) {
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
-        { degen: true, phrase: 2891398616, relev: 1, text: '京' },
-        { degen: true, phrase: 1629263362, relev: 1, text: '京都' },
-        { degen: true, phrase: 413951160, relev: 1, text: '京都市' },
-        { degen: false, phrase: 413951161, relev: 1, text: '京都市' }
+        { degen: true, phrase: 3106018850, relev: 1, text: '京' },
+        { degen: true, phrase: 2523610326, relev: 1, text: '京都' },
+        { degen: true, phrase: 3849941224, relev: 1, text: '京都市' },
+        { degen: false, phrase: 3849941225, relev: 1, text: '京都市' }
     ]);
 
     assert.end();
