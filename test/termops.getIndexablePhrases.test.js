@@ -65,3 +65,64 @@ test('termops.getIndexablePhrases', function(assert) {
     assert.end();
 });
 
+test('termops.getIndexablePhrases (京都市)', function(assert) {
+    var tokens;
+    var freq;
+
+    tokens = ['京都市'];
+    freq = {};
+    freq[0] = [1];
+    freq[termops.encodeTerm(tokens[0])] = [1];
+
+    assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
+        { degen: true, phrase: 2891398616, relev: 1, text: '京' },
+        { degen: true, phrase: 1629263362, relev: 1, text: '京都' },
+        { degen: true, phrase: 413951160, relev: 1, text: '京都市' },
+        { degen: false, phrase: 413951161, relev: 1, text: '京都市' }
+    ]);
+
+    assert.end();
+});
+
+test('termops.getIndexablePhrases (москва)', function(assert) {
+    var tokens;
+    var freq;
+
+    tokens = ['москва'];
+    freq = {};
+    freq[0] = [1];
+    freq[termops.encodeTerm(tokens[0])] = [1];
+
+    assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
+        { degen: true, phrase: 3893112696, relev: 1, text: 'м' },
+        { degen: true, phrase: 1647190324, relev: 1, text: 'мо' },
+        { degen: true, phrase: 3567149362, relev: 1, text: 'мос' },
+        { degen: true, phrase: 240336666, relev: 1, text: 'моск' },
+        { degen: true, phrase: 4195145878, relev: 1, text: 'москв' },
+        { degen: true, phrase: 2553908034, relev: 1, text: 'москва' },
+        { degen: false, phrase: 2553908035, relev: 1, text: 'москва' }
+    ]);
+
+    assert.end();
+});
+
+test('termops.getIndexablePhrases (josé)', function(assert) {
+    var tokens;
+    var freq;
+
+    tokens = ['josé'];
+    freq = {};
+    freq[0] = [1];
+    freq[termops.encodeTerm(tokens[0])] = [1];
+
+    assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
+        { degen: true, phrase: 4010556028, relev: 1, text: 'j' },
+        { degen: true, phrase: 1648323158, relev: 1, text: 'jo' },
+        { degen: true, phrase: 3470006334, relev: 1, text: 'jos' },
+        { degen: true, phrase: 4058142126, relev: 1, text: 'josé' },
+        { degen: false, phrase: 4058142127, relev: 1, text: 'josé' }
+    ]);
+
+    assert.end();
+});
+
