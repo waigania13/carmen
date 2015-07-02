@@ -1,5 +1,3 @@
-//Test Carmen options.debug
-
 var tape = require('tape');
 var Carmen = require('..');
 var index = require('../lib/index');
@@ -8,50 +6,125 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    country: new mem({ maxzoom:6 }, function() {})
+    province: new mem(null, function() {}),
+    city: new mem(null, function() {}),
+    street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index country', function(t) {
-    var country = {
+tape('index province', function(t) {
+    var province = {
         _id:1,
-        _text:'czech republic',
+        _text:'new york, ny',
+        _zxy:['6/32/32','6/33/32'],
+        _center:[0,0]
+    };
+    addFeature(conf.province, province, t.end);
+});
+tape('index city 1', function(t) {
+    var city = {
+        _id:2,
+        _text:'new york, ny',
         _zxy:['6/32/32'],
         _center:[0,0]
     };
-    addFeature(conf.country, country, t.end);
+    addFeature(conf.city, city, t.end);
 });
-tape('index country2', function(t) {
-    var country = {
-        _id:2,
-        _text:'fake country two',
-        _zxy:['7/32/32'],
+tape('index city 2', function(t) {
+    var city = {
+        _id:3,
+        _text:'tonawanda',
+        _zxy:['6/33/32'],
+        _center:[360/64+0.001,0]
+    };
+    addFeature(conf.city, city, t.end);
+});
+tape('index street 1', function(t) {
+    var street = {
+        _id:4,
+        _text:'west st',
+        _zxy:['6/32/32'],
         _center:[0,0]
     };
-    addFeature(conf.country, country, t.end);
+    addFeature(conf.street, street, t.end);
 });
-tape('czech debug:1', function(t) {
-    c.geocode('czech', { debug: 1, limit_verify:1 }, function(err, res) {
+tape('index street 2', function(t) {
+    var street = {
+        _id:5,
+        _text:'west st',
+        _zxy:['6/33/32'],
+        _center:[360/64+0.001,0]
+    };
+    addFeature(conf.street, street, t.end);
+});
+tape('west st, tonawanda, ny', function(t) {
+    c.geocode('west st tonawanda ny', { limit_verify:1, debug:4 }, function(err, res) {
         t.ifError(err);
-        if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-1a.json', JSON.stringify(res.debug, null, 2));
-        t.deepEqual(res.debug, require('./fixtures/debug-1a.json'), 'debug matches');
+        t.equal(res.debug.id, 4, 'debugs id');
+        t.equal(res.debug.extid, 4, 'debugs extid');
+
+        t.deepEqual(Object.keys(res.debug), [
+            'id',
+            'extid',
+            'phrasematch',
+            'spatialmatch',
+            'spatialmatch_position',
+            'verifymatch'
+        ], 'debug keys');
+
+        t.deepEqual(res.debug.phrasematch, {
+            '0': { ny: 0.25 },
+            '1': { ny: 0.25, tonawanda: 0.25 },
+            '2': { st: 0.25, west: 0.25, 'west st': 0.5 }
+        }, 'debugs matched phrases');
+
+        // Found debug feature in spatialmatch results @ position 1
+        t.deepEqual(res.debug.spatialmatch[0].text, 'west st');
+        t.deepEqual(res.debug.spatialmatch[0].relev, 0.5);
+        t.deepEqual(res.debug.spatialmatch[1].text, 'ny');
+        t.deepEqual(res.debug.spatialmatch[1].relev, 0.25);
+        t.deepEqual(res.debug.spatialmatch_position, 1);
+
+        // Debug feature not found in verifymatch
+        t.deepEqual(res.debug.verifymatch, null);
         t.end();
     });
 });
-
-tape('czech republic debug:1', function(t) {
-    c.geocode('czech republic', { debug: 1, limit_verify:1 }, function(err, res) {
+tape('west st, tonawanda, ny', function(t) {
+    c.geocode('west st tonawanda ny', { limit_verify:1, debug:5 }, function(err, res) {
         t.ifError(err);
-        if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-1b.json', JSON.stringify(res.debug, null, 2));
-        t.deepEqual(res.debug, require('./fixtures/debug-1b.json'), 'debug matches');
-        t.end();
-    });
-});
+        t.equal(res.debug.id, 5, 'debugs id');
+        t.equal(res.debug.extid, 5, 'debugs extid');
 
-tape('czech republic debug:3', function(t) {
-    c.geocode('czech republic', { debug: 3, limit_verify:1 }, function(err, res) {
-        t.ifError(err);
-        if (process.env.UPDATE) fs.writeFileSync(__dirname + '/fixtures/debug-3a.json', JSON.stringify(res.debug, null, 2));
-        t.deepEqual(res.debug, require('./fixtures/debug-3a.json'), 'debug matches');
+        t.deepEqual(Object.keys(res.debug), [
+            'id',
+            'extid',
+            'phrasematch',
+            'spatialmatch',
+            'spatialmatch_position',
+            'verifymatch',
+            'verifymatch_position'
+        ], 'debug keys');
+
+        t.deepEqual(res.debug.phrasematch, {
+            '0': { ny: 0.25 },
+            '1': { ny: 0.25, tonawanda: 0.25 },
+            '2': { st: 0.25, west: 0.25, 'west st': 0.5 }
+        }, 'debugs matched phrases');
+
+        // Found debug feature in spatialmatch results @ position 1
+        t.deepEqual(res.debug.spatialmatch[0].id, 5);
+        t.deepEqual(res.debug.spatialmatch[0].text, 'west st');
+        t.deepEqual(res.debug.spatialmatch[0].relev, 0.5);
+        t.deepEqual(res.debug.spatialmatch[1].text, 'tonawanda');
+        t.deepEqual(res.debug.spatialmatch[1].relev, 0.25);
+        t.deepEqual(res.debug.spatialmatch[2].text, 'ny');
+        t.deepEqual(res.debug.spatialmatch[2].relev, 0.25);
+        t.deepEqual(res.debug.spatialmatch_position, 0);
+
+        // Debug feature not found in verifymatch
+        t.deepEqual(res.debug.verifymatch[0]._id, 5);
+        t.deepEqual(res.debug.verifymatch[0]._text, 'west st');
+        t.deepEqual(res.debug.verifymatch_position, 0);
         t.end();
     });
 });

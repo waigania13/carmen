@@ -6,6 +6,49 @@ var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
 var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
+var Carmen = require('../index.js');
+var MBTiles = require('mbtiles');
+var Memsource = require('../lib/api-mem');
+var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
+var addFeature = require('../lib/util/addfeature');
+
+tape('index', function(assert) {
+    try { fs.unlinkSync(tmpindex); } catch(err) {}
+    var mbtiles = new MBTiles(tmpindex, start);
+    var carmen = new Carmen({ index: mbtiles });
+    function start(err) {
+        assert.ifError(err);
+        mbtiles.startWriting(write1);
+    }
+    function write1(err) {
+        assert.ifError(err);
+        addFeature(mbtiles, {
+            _id:38,
+            _text:'Canada',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        }, write2);
+    }
+    function write2(err) {
+        assert.ifError(err);
+        addFeature(mbtiles, {
+            _id:39,
+            _text:'Brazil',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        }, store);
+    }
+    function store(err) {
+        assert.ifError(err);
+        require('../lib/index.js').teardown();
+        require('../lib/index.js').store(mbtiles, stop);
+    }
+    function stop(err) {
+        assert.ifError(err);
+        mbtiles.stopWriting(assert.end);
+    }
+});
+
 tape('bin/grid --from', function(t){
     exec(bin + '/grid.js --from --query="2199191027836"', function(err, stdout, stderr) {
         t.ifError(err);
@@ -23,12 +66,14 @@ tape('bin/grid --to', function(t){
 });
 
 tape('bin/carmen DEBUG', function(t){
-    exec(bin + '/carmen.js --query="canada" --debug="38"', function(err, stdout, stderr) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', function(err, stdout, stderr) {
         t.ifError(err);
-        t.ok(stdout.indexOf('{ grid: 9896107966502, x: 18, y: 15 }') !== -1, 'single grid feature');
+        t.equal(/0\.99 Canada/.test(stdout), true, 'finds canada');
         t.ok(stdout.indexOf('phrasematch:') !== -1, 'debug phrase match');
+        t.ok(stdout.indexOf('spatialmatch:') !== -1, 'debug spatial');
         t.ok(stdout.indexOf('spatialmatch_position:') !== -1, 'debug spatial');
         t.ok(stdout.indexOf('verifymatch:') !== -1, 'debug verify match');
+        t.ok(stdout.indexOf('verifymatch_position:') !== -1, 'debug verify match');
         t.end();
     });
 });
@@ -41,19 +86,9 @@ tape('bin/carmen', function(t) {
     });
 });
 tape('bin/carmen query', function(t) {
-    exec(bin + '/carmen.js ' + path.resolve(path.join(__dirname, 'fixtures', '01-ne.country.s3')) + ' --query=brazil', function(err, stdout, stderr) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil', function(err, stdout, stderr) {
         t.ifError(err);
         t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
-        t.end();
-    });
-});
-tape('bin/lookup query', function(t) {
-    exec(bin + '/lookup.js --query="czech republic", --index="tiles/01-ne.country.mbtiles" --term', function(err, stdout, stderr) {
-        t.ifError(err);
-        var lookup = stdout.replace(/\r?\n|\r/g, " ");
-        var lookupFixture = fs.readFileSync(__dirname + '/fixtures/lookup', 'utf-8').replace(/\r?\n|\r/g, " ");
-
-        t.equal(lookup, lookupFixture, 'finds czech republic');
         t.end();
     });
 });
@@ -65,7 +100,7 @@ tape('bin/carmen-copy noargs', function(t) {
     });
 });
 tape('bin/carmen-copy 1arg', function(t) {
-    exec(bin + '/carmen-copy.js tiles/01-ne.country.mbtiles', function(err, stdout, stderr) {
+    exec(bin + '/carmen-copy.js ' + tmpindex, function(err, stdout, stderr) {
         t.equal(1, err.code);
         t.equal("Usage: carmen-copy.js <from> <to>\n", stdout);
         t.end();
@@ -73,11 +108,11 @@ tape('bin/carmen-copy 1arg', function(t) {
 });
 tape('bin/carmen-copy', function(t) {
     var dst = tmpdir + '/carmen-copy-test.mbtiles';
-    exec(bin + '/carmen-copy.js tiles/01-ne.country.mbtiles ' + dst, function(err, stdout, stderr) {
+    exec(bin + '/carmen-copy.js ' + tmpindex + ' ' + dst, function(err, stdout, stderr) {
         t.ifError(err);
-        t.equal(/Copying tiles\/01-ne\.country\.mbtiles/.test(stdout), true);
+        t.equal(/Copying/.test(stdout), true);
         t.equal(/Done\./.test(stdout), true);
-        t.equal(fs.statSync(dst).size > 80e3, true);
+        t.equal(fs.statSync(dst).size > 20e3, true);
         t.equal(fs.unlinkSync(dst), undefined, 'cleanup');
         t.end();
     });
