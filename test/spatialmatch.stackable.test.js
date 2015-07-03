@@ -31,20 +31,20 @@ test('stackable complex', function(assert) {
         [ b1, b2 ],
         [ c1, c2 ],
     ]).map(function(stack) {
-        return stack.map(function(s) { return s.text });
+        return stack.relev.toFixed(2) + ' - ' + stack.map(function(s) { return s.text }).join(', ');
     });
     assert.deepEqual(debug, [
-        [ 'a1', 'b1', 'c2' ],
-        [ 'a1', 'b2', 'c1' ],
-        [ 'a2', 'b1' ],
-        [ 'a2', 'c1' ],
-        [ 'a1', 'c1' ],
-        [ 'a1', 'c2' ],
-        [ 'a1', 'b1' ],
-        [ 'a1', 'b2' ],
-        [ 'b2', 'c1' ],
-        [ 'b1', 'c2' ],
-        [ 'a2' ]
+        '1.00 - a2, b1',
+        '1.00 - a2, c1',
+        '1.00 - a1, b1, c2',
+        '1.00 - a1, b2, c1',
+        '0.67 - a1, c1',
+        '0.67 - a1, c2',
+        '0.67 - a1, b1',
+        '0.67 - a1, b2',
+        '0.67 - b2, c1',
+        '0.67 - b1, c2',
+        '0.66 - a2'
     ]);
     assert.end();
 });
