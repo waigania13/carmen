@@ -385,8 +385,8 @@ lib/
 
 There are two types of index stores in Carmen.
 
-- `cxxcache` is used for storing the `degen`, `term`, `phrase`, `grid`, and
-  `freq` indexes. Each index is sharded and each shard contains a one-to-many
+- `cxxcache` is used for storing the `grid`, and `freq` indexes.
+  Each index is sharded and each shard contains a one-to-many
   hash with 32-bit integer keys that map to arrays of arbitrary length
   containing 32-bit integer elements.
 - `feature` is used to store feature docs. Each index is sharded and each shard
@@ -399,54 +399,41 @@ performance, especially in V8 as keys of a hash object. To convert arbitrary
 text (like tokenized text) to integers the FNV1a hash is used and sometimes
 truncated to make room for additional encoded data.
 
-### term (canonical, degenerate, weighted)
+### freq
 
-term | extra
------|------
-31-4 | 3-0
+Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a `fnv1a` hash.
 
-The first 28 bits of a term hash determine the canonical ID of a term. The
-remaining 4 bits can be used for additional data.
+    term_id => [ count ]
 
-- **Degenerates** are terms with delete operations performed on them. The extra
-  4 bits are used to encode the number of delete operations (up to 15 chars)
-  performed on the canonical term to result in the degenerate.
-- **Weighted** terms are term hashes with weights (0-15) relative to other terms
-  in the same phrase. The weights are only relevant in the context of the phrase
-  being considered. A weight of 15 signifies the most significant term in the
-  phrase with other terms being <= 15.
+Conceptual exapmle with actual text rather than `fnv1a` hashes for readability:
 
-### term (numeric)
+    street => [ 103120 ]
+    main   => [ 503 ]
+    market => [ 31 ]
 
-term | extra
------|------
-31-4 | 3-0
+### grid
 
-The first 28 bits of a numeric term are based on the parsed number value of the
-term text (e.g. "2801" => 2801). The remaining 4 bits can be used for
-additional data.
+Stores a mapping of phrase/phrase degenerate to feature cover grids.
 
-- **Degenerates** for numeric terms are currently not calculated.
-- **Weights** for numeric terms are encoded in the same way as normal text terms.
+    phrase_id => [ grid, grid, grid, grid ... ]
 
-### dataterm (min/max range)
+A lookup against this index effectively answers the question: what and where are all the features that match (whole or partially) a given text phrase? 
 
-dataterm | max   | min  | type | extra
----------|-------|------|------|------
-52       | 47-28 | 27-8 | 7-4  | 3-0
+Grids are encoded as 53-bit integers (largest possible JS integer) storing the following information:
 
-The 52-bit of a dataterm flags it as dataterm. Currently the only `type` of
-dataterm is the `0 => range` type whereby the next 40 bits are used to encode
-the min/max housenum range of a feature. Future types may encode different data
-in this space. Like any normal term there is an extra 4 bits for encoding a
-**weight**.
+info | bits | description
+---- |------|------------
+x    | 14   | x tile cover coordinate, up to z14
+y    | 14   | y tile cover coordinate, up to z14
+relev| 2    | relev between 0.4 and 1.0 (possible values: 0.4, 0.6, 0.8, 1.0)
+score| 3    | score scaled to a value between 0-7
+id   | 20   | feature id, truncated to 20 bits
 
-### phrase
+### phrase_id
 
-sig term | phrase
----------|-------
-0-11     | 12-31
+phrase | degen
+------ |------
+31-1   | 0
 
-The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
-the most significant term (based on IDF of freq index) of a phrase. This scheme
-clusters phrases in shards by the term used to query each phrase.
+The first 31 bits of a phrase ID are the `fnv1a` hash of the phrase text. The last remaining bit is used to store whether the `phrase_id` is for a complete or degenerate phrase.
+
