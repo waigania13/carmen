@@ -21,7 +21,7 @@ test('#get', function(r) {
     var cache = new Cache('a', 1);
     cache.set('term', 5, [0,1,2]);
     r.deepEqual([0, 1, 2], cache.get('term', 5));
-    r.equal(undefined, cache.get('term'));
+    r.throws(function() { cache.get('term'); }, Error, 'throws on misuse');
     r.end();
 });
 
