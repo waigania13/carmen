@@ -21,7 +21,7 @@ tape('worker.loadDoc', function(assert) {
         _id: 1,
         _text: 'main st',
         _center: [0, 0],
-        _zxy: ['6/32/32'],
+        _zxy: ['6/32/32', '14/16384/32'],
         _score: 100
     };
 
