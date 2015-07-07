@@ -34,17 +34,17 @@ test('stackable complex', function(assert) {
         return stack.relev.toFixed(2) + ' - ' + stack.map(function(s) { return s.text }).join(', ');
     });
     assert.deepEqual(debug, [
-        '1.00 - a2, b1',
-        '1.00 - a2, c1',
-        '1.00 - a1, b1, c2',
-        '1.00 - a1, b2, c1',
-        '0.67 - a1, c1',
-        '0.67 - a1, c2',
-        '0.67 - a1, b1',
-        '0.67 - a1, b2',
-        '0.67 - b2, c1',
-        '0.67 - b1, c2',
-        '0.66 - a2'
+        '0.99 - a2, c1',
+        '0.99 - a2, b1',
+        '0.66 - a2',
+        // '1.00 - a1, b1, c2', => mask goes backwards
+        // '1.00 - a1, b2, c1', => mask goes backwards
+        // '0.66 - a1, c2', => mask goes backwards
+        // '0.66 - a1, b2', => mask goes backwards
+        // '0.66 - b1, c2', => mask goes backwards
+        '0.66 - b2, c1',
+        '0.66 - a1, c1',
+        '0.66 - a1, b1',
     ]);
     assert.end();
 });
