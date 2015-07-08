@@ -35,6 +35,42 @@ test('index.update -- error', function(t) {
     var to = new mem(docs, null, function() {});
     var carmen = new Carmen({ to: to });
     var zoom = 6;
+    t.test('update 1', function(q) {
+        index.update(to, [{
+            _text:'main st',
+            _id:1,
+            _score:10,
+            _geometry:{type:'Point', coordinates:[0,0]},
+            _center:[0,0],
+            _zxy:['6/32/32']
+        }], zoom, function(err) {
+            q.ifError(err);
+            q.deepEqual(to._geocoder.get('freq', 0), [2,10]);
+            q.end();
+        });
+    });
+    t.test('update 2', function(q) {
+        index.update(to, [{
+            _text:'main st',
+            _id:1,
+            _score:0,
+            _geometry:{type:'Point', coordinates:[0,0]},
+            _center:[0,0],
+            _zxy:['6/32/32']
+        }], zoom, function(err) {
+            q.ifError(err);
+            q.deepEqual(to._geocoder.get('freq', 0), [4,10]);
+            q.end();
+        });
+    });
+    t.end();
+});
+
+test('index.update freq', function(t) {
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var to = new mem(null, function() {});
+    var carmen = new Carmen({ to: to });
+    var zoom = 6;
     t.test('error no _id', function(q) {
         index.update(to, [{_text:'main st'}], zoom, function(err) {
             q.equal('Error: doc has no _id', err.toString());
