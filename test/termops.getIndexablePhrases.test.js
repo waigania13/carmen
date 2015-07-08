@@ -22,13 +22,13 @@ test('termops.getIndexablePhrases', function(assert) {
             "degen": true,
             "relev": 1,
             "text": "ma",
-            "phrase": 1680745562,
+            "phrase": 1680745560,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "mai",
-            "phrase": 3869440694,
+            "phrase": 3869440688,
         },
         {
             "degen": true,
@@ -40,19 +40,19 @@ test('termops.getIndexablePhrases', function(assert) {
             "degen": true,
             "relev": 1,
             "text": "main s",
-            "phrase": 2290296528,
+            "phrase": 2290296530,
         },
         {
             "degen": true,
             "relev": 1,
             "text": "main st",
-            "phrase": 2339755454,
+            "phrase": 2339755450,
         },
         {
             "degen": false,
             "relev": 1,
             "text": "main st",
-            "phrase": 2339755455,
+            "phrase": 2339755451,
         },
         {
             "degen": false,
@@ -75,10 +75,10 @@ test('termops.getIndexablePhrases (京都市)', function(assert) {
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
-        { degen: true, phrase: 3106018850, relev: 1, text: '京' },
-        { degen: true, phrase: 2523610326, relev: 1, text: '京都' },
-        { degen: true, phrase: 3849941224, relev: 1, text: '京都市' },
-        { degen: false, phrase: 3849941225, relev: 1, text: '京都市' }
+        { degen: true, phrase: 3106018848, relev: 1, text: '京' },
+        { degen: true, phrase: 2523610322, relev: 1, text: '京都' },
+        { degen: true, phrase: 3849941228, relev: 1, text: '京都市' },
+        { degen: false, phrase: 3849941229, relev: 1, text: '京都市' }
     ]);
 
     assert.end();
@@ -95,12 +95,12 @@ test('termops.getIndexablePhrases (москва)', function(assert) {
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         { degen: true, phrase: 3893112696, relev: 1, text: 'м' },
-        { degen: true, phrase: 1647190324, relev: 1, text: 'мо' },
-        { degen: true, phrase: 3567149362, relev: 1, text: 'мос' },
-        { degen: true, phrase: 240336666, relev: 1, text: 'моск' },
-        { degen: true, phrase: 4195145878, relev: 1, text: 'москв' },
-        { degen: true, phrase: 2553908034, relev: 1, text: 'москва' },
-        { degen: false, phrase: 2553908035, relev: 1, text: 'москва' }
+        { degen: true, phrase: 1647190320, relev: 1, text: 'мо' },
+        { degen: true, phrase: 3567149360, relev: 1, text: 'мос' },
+        { degen: true, phrase: 240336664, relev: 1, text: 'моск' },
+        { degen: true, phrase: 4195145872, relev: 1, text: 'москв' },
+        { degen: true, phrase: 2553908032, relev: 1, text: 'москва' },
+        { degen: false, phrase: 2553908033, relev: 1, text: 'москва' }
     ]);
 
     assert.end();
@@ -116,11 +116,11 @@ test('termops.getIndexablePhrases (josé)', function(assert) {
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
-        { degen: true, phrase: 4010556028, relev: 1, text: 'j' },
-        { degen: true, phrase: 1648323158, relev: 1, text: 'jo' },
-        { degen: true, phrase: 3470006334, relev: 1, text: 'jos' },
-        { degen: true, phrase: 4058142126, relev: 1, text: 'josé' },
-        { degen: false, phrase: 4058142127, relev: 1, text: 'josé' }
+        { degen: true, phrase: 4010556024, relev: 1, text: 'j' },
+        { degen: true, phrase: 1648323152, relev: 1, text: 'jo' },
+        { degen: true, phrase: 3470006328, relev: 1, text: 'jos' },
+        { degen: true, phrase: 4058142120, relev: 1, text: 'josé' },
+        { degen: false, phrase: 4058142121, relev: 1, text: 'josé' }
     ]);
 
     assert.end();
