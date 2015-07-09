@@ -67,7 +67,7 @@ test('copy', function(t) {
 });
 
 // Tests copy @ shardlevel 5
-test('copy (shardlevel=5)', function(t) {
+test.skip('copy (shardlevel=5)', function(t) {
     var from = new mem({geocoder_shardlevel:5}, function() {});
     var to = new mem({geocoder_shardlevel:5}, function() {});
     var carmen = new Carmen({

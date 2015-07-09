@@ -170,6 +170,7 @@ test('index', function(t) {
             q.deepEqual({
                 freq: { '0': '' },
                 grid: { '0': '' },
+                look: { '0': '' },
                 feature: { '0': '{}', '1':'{}', '2':'{}', '3':'{}' }
             }, to.serialize().shards);
             q.end();
