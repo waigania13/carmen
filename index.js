@@ -10,7 +10,6 @@ var Cache = require('./lib/util/cxxcache'),
     loadall = require('./lib/loadall'),
     termops = require('./lib/util/termops'),
     token = require('./lib/util/token'),
-    wipe = require('./lib/wipe'),
     copy = require('./lib/copy'),
     index = require('./lib/index');
 
@@ -46,7 +45,7 @@ function Geocoder(options) {
                 names.push(name);
                 this.byname[name] = [];
             }
-            source._geocoder = source._geocoder || new Cache(name, +info.geocoder_shardlevel || 0);
+            source._geocoder = source._geocoder || new Cache(name);
 
             if (!info.geocoder_address || typeof info.geocoder_address === "number" || info.geocoder_address.toString().match(/^\d$/)) {
                 source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
@@ -56,6 +55,13 @@ function Geocoder(options) {
                 } else {
                     source._geocoder.geocoder_address = false;
                 }
+            }
+
+            if (info.geocoder_version) {
+                source._geocoder.version = info.geocoder_version;
+            } else {
+                source._geocoder.version = 0;
+                source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
             }
 
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
@@ -154,17 +160,6 @@ Geocoder.prototype.analyze = function(source, callback) {
         }.bind(this));
     }
     return analyze(source, callback);
-};
-
-// Wipe a source's index.
-Geocoder.prototype.wipe = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            wipe(source, callback);
-        }.bind(this));
-    }
-    return wipe(source, callback);
 };
 
 // Load all shards for a source.

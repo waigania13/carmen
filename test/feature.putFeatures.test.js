@@ -39,7 +39,8 @@ tape('putFeatures', function(assert) {
         },
     ], function(err) {
         assert.ifError(err);
-        assert.equal(source._shards.feature[0], '{"1":"{\\"1\\":{\\"_id\\":1,\\"_text\\":\\"a\\",\\"_center\\":[0,0],\\"_zxy\\":[\\"6/32/32\\"],\\"_geometry\\":{\\"type\\":\\"Point\\",\\"coordinates\\":[0,0]}},\\"1048577\\":{\\"_id\\":1048577,\\"_text\\":\\"c\\",\\"_center\\":[5.626,0],\\"_zxy\\":[\\"6/33/32\\"],\\"_geometry\\":{\\"type\\":\\"Point\\",\\"coordinates\\":[0,0]}}}","2":"{\\"2\\":{\\"_id\\":2,\\"_text\\":\\"b\\",\\"_center\\":[0,0],\\"_geometry\\":{\\"type\\":\\"Point\\",\\"coordinates\\":[0,0]}}}"}');
+        assert.equal(source._shards.feature[1], '{"1":{"_id":1,"_text":"a","_center":[0,0],"_zxy":["6/32/32"],"_geometry":{"type":"Point","coordinates":[0,0]}},"1048577":{"_id":1048577,"_text":"c","_center":[5.626,0],"_zxy":["6/33/32"],"_geometry":{"type":"Point","coordinates":[0,0]}}}', 'has feature shard 1');
+        assert.equal(source._shards.feature[2], '{"2":{"_id":2,"_text":"b","_center":[0,0],"_geometry":{"type":"Point","coordinates":[0,0]}}}', 'has feature shard 2');
         assert.end();
     });
 });
