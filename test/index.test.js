@@ -133,7 +133,7 @@ test('index', function(t) {
     t.test('loadall index', function(q) {
         to._geocoder.unloadall('grid');
         q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 1, function(err) {
+        carmen.loadall(to, 'grid', 1, function(err) {
             q.ifError(err);
             q.ok(to._geocoder.has('grid', 0));
             q.end();
@@ -142,7 +142,7 @@ test('index', function(t) {
     t.test('loadall (concurrency 10)', function(q) {
         to._geocoder.unloadall('grid');
         q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 10, function(err) {
+        carmen.loadall(to, 'grid', 10, function(err) {
             q.ifError(err);
             q.ok(to._geocoder.has('grid', 0));
             q.end();
@@ -151,14 +151,14 @@ test('index', function(t) {
     t.test('loadall (concurrency 0.01)', function(q) {
         to._geocoder.unloadall('grid');
         q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 0.01, function(err) {
+        carmen.loadall(to, 'grid', 0.01, function(err) {
             q.ifError(err);
             q.ok(to._geocoder.has('grid', 0));
             q.end();
         });
     });
     t.test('unloadall index', function(q) {
-        carmen.unloadall(to, function(err) {
+        carmen.unloadall(to, 'grid', function(err) {
             q.ifError(err);
             q.equal(to._geocoder.has('grid', 0), false);
             q.end();

@@ -168,24 +168,24 @@ Geocoder.prototype.wipe = function(source, callback) {
 };
 
 // Load all shards for a source.
-Geocoder.prototype.loadall = function(source, concurrency, callback) {
+Geocoder.prototype.loadall = function(source, type, concurrency, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            loadall.loadall(source, concurrency, callback);
+            loadall.loadall(source, type, concurrency, callback);
         }.bind(this));
     }
-    return loadall.loadall(source, concurrency, callback);
+    return loadall.loadall(source, type, concurrency, callback);
 };
 
-Geocoder.prototype.unloadall = function(source, callback) {
+Geocoder.prototype.unloadall = function(source, type, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            loadall.unloadall(source, callback);
+            loadall.unloadall(source, type, callback);
         }.bind(this));
     }
-    return loadall.unloadall(source, callback);
+    return loadall.unloadall(source, type, callback);
 };
 
 // Copy a source's index to another.
