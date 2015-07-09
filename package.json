@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/c4",
+    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/c4-stat",
     "locking": "2.0.1",
     "mapnik": "3.2.0",
     "minimist": "0.0.5",
