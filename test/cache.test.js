@@ -3,17 +3,17 @@ var fs = require('fs');
 var test = require('tape');
 
 test('.shard', function(s) {
-    s.equal(0, Cache.shard(0, 0));
-    s.equal(0, Cache.shard(0, 1), 'level0 => 0 shard for all ids');
+    s.equal(0, Cache.shard('grid', 0, 0));
+    s.equal(0, Cache.shard('grid', 0, 1), 'level0 => 0 shard for all ids');
 
-    s.equal(0, Cache.shard(1, 0));
-    s.equal(0, Cache.shard(1, 1));
-    s.equal(3, Cache.shard(1, Cache.mp[28] * 3));
-    s.equal(3, Cache.shard(1, Cache.mp[28] * 3 + 5), 'lower bits do not affect shard');
-    s.equal(15, Cache.shard(1, Cache.mp[28] * 15));
-    s.equal(3, Cache.shard(2, Cache.mp[24] * 3));
-    s.equal(15, Cache.shard(2, Cache.mp[24] * 15));
-    s.equal(false, Cache.shard(1));
+    s.equal(0, Cache.shard('grid', 1, 0));
+    s.equal(0, Cache.shard('grid', 1, 1));
+    s.equal(3, Cache.shard('grid', 1, Cache.mp[28] * 3));
+    s.equal(3, Cache.shard('grid', 1, Cache.mp[28] * 3 + 5), 'lower bits do not affect shard');
+    s.equal(15, Cache.shard('grid', 1, Cache.mp[28] * 15));
+    s.equal(3, Cache.shard('grid', 2, Cache.mp[24] * 3));
+    s.equal(15, Cache.shard('grid', 2, Cache.mp[24] * 15));
+    s.equal(false, Cache.shard('grid', 1));
     s.end();
 });
 
