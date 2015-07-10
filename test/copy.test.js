@@ -35,7 +35,6 @@ test('copy', function(t) {
                 byScore: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
                 degen: 0,
                 ender: 0,
-                shardlevel: 0,
                 total: 0
             });
             q.end();
@@ -67,7 +66,7 @@ test('copy', function(t) {
 });
 
 // Tests copy @ shardlevel 5
-test('copy (shardlevel=5)', function(t) {
+test.skip('copy (shardlevel=5)', function(t) {
     var from = new mem({geocoder_shardlevel:5}, function() {});
     var to = new mem({geocoder_shardlevel:5}, function() {});
     var carmen = new Carmen({
@@ -93,7 +92,6 @@ test('copy (shardlevel=5)', function(t) {
                 byScore: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 },
                 degen: 0,
                 ender: 0,
-                shardlevel: 5,
                 total: 0
             });
             q.end();

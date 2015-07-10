@@ -131,47 +131,36 @@ test('index', function(t) {
         });
     });
     t.test('loadall index', function(q) {
-        to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 1, function(err) {
+        to._geocoder.unloadall('stat');
+        q.ok(!to._geocoder.has('stat', 0));
+        carmen.loadall(to, 'stat', 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('grid', 0));
+            q.ok(to._geocoder.has('stat', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
-        to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 10, function(err) {
+        to._geocoder.unloadall('stat');
+        q.ok(!to._geocoder.has('stat', 0));
+        carmen.loadall(to, 'stat', 10, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('grid', 0));
+            q.ok(to._geocoder.has('stat', 0));
             q.end();
         });
     });
-    t.test('loadall (concurrency 0.01)', function(q) {
-        to._geocoder.unloadall('grid');
-        q.ok(!to._geocoder.has('grid', 0));
-        carmen.loadall(to, 0.01, function(err) {
+    t.test('loadall (concurrency 0.5)', function(q) {
+        to._geocoder.unloadall('stat');
+        q.ok(!to._geocoder.has('stat', 0));
+        carmen.loadall(to, 'stat', 0.5, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('grid', 0));
+            q.ok(to._geocoder.has('stat', 0));
             q.end();
         });
     });
     t.test('unloadall index', function(q) {
-        carmen.unloadall(to, function(err) {
+        carmen.unloadall(to, 'stat', function(err) {
             q.ifError(err);
-            q.equal(to._geocoder.has('grid', 0), false);
-            q.end();
-        });
-    });
-    t.test('wipes index', function(q) {
-        carmen.wipe(to, function(err) {
-            q.ifError(err);
-            q.deepEqual({
-                freq: { '0': '' },
-                grid: { '0': '' },
-                feature: { '0': '{}', '1':'{}', '2':'{}', '3':'{}' }
-            }, to.serialize().shards);
+            q.equal(to._geocoder.has('stat', 0), false);
             q.end();
         });
     });
@@ -223,7 +212,7 @@ test('index phrase collection', function(assert) {
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        assert.deepEqual(conf.test._geocoder.list('grid',0), [ '3826002216', '3826002217' ], '2 phrases');
+        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(3826002216/65536)), [ '3826002216', '3826002217' ], '2 phrases');
         assert.deepEqual(conf.test._geocoder.get('grid',3826002216), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
         assert.deepEqual(conf.test._geocoder.get('grid',3826002217), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
         assert.end();
