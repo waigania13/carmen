@@ -71,3 +71,52 @@ test('termops.permutations (props)', function(assert) {
     assert.end();
 });
 
+test('termops.permutations (props)', function(assert) {
+    var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6]);
+    assert.deepEqual(permutations.length, 6);
+
+    assert.deepEqual(permutations[0].join(','), ['a','b','c'].join(','));
+    assert.deepEqual(permutations[0].ender, true);
+    assert.deepEqual(permutations[0].relev, 1);
+    assert.deepEqual(permutations[0].mask.toString(2), '111');
+
+    assert.deepEqual(permutations[1].join(','), ['a','b'].join(','));
+    assert.deepEqual(permutations[1].ender, false);
+    assert.deepEqual(permutations[1].relev, 0.4);
+    assert.deepEqual(permutations[1].mask.toString(2), '11');
+
+    assert.deepEqual(permutations[2].join(','), ['b','c'].join(','));
+    assert.deepEqual(permutations[2].ender, true);
+    assert.deepEqual(permutations[2].relev, 0.8);
+    assert.deepEqual(permutations[2].mask.toString(2), '110');
+
+    assert.end();
+});
+
+test('termops.permutations (props + all)', function(assert) {
+    var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6], true);
+    assert.deepEqual(permutations.length, 7);
+
+    assert.deepEqual(permutations[0].join(','), ['a','b','c'].join(','));
+    assert.deepEqual(permutations[0].ender, true);
+    assert.deepEqual(permutations[0].relev, 1);
+    assert.deepEqual(permutations[0].mask.toString(2), '111');
+
+    assert.deepEqual(permutations[1].join(','), ['a','b'].join(','));
+    assert.deepEqual(permutations[1].ender, false);
+    assert.deepEqual(permutations[1].relev, 0.4);
+    assert.deepEqual(permutations[1].mask.toString(2), '11');
+
+    assert.deepEqual(permutations[2].join(','), ['a','c'].join(','));
+    assert.deepEqual(permutations[2].ender, true);
+    assert.deepEqual(permutations[2].relev, 0.8);
+    assert.deepEqual(permutations[2].mask.toString(2), '101');
+
+    assert.deepEqual(permutations[3].join(','), ['b','c'].join(','));
+    assert.deepEqual(permutations[3].ender, true);
+    assert.deepEqual(permutations[3].relev, 0.8);
+    assert.deepEqual(permutations[3].mask.toString(2), '110');
+
+    assert.end();
+});
+

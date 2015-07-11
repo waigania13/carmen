@@ -65,6 +65,56 @@ test('termops.getIndexablePhrases', function(assert) {
     assert.end();
 });
 
+test('termops.getIndexablePhrases (weight sieve)', function(assert) {
+    var tokens;
+    var freq;
+
+    tokens = ['jose', 'de', 'la', 'casa'];
+    freq = {};
+    freq[0] = [202];
+    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[termops.encodeTerm(tokens[1])] = [100];
+    freq[termops.encodeTerm(tokens[2])] = [100];
+    freq[termops.encodeTerm(tokens[3])] = [1];
+
+    assert.deepEqual(termops.getIndexablePhrases(tokens, freq).map(function(p) {
+        return (p.relev) + '-' + (p.degen ? 1 : 0) + '-' + p.text;
+    }), [
+        '1-1-j',
+        '1-1-jo',
+        '1-1-jos',
+        '1-1-jose',
+        '1-1-jose d',
+        '1-1-jose de',
+        '1-1-jose de l',
+        '1-1-jose de la',
+        '1-1-jose de la c',
+        '1-1-jose de la ca',
+        '1-1-jose de la cas',
+        '1-1-jose de la casa',
+        '1-0-jose de la casa',
+        '1-1-jose de c',
+        '1-1-jose de ca',
+        '1-1-jose de cas',
+        '1-1-jose de casa',
+        '1-0-jose de casa',
+        '1-1-jose l',
+        '1-1-jose la',
+        '1-1-jose la c',
+        '1-1-jose la ca',
+        '1-1-jose la cas',
+        '1-1-jose la casa',
+        '1-0-jose la casa',
+        '0.8-1-jose c',
+        '0.8-1-jose ca',
+        '0.8-1-jose cas',
+        '0.8-1-jose casa',
+        '0.8-0-jose casa'
+    ]);
+
+    assert.end();
+});
+
 test('termops.getIndexablePhrases (京都市)', function(assert) {
     var tokens;
     var freq;
