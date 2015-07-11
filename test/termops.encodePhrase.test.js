@@ -57,6 +57,14 @@ test('termops.encodePhrase', function(assert) {
     assert.deepEqual(a % 2, 1, 'jing du shi = non-degen');
     assert.deepEqual(Math.floor((a%8)/2), 2, 'jing du shi = 3 terms');
 
+    // known examples of fnv1a phrase collisions
+    // these will be datapoints for decolliding strategies elsewhere...
+    assert.deepEqual(
+        termops.encodePhrase('av francisco de aguirre # la serena'),
+        termops.encodePhrase('# r ademar da silva neiva'),
+        'known collisions: #1'
+    );
+
     assert.end();
 });
 
