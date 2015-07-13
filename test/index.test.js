@@ -131,36 +131,44 @@ test('index', function(t) {
         });
     });
     t.test('loadall index', function(q) {
-        to._geocoder.unloadall('stat');
-        q.ok(!to._geocoder.has('stat', 0));
-        carmen.loadall(to, 'stat', 1, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('stat', 0));
+            q.ok(to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
-        to._geocoder.unloadall('stat');
-        q.ok(!to._geocoder.has('stat', 0));
-        carmen.loadall(to, 'stat', 10, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 10, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('stat', 0));
+            q.ok(to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 0.5)', function(q) {
-        to._geocoder.unloadall('stat');
-        q.ok(!to._geocoder.has('stat', 0));
-        carmen.loadall(to, 'stat', 0.5, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 0.5, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('stat', 0));
+            q.ok(to._geocoder.has('freq', 0));
+            q.end();
+        });
+    });
+    t.test('loadall stat uses Dict', function(q) {
+        q.ok(!to._geocoder.hasDict('stat', 0));
+        carmen.loadall(to, 'stat', 1, function(err) {
+            q.ifError(err);
+            q.ok(to._geocoder.hasDict('stat', 0));
             q.end();
         });
     });
     t.test('unloadall index', function(q) {
-        carmen.unloadall(to, 'stat', function(err) {
+        carmen.unloadall(to, 'freq', function(err) {
             q.ifError(err);
-            q.equal(to._geocoder.has('stat', 0), false);
+            q.equal(to._geocoder.has('freq', 0), false);
             q.end();
         });
     });
