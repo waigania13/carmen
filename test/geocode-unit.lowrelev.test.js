@@ -30,7 +30,7 @@ tape('index country2', function(t) {
     };
     addFeature(conf.country, country, t.end);
 });
-tape('czech => czech repblic', function(t) {
+tape('czech => czech republic', function(t) {
     c.geocode('czech', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'czech republic');
