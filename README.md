@@ -58,12 +58,18 @@ maxzoom                 | The assumed zoom level of the zxy geocoder grid index.
 geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
 geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0. Or a string containing how to format the street name and address. eg: `"{name} {num}"`. Carmen defaults to `"{num} {name}"`
 geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
-geocoder_shardlevel     | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
+geocoder_version        | Required. Should be set to **1** for carmen@v4. Previous index versions without this attribute can be used for reverse geocoding but not forward.
 
-The sum of maxzoom + geocoder_resolution must be no greater than 14.
+*Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
+
+### geocoder_version < 1
+
+attribute               | description
+------------------------|------------
+geocoder_shardlevel     | Deprecated. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 
 ### geocode(query, options, callback)
 
