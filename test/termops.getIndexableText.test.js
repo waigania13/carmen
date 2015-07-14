@@ -34,14 +34,16 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = {_text:'Avenue du dix-huitième régiment'};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        [ 'avenue', 'du', '18e', 'regiment' ]
+        [ 'avenue', 'du', '18e', 'régiment' ]
     ], 'hypenated replacement');
 
     replacer = token.createReplacer({});
     doc = {_text:'Main Street', _cluster:{1:{}, 10:{}}};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
-        ['{"type":"range","min":0,"max":1000}', 'main', 'street' ],
-        ['main', 'street', '{"type":"range","min":0,"max":1000}' ]
+        ['##', 'main', 'street' ],
+        ['main', 'street', '##' ],
+        ['#', 'main', 'street' ],
+        ['main', 'street', '#' ],
     ], 'with range');
 
 

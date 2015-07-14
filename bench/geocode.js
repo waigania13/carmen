@@ -21,7 +21,7 @@ var tape = require('tape');
                 // generate between 1-100 features with this text.
                 var seed = 2000;
                 for (var i = 0; i < seed; i++) {
-                    var lat = Math.random() * 180 - 90;
+                    var lat = Math.random() * 170 - 85;
                     var lon = Math.random() * 360 - 180;
                     memo.push({
                         _id: ++seq,

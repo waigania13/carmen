@@ -84,36 +84,11 @@ carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug },
         if (!argv.stats) return;
         console.log('Stats');
         console.log('-----');
-        console.log('- warmup:    %sms', load);
-        console.log('- search:    %s @ %sms', data.stats.searchCount||0, data.stats.searchTime||0);
-        console.log('- relev:     %s @ %sms', data.stats.relevCount||0, data.stats.relevTime||0);
-        console.log('- results:   %s @ %sms', data.stats.contextCount||0, data.stats.contextTime||0);
-        console.log('- totaltime: %sms', data.stats.totalTime||0);
-
-        console.log('Cache');
-        console.log('-----');
-        var cachestats = {term:0,phrase:0,grid:0,degen:0,total:0};
-        Object.keys(carmen.indexes).forEach(function(source) {
-            source = carmen.indexes[source];
-            Object.keys(cachestats).forEach(function(key) {
-                var count = source._geocoder.list(key).length;
-                cachestats[key] += count;
-                cachestats.total += count;
-            });
-        });
-        console.log('- degen:     %s', cachestats.degen);
-        console.log('- term:      %s', cachestats.term);
-        console.log('- phrase:    %s', cachestats.phrase);
-        console.log('- grid:      %s', cachestats.grid);
-        console.log('- total:     %s', cachestats.total);
-        if (process.env.DEBUG) Object.keys(opts).forEach(function(dbname) {
-            var stats = data.stats['search.'+dbname];
-            if (!stats) return;
-            console.log('- search.%s', dbname);
-            for (var phase in stats) {
-                console.log('  - %s %s => %s @ %s ms', rpad(phase,8), stats[phase][0], stats[phase][1], stats[phase][2]);
-            }
-        });
+        console.log('- warmup:       %sms', load);
+        console.log('- phrasematch:  %sms', data.stats.phrasematch.time);
+        console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
+        console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
+        console.log('- totaltime:    %sms', data.stats.time);
     });
 });
 

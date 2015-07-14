@@ -7,13 +7,13 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 ## Depends
 
-- Node v0.8.x or Node v0.10.x
+- Node v0.10.x
 
 ## Install
 
-    npm install && ./scripts/install-dbs.sh
+    npm install
 
-Installs dependencies and downloads the default tiles indexes (about 200MB of data).
+Carmen no longer ships with any default or sample data. Sample data will be provided in a future release.
 
 ## Command line
 
@@ -26,10 +26,6 @@ To query the default indexes:
 To analyze an index:
 
     ./scripts/carmen-analyze.js tiles/01-ne.country.mbtiles
-
-## Example data
-
-Example TM2 projects are available in the `datadev` branch.
 
 ------
 
@@ -62,12 +58,18 @@ maxzoom                 | The assumed zoom level of the zxy geocoder grid index.
 geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
 geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0. Or a string containing how to format the street name and address. eg: `"{name} {num}"`. Carmen defaults to `"{num} {name}"`
 geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
-geocoder_shardlevel     | Optional. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
+geocoder_version        | Required. Should be set to **1** for carmen@v4. Previous index versions without this attribute can be used for reverse geocoding but not forward.
 
-The sum of maxzoom + geocoder_resolution must be no greater than 14.
+*Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
+
+### geocoder_version < 1
+
+attribute               | description
+------------------------|------------
+geocoder_shardlevel     | Deprecated. An integer order of magnitude that geocoder data is sharded. Defaults to 0.
 
 ### geocode(query, options, callback)
 
@@ -78,10 +80,6 @@ represented by that string.
 
 Indexes docs using `from` as the source and `to` as the destination. Options can
 be passed to `pointer` or omitted.
-
-### verify(source, callback)
-
-Verify the integrity of index relations for a given source.
 
 ### analyze(source, callback)
 
@@ -169,103 +167,150 @@ _parityr  | Single (LineString) or array of values (Multi) of TIGER PARITYR fiel
 
 A user searches for
 
-> 350 Fairfax Dr Arlington
+> West Lake View Rd Englewood
 
 How does an appropriately indexed carmen geocoder come up with its results?
 
-For the purpose of this example, we will assume the carmen geocoder is working with four indexes:
+For the purpose of this example, we will assume the carmen geocoder is working with the following indexes:
 
     01 country
-    02 province
+    02 region
     03 place
     04 street
 
-### 1. Tokenization
+### 0. Indexing
 
-    "350 Fairfax Dr Arlington" => ["350", "fairfax", "dr", "arlington"]
+The heavy lifting in carmen occurs when indexes are generated. As an index is generated for a datasource carmen tokenizes the text into distinct terms. For example, for a street feature:
 
-    // Other examples
-    "Chicago Illinois"         => ["chicago", "illinois"]
-    "San José CALIFORNIA"      => ["san", "jose", "california"]
-    "SAINT-LOUIS,MO"           => ["saint", "louis", "mo"]
+    "West Lake View Rd" => ["west", "lake", "view", "rd"]
 
-The user input is transformed into a tokenized `query` -- an array of strings that are
+Each term in the dataset is tallied, generating a frequency index which can be used to determine the relative importance of terms against each other. In this example, because `west` and `rd` are very common terms while `lake` and `view` are comparatively less common the following weights might be assigned:
 
-- **split** on spaces, dashes, and other splitting punctuation characters,
-- **normalized** to remove non-splitting punctuation like apostrophes,
-- **lowercased** to make searches case-insensitive,
-- **unidecoded** to squash accented characters and avoid subtle unicode mismatches.
+    west lake view rd
+    0.2  0.5  0.2  0.1
 
-The same normalization process is used when creating the search indexes that carmen uses. By normalizing both the indexed text and user queries we can eliminate non-substantive variations in the query and focus on getting real term matches.
+The indexer then generates all possible subqueries that might match this feature:
 
-*Note: from this point on in carmen there are actually no text strings used. Each token is converted to a 32-bit integer using the FNV-1a hash and any index lookups are done with integer values. The examples below retain string versions of each term and phrase for easy reading.*
+    0.2 west
+    0.7 west lake
+    0.9 west lake view
+    1.0 west lake view rd
+    0.5 lake
+    0.7 lake view
+    0.8 lake view rd
+    0.2 view
+    0.3 view rd
+    0.1 rd
 
-### 2. Term matching
+It drops any of the subqueries below a threshold (e.g. 0.4). This will also save bloating our index for phrases like `rd`:
 
-The first step in the search process is to identify *terms* in each of the search indexes that match, or may match, one of the query tokens. The `degen` index provides a set of degenerate terms that may match each query token:
+    0.5 lake
+    0.7 west lake
+    0.7 lake view
+    0.8 lake view rd
+    0.9 west lake view
+    1.0 west lake view rd
 
-**Degen matches for "fairfax"**
+Finally the indexer generates degenerates for all these subqueries, making it possible to match using typeahead, like this:
 
-    01 country   02 province   03 place     04 street
-    ----------   -----------   --------     ---------
-    <none>       <none>        fairfax d0   fairfax d0
+    0.5 l
+    0.5 la
+    0.5 lak
+    0.5 lake
+    0.7 w
+    0.7 we
+    0.7 wes
+    0.7 west
+    0.7 west l
+    0.7 west la
+    ...
 
-Each degenerate term entry in the index is mapped to one or more real terms with a *character distance* value for the number of deletions performed to reach the degenerate term. For example, the token "fair" may have the following results:
+Finally, the indexer stores the results of all this using `phrase_id` in the `grid` index:
 
-    "fair" => fairfax d3, fairway d3, fairmont d4, fairfield d5
+    lake      => [ grid, grid, grid, grid ... ]
+    west lake => [ grid, grid, grid, grid ... ]
 
-While each term match is considered, larger character distance values have a negative impact on the eventual relevance of results to ensure that close and exact values win when they are otherwise equivalent to looser term matches.
+The `phrase_id` uses the final bit to mark whether the phrase is a "degen" or "complete". e.g
 
-Currently degenerates are indexed only for the purposes of *autocomplete*. The index structure, however, was designed to be used with "fast similarity search" -- ie. random character deletions -- a feature to be added in future versions.
+    west lak          0
+    west lake         1
 
-### 3. Phrase matching
+Grids encode the following information for each XYZ `x,y` coordinate covered by a feature geometry:
 
-With true term matches for each index on hand we can now lookup all the phrases that include one of the terms:
+    x            14 bits
+    y            14 bits
+    feature id   20 bits  (previously 25)
+    phrase relev  2 bits  (0 1 2 3 => 0.4, 0.6, 0.8, 1)
+    score         3 bits  (0 1 2 3 4 5 6 7)
 
-    01 country                02 province
-    ----------                -----------
-                              dar'a          1.0 --x-
-                              drenthe        1.0 --x-
+This is done for both our `01 place` and `02 street` indexes. Now we're ready to search.
 
-    03 place                  04 street
-    --------                  ---------
-    fairfax       1.0 -x--    fairfax dr     1.0 -xx-
-    arlington     1.0 ---x    arlington dr   0.9 ---x
-                              fairfax ct     0.9 -x--
-                              n fairfax st   0.8 -x--
-                              fairfax cty rd 0.7 -x--
+### 1. Phrasematch
 
-Matching phrases are drawn from each index for *every* query token. No assumptions are made about what a particular token refers to, leading to results like
-[Drenthe](http://en.wikipedia.org/wiki/Drenthe) because `dr` has been indexed as one of its synonyms (its postal code). For tokens to match a phrase some basic rules are followed, like term order + continuity.
+Ok so what happens at runtime when a user searches?
 
-    Order + continuity check examples:
+We take the entire query and break it into all the possible subquery permutations. We then lookup all possible matches in all the indexes for all of these permutations:
 
-    ["dr","arlington"] => arlington dr 0.9 -x
-    ["arlington","dr"] => arlington dr 1.0 xx
+> West Lake View Englewood USA
 
-Each phrase match is assigned a
+Leads to 15 subquery permutations:
 
-- **score**, the sum of the weights of matching query terms. Each phrase has a possible score of 1.0 with its component terms contributing varying weights based on their IDF significance -- terms that appear most commonly have lower weights.
+    1  west lake view englewood usa
+    2  west lake view englewood
+    3  lake view englewood usa
+    4  west lake view
+    5  lake view englewood
+    6  view englewood usa
+    7  west lake
+    8  lake view
+    9  view englewood
+    10 englewood usa
+    11 west
+    12 lake
+    13 view
+    14 englewood
+    15 usa
 
-        fairfax   cty   rd
-        0.7       0.2   0.1
+Once phrasematch results are retrieved any subqueries that didn't match any results are eliminated.
 
-- **reason**, a bitmask storing the query tokens that contributed to the score value.
+    4  west lake view   11100 street
+    7  west lake        11000 street
+    8  lake view        01100 street
+    11 west             10000 street, place, country
+    12 lake             01000 street, place
+    13 view             00100 street
+    14 englewood        00010 street, place
+    15 usa              00001 country
 
-        350   fairfax   dr   arlington
-        0     1         0    0
+By assigning a bitmask to each subquery representing the positions of the input query it represents we can evaluate all the permutations that *could* be "stacked" to match the input query more completely. We can also calculate a *potential* max relevance score that would result from each permutation if the features matched by these subqueries do indeed stack spatially. Examples:
 
-### 4. Spatial matching
+    4  west lake view   11100 street
+    14 englewood        00010 place
+    15 usa              00001 country
 
-To make sense of the "result soup" from step 3 -- sometimes thousands of potential results of comparable score -- a zxy coordinate index is used to determine which results overlap in geographic space. This is the `grid` index, which maps phrases to individual feature IDs and their respective zxy coordinates.
+    potential relev 5/5 query terms = 1
+
+    14 englewood        00010 street
+    11 west             10000 place
+    15 usa              00001 country
+
+    potential relev 3/5 query terms = 0.6
+
+    etc.
+
+Now we're ready to use the spatial properties of our indexes to see if these textual matches actually line up in space.
+
+### 2. Spatial matching
+
+To make sense of the "result soup" from step 1 -- sometimes thousands of potential resulting features match the same text -- the zxy coordinates in the grid index are used to determine which results overlap in geographic space. This is the `grid` index, which maps phrases to individual feature IDs and their respective zxy coordinates.
 
     04 street
     ................
-    ............x...
+    ............x... <== englewood st
     ................
     ...x............
-    .......x........ <== fairfax dr
-    .........x...... <== arlington dr
+    .......x........ <== west lake view rd
+    .........x......
     ................
     ................
     .x..............
@@ -275,59 +320,41 @@ To make sense of the "result soup" from step 3 -- sometimes thousands of potenti
     ................
     ................
     .......xx.......
-    ......xxxxxx.... <== arlington
+    ......xxxxxx.... <== englewood
     ........xx......
     x...............
     xx..............
-    xxxx............ <== fairfax
+    xxxx............ <== west town
 
-Features which overlap in the grid index are candidates to have their scores combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with.
+Features which overlap in the grid index are candidates to have their subqueries combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with, leading to a lower total relev.
 
-    1 fairfax dr    1.0 -xx-  =  0.75 -xxx
-      arlington     1.0 ---x
+    4  west lake view   11100 street
+    14 englewood        00010 place
+    15 usa              00001 country
 
-    2 n fairfax st  0.8 -x--  =  0.45 -x-x
-      arlington     1.0 ---x
+    All three features stack, relev = 1
 
-    3 arlington dr  0.9 ---x  =  0.25 ---x
-      arlington     1.0 ---x
+    14 englewood        00010 street
+    11 west             10000 place
+    15 usa              00001 country
 
-    4 drenthe       1.0 --x-  =  0.25 --x-
+    Englewood St does not overlap others, relev = 0.2
 
-The *query match* has a score of 1.0 if,
+The stack of subqueries has has a score of 1.0 if,
 
-1. all query terms are accounted for by features with 1.0 scores,
+1. all query terms are accounted for by features with 1.0 relev in the grid index,
 2. no two features are from the same index,
-3. no two features have overlapping reason bitmasks,
-4. several other heuristics (see "Challenging cases")
+3. no two subqueries have overlapping bitmasks.
 
-### 5. Verify, interpolate
+### 3. Verify, interpolate
 
 The `grid` index is fast but not 100% accurate. It answers the question "Do features A + B overlap?" with **No/Maybe** -- leaving open the possibility of false positives. The best results from step 4 are now verified by querying real geometries in vector tiles.
 
-Finally, if a geocoding index support *address interpolation*, an initial query token like `350` can be used to interpolate a point position along the line geometry of the matching feature.
+Finally, if a geocoding index support *address interpolation*, an initial query token that might represent a housenumber like `350` can be used to interpolate a point position along the line geometry of the matching feature.
 
-### 6. Challenging cases
+### 4. Challenging cases
 
 Most challenging cases are solvable but stress performance/optimization assumptions in the carmen codebase.
-
-#### Repeated query tokens
-
-Prior to `e6522498` the following would occur:
-
-    new york new york =>
-
-    02 place    new york 1.0 xx--
-    01 province new york 1.0 xx--
-
-Leading to bitmasks that canceled each other out at query match time. The current workaround for these cases in carmen is to store a *greedy* term position bitmask and a third param -- a count of the number of terms matched:
-
-    new york new york =>
-
-    02 place    new york 1.0 xxxx 2
-    01 province new york 1.0 xxxx 2
-
-At query match time the `2` count is decremented until 0 to exhaust the first phrase match, moving onto the province phrase match which has remaining counts to be used against its greedy bitmask.
 
 #### Continuity of feature hierarchy
 
@@ -335,13 +362,13 @@ At query match time the `2` count is decremented until 0 to exhaust the first ph
 
 The user intends to match 5th st in New York City with this query. She may, instead, receive equally relevant results that match a 5th st in Albany or any other 5th st in the state of New York. To address this case, carmen introduces a slight penalty for "index gaps" when query matching. Consider the two following query matches:
 
-    04 street   5th st   1.0 xx--
-    03 place    new york 1.0 --xx
+    04 street   5th st    1100
+    03 place    new york  0011
 
-    04 street   5th st   1.0 xx--
-    02 province new york 1.0 --xx
+    04 street   5th st    1100
+    02 region   new york  0011
 
-Based on score and reason bitmask both should have a querymatch score of 1.0. However, because there is a "gap" in the index hierarchy for the second match it receives an extremely small penalty (0.01) -- one that would not affect its standing amongst other scores other than a perfect tie.
+Based on score and subquery bitmask both should have a relevance of 1.0. However, because there is a "gap" in the index hierarchy for the second match it receives an extremely small penalty (0.01) -- one that would not affect its standing amongst other scores other than a perfect tie.
 
 Carmen thus *prefers* queries that contain contiguous hierarchy over ones that do not. This works:
 
@@ -351,7 +378,7 @@ But this works better:
 
     seattle washington => 1.00
 
-### 7. Carmen is more complex
+### 5. Carmen is more complex
 
 Unfortunately, the carmen codebase is more complex than this explanation.
 
@@ -385,8 +412,8 @@ lib/
 
 There are two types of index stores in Carmen.
 
-- `cxxcache` is used for storing the `degen`, `term`, `phrase`, `grid`, and
-  `freq` indexes. Each index is sharded and each shard contains a one-to-many
+- `cxxcache` is used for storing the `grid`, and `freq` indexes.
+  Each index is sharded and each shard contains a one-to-many
   hash with 32-bit integer keys that map to arrays of arbitrary length
   containing 32-bit integer elements.
 - `feature` is used to store feature docs. Each index is sharded and each shard
@@ -399,54 +426,41 @@ performance, especially in V8 as keys of a hash object. To convert arbitrary
 text (like tokenized text) to integers the FNV1a hash is used and sometimes
 truncated to make room for additional encoded data.
 
-### term (canonical, degenerate, weighted)
+### freq
 
-term | extra
------|------
-31-4 | 3-0
+Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a `fnv1a` hash.
 
-The first 28 bits of a term hash determine the canonical ID of a term. The
-remaining 4 bits can be used for additional data.
+    term_id => [ count ]
 
-- **Degenerates** are terms with delete operations performed on them. The extra
-  4 bits are used to encode the number of delete operations (up to 15 chars)
-  performed on the canonical term to result in the degenerate.
-- **Weighted** terms are term hashes with weights (0-15) relative to other terms
-  in the same phrase. The weights are only relevant in the context of the phrase
-  being considered. A weight of 15 signifies the most significant term in the
-  phrase with other terms being <= 15.
+Conceptual exapmle with actual text rather than `fnv1a` hashes for readability:
 
-### term (numeric)
+    street => [ 103120 ]
+    main   => [ 503 ]
+    market => [ 31 ]
 
-term | extra
------|------
-31-4 | 3-0
+### grid
 
-The first 28 bits of a numeric term are based on the parsed number value of the
-term text (e.g. "2801" => 2801). The remaining 4 bits can be used for
-additional data.
+Stores a mapping of phrase/phrase degenerate to feature cover grids.
 
-- **Degenerates** for numeric terms are currently not calculated.
-- **Weights** for numeric terms are encoded in the same way as normal text terms.
+    phrase_id => [ grid, grid, grid, grid ... ]
 
-### dataterm (min/max range)
+A lookup against this index effectively answers the question: what and where are all the features that match (whole or partially) a given text phrase? 
 
-dataterm | max   | min  | type | extra
----------|-------|------|------|------
-52       | 47-28 | 27-8 | 7-4  | 3-0
+Grids are encoded as 53-bit integers (largest possible JS integer) storing the following information:
 
-The 52-bit of a dataterm flags it as dataterm. Currently the only `type` of
-dataterm is the `0 => range` type whereby the next 40 bits are used to encode
-the min/max housenum range of a feature. Future types may encode different data
-in this space. Like any normal term there is an extra 4 bits for encoding a
-**weight**.
+info | bits | description
+---- |------|------------
+x    | 14   | x tile cover coordinate, up to z14
+y    | 14   | y tile cover coordinate, up to z14
+relev| 2    | relev between 0.4 and 1.0 (possible values: 0.4, 0.6, 0.8, 1.0)
+score| 3    | score scaled to a value between 0-7
+id   | 20   | feature id, truncated to 20 bits
 
-### phrase
+### phrase_id
 
-sig term | phrase
----------|-------
-0-11     | 12-31
+phrase | degen
+------ |------
+31-1   | 0
 
-The first 12 bits of a phrase hash are generated from the `fnv1a(str)` hash of
-the most significant term (based on IDF of freq index) of a phrase. This scheme
-clusters phrases in shards by the term used to query each phrase.
+The first 31 bits of a phrase ID are the `fnv1a` hash of the phrase text. The last remaining bit is used to store whether the `phrase_id` is for a complete or degenerate phrase.
+

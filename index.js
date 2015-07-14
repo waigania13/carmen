@@ -7,11 +7,9 @@ var Cache = require('./lib/util/cxxcache'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
     analyze = require('./lib/analyze'),
-    verify = require('./lib/verify'),
     loadall = require('./lib/loadall'),
     termops = require('./lib/util/termops'),
     token = require('./lib/util/token'),
-    wipe = require('./lib/wipe'),
     copy = require('./lib/copy'),
     index = require('./lib/index');
 
@@ -47,7 +45,7 @@ function Geocoder(options) {
                 names.push(name);
                 this.byname[name] = [];
             }
-            source._geocoder = source._geocoder || new Cache(name, +info.geocoder_shardlevel || 0);
+            source._geocoder = source._geocoder || new Cache(name);
 
             if (!info.geocoder_address || typeof info.geocoder_address === "number" || info.geocoder_address.toString().match(/^\d$/)) {
                 source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
@@ -59,15 +57,22 @@ function Geocoder(options) {
                 }
             }
 
+            if (info.geocoder_version) {
+                source._geocoder.version = info.geocoder_version;
+            } else {
+                source._geocoder.version = 0;
+                source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
+            }
+
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
             source._geocoder.maxzoom = info.maxzoom;
             source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
-            source._geocoder.group = info.geocoder_group || '';
             source._geocoder.name = name;
             source._geocoder.id = id;
             source._geocoder.idx = i;
+            source._geocoder.ndx = names.indexOf(name);
             source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
 
             // add index idx => name idx lookup
@@ -146,18 +151,6 @@ Geocoder.prototype.index = function(from, to, pointer, callback) {
     return index(this, from, to, pointer, callback);
 };
 
-// Verify the integrity of a source's index.
-Geocoder.prototype.verify = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            verify(source, callback);
-        }.bind(this));
-    }
-    return verify(source, callback);
-};
-
-
 // Analyze a source's index.
 Geocoder.prototype.analyze = function(source, callback) {
     if (!this._opened) {
@@ -169,36 +162,25 @@ Geocoder.prototype.analyze = function(source, callback) {
     return analyze(source, callback);
 };
 
-// Wipe a source's index.
-Geocoder.prototype.wipe = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            wipe(source, callback);
-        }.bind(this));
-    }
-    return wipe(source, callback);
-};
-
 // Load all shards for a source.
-Geocoder.prototype.loadall = function(source, concurrency, callback) {
+Geocoder.prototype.loadall = function(source, type, concurrency, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            loadall.loadall(source, concurrency, callback);
+            loadall.loadall(source, type, concurrency, callback);
         }.bind(this));
     }
-    return loadall.loadall(source, concurrency, callback);
+    return loadall.loadall(source, type, concurrency, callback);
 };
 
-Geocoder.prototype.unloadall = function(source, callback) {
+Geocoder.prototype.unloadall = function(source, type, callback) {
     if (!this._opened) {
         return this._open(function(err) {
             if (err) return callback(err);
-            loadall.unloadall(source, callback);
+            loadall.unloadall(source, type, callback);
         }.bind(this));
     }
-    return loadall.unloadall(source, callback);
+    return loadall.unloadall(source, type, callback);
 };
 
 // Copy a source's index to another.

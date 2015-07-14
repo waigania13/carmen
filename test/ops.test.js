@@ -1,24 +1,6 @@
 var ops = require('../lib/util/ops');
 var test = require('tape');
 
-test('ops#sortDegens', function(t) {
-    t.deepEqual([0, 4, 5].sort(ops.sortDegens), [0, 4, 5]);
-    t.deepEqual([5, 6, 4].sort(ops.sortDegens), [4, 5, 6]);
-    t.end();
-});
-
-test('ops#zxy', function(t) {
-    t.deepEqual(ops.zxy(0, '4/0/0'), 0);
-    t.deepEqual(ops.zxy(20, '4/3/3'), 1649368104980);
-    t.end();
-});
-
-test('ops#grid', function(t) {
-    t.deepEqual(ops.grid(0), {id: 0, x: 0, y: 0});
-    t.deepEqual(ops.grid(1649368104980), {id: 20, x: 3, y:3});
-    t.end();
-});
-
 test('ops#toFeature', function(t) {
     t.deepEqual(ops.toFeature([
         {

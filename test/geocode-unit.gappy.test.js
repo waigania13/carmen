@@ -104,8 +104,7 @@ tape('ny ny', function(t) {
         t.end();
     });
 });
-// failing
-tape.skip('new york ny', function(t) {
+tape('new york ny', function(t) {
     c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
