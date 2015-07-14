@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0
+
+- Large refactor of carmen index structure and indexing/runtime processes. See https://github.com/mapbox/carmen/pull/287
+
 ## 3.1.6
 
 - Rollback XRegExp use.
