@@ -28,12 +28,6 @@ test('proximity.scoredist', function(assert) {
     assert.equal(proximity.scoredist([0,0], [0.05,0], 1000), 11574.905, 'll scoredist');
     assert.equal(proximity.scoredist([0,0], [2.00,0], 1000), 289.3726, 'll scoredist');
     assert.equal(proximity.scoredist([0,0], [10.00,0], 1000), 57.8745, 'll scoredist');
-
-    // zxy center
-    assert.equal(proximity.scoredist([0,0], [0,0,0], 1000), 4e8, 'zxy scoredist');
-    assert.equal(proximity.scoredist([0,0], [1,0,0], 1000), 6.4305, 'zxy scoredist');
-    assert.equal(proximity.scoredist([0,0], [1,0,0], 1000), proximity.scoredist([0,0], [-90,45], 1000), 'zxy scoredist ~= ll scoredist');
-
     assert.end();
 });
 
