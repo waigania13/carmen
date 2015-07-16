@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.2
+
+- Fixes to proximity mode to account for both score and distance.
+
 ## 4.0.1
 
 - Bug fix for lone housenum subquery permutations and upgrade to carmen-cache@0.5.1.
