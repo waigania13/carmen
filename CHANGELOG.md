@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.3
+
+- Robustification fix for how token replacement handles unidecode at indexing + query time.
+
 ## 4.0.2
 
 - Fixes to proximity mode to account for both score and distance.
