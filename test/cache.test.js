@@ -65,7 +65,7 @@ test('#pack', function(s) {
     }
     packer.set('grid', 5, array);
     var loader = new Cache('a', 1);
-    loader.load(packer.pack('grid',0), 'grid', 0);
+    loader.loadSync(packer.pack('grid',0), 'grid', 0);
     // grab data right back out
     s.deepEqual(10008, loader.pack('grid', 0).length);
     // try to grab data that does not exist
@@ -92,52 +92,11 @@ test('#load', function(s) {
     // cache A serializes data, cache B loads serialized data.
     var pack = cache.pack('grid', 0);
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 0);
     s.deepEqual([5,6], loader.get('grid', 21));
     s.deepEqual([0], loader.list('grid'), 'single shard');
     s.deepEqual(['5', '21'], loader.list('grid', 0), 'keys in shard');
     s.end();
-});
-
-test('#load (async)', function(s) {
-    var cache = new Cache('a', 1);
-    var array = [];
-    for (var i=0;i<10000;++i) {
-        array.push(0);
-    }
-    cache.set('grid', 0, array);
-    var pack = cache.pack('grid', 0);
-    var loader = new Cache('b', 1);
-    // multiple inserts to ensure we are thread safe
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-        s.end();
-    });
 });
 
 test('#unload on empty data', function(s) {
@@ -165,7 +124,7 @@ test('#unload after load', function(s) {
     cache.set('grid', 5, array);
     var pack = cache.pack('grid', 0);
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 0);
     s.deepEqual(array, loader.get('grid', 5));
     s.deepEqual([0], loader.list('grid'), 'single shard');
     s.deepEqual(true, loader.has('grid', 0));
@@ -184,11 +143,11 @@ test('#unloadall', function(s) {
     var pack = cache.pack('grid', 0);
 
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
-    loader.load(pack, 'grid', 1);
-    loader.load(pack, 'grid', 2);
-    loader.load(pack, 'grid', 3);
-    loader.load(pack, 'grid', 4);
+    loader.loadSync(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 1);
+    loader.loadSync(pack, 'grid', 2);
+    loader.loadSync(pack, 'grid', 3);
+    loader.loadSync(pack, 'grid', 4);
     s.deepEqual(array, loader.get('grid', 5));
     s.deepEqual([0,1,2,3,4], loader.list('grid'), 'many shards');
     s.deepEqual(true, loader.has('grid', 0));
