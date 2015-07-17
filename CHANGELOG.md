@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.0.4
+
+- Updates to carmen-cache @ 0.6.0 for more conservative memory use
+- Reduces vtile LRU cache size for high zoom sources
+
 ## 4.0.3
 
 - Robustification fix for how token replacement handles unidecode at indexing + query time.
