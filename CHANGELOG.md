@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.0.3
+
+- Robustification fix for how token replacement handles unidecode at indexing + query time.
+
+## 4.0.2
+
+- Fixes to proximity mode to account for both score and distance.
+
+## 4.0.1
+
+- Bug fix for lone housenum subquery permutations and upgrade to carmen-cache@0.5.1.
+
+## 4.0.0
+
+- Large refactor of carmen index structure and indexing/runtime processes. See https://github.com/mapbox/carmen/pull/287
+
 ## 3.1.6
 
 - Rollback XRegExp use.
