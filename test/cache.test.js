@@ -65,7 +65,7 @@ test('#pack', function(s) {
     }
     packer.set('grid', 5, array);
     var loader = new Cache('a', 1);
-    loader.load(packer.pack('grid',0), 'grid', 0);
+    loader.loadSync(packer.pack('grid',0), 'grid', 0);
     // grab data right back out
     s.deepEqual(10008, loader.pack('grid', 0).length);
     // try to grab data that does not exist
@@ -92,52 +92,11 @@ test('#load', function(s) {
     // cache A serializes data, cache B loads serialized data.
     var pack = cache.pack('grid', 0);
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 0);
     s.deepEqual([5,6], loader.get('grid', 21));
     s.deepEqual([0], loader.list('grid'), 'single shard');
     s.deepEqual(['5', '21'], loader.list('grid', 0), 'keys in shard');
     s.end();
-});
-
-test('#load (async)', function(s) {
-    var cache = new Cache('a', 1);
-    var array = [];
-    for (var i=0;i<10000;++i) {
-        array.push(0);
-    }
-    cache.set('grid', 0, array);
-    var pack = cache.pack('grid', 0);
-    var loader = new Cache('b', 1);
-    // multiple inserts to ensure we are thread safe
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-    });
-    loader.load(pack, 'grid', 0,function(err) {
-        s.deepEqual(array, loader.get('grid', 0));
-        s.deepEqual([0], loader.list('grid'), 'single shard');
-        s.end();
-    });
 });
 
 test('#unload on empty data', function(s) {
@@ -165,7 +124,7 @@ test('#unload after load', function(s) {
     cache.set('grid', 5, array);
     var pack = cache.pack('grid', 0);
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 0);
     s.deepEqual(array, loader.get('grid', 5));
     s.deepEqual([0], loader.list('grid'), 'single shard');
     s.deepEqual(true, loader.has('grid', 0));
@@ -184,11 +143,11 @@ test('#unloadall', function(s) {
     var pack = cache.pack('grid', 0);
 
     var loader = new Cache('b', 1);
-    loader.load(pack, 'grid', 0);
-    loader.load(pack, 'grid', 1);
-    loader.load(pack, 'grid', 2);
-    loader.load(pack, 'grid', 3);
-    loader.load(pack, 'grid', 4);
+    loader.loadSync(pack, 'grid', 0);
+    loader.loadSync(pack, 'grid', 1);
+    loader.loadSync(pack, 'grid', 2);
+    loader.loadSync(pack, 'grid', 3);
+    loader.loadSync(pack, 'grid', 4);
     s.deepEqual(array, loader.get('grid', 5));
     s.deepEqual([0,1,2,3,4], loader.list('grid'), 'many shards');
     s.deepEqual(true, loader.has('grid', 0));
@@ -243,6 +202,42 @@ test('#loadall', function(assert) {
         loader.getall(getter, 'grid', [1,65536], function(err, loaded) {
             assert.ifError(err);
             assert.deepEqual(loaded, [1,0]);
+            assert.end();
+        });
+    }
+});
+
+test('#dictall', function(assert) {
+    var cache = new Cache('a', 1);
+    cache.set('grid', 1, [0]);
+    cache.set('grid', 65536, [1]);
+
+    var packs = [];
+    packs[0] = cache.pack('grid', 0);
+    packs[1] = cache.pack('grid', 1);
+
+    function getter(type, shard, callback) {
+        return callback(null, packs[shard]);
+    }
+
+    var loader = new Cache('b', 1);
+    assert.equal(loader.has('grid', 0), false);
+    assert.equal(loader.has('grid', 1), false);
+    load1();
+
+    function load1() {
+        loader.dictall(getter, 'grid', [1,65536], function(err) {
+            assert.ifError(err);
+            assert.deepEqual(loader.dict('grid', 1), true);
+            assert.deepEqual(loader.dict('grid', 65536), true);
+            load2();
+        });
+    }
+    function load2() {
+        loader.dictall(getter, 'grid', [1,65536], function(err) {
+            assert.ifError(err);
+            assert.deepEqual(loader.dict('grid', 1), true);
+            assert.deepEqual(loader.dict('grid', 65536), true);
             assert.end();
         });
     }

@@ -2,8 +2,7 @@ var unidecode = require('unidecode');
 var token = require('../lib/util/token');
 var test = require('tape');
 
-
-var tokens = token.createReplacer({           
+var tokens = token.createReplacer({
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -209,3 +208,23 @@ test('token replacement', function(q) {
     q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
     q.end();
 });
+
+test('replacer', function(q) {
+    q.deepEqual(token.createReplacer({
+        'Road': 'Rd',
+        'Street': 'St'
+    }), [
+        { from: /(\W|^)Road(\W|$)/gi, to: '$1Rd$2' },
+        { from: /(\W|^)Street(\W|$)/gi, to: '$1St$2' }
+    ]);
+    q.deepEqual(token.createReplacer({
+        'Maréchal': 'Mal',
+        'Monsieur': 'M'
+    }), [
+        { from: /(\W|^)Maréchal(\W|$)/gi, to: '$1Mal$2' },
+        { from: /(\W|^)Marechal(\W|$)/gi, to: '$1Mal$2' },
+        { from: /(\W|^)Monsieur(\W|$)/gi, to: '$1M$2' }
+    ]);
+    q.end();
+});
+
