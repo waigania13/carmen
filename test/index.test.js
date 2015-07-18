@@ -221,8 +221,8 @@ test('index phrase collection', function(assert) {
     function afterUpdate(err) {
         assert.ifError(err);
         assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(3826002216/65536)), [ '3826002216', '3826002217' ], '2 phrases');
-        assert.deepEqual(conf.test._geocoder.get('grid',3826002216), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
-        assert.deepEqual(conf.test._geocoder.get('grid',3826002217), [ 17593284952065, 17593284952066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.get('grid',3826002216), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.get('grid',3826002217), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });
