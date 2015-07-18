@@ -33,9 +33,6 @@ function Geocoder(options) {
     });
 
     q.awaitAll(function(err, results) {
-        this._error = err;
-        this._opened = true;
-
         var names = [];
         results.forEach(function(info, i) {
             var id = indexes[i][0];
@@ -58,7 +55,11 @@ function Geocoder(options) {
             }
 
             if (info.geocoder_version) {
-                source._geocoder.version = info.geocoder_version;
+                source._geocoder.version = parseInt(info.geocoder_version, 10);
+                if (source._geocoder.version !== 2) {
+                    err = new Error('geocoder version is not 2, index: ' + id);
+                    return;
+                }
             } else {
                 source._geocoder.version = 0;
                 source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
@@ -85,6 +86,8 @@ function Geocoder(options) {
             this.byidx[i] = source;
         }.bind(this));
 
+        this._error = err;
+        this._opened = true;
         this.emit('open', err);
     }.bind(this));
 
@@ -131,67 +134,55 @@ Geocoder.prototype._open = function(callback) {
 // `options` is an object with additional parameters
 // `callback` is called with (error, results)
 Geocoder.prototype.geocode = function(query, options, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            geocode(this, query, options, callback);
-        }.bind(this));
-    }
-    return geocode(this, query, options, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        geocode(self, query, options, callback);
+    });
 };
 
 // Index docs from one source to another.
 Geocoder.prototype.index = function(from, to, pointer, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            index(this, from, to, pointer, callback);
-        }.bind(this));
-    }
-    return index(this, from, to, pointer, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        index(self, from, to, pointer, callback);
+    });
 };
 
 // Analyze a source's index.
 Geocoder.prototype.analyze = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            analyze(source, callback);
-        }.bind(this));
-    }
-    return analyze(source, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        analyze(source, callback);
+    });
 };
 
 // Load all shards for a source.
 Geocoder.prototype.loadall = function(source, type, concurrency, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            loadall.loadall(source, type, concurrency, callback);
-        }.bind(this));
-    }
-    return loadall.loadall(source, type, concurrency, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        loadall.loadall(source, type, concurrency, callback);
+    });
 };
 
 Geocoder.prototype.unloadall = function(source, type, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            loadall.unloadall(source, type, callback);
-        }.bind(this));
-    }
-    return loadall.unloadall(source, type, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        loadall.unloadall(source, type, callback);
+    });
 };
 
 // Copy a source's index to another.
 Geocoder.prototype.copy = function(from, to, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            copy(from, to, callback);
-        }.bind(this));
-    }
-    return copy(from, to, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        copy(from, to, callback);
+    });
 };
 
 Geocoder.auto = loader.auto;
