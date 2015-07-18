@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.5
+
+- Doubletap - more conservative vt caching settings
+
 ## 4.0.4
 
 - Updates to carmen-cache @ 0.6.0 for more conservative memory use
