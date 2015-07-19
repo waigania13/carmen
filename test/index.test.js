@@ -15,14 +15,16 @@ test('index.generateStats', function(assert) {
     var docs = [{_text:'main street', _score:2},{_text:'Main Road', _score:1}];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
-        0: [ 4, 2 ],        // 4 total
+        0: [ 4 ],           // 4 total
+        1: [ 2 ],           // 2 maxscore
         1025494171: [ 1 ],  // 1 road
         1986331710: [ 1 ],  // 1 street
         3935363592: [ 2 ]   // 2 main
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
-        0: [ 4, 2 ],        // 4 total
+        0: [ 4 ],           // 4 total
+        1: [ 2 ],           // 2 maxscore
         1263673922: [ 1 ],  // 1 road
         1498707683: [ 1 ],  // 1 street
         3935363592: [ 2 ]   // 2 main
@@ -45,7 +47,8 @@ test('index.update -- error', function(t) {
             _zxy:['6/32/32']
         }], zoom, function(err) {
             q.ifError(err);
-            q.deepEqual(to._geocoder.get('freq', 0), [2,10]);
+            q.deepEqual(to._geocoder.get('freq', 0), [2]);
+            q.deepEqual(to._geocoder.get('freq', 1), [10]);
             q.end();
         });
     });
@@ -59,7 +62,8 @@ test('index.update -- error', function(t) {
             _zxy:['6/32/32']
         }], zoom, function(err) {
             q.ifError(err);
-            q.deepEqual(to._geocoder.get('freq', 0), [4,10]);
+            q.deepEqual(to._geocoder.get('freq', 0), [4]);
+            q.deepEqual(to._geocoder.get('freq', 1), [10]);
             q.end();
         });
     });
