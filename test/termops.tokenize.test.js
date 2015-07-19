@@ -17,7 +17,7 @@ test('tokenizes basic strings', function(assert) {
     assert.deepEqual(termops.tokenize('foo]bar'), ['foo', 'bar'], 'splits on ]');
     assert.deepEqual(termops.tokenize('foo(bar'), ['foo', 'bar'], 'splits on (');
     assert.deepEqual(termops.tokenize('foo)bar'), ['foo', 'bar'], 'splits on )');
-    assert.deepEqual(termops.tokenize('st.foo'), ['st', 'foo'], 'splits on .');
+    assert.deepEqual(termops.tokenize('foo b.a.r'), ['foo', 'bar'], 'collapses .');
     assert.deepEqual(termops.tokenize('foo\'s bar'), ['foos', 'bar'], 'collapses apostraphe');
     assert.deepEqual(termops.tokenize('69-150'), ['69-150']);
     assert.deepEqual(termops.tokenize('4-10'), ['4-10']);
