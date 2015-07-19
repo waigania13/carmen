@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.6
+
+- More sophisticated tokenization behavior around punctuation -- apostraphe and period characters collapse while most others split terms.
+
 ## 4.0.5
 
 - Doubletap - more conservative vt caching settings
