@@ -93,7 +93,7 @@ test('#load', function(s) {
     var pack = cache.pack('grid', 0);
     var loader = new Cache('b', 1);
     loader.loadSync(pack, 'grid', 0);
-    s.deepEqual([5,6], loader.get('grid', 21));
+    s.deepEqual([6,5], loader.get('grid', 21));
     s.deepEqual([0], loader.list('grid'), 'single shard');
     s.deepEqual(['5', '21'], loader.list('grid', 0), 'keys in shard');
     s.end();

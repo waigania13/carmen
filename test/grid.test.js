@@ -25,13 +25,13 @@ test('grid', function(assert) {
     data = { id: 1, x:5, y:4, relev: 1, score: 0 };
     encoded = grid.encode(data);
     decoded = grid.decode(encoded);
-    assert.equal(encoded, 2748938452993);
+    assert.equal(encoded, 6755468165775361);
     assert.deepEqual(decoded, data);
 
     data = { id: 532, x:12, y:17, relev: 0.6, score: 7 };
     encoded = grid.encode(data);
     decoded = grid.decode(encoded);
-    assert.equal(encoded, 6597655921172);
+    assert.equal(encoded, 4222416721019412);
     assert.deepEqual(decoded, data);
 
     data = { id: 1, x:1, y:1, relev: 1, score: -1 };
