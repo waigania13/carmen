@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0
+
+- Update index format for delta encoding in carmen-cache@0.7.x. This is a breaking change that requires reindexing. See https://github.com/mapbox/carmen/pull/301 and https://github.com/mapbox/carmen-cache/pull/37 for details.
+
 ## 4.0.6
 
 - More sophisticated tokenization behavior around punctuation -- apostraphe and period characters collapse while most others split terms.
