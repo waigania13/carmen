@@ -91,12 +91,15 @@ function Geocoder(options) {
         // bounds do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
         for (var i = 0; i < this.byidx.length; i++) {
-            var bmask = 0;
+            var bmask = [];
             var a = this.byidx[i]._geocoder;
             for (var j = 0; j < this.byidx.length; j++) {
                 var b = this.byidx[j]._geocoder;
-                if (boundsIntersect(a.bounds, b.bounds)) continue;
-                bmask = bmask | (1 << j);
+                if (boundsIntersect(a.bounds, b.bounds)) {
+                    bmask[j] = 0;
+                } else {
+                    bmask[j] = 1;
+                }
             }
             this.byidx[i]._geocoder.bmask = bmask;
         }

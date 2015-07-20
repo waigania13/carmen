@@ -38,8 +38,8 @@ test('stackable nmask', function(assert) {
 });
 
 test('stackable bmask', function(assert) {
-    var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), bmask:parseInt('10',2), weight:0.66 };
-    var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), bmask:parseInt('01',2), weight:0.66 };
+    var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), bmask:[0,1], weight:0.66 };
+    var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), bmask:[1,0], weight:0.66 };
     var debug = stackable([
         [ a1 ],
         [ b1 ],
