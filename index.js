@@ -25,7 +25,7 @@ function Geocoder(options) {
 
     this.indexes = indexes.reduce(toObject, {});
     this.byname = {};
-    this.byidx = {};
+    this.byidx = [];
     this.names = [];
 
     indexes.forEach(function(index) {
@@ -86,6 +86,24 @@ function Geocoder(options) {
             this.byidx[i] = source;
         }.bind(this));
 
+        // Second pass -- generate bmask (bounds mask) per index.
+        // The bmask of an index represents a mask of all indexes that its
+        // bounds do not intersect with -- ie. a spatialmatch with any of
+        // these indexes should not be attempted as it will fail anyway.
+        for (var i = 0; i < this.byidx.length; i++) {
+            var bmask = [];
+            var a = this.byidx[i]._geocoder;
+            for (var j = 0; j < this.byidx.length; j++) {
+                var b = this.byidx[j]._geocoder;
+                if (boundsIntersect(a.bounds, b.bounds)) {
+                    bmask[j] = 0;
+                } else {
+                    bmask[j] = 1;
+                }
+            }
+            this.byidx[i]._geocoder.bmask = bmask;
+        }
+
         this._error = err;
         this._opened = true;
         this.emit('open', err);
@@ -106,6 +124,14 @@ function Geocoder(options) {
             source.getInfo(callback);
         }
     }
+}
+
+function boundsIntersect(a, b) {
+    if (a[2] < b[0]) return false; // a is left of b
+    if (a[0] > b[2]) return false; // a is right of b
+    if (a[3] < b[1]) return false; // a is below b
+    if (a[1] > b[3]) return false; // a is above b
+    return true;
 }
 
 function pairs(o) {
