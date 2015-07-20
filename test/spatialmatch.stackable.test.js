@@ -19,6 +19,40 @@ test('stackable simple', function(assert) {
     assert.end();
 });
 
+test('stackable nmask', function(assert) {
+    var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), nmask:parseInt('1',2), weight:0.33 };
+    var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), nmask:parseInt('10',2), weight:0.33 };
+    var c1 = { text:"c1", idx:2, zoom:1, mask:parseInt('1',2), nmask:parseInt('10',2), weight:0.33 };
+    var debug = stackable([
+        [ a1 ],
+        [ b1 ],
+        [ c1 ],
+    ]).map(function(stack) {
+        return stack.map(function(s) { return s.text });
+    });
+    assert.deepEqual(debug, [
+        [ 'c1', 'a1' ],
+        [ 'b1', 'a1' ],
+    ], 'b1 and c1 do not stack (nmask: same geocoder_name)');
+    assert.end();
+});
+
+test('stackable bmask', function(assert) {
+    var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), bmask:parseInt('10',2), weight:0.66 };
+    var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), bmask:parseInt('01',2), weight:0.66 };
+    var debug = stackable([
+        [ a1 ],
+        [ b1 ],
+    ]).map(function(stack) {
+        return stack.map(function(s) { return s.text });
+    });
+    assert.deepEqual(debug, [
+        [ 'a1' ],
+        [ 'b1' ],
+    ], 'a1 and b1 do not stack (bmask: exclusive bounds)');
+    assert.end();
+});
+
 test('stackable complex', function(assert) {
     var a1 = { text:"a1", idx:0, zoom:0, mask:parseInt('10',2), weight:0.33 };
     var a2 = { text:"a2", idx:0, zoom:0, mask:parseInt('110',2), weight:0.66 };
