@@ -12,7 +12,10 @@ suite.add('index', function() {
     var query = ['1600','p'];
     var geocoder = { byidx: {} };
     for (var i = 0; i < 40; i++) geocoder.byidx[i] = {
-        _geocoder: { token_replacer: replacer }
+        _geocoder: {
+            token_replacer: replacer,
+            geocoder_address: true
+        }
     };
     var options = {
         proximity: [ -77.0414, 38.9004 ],
