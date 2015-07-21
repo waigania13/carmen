@@ -6,10 +6,10 @@ tape('verifymatch.sortFeature', function(assert) {
         { _id: 7, _spatialmatch:{relev:0.9}, _address:null },
         { _id: 6, _spatialmatch:{relev:1.0}, _address:null },
         { _id: 5, _spatialmatch:{relev:1.0}, _address:'26', _geometry: { omitted: true } },
-        { _id: 4, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _distance:5, _score: 1 },
-        { _id: 3, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _distance:2, _score: 1 },
-        { _id: 2, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _distance:2, _score: 2, _position:2 },
-        { _id: 1, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _distance:2, _score: 2, _position:1 }
+        { _id: 4, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _scoredist:2, },
+        { _id: 3, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _scoredist:3, },
+        { _id: 2, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _scoredist:4, _position:2 },
+        { _id: 1, _spatialmatch:{relev:1.0}, _address:'26', _geometry: {}, _scoredist:5, _position:1 }
     ];
     arr.sort(verifymatch.sortFeature);
     assert.deepEqual(arr.map(function(f) { return f._id }), [1,2,3,4,5,6,7]);
@@ -37,37 +37,37 @@ tape('verifymatch.sortContext (no distance)', function(assert) {
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ _id: 6, _address:'26', _cluster:{}, _geometry: {}, _score:1 }];
+    c = [{ _id: 6, _address:'26', _cluster:{}, _geometry: {}, _scoredist:1 }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ _id: 5, _address:'26', _cluster:{}, _geometry: {}, _score:2 }];
+    c = [{ _id: 5, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2 }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ _id: 4, _address:'26', _cluster:{}, _geometry: {}, _score:2 }];
+    c = [{ _id: 4, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2 }];
     c._relevance = 1.0;
     c._typeindex = 2;
     arr.push(c);
 
-    c = [{ _id: 3, _address:'26', _cluster:{}, _geometry: {}, _score:2 }];
+    c = [{ _id: 3, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     c._distance = 20;
     arr.push(c);
 
-    c = [{ _id: 2, _address:'26', _cluster:{}, _geometry: {}, _score:2 }];
+    c = [{ _id: 2, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     c._distance = 10;
     arr.push(c);
 
-    c = [{ _id: 1, _address:'26', _cluster:{}, _geometry: {}, _score:2, _position: 2 }];
+    c = [{ _id: 1, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2, _position: 2 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
 
-    c = [{ _id: 0, _address:'26', _cluster:{}, _geometry: {}, _score:2, _position: 1 }];
+    c = [{ _id: 0, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2, _position: 1 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
@@ -99,12 +99,12 @@ tape('verifymatch.sortContext (with distance)', function(assert) {
     c._typeindex = 2;
     arr.push(c);
 
-    c = [{ _id: 2, _address:'26', _cluster:{}, _geometry: {}, _distance:2 }];
+    c = [{ _id: 2, _address:'26', _cluster:{}, _geometry: {}, _scoredist:1 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
 
-    c = [{ _id: 1, _address:'26', _cluster:{}, _geometry: {}, _distance:1 }];
+    c = [{ _id: 1, _address:'26', _cluster:{}, _geometry: {}, _scoredist:2 }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
@@ -123,11 +123,11 @@ tape('verifymatch.sortContext (distance vs addresstype)', function(assert) {
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ _id: 2, _address:'26', _distance: 2, _cluster:{} }];
+    c = [{ _id: 2, _address:'26', _scoredist: 1, _cluster:{} }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ _id: 1, _address:'26', _distance: 1 }];
+    c = [{ _id: 1, _address:'26', _scoredist: 2 }];
     c._relevance = 1.0;
     arr.push(c);
 

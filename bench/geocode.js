@@ -16,10 +16,10 @@ var tape = require('tape');
         var docs = require('fs').readFileSync(__dirname + '/fixtures/lake-streetnames.txt', 'utf8')
             .split('\n')
             .filter(function(text) { return !!text; })
-            .slice(0,100)
+            .slice(0,500)
             .reduce(function(memo, text) {
                 // generate between 1-100 features with this text.
-                var seed = 2000;
+                var seed = 100;
                 for (var i = 0; i < seed; i++) {
                     var lat = Math.random() * 170 - 85;
                     var lon = Math.random() * 360 - 180;
@@ -34,8 +34,11 @@ var tape = require('tape');
             }, []);
         index.update(conf.street, docs, 14, function(err) {
             if (err) throw err;
-            assert.ok(true, 'setup time ' + (+new Date - start) + 'ms');
-            assert.end();
+            index.store(conf.street, function(err) {
+                if (err) throw err;
+                assert.ok(true, 'setup time ' + (+new Date - start) + 'ms');
+                assert.end();
+            });
         });
     });
     tape('geocode', function(assert) {

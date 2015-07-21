@@ -1,5 +1,42 @@
 # Changelog
 
+## 5.0.1
+
+- More efficient spatialmatch by introducing a bounds mask per index and loading grids at spatialmatch time.
+
+## 5.0.0
+
+- Update index format for delta encoding in carmen-cache@0.7.x. This is a breaking change that requires reindexing. See https://github.com/mapbox/carmen/pull/301 and https://github.com/mapbox/carmen-cache/pull/37 for details.
+
+## 4.0.6
+
+- More sophisticated tokenization behavior around punctuation -- apostraphe and period characters collapse while most others split terms.
+
+## 4.0.5
+
+- Doubletap - more conservative vt caching settings
+
+## 4.0.4
+
+- Updates to carmen-cache @ 0.6.0 for more conservative memory use
+- Reduces vtile LRU cache size for high zoom sources
+
+## 4.0.3
+
+- Robustification fix for how token replacement handles unidecode at indexing + query time.
+
+## 4.0.2
+
+- Fixes to proximity mode to account for both score and distance.
+
+## 4.0.1
+
+- Bug fix for lone housenum subquery permutations and upgrade to carmen-cache@0.5.1.
+
+## 4.0.0
+
+- Large refactor of carmen index structure and indexing/runtime processes. See https://github.com/mapbox/carmen/pull/287
+
 ## 3.1.6
 
 - Rollback XRegExp use.

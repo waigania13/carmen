@@ -25,7 +25,7 @@ function Geocoder(options) {
 
     this.indexes = indexes.reduce(toObject, {});
     this.byname = {};
-    this.byidx = {};
+    this.byidx = [];
     this.names = [];
 
     indexes.forEach(function(index) {
@@ -33,9 +33,6 @@ function Geocoder(options) {
     });
 
     q.awaitAll(function(err, results) {
-        this._error = err;
-        this._opened = true;
-
         var names = [];
         results.forEach(function(info, i) {
             var id = indexes[i][0];
@@ -58,7 +55,11 @@ function Geocoder(options) {
             }
 
             if (info.geocoder_version) {
-                source._geocoder.version = info.geocoder_version;
+                source._geocoder.version = parseInt(info.geocoder_version, 10);
+                if (source._geocoder.version !== 2) {
+                    err = new Error('geocoder version is not 2, index: ' + id);
+                    return;
+                }
             } else {
                 source._geocoder.version = 0;
                 source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
@@ -85,6 +86,26 @@ function Geocoder(options) {
             this.byidx[i] = source;
         }.bind(this));
 
+        // Second pass -- generate bmask (bounds mask) per index.
+        // The bmask of an index represents a mask of all indexes that its
+        // bounds do not intersect with -- ie. a spatialmatch with any of
+        // these indexes should not be attempted as it will fail anyway.
+        for (var i = 0; i < this.byidx.length; i++) {
+            var bmask = [];
+            var a = this.byidx[i]._geocoder;
+            for (var j = 0; j < this.byidx.length; j++) {
+                var b = this.byidx[j]._geocoder;
+                if (boundsIntersect(a.bounds, b.bounds)) {
+                    bmask[j] = 0;
+                } else {
+                    bmask[j] = 1;
+                }
+            }
+            this.byidx[i]._geocoder.bmask = bmask;
+        }
+
+        this._error = err;
+        this._opened = true;
         this.emit('open', err);
     }.bind(this));
 
@@ -103,6 +124,14 @@ function Geocoder(options) {
             source.getInfo(callback);
         }
     }
+}
+
+function boundsIntersect(a, b) {
+    if (a[2] < b[0]) return false; // a is left of b
+    if (a[0] > b[2]) return false; // a is right of b
+    if (a[3] < b[1]) return false; // a is below b
+    if (a[1] > b[3]) return false; // a is above b
+    return true;
 }
 
 function pairs(o) {
@@ -131,67 +160,55 @@ Geocoder.prototype._open = function(callback) {
 // `options` is an object with additional parameters
 // `callback` is called with (error, results)
 Geocoder.prototype.geocode = function(query, options, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            geocode(this, query, options, callback);
-        }.bind(this));
-    }
-    return geocode(this, query, options, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        geocode(self, query, options, callback);
+    });
 };
 
 // Index docs from one source to another.
 Geocoder.prototype.index = function(from, to, pointer, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            index(this, from, to, pointer, callback);
-        }.bind(this));
-    }
-    return index(this, from, to, pointer, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        index(self, from, to, pointer, callback);
+    });
 };
 
 // Analyze a source's index.
 Geocoder.prototype.analyze = function(source, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            analyze(source, callback);
-        }.bind(this));
-    }
-    return analyze(source, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        analyze(source, callback);
+    });
 };
 
 // Load all shards for a source.
 Geocoder.prototype.loadall = function(source, type, concurrency, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            loadall.loadall(source, type, concurrency, callback);
-        }.bind(this));
-    }
-    return loadall.loadall(source, type, concurrency, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        loadall.loadall(source, type, concurrency, callback);
+    });
 };
 
 Geocoder.prototype.unloadall = function(source, type, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            loadall.unloadall(source, type, callback);
-        }.bind(this));
-    }
-    return loadall.unloadall(source, type, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        loadall.unloadall(source, type, callback);
+    });
 };
 
 // Copy a source's index to another.
 Geocoder.prototype.copy = function(from, to, callback) {
-    if (!this._opened) {
-        return this._open(function(err) {
-            if (err) return callback(err);
-            copy(from, to, callback);
-        }.bind(this));
-    }
-    return copy(from, to, callback);
+    var self = this;
+    this._open(function(err) {
+        if (err) return callback(err);
+        copy(from, to, callback);
+    });
 };
 
 Geocoder.auto = loader.auto;
