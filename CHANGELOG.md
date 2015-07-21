@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.0.3
+
+- Fix for decollide bug.
+
+## 5.0.2
+
+- Improved performance for feature verification in verifymatch.
+
 ## 5.0.1
 
 - More efficient spatialmatch by introducing a bounds mask per index and loading grids at spatialmatch time.
