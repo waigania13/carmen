@@ -28,6 +28,10 @@ test('termops.decollide', function(assert) {
         _text: 'main street'
     }, 'market'), false, 'finds collision: letter "k"');
 
+    assert.deepEqual(termops.decollide([], {
+        _text: 'Грамада'
+    }, 'грамада'), true, 'decollides - unicode');
+
     assert.end();
 });
 
