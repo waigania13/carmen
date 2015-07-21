@@ -29,6 +29,20 @@ test('termops.getPhraseDegens', function(assert) {
     assert.deepEqual(termops.getPhraseDegens(['###']), [
     ], 'no degens for numToken');
 
+    assert.deepEqual(termops.getPhraseDegens(['###', 'main']), [
+        '### m',
+        '### ma',
+        '### mai',
+        '### main',
+    ], '### no degens for numToken road until non-numeric');
+
+    assert.deepEqual(termops.getPhraseDegens(['2##', 'main']), [
+        '2## m',
+        '2## ma',
+        '2## mai',
+        '2## main',
+    ], '2## no degens for numToken road until non-numeric');
+
     assert.end();
 });
 
