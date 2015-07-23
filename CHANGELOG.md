@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.4
+
+- Fix for proximity bug where extreme values would push into negative xy integers.
+
 ## 5.0.3
 
 - Fix for decollide bug.
