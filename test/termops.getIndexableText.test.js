@@ -41,13 +41,9 @@ test('termops.getIndexableText', function(assert) {
     doc = {_text:'Main Street', _cluster:{1:{}, 10:{}, 100:{}, 200:{}}};
     assert.deepEqual(termops.getIndexableText(replacer, doc), [
         ['2##', 'main', 'street' ],
-        ['main', 'street', '2##' ],
         ['1##', 'main', 'street' ],
-        ['main', 'street', '1##' ],
         ['##', 'main', 'street' ],
-        ['main', 'street', '##' ],
         ['#', 'main', 'street' ],
-        ['main', 'street', '#' ],
     ], 'with range');
 
 
