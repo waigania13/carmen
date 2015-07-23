@@ -10,10 +10,10 @@ test('numTokenize', function(assert) {
     ], 'two numbers');
 
     assert.deepEqual(termops.numTokenize('foo-bar',3), [], 'no numbers');
-    assert.deepEqual(termops.numTokenize('69-150',3), [['6####']], 'only numbers');
+    assert.deepEqual(termops.numTokenize('69-150',3), [['69###']], 'only numbers');
     assert.deepEqual(termops.numTokenize('500 main street 20009',3), [
         ['5##', 'main', 'street', '20009'],
-        ['500', 'main', 'street', '2####'],
+        ['500', 'main', 'street', '20###'],
     ], 'two numbers');
     assert.end();
 });

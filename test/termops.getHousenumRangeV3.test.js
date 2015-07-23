@@ -16,11 +16,11 @@ test('termops.getHousenumRangeV3', function(assert) {
 
     assert.deepEqual(getHousenumRangeV3({
         _cluster:{ 0: {}, 10000000000: {} }
-    }), ['#','1##########'], '_cluster => [0,10000000000]');
+    }), ['#','10#########'], '_cluster => [0,10000000000]');
 
     assert.deepEqual(getHousenumRangeV3({
         _cluster:{ 5: {}, 10: {}, 1: {}, 13: {}, 3100:{}, 3101:{}, 3503:{} }
-    }), ['#','##','3###'], '_cluster => [1,13,3100,3101,3503]');
+    }), ['#','##','31##','35##'], '_cluster => [1,13,3100,3101,3503]');
 
     assert.deepEqual(getHousenumRangeV3({
         _cluster:{ '5a': {}, '10b': {}, '1c': {}, '13d': {} }
@@ -65,13 +65,13 @@ test('termops.getHousenumRangeV3', function(assert) {
         _rfromhn:['1001'],
         _rtohn:['1200']
 
-    }), ['#', '##','1###'], 'complex case A');
+    }), ['#', '##','10##','11##','12##'], 'complex case A');
 
     assert.deepEqual(getHousenumRangeV3({
         _rangetype:'tiger',
         _rfromhn:['1'],
         _rtohn:['1000']
-    }), ['#', '##','1##','1###','2##', '3##', '4##', '5##', '6##', '7##', '8##', '9##'], 'complex case B');
+    }), ['#', '##','1##','10##','2##', '3##', '4##', '5##', '6##', '7##', '8##', '9##'], 'complex case B');
 
     assert.end();
 });
