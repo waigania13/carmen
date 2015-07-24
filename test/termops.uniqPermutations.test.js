@@ -53,9 +53,9 @@ test('termops.uniqPermutations', function(assert) {
 
     a = termops.permutations(['a','b','##']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a b ##',
+        '## a b',
         'a b',
-        'b ##',
+        '## b',
         'a',
         'b',
         '##'
@@ -63,9 +63,9 @@ test('termops.uniqPermutations', function(assert) {
 
     a = termops.permutations(['a','b','2##']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a b 2##',
+        '2## a b',
         'a b',
-        'b 2##',
+        '2## b',
         'a',
         'b',
         '2##'
@@ -73,7 +73,7 @@ test('termops.uniqPermutations', function(assert) {
 
     a = termops.permutations(['a','##','c']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a ##',
+        '## a',
         '## c',
         'a',
         '##',
@@ -82,7 +82,7 @@ test('termops.uniqPermutations', function(assert) {
 
     a = termops.permutations(['a','2##','c']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a 2##',
+        '2## a',
         '2## c',
         'a',
         '2##',

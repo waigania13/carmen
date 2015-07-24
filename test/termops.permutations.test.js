@@ -31,6 +31,30 @@ test('termops.permutations', function(assert) {
     assert.deepEqual(clone(termops.permutations(['a'])), [
         ['a'],
     ]);
+    assert.deepEqual(clone(termops.permutations(['2##','b','c'])), [
+        ['2##','b','c'],
+        ['2##','b'],
+        ['b','c'],
+        ['2##'],
+        ['b'],
+        ['c'],
+    ]);
+    assert.deepEqual(clone(termops.permutations(['a','b','2##'])), [
+        ['2##','a','b'],
+        ['a','b'],
+        ['2##','b'],
+        ['a'],
+        ['b'],
+        ['2##'],
+    ]);
+    assert.deepEqual(clone(termops.permutations(['a','2##','c'])), [
+        ['a','2##','c'],
+        ['2##','a'],
+        ['2##','c'],
+        ['a'],
+        ['2##'],
+        ['c'],
+    ]);
     assert.end();
 });
 
