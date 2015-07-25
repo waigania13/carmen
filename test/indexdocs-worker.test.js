@@ -25,7 +25,8 @@ tape('worker.loadDoc', function(assert) {
         _score: 100
     };
 
-    freq[0] = [101, 200];
+    freq[0] = [101];
+    freq[1] = [200];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
 

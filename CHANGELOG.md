@@ -1,5 +1,29 @@
 # Changelog
 
+## 5.0.4
+
+- Fix for proximity bug where extreme values would push into negative xy integers.
+
+## 5.0.3
+
+- Fix for decollide bug.
+
+## 5.0.2
+
+- Improved performance for feature verification in verifymatch.
+
+## 5.0.1
+
+- More efficient spatialmatch by introducing a bounds mask per index and loading grids at spatialmatch time.
+
+## 5.0.0
+
+- Update index format for delta encoding in carmen-cache@0.7.x. This is a breaking change that requires reindexing. See https://github.com/mapbox/carmen/pull/301 and https://github.com/mapbox/carmen-cache/pull/37 for details.
+
+## 4.0.6
+
+- More sophisticated tokenization behavior around punctuation -- apostraphe and period characters collapse while most others split terms.
+
 ## 4.0.5
 
 - Doubletap - more conservative vt caching settings
