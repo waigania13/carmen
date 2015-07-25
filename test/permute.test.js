@@ -11,6 +11,16 @@ function debug(p) {
 }
 
 test('permute.all', function(assert) {
+    assert.deepEqual(permute.all(1).length, 1);
+    assert.deepEqual(permute.all(2).length, 3);
+    assert.deepEqual(permute.all(3).length, 7);
+    assert.deepEqual(permute.all(4).length, 15);
+    assert.deepEqual(permute.all(5).length, 31);
+    assert.deepEqual(permute.all(6).length, 63);
+    assert.deepEqual(permute.all(7).length, 127);
+    assert.deepEqual(permute.all(8).length, 255);
+    assert.deepEqual(permute.all(9).length, 511);
+    assert.deepEqual(permute.all(10).length, 1023);
     assert.deepEqual(debug(permute.all(1)), [
         '1'
     ]);
