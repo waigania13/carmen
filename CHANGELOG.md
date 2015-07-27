@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.5
+
+- Fix for feature verification bug where a non-optimal relevance could sometimes be assigned.
+
 ## 5.0.4
 
 - Fix for proximity bug where extreme values would push into negative xy integers.
