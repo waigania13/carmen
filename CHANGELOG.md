@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.0
+
+- NumTokens V3 for more efficient feature verification. See https://github.com/mapbox/carmen/pull/310.
+- Sieve indexing mode for broader indexing of feature text.
+- Bumps geocoder_version to 3 (version 2 continues to be supported at runtime).
+
 ## 5.0.5
 
 - Fix for feature verification bug where a non-optimal relevance could sometimes be assigned.
