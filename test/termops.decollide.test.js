@@ -4,7 +4,19 @@ var test = require('tape');
 test('termops.decollide', function(assert) {
     assert.deepEqual(termops.decollide([], {
         _text: 'main street'
-    }, '## ma'), true, 'decollides');
+    }, '## ma'), true, 'decollides "## ma"');
+
+    assert.deepEqual(termops.decollide([], {
+        _text: 'main street'
+    }, '2# ma'), true, 'decollides "2# ma"');
+
+    assert.deepEqual(termops.decollide([], {
+        _text: 'main street'
+    }, 'main street 2#'), true, 'decollides "main street 2#"');
+
+    assert.deepEqual(termops.decollide([], {
+        _text: 'main street'
+    }, 'main 2# street'), false, 'collides "main 2# street"');
 
     assert.deepEqual(termops.decollide([], {
         _text: 'first street'

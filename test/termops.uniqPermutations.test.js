@@ -39,26 +39,56 @@ test('termops.uniqPermutations', function(assert) {
         '##',
         'b',
         'c'
-    ], 'leading housenum');
+    ], '## leading housenum');
+
+    a = termops.permutations(['2##','b','c']);
+    assert.deepEqual(termops.uniqPermutations(a).map(debug), [
+        '2## b c',
+        '2## b',
+        'b c',
+        '2##',
+        'b',
+        'c'
+    ], '2## leading housenum');
 
     a = termops.permutations(['a','b','##']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a b ##',
+        '## a b',
         'a b',
-        'b ##',
+        '## b',
         'a',
         'b',
         '##'
-    ], 'trailing housenum');
+    ], 'trailing housenum ##');
+
+    a = termops.permutations(['a','b','2##']);
+    assert.deepEqual(termops.uniqPermutations(a).map(debug), [
+        '2## a b',
+        'a b',
+        '2## b',
+        'a',
+        'b',
+        '2##'
+    ], 'trailing housenum 2##');
 
     a = termops.permutations(['a','##','c']);
     assert.deepEqual(termops.uniqPermutations(a).map(debug), [
-        'a ##',
+        '## a',
         '## c',
         'a',
         '##',
         'c'
-    ], 'landlocked housenum');
+    ], 'landlocked housenum ##');
+
+    a = termops.permutations(['a','2##','c']);
+    assert.deepEqual(termops.uniqPermutations(a).map(debug), [
+        '2## a',
+        '2## c',
+        'a',
+        '2##',
+        'c'
+    ], 'landlocked housenum 2##');
+
     assert.end();
 });
 
