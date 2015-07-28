@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.1
+
+- Smart dedupe of ghost features out of result sets when they match text of other non-ghost features.
+
 ## 5.1.0
 
 - NumTokens V3 for more efficient feature verification. See https://github.com/mapbox/carmen/pull/310.
