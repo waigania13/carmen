@@ -74,7 +74,21 @@ geocoder_shardlevel     | Deprecated. An integer order of magnitude that geocode
 ### geocode(query, options, callback)
 
 Given a `query` string, call callback with `(err, results)` of possible contexts
-represented by that string.
+represented by that string. The following are all optional and can be provided
+as part of the `options` object:
+
+- `limit` - number. Adjust the maximium number of features returned. Defaults to 5.
+- `proximity` - a `[ lon, lat ]` array to use for biasing search results.
+  Features closer to the proximity value will be given priority over those
+  further from the proximity value.
+- `types` - an array of string types. Only features matching one of the types
+  specified will be returned.
+- `allow_dupes` - boolean. If true, carmen will allow features with identical
+  place names to be returned. Defaults to false.
+- `debug` - boolean. If true, the carmen debug object will be returned as part
+  of the results.
+- `stats` - boolean. If true, the carmen stats object will be returned as part
+  of the results.
 
 ### index(from, to, pointer, callback)
 
