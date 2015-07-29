@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.2
+
+- Fix feature id query mode.
+
 ## 5.1.1
 
 - Smart dedupe of ghost features out of result sets when they match text of other non-ghost features.
