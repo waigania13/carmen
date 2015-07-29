@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.0
+
+- Add `types` query option to filter results by feature type.
+
 ## 5.1.2
 
 - Fix feature id query mode.
