@@ -91,6 +91,38 @@ tape('china', function(t) {
     });
 });
 
+// reverse without type filter
+tape('reverse', function(t) {
+    c.geocode('0,0', {}, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 3, '3 results');
+        t.deepEqual(res.features[0].id, 'place.1', 'place wins');
+        t.end();
+    });
+});
+tape('reverse: country', function(t) {
+    c.geocode('0,0', { types:['country'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 result');
+        t.deepEqual(res.features[0].id, 'country.1', 'country wins');
+        t.end();
+    });
+});
+tape('reverse: country,place', function(t) {
+    c.geocode('0,0', { types:['country','place'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 2, '2 results');
+        t.deepEqual(res.features[0].id, 'place.1', '1: place');
+        t.deepEqual(res.features[0].context, [
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including region)');
+        t.deepEqual(res.features[1].id, 'country.1', '2: country');
+        t.deepEqual(res.features[1].context, undefined);
+        t.end();
+    });
+});
+
 tape('index.teardown', function(assert) {
     index.teardown();
     assert.end();
