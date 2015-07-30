@@ -8,11 +8,11 @@ test('.shard', function(s) {
 
     s.equal(0, Cache.shard('grid', 0));
     s.equal(0, Cache.shard('grid', 1));
-    s.equal(1, Cache.shard('grid', 65536));
-    s.equal(1, Cache.shard('grid', 65536 + 1), 'lower bits do not affect shard');
-    s.equal(2, Cache.shard('grid', 65536 * 2));
-    s.equal(3, Cache.shard('grid', 65536 * 3));
-    s.equal(15, Cache.shard('grid', 65536 * 15));
+    s.equal(1, Cache.shard('grid', 68719476736));
+    s.equal(1, Cache.shard('grid', 68719476736 + 1), 'lower bits do not affect shard');
+    s.equal(2, Cache.shard('grid', 68719476736 * 2));
+    s.equal(3, Cache.shard('grid', 68719476736 * 3));
+    s.equal(15, Cache.shard('grid', 68719476736 * 15));
     s.equal(false, Cache.shard('grid'));
     s.end();
 });
@@ -160,7 +160,7 @@ test('#unloadall', function(s) {
 test('#loadall', function(assert) {
     var cache = new Cache('a', 1);
     cache.set('grid', 1, [0]);
-    cache.set('grid', 65536, [1]);
+    cache.set('grid', 68719476736, [1]);
 
     var packs = [];
     packs[0] = cache.pack('grid', 0);
@@ -176,30 +176,30 @@ test('#loadall', function(assert) {
     load1();
 
     function load1() {
-        loader.loadall(getter, 'grid', [1,65536], function(err, shards, queue) {
+        loader.loadall(getter, 'grid', [1,68719476736], function(err, shards, queue) {
             assert.ifError(err);
             assert.deepEqual(loader.get('grid', 1), [0]);
-            assert.deepEqual(loader.get('grid', 65536), [1]);
+            assert.deepEqual(loader.get('grid', 68719476736), [1]);
             load2();
         });
     }
     function load2() {
-        loader.loadall(getter, 'grid', [1,65536], function(err, shards, queue) {
+        loader.loadall(getter, 'grid', [1,68719476736], function(err, shards, queue) {
             assert.ifError(err);
             assert.deepEqual(loader.get('grid', 1), [0]);
-            assert.deepEqual(loader.get('grid', 65536), [1]);
+            assert.deepEqual(loader.get('grid', 68719476736), [1]);
             get1();
         });
     }
     function get1() {
-        loader.getall(getter, 'grid', [1,65536], function(err, loaded) {
+        loader.getall(getter, 'grid', [1,68719476736], function(err, loaded) {
             assert.ifError(err);
             assert.deepEqual(loaded, [1,0]);
             get2();
         });
     }
     function get2() {
-        loader.getall(getter, 'grid', [1,65536], function(err, loaded) {
+        loader.getall(getter, 'grid', [1,68719476736], function(err, loaded) {
             assert.ifError(err);
             assert.deepEqual(loaded, [1,0]);
             assert.end();
@@ -210,7 +210,7 @@ test('#loadall', function(assert) {
 test('#dictall', function(assert) {
     var cache = new Cache('a', 1);
     cache.set('grid', 1, [0]);
-    cache.set('grid', 65536, [1]);
+    cache.set('grid', 68719476736, [1]);
 
     var packs = [];
     packs[0] = cache.pack('grid', 0);
@@ -226,18 +226,18 @@ test('#dictall', function(assert) {
     load1();
 
     function load1() {
-        loader.dictall(getter, 'grid', [1,65536], function(err) {
+        loader.dictall(getter, 'grid', [1,68719476736], function(err) {
             assert.ifError(err);
             assert.deepEqual(loader.dict('grid', 1), true);
-            assert.deepEqual(loader.dict('grid', 65536), true);
+            assert.deepEqual(loader.dict('grid', 68719476736), true);
             load2();
         });
     }
     function load2() {
-        loader.dictall(getter, 'grid', [1,65536], function(err) {
+        loader.dictall(getter, 'grid', [1,68719476736], function(err) {
             assert.ifError(err);
             assert.deepEqual(loader.dict('grid', 1), true);
-            assert.deepEqual(loader.dict('grid', 65536), true);
+            assert.deepEqual(loader.dict('grid', 68719476736), true);
             assert.end();
         });
     }
