@@ -68,3 +68,25 @@ test('termops.encodePhrase', function(assert) {
     assert.end();
 });
 
+test('termops.encodePhrase collisions', function(assert) {
+    var texts = 0;
+    var sample = 1e6;
+    var ids = {};
+    var collisions = [];
+    while (texts < sample) {
+        var text = Math.random().toString(36);
+        var id = termops.encodePhrase(text);
+        if (ids[id] === text) {
+            continue;
+        } else if (ids[id]) {
+            collisions.push([ids[id], text]);
+        } else {
+            ids[id] = text;
+        }
+        texts++;
+    }
+    var rate = (collisions.length/sample);
+    assert.equal(rate < 0.001, true, 'Collision rate ' + (rate*100).toFixed(3) + '% < 0.1%');
+    assert.end();
+});
+
