@@ -6,45 +6,45 @@ test('termops.encodePhrase', function(assert) {
     var a;
 
     a = termops.encodePhrase('main');
-    assert.deepEqual(a, 4297249566126977, 'main');
+    assert.deepEqual(a, 609659059851265, 'main');
     assert.deepEqual(a % 2, 1, 'main = non-degen');
 
     a = termops.encodePhrase('main', true);
-    assert.deepEqual(a, 4297249566126976, 'main (degen)');
+    assert.deepEqual(a, 609659059851264, 'main (degen)');
     assert.deepEqual(a % 2, 0, 'main = degen');
 
     a = termops.encodePhrase('main st');
-    assert.deepEqual(a, 4180819894555435, 'main st');
+    assert.deepEqual(a, 2135214313017581, 'main st');
     assert.deepEqual(a % 2, 1, 'main st = non-degen');
 
     // prev as token array
     a = termops.encodePhrase(['main','st']);
-    assert.deepEqual(a, 4180819894555435, 'main st');
+    assert.deepEqual(a, 2135214313017581, 'main st');
     assert.deepEqual(a % 2, 1, 'main st = non-degen');
 
     a = termops.encodePhrase('lazy dog');
-    assert.deepEqual(a, 624153561068491, 'lazy dog')
+    assert.deepEqual(a, 1523002542039449, 'lazy dog')
     assert.deepEqual(a % 2, 1, 'lazy dog = non-degen');
 
     a = termops.encodePhrase('lazy dog', 1);
-    assert.deepEqual(a, 624153561068490, 'lazy dog (degen)')
+    assert.deepEqual(a, 1523002542039448, 'lazy dog (degen)')
     assert.deepEqual(a % 2, 0, 'lazy dog = degen');
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
-    assert.deepEqual(a, 1377659491092813, 'long phrase');
+    assert.deepEqual(a, 2067419977200835, 'long phrase');
     assert.deepEqual(a % 2, 1, 'long phrase = non-degen');
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 1377659491092812, 'long phrase (degen)');
+    assert.deepEqual(a, 2067419977200834, 'long phrase (degen)');
     assert.deepEqual(a % 2, 0, 'long phrase = degen');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
-    assert.deepEqual(a, 1202079270157563, '京都市');
+    assert.deepEqual(a, 657403748910369, '京都市');
     assert.deepEqual(a % 2, 1, '京都市 = non-degen');
 
     a = termops.encodePhrase('jing du shi');
-    assert.deepEqual(a, 1202079270157563, 'jing du shi = 京都市');
+    assert.deepEqual(a, 657403748910369, 'jing du shi = 京都市');
     assert.deepEqual(a % 2, 1, 'jing du shi = non-degen');
 
     // known examples of fnv1a phrase collisions
@@ -78,7 +78,8 @@ test('termops.encodePhrase collisions', function(assert) {
         texts++;
     }
     var rate = (collisions.length/sample);
-    assert.equal(rate < 0.001, true, 'Collision rate ' + (rate*100).toFixed(3) + '% < 0.1%');
+    var thresh = 1/1e6;
+    assert.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
     assert.end();
 });
 
