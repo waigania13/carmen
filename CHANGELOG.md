@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.1
+
+- Improve `scoredist` calculation by using geometric mean of features for scaling scoredist, not max score.
+
 ## 5.2.0
 
 - Add `types` query option to filter results by feature type.
