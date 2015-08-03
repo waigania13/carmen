@@ -197,12 +197,12 @@ tape('forward country - multi layer', function(t) {
     });
 });
 
-//If two results are returned prox will only sort if the relev and idx are the same
-tape('forward country - repect layer presidence', function(t) {
+// Ignores idx hierarchy -- scoredist trumps all
+tape('forward country - scoredist wins', function(t) {
     c.geocode('province', { proximity: [-80,40] }, function (err, res) {
         t.ifError(err);
-        t.equals(res.features[0].place_name, 'province', 'found province');
-        t.equals(res.features[0].id, 'country.3', 'found country.3');
+        t.equals(res.features[0].place_name, 'province, country', 'found province');
+        t.equals(res.features[0].id, 'province.1', 'found province.1');
         t.equals(res.features[0].relevance, 0.99);
         t.end();
     });
