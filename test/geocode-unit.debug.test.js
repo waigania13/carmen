@@ -72,9 +72,9 @@ tape('west st, tonawanda, ny', function(t) {
         ], 'debug keys');
 
         t.deepEqual(res.debug.phrasematch, {
-            '0': { ny: 0.25 },
-            '1': { ny: 0.25, tonawanda: 0.25 },
-            '2': { st: 0.25, west: 0.25, 'west st': 0.5 }
+            'province': { ny: 0.25 },
+            'city': { ny: 0.25, tonawanda: 0.25 },
+            'street': { 'west st': 0.5 }
         }, 'debugs matched phrases');
 
         // Found debug feature in spatialmatch results @ position 1
@@ -106,9 +106,9 @@ tape('west st, tonawanda, ny', function(t) {
         ], 'debug keys');
 
         t.deepEqual(res.debug.phrasematch, {
-            '0': { ny: 0.25 },
-            '1': { ny: 0.25, tonawanda: 0.25 },
-            '2': { st: 0.25, west: 0.25, 'west st': 0.5 }
+            'province': { ny: 0.25 },
+            'city': { ny: 0.25, tonawanda: 0.25 },
+            'street': { 'west st': 0.5 }
         }, 'debugs matched phrases');
 
         // Found debug feature in spatialmatch results @ position 1

@@ -19,7 +19,7 @@ tape('legacy version (v1 => error)', function(assert) {
     });
     c.geocode('test', {}, function(err, res) {
         assert.ok(err);
-        assert.deepEqual(err.toString(), 'Error: geocoder version is not 2, index: test');
+        assert.deepEqual(err.toString(), 'Error: geocoder version is not 2 or 3, index: test');
         assert.end();
     });
 });

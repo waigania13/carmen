@@ -31,6 +31,30 @@ test('termops.permutations', function(assert) {
     assert.deepEqual(clone(termops.permutations(['a'])), [
         ['a'],
     ]);
+    assert.deepEqual(clone(termops.permutations(['2##','b','c'])), [
+        ['2##','b','c'],
+        ['2##','b'],
+        ['b','c'],
+        ['2##'],
+        ['b'],
+        ['c'],
+    ]);
+    assert.deepEqual(clone(termops.permutations(['a','b','2##'])), [
+        ['2##','a','b'],
+        ['a','b'],
+        ['2##','b'],
+        ['a'],
+        ['b'],
+        ['2##'],
+    ]);
+    assert.deepEqual(clone(termops.permutations(['a','2##','c'])), [
+        ['a','2##','c'],
+        ['2##','a'],
+        ['2##','c'],
+        ['a'],
+        ['2##'],
+        ['c'],
+    ]);
     assert.end();
 });
 
@@ -67,6 +91,55 @@ test('termops.permutations (props)', function(assert) {
     assert.deepEqual(permutations[5].ender, true);
     assert.deepEqual(permutations[5].relev, 0.8);
     assert.deepEqual(permutations[5].mask.toString(2), '1100');
+
+    assert.end();
+});
+
+test('termops.permutations (props)', function(assert) {
+    var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6]);
+    assert.deepEqual(permutations.length, 6);
+
+    assert.deepEqual(permutations[0].join(','), ['a','b','c'].join(','));
+    assert.deepEqual(permutations[0].ender, true);
+    assert.deepEqual(permutations[0].relev, 1);
+    assert.deepEqual(permutations[0].mask.toString(2), '111');
+
+    assert.deepEqual(permutations[1].join(','), ['a','b'].join(','));
+    assert.deepEqual(permutations[1].ender, false);
+    assert.deepEqual(permutations[1].relev, 0.4);
+    assert.deepEqual(permutations[1].mask.toString(2), '11');
+
+    assert.deepEqual(permutations[2].join(','), ['b','c'].join(','));
+    assert.deepEqual(permutations[2].ender, true);
+    assert.deepEqual(permutations[2].relev, 0.8);
+    assert.deepEqual(permutations[2].mask.toString(2), '110');
+
+    assert.end();
+});
+
+test('termops.permutations (props + all)', function(assert) {
+    var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6], true);
+    assert.deepEqual(permutations.length, 7);
+
+    assert.deepEqual(permutations[0].join(','), ['a','b','c'].join(','));
+    assert.deepEqual(permutations[0].ender, true);
+    assert.deepEqual(permutations[0].relev, 1);
+    assert.deepEqual(permutations[0].mask.toString(2), '111');
+
+    assert.deepEqual(permutations[1].join(','), ['a','b'].join(','));
+    assert.deepEqual(permutations[1].ender, false);
+    assert.deepEqual(permutations[1].relev, 0.4);
+    assert.deepEqual(permutations[1].mask.toString(2), '11');
+
+    assert.deepEqual(permutations[2].join(','), ['a','c'].join(','));
+    assert.deepEqual(permutations[2].ender, true);
+    assert.deepEqual(permutations[2].relev, 0.8);
+    assert.deepEqual(permutations[2].mask.toString(2), '101');
+
+    assert.deepEqual(permutations[3].join(','), ['b','c'].join(','));
+    assert.deepEqual(permutations[3].ender, true);
+    assert.deepEqual(permutations[3].relev, 0.8);
+    assert.deepEqual(permutations[3].mask.toString(2), '110');
 
     assert.end();
 });

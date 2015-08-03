@@ -35,7 +35,7 @@ var addFeature = require('../lib/util/addfeature');
         var place = { 
             _id:3,
             _score: -1,
-            _text:'20009-2004',
+            _text:'20003-2004',
             _zxy:['6/32/32'],
             _center:[0,0]
         };  
@@ -78,17 +78,18 @@ var addFeature = require('../lib/util/addfeature');
         }); 
     }); 
     tape('scored feature beats ghost', function(t) {
-        c.geocode('20009', { limit_verify:1 }, function(err, res) {
+        c.geocode('20009', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
+            t.deepEqual(res.features.length, 1, 'ghost feature deduped');
             t.deepEqual(res.features[0].place_name, '20009');
             t.deepEqual(res.features[0].id, 'place.4');
             t.end();
         }); 
     }); 
     tape('exact match bests score', function(t) {
-        c.geocode('20009-2004', { limit_verify:1 }, function(err, res) {
+        c.geocode('20003-2004', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.features[0].place_name, '20009-2004');
+            t.deepEqual(res.features[0].place_name, '20003-2004');
             t.deepEqual(res.features[0].id, 'place.3');
             t.end();
         }); 

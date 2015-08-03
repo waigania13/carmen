@@ -69,6 +69,53 @@ tape('index province', function(t) {
     addFeature(conf.province, province, t.end);
 });
 
+tape('error: invalid options.proximity type', function(t) {
+    c.geocode('province', { proximity: 'adsf' }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity must be an array in the form [lon, lat]');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+
+tape('error: invalid options.proximity length', function(t) {
+    c.geocode('province', { proximity: [0,0,0] }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity must be an array in the form [lon, lat]');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+
+tape('error: invalid options.proximity[0] type', function(t) {
+    c.geocode('province', { proximity: [{},0] }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity lon value must be a number between -180 and 180');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+
+tape('error: invalid options.proximity[0] value', function(t) {
+    c.geocode('province', { proximity: [-181,0] }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity lon value must be a number between -180 and 180');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+
+tape('error: invalid options.proximity[1] type', function(t) {
+    c.geocode('province', { proximity: [0,{}] }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity lat value must be a number between -90 and 90');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+
+tape('error: invalid options.proximity[1] value', function(t) {
+    c.geocode('province', { proximity: [0,-91] }, function (err, res) {
+        t.equal(err && err.toString(), 'Error: Proximity lat value must be a number between -90 and 90');
+        t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
 
 tape('forward country - single layer - limit', function(t) {
     c.geocode('country', { limit_verify: 1, }, function (err, res) {
@@ -150,12 +197,12 @@ tape('forward country - multi layer', function(t) {
     });
 });
 
-//If two results are returned prox will only sort if the relev and idx are the same
-tape('forward country - repect layer presidence', function(t) {
+// Ignores idx hierarchy -- scoredist trumps all
+tape('forward country - scoredist wins', function(t) {
     c.geocode('province', { proximity: [-80,40] }, function (err, res) {
         t.ifError(err);
-        t.equals(res.features[0].place_name, 'province', 'found province');
-        t.equals(res.features[0].id, 'country.3', 'found country.3');
+        t.equals(res.features[0].place_name, 'province, country', 'found province');
+        t.equals(res.features[0].id, 'province.1', 'found province.1');
         t.equals(res.features[0].relevance, 0.99);
         t.end();
     });

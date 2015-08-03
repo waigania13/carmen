@@ -1,5 +1,43 @@
 # Changelog
 
+## 5.2.1
+
+- Improve `scoredist` calculation by using geometric mean of features for scaling scoredist, not max score.
+
+## 5.2.0
+
+- Add `types` query option to filter results by feature type.
+
+## 5.1.2
+
+- Fix feature id query mode.
+
+## 5.1.1
+
+- Smart dedupe of ghost features out of result sets when they match text of other non-ghost features.
+
+## 5.1.0
+
+- NumTokens V3 for more efficient feature verification. See https://github.com/mapbox/carmen/pull/310.
+- Sieve indexing mode for broader indexing of feature text.
+- Bumps geocoder_version to 3 (version 2 continues to be supported at runtime).
+
+## 5.0.5
+
+- Fix for feature verification bug where a non-optimal relevance could sometimes be assigned.
+
+## 5.0.4
+
+- Fix for proximity bug where extreme values would push into negative xy integers.
+
+## 5.0.3
+
+- Fix for decollide bug.
+
+## 5.0.2
+
+- Improved performance for feature verification in verifymatch.
+
 ## 5.0.1
 
 - More efficient spatialmatch by introducing a bounds mask per index and loading grids at spatialmatch time.

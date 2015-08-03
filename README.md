@@ -61,7 +61,7 @@ geocoder_resolution     | Optional. Integer bonus against maxzoom used to increa
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
-geocoder_version        | Required. Should be set to **2** for carmen@v5. Previous index versions without this attribute can be used for reverse geocoding but not forward.
+geocoder_version        | Required. Should be set to **3** for carmen@v5.1.x. Index versions <= 1 can be used for reverse geocoding but not forward.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 
@@ -74,7 +74,21 @@ geocoder_shardlevel     | Deprecated. An integer order of magnitude that geocode
 ### geocode(query, options, callback)
 
 Given a `query` string, call callback with `(err, results)` of possible contexts
-represented by that string.
+represented by that string. The following are all optional and can be provided
+as part of the `options` object:
+
+- `limit` - number. Adjust the maximium number of features returned. Defaults to 5.
+- `proximity` - a `[ lon, lat ]` array to use for biasing search results.
+  Features closer to the proximity value will be given priority over those
+  further from the proximity value.
+- `types` - an array of string types. Only features matching one of the types
+  specified will be returned.
+- `allow_dupes` - boolean. If true, carmen will allow features with identical
+  place names to be returned. Defaults to false.
+- `debug` - boolean. If true, the carmen debug object will be returned as part
+  of the results.
+- `stats` - boolean. If true, the carmen stats object will be returned as part
+  of the results.
 
 ### index(from, to, pointer, callback)
 
