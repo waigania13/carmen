@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.2
+
+- Triage unknown conditions that can cause an unexpected error.
+
 ## 5.2.1
 
 - Improve `scoredist` calculation by using geometric mean of features for scaling scoredist, not max score.
