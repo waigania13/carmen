@@ -61,7 +61,7 @@ geocoder_resolution     | Optional. Integer bonus against maxzoom used to increa
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
-geocoder_version        | Required. Should be set to **3** for carmen@v5.1.x. Index versions <= 1 can be used for reverse geocoding but not forward.
+geocoder_version        | Required. Should be set to **4** for carmen@v6.0.x. Index versions <= 1 can be used for reverse geocoding but not forward.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 
@@ -428,25 +428,25 @@ There are two types of index stores in Carmen.
 
 - `cxxcache` is used for storing the `grid`, and `freq` indexes.
   Each index is sharded and each shard contains a one-to-many
-  hash with 32-bit integer keys that map to arrays of arbitrary length
-  containing 32-bit integer elements.
+  hash with 64-bit integer keys that map to arrays of arbitrary length
+  containing 64-bit integer elements.
 - `feature` is used to store feature docs. Each index is sharded and each shard
   contains a one-to-many hash with 32-bit integer keys that map to a bundle of
   features. Each bundle contains feature documents keyed by their original, full
   id.
 
-32-bit unsigned integers are widely used in the Carmen codebase because of their
-performance, especially in V8 as keys of a hash object. To convert arbitrary
-text (like tokenized text) to integers the FNV1a hash is used and sometimes
-truncated to make room for additional encoded data.
+Unsigned integers are widely used in the Carmen codebase because of their
+performance and memory efficiency. To convert arbitrary text (like tokenized
+text) to integers the murmur hash is used and sometimes truncated to make room
+for additional encoded data.
 
 ### freq
 
-Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a `fnv1a` hash.
+Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a `murmur` hash.
 
     term_id => [ count ]
 
-Conceptual exapmle with actual text rather than `fnv1a` hashes for readability:
+Conceptual exapmle with actual text rather than `murmur` hashes for readability:
 
     street => [ 103120 ]
     main   => [ 503 ]
@@ -474,7 +474,7 @@ id   | 20   | feature id, truncated to 20 bits
 
 phrase | degen
 ------ |------
-31-1   | 0
+51-1   | 0
 
-The first 31 bits of a phrase ID are the `fnv1a` hash of the phrase text. The last remaining bit is used to store whether the `phrase_id` is for a complete or degenerate phrase.
+The first 51 bits of a phrase ID are the `murmur` hash of the phrase text. The last remaining bit is used to store whether the `phrase_id` is for a complete or degenerate phrase.
 
