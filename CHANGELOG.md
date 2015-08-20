@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.0.0
+
+- Switch to murmur hash and 52-bit phrase IDs.
+
 ## 5.2.2
 
 - Triage unknown conditions that can cause an unexpected error.
