@@ -427,3 +427,53 @@ test('contextVector restricts distance', function(assert) {
     });
 })();
 
+test('contextVector caching', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [0,0] },
+                "properties": { "_text": "A" }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            _geocoder: {
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                id: 'testA',
+                idx: 0
+            }
+        };
+        var hit, miss;
+        hit = context.getTile.cacheStats.hit;
+        miss = context.getTile.cacheStats.miss;
+        context.contextVector(source, 0, 0, false, {}, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data._extid, 'test.1');
+            assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
+            assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
+            hit = context.getTile.cacheStats.hit;
+            miss = context.getTile.cacheStats.miss;
+            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+                assert.ifError(err);
+                assert.equal(data._extid, 'test.1');
+                assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
+                assert.equal(context.getTile.cacheStats.miss - miss, 0, 'miss +0');
+                assert.end();
+            });
+        });
+    });
+});
+
