@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.0.1
+
+- Use a singleton VT cache to limit memory usage across indexes.
+
 ## 6.0.0
 
 - Switch to murmur hash and 52-bit phrase IDs.
