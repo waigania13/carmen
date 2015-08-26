@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.1.0
+
+- Update mapnik to version 3.4.3
+
 ## 6.0.1
 
 - Use a singleton VT cache to limit memory usage across indexes.
