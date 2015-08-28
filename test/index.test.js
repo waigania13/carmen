@@ -12,7 +12,19 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
 test('index.generateStats', function(assert) {
-    var docs = [{_text:'main street', _score:2},{_text:'Main Road', _score:1}];
+    var docs = [{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'main street', 
+            "carmen:score": 2
+        }
+    },{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'Main Road',
+            "carmen:score": 1
+        }
+    }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
         0: [ 4 ],           // 4 total
