@@ -233,15 +233,25 @@ test('index phrase collection', function(assert) {
     var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
     var docs = [{
-        _id:1,
-        _text:'a',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'a',
+            'carmen:center': [0,0]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }, {
-        _id:2,
-        _text:'a',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text': 'a',
+            'carmen:center': [0,0]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }];
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
@@ -271,15 +281,31 @@ test('error -- _geometry too high resolution', function(t) {
 
 test('error -- _zxy too large tile-cover', function(t) {
     var docs = [{
-        _id:2,
-        _text:'fake street',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [0,0]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }, {
-        _id:1,
-        _text:'fake street',
-        _zxy:new Array(10001),
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carment:center': [0,0]
+        },
+        geomery: {
+            type: "Polygon",
+            coordinates: [[
+                [-180,-90],
+                [-180,90],
+                [180,90],
+                [180,-90],
+                [-180,-90]
+            ]]
+        }
     }];
     var from = new mem(docs, {maxzoom: 6}, function() {});
     var to = new mem(docs, null, function() {});
