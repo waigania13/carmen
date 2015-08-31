@@ -274,7 +274,7 @@ test('error -- _geometry too high resolution', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts.', err.toString());
+        t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1', err.toString());
         t.end();
     });
 });
@@ -294,9 +294,9 @@ test('error -- _zxy too large tile-cover', function(t) {
         id:1,
         properties: {
             'carmen:text': 'fake street',
-            'carment:center': [0,0]
+            'carmen:center': [0,0]
         },
-        geomery: {
+        geometry: {
             type: "Polygon",
             coordinates: [[
                 [-180,-90],
@@ -324,9 +324,9 @@ test('index.cleanDocs', function(assert) {
     var sourceWithAddress = {_geocoder:{geocoder_address:true}};
     var sourceWithoutAddress = {_geocoder:{geocoder_address:false}};
 
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{}}])[0]._geometry, 'object', 'with address: preserves geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{_geometry:{}}])[0]._geometry, 'undefined', 'without address: removes geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{},_cluster:{}}])[0]._geometry, 'undefined', 'with cluster: removes geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{geometry:{},properties: { 'carmen:addressnumber':{}} }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
     assert.end();
 });
 
