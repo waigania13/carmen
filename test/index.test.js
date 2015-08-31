@@ -17,13 +17,15 @@ test('index.generateStats', function(assert) {
         properties: {
             "carmen:text": 'main street', 
             "carmen:score": 2
-        }
+        },
+        geometry: {}
     },{
         type: "Feature",
         properties: {
             "carmen:text": 'Main Road',
             "carmen:score": 1
-        }
+        },
+        geometry: {}
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
@@ -51,12 +53,16 @@ test('index.update -- error', function(t) {
     var zoom = 6;
     t.test('update 1', function(q) {
         index.update(to, [{
-            _text:'main st',
-            _id:1,
-            _score:10,
-            _geometry:{type:'Point', coordinates:[0,0]},
-            _center:[0,0],
-            _zxy:['6/32/32']
+            id: 1,
+            properties: {
+                'carmen:text': 'main st',
+                'carmen:score': 10,
+                'carmen:center': [0,0]
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[0,0]
+            }
         }], zoom, function(err) {
             q.ifError(err);
             q.deepEqual(to._geocoder.get('freq', 0), [2]);
@@ -66,12 +72,16 @@ test('index.update -- error', function(t) {
     });
     t.test('update 2', function(q) {
         index.update(to, [{
-            _text:'main st',
-            _id:1,
-            _score:0,
-            _geometry:{type:'Point', coordinates:[0,0]},
-            _center:[0,0],
-            _zxy:['6/32/32']
+            id: 1,
+            properties: {
+                'carmen:text': 'main st',
+                'carmen:score': 0,
+                'carmen:center': [0,0],
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[0,0]
+            }
         }], zoom, function(err) {
             q.ifError(err);
             q.deepEqual(to._geocoder.get('freq', 0), [4]);
@@ -87,32 +97,32 @@ test('index.update freq', function(t) {
     var to = new mem(null, function() {});
     var carmen = new Carmen({ to: to });
     var zoom = 6;
-    t.test('error no _id', function(q) {
-        index.update(to, [{_text:'main st'}], zoom, function(err) {
-            q.equal('Error: doc has no _id', err.toString());
+    t.test('error no id', function(q) {
+        index.update(to, [{ properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+            q.equal('Error: doc has no id', err.toString());
             q.end();
         });
     });
-    t.test('error no _center', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], zoom, function(err) {
-            q.equal('Error: doc has no _center or _geometry on _id:1', err.toString());
+    t.test('error no carmen:center', function(q) {
+        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+            q.equal('Error: doc has no geometry on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], zoom, function(err) {
+        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
     });
-    t.test('indexes doc with _geometry and no _center or _zxy', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]}}], zoom, function(err) {
+    t.test('indexes doc with geometry and no carmen:center', function(q) {
+        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
     });
     t.test('indexes doc with _geometry and _center, but no _zxy', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]},_center:[-75.598211,38.367333]}], zoom, function(err) {
+        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
