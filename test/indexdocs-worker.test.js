@@ -18,11 +18,13 @@ tape('worker.loadDoc', function(assert) {
     tokens = ['main', 'st'];
     zoom = 6;
     doc = {
-        _id: 1,
-        _text: 'main st',
-        _center: [0, 0],
-        _zxy: ['6/32/32', '14/16384/32'],
-        _score: 100
+        id: 1,
+        properties: {
+            'carmen:text': 'main st',
+            'carmen:center': [0, 0],
+            _zxy: ['6/32/32', '14/16384/32'],
+            'carmen:score': 100
+        }
     };
 
     freq[0] = [101];
@@ -56,10 +58,10 @@ tape('worker.verifyCenter', function(assert) {
 
 tape('worker.runChecks', function(assert) {
     assert.equal(worker.runChecks({
-    }), 'doc has no _id');
+    }), 'doc has no id');
     assert.equal(worker.runChecks({
-        _id:1
-    }), 'doc has no _text on _id:1');
+        id:1
+    }), 'doc has no carmen:text on id:1');
     assert.equal(worker.runChecks({
         _id:1,
         _text:'Main Street'

@@ -117,11 +117,11 @@ test('index.update freq', function(t) {
     });
     t.test('indexes doc with geometry and no carmen:center', function(q) {
         index.update(to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
-            q.ifError(err);
+            q.equal('Error: doc has no carmen:center on id:1', err.toString());
             q.end();
         });
     });
-    t.test('indexes doc with _geometry and _center, but no _zxy', function(q) {
+    t.test('indexes doc with geometry and carmen:center', function(q) {
         index.update(to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
