@@ -345,12 +345,8 @@ test('address point clustering', function(t) {
                 'carmen:addressnumber': [9,10,7]
             },
             geometry: {
-                type: 'FeatureCollection',
-                features: [
-                    { type: "Point", coordinates: [1,1] },
-                    { type: "Point", coordinates: [2,2] },
-                    { type: "Point", coordinates: [0,0] }
-                ]
+                type: 'MultiPoint',
+                coordinates: [ [1,1], [2,2], [0,0] ]
             } 
         },9), {
             type:'Point',
@@ -367,33 +363,10 @@ test('reverse address point clustering', function(t) {
                 'carmen:addressnumber': [9,10,7]
             },
             geometry: { 
-                type: 'FeatureCollection',
-                features: [
-                    { type: "Point", coordinates: [1,3] },
-                    { type: "Point", coordinates: [2,4] },
-                    { type: "Point", coordinates: [0,1] }
-                ]
+                type: 'MultiPoint',
+                coordinates: [ [1,3], [2,4], [0,1] ]
             }
         }, [1,3]), { geometry: { coordinates: [ 1, 3 ], type: 'Point' }, properties: { 'carmen:address': 9, 'carmen:addressnumber': [ 9, 10, 7 ], 'carmen:text': 'test' } });
-    t.end();
-});
-
-test('address point clustering invalid coords', function(t) {
-    t.deepEqual(
-        addressCluster({
-            properties: {
-                'carmen:addressnumber': [9,10,7] 
-            },
-            geometry: {
-                type: 'FeatureCollection',
-                features: [
-                    { type: "Point", coordinates: [1,1,1] },
-                    { type: "Point", coordinates: [2,2,2] },
-                    { type: "Point", coordinates: [0,0,0] }
-                ]
-            }
-        }, 9),
-        undefined);
     t.end();
 });
 
@@ -445,17 +418,8 @@ test('address point clustering fail', function(t) {
                 'carmen:addressnumber': [9,10,7]
             },
             geometry: {
-                type: 'FeatureCollection',
-                features: [{
-                    type: 'Point',
-                    coordinates: [1,1]
-                }, {
-                    type: 'Point',
-                    coordinates: [2,2]
-                },{
-                    type: 'Point',
-                    coordinates: [0,0]
-                }]
+                type: 'MultiPoint',
+                coordinates: [[1,1],[2,2],[0,0]]
             }
         }, 11),
         undefined);
