@@ -92,6 +92,17 @@ var addFeature = require('../lib/util/addfeature');
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].address, '9b', 'address number is 9b');
+            t.end();
+        });
+    });
+
+    tape('test alphanumeric address query with invalid address number', function(t) {
+        c.geocode('9bc fake street', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
+            t.ok((res.features[0].relevance < 0.6), 'appropriate relevance');
+            t.ok((res.features[0].address === undefined), 'address number is not defined');
             t.end();
         });
     });
