@@ -69,7 +69,8 @@ tape('west st, tonawanda, ny', function(t) {
             'phrasematch',
             'spatialmatch',
             'spatialmatch_position',
-            'verifymatch'
+            'verifymatch',
+            'verifymatch_position'
         ], 'debug keys');
 
         t.deepEqual(res.debug.phrasematch, {
