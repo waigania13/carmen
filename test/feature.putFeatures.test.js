@@ -12,7 +12,6 @@ tape('putFeatures', function(assert) {
             _id: 1,
             _text: 'a',
             _center: [ 0, 0 ],
-            _zxy: ['6/32/32'],
             _geometry: {
                 type: 'Point',
                 coordinates: [ 0, 0 ]
@@ -31,15 +30,11 @@ tape('putFeatures', function(assert) {
             _id: Math.pow(2,20) + 1,
             _text: 'c',
             _center: [360/64+0.001,0],
-            _zxy: ['6/33/32'],
-            _geometry: {
-                type: 'Point',
-                coordinates: [ 0, 0 ]
-            }
+            _zxy: ['6/33/32']
         },
     ], function(err) {
         assert.ifError(err);
-        assert.equal(source._shards.feature[1], '{"1":{"type":"Feature","properties":{"carmen:center":[0,0],"carmen:text":"a","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":1},"1048577":{"type":"Feature","properties":{"carmen:center":[5.626,0],"carmen:text":"c","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":1048577}}');
+        assert.equal(source._shards.feature[1], '{"1":{"type":"Feature","properties":{"carmen:center":[0,0],"carmen:text":"a","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":1},"1048577":{"type":"Feature","properties":{"carmen:center":[5.626,0],"carmen:text":"c","carmen:zxy":["6/33/32","6/34/32","6/33/33","6/34/33"]},"id":1048577,"geometry":{"type":"MultiPolygon","coordinates":[[[[5.625,-5.615985819155337],[11.25,-5.615985819155337],[11.25,0],[5.625,0],[5.625,-5.615985819155337]]]]}}}');
         assert.equal(source._shards.feature[2], '{"2":{"type":"Feature","properties":{"carmen:center":[0,0],"carmen:text":"b","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":2}}', 'has feature shard 2');
         assert.end();
     });
