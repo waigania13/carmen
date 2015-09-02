@@ -110,6 +110,58 @@ var addFeature = require('../lib/util/addfeature');
 
 (function() {
     var conf = {
+        postcode: new mem({maxzoom: 6 }, function() {}),
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+    tape('index fake UK address range', function(t) {
+            var address = {
+                _id: 1,
+                _text:'B77',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _rangetype:'tiger',
+                _lfromhn: '0',
+                _ltohn: '100',
+                _geometry: {
+                    type:'LineString',
+                    coordinates:[[0,0],[0,100]]
+                }
+            };
+            addFeature(conf.address, address, t.end);
+    });
+    tape('index fake UK postcode', function(t) {
+            var postcode = {
+                _id: 2,
+                _text:'B77 1AB',
+                _zxy:['6/32/32'],
+                _center:[0,0],
+                _geometry: {
+                    type: 'Polygon',
+                    coordinates: [
+                        [-1, -1],
+                        [101, -1],
+                        [101, 101],
+                        [-1, 101],
+                        [-1, -1]
+                    ]
+                }
+            };
+            addFeature(conf.postcode, postcode, t.end);
+    });
+    tape('test UK postcode not getting confused w/ address range', function(t) {
+        c.geocode('B77 1AB', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
+            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
         address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
     };
     var c = new Carmen(conf);
