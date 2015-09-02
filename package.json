@@ -29,8 +29,6 @@
     "unidecode": "0.1.3"
   },
   "devDependencies": {
-    "istanbul": "^0.3.5",
-    "coveralls": "^2.11.2",
     "retire": "0.4.x",
     "bytes": "^1.0.0",
     "tape": "^2.13.4",
