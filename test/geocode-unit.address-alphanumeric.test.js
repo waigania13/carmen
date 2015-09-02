@@ -101,7 +101,7 @@ var addFeature = require('../lib/util/addfeature');
         c.geocode('9bc fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
-            t.ok((res.features[0].relevance < 0.6), 'appropriate relevance');
+            t.ok((res.features[0].relevance < 0.6), 'appropriate relevance (9bc token should not be matched)');
             t.ok((res.features[0].address === undefined), 'address number is not defined');
             t.end();
         });
@@ -150,11 +150,12 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.postcode, postcode, t.end);
     });
     tape('test UK postcode not getting confused w/ address range', function(t) {
-        c.geocode('B77 1AB', { limit_verify: 1 }, function (err, res) {
-            t.ifError(err);
+        c.geocode('B77 1AB', { limit_verify: 10 }, function (err, res) {
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
             t.equals(res.features[0].relevance, 0.99);
             t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
+            var addressInResultSet = res.features.some(function(feature) { return feature.id.split('.')[0] === 'address' });
+            t.ok(!addressInResultSet, 'result set does not include address feature');
             t.end();
         });
     });
