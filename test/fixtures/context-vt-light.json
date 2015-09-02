@@ -1,14 +1,18 @@
 [
     {
-        "_extid": "province.3427",
-        "_tmpid": 33557859,
-        "_dbidx": 1,
-        "_text": "Comunidad Valenciana,VC"
+        "properties": {
+            "carmen:extid": "province.3427",
+            "carmen:tmpid": 33557859,
+            "carmen:dbidx": 1,
+            "carmen:text": "Comunidad Valenciana,VC"
+        }
     },
     {
-        "_extid": "country.33",
-        "_tmpid": 33,
-        "_dbidx": 0,
-        "_text": "Spain"
+        "properties": {
+            "carmen:extid": "country.33",
+            "carmen:tmpid": 33,
+            "carmen:dbidx": 0,
+            "carmen:text": "Spain"
+        }
     }
 ]

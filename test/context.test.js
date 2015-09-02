@@ -64,10 +64,12 @@ test('contextVector deflate', function(t) {
     context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
-            _extid: 'test.5',
-            _dbidx: 1,
-            _tmpid: Math.pow(2,25) + 5,
-            _text: 'United States of America, United States, America, USA, US'
+            properties: {
+                'carmen:extid': 'test.5',
+                'carmen:dbidx': 1,
+                'carmen:tmpid': Math.pow(2,25) + 5,
+                'carmen:text': 'United States of America, United States, America, USA, US'
+            }
         });
         t.end();
     });
@@ -95,10 +97,12 @@ test('contextVector gzip', function(t) {
     context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
-            _dbidx: 1,
-            _extid: 'test.5',
-            _tmpid: Math.pow(2,25) + 5,
-            _text: 'United States of America, United States, America, USA, US'
+            properties: {
+                'carmen:dbidx': 1,
+                'carmen:extid': 'test.5',
+                'carmen:tmpid': Math.pow(2,25) + 5,
+                'carmen:text': 'United States of America, United States, America, USA, US'
+            }
         });
         t.end();
     });
@@ -193,7 +197,7 @@ test('contextVector ignores negative score', function(assert) {
         };
         context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
-            assert.equal(data._text, 'B');
+            assert.equal(data.properties['carmen:text'], 'B');
             assert.end();
         });
     });
@@ -267,7 +271,7 @@ test('contextVector matched negative score', function(assert) {
         };
         context.contextVector(source, 0, 0, false, { 1:{} }, function(err, data) {
             assert.ifError(err);
-            assert.equal(data._text, 'A');
+            assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
         });
     });
@@ -368,7 +372,7 @@ test('contextVector restricts distance', function(assert) {
             };
             context.contextVector(source, 0, 0, false, {}, function(err, data) {
                 assert.ifError(err);
-                assert.equal(data._text, 'A');
+                assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
             });
         });
@@ -394,7 +398,7 @@ test('contextVector restricts distance', function(assert) {
             };
             context.contextVector(source, 0, 0, false, {}, function(err, data) {
                 assert.ifError(err);
-                assert.equal(data._text, 'A');
+                assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
             });
         });
@@ -420,7 +424,7 @@ test('contextVector restricts distance', function(assert) {
             };
             context.contextVector(source, 0, 0, false, { 2:true }, function(err, data) {
                 assert.ifError(err);
-                assert.equal(data._text, 'B');
+                assert.equal(data.properties['carmen:text'], 'B');
                 assert.end();
             });
         });
@@ -461,14 +465,14 @@ test('contextVector caching', function(assert) {
         miss = context.getTile.cacheStats.miss;
         context.contextVector(source, 0, 0, false, {}, function(err, data) {
             assert.ifError(err);
-            assert.equal(data._extid, 'test.1');
+            assert.equal(data.properties['carmen:extid'], 'test.1');
             assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
             context.contextVector(source, 0, 0, false, {}, function(err, data) {
                 assert.ifError(err);
-                assert.equal(data._extid, 'test.1');
+                assert.equal(data.properties['carmen:extid'], 'test.1');
                 assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
                 assert.equal(context.getTile.cacheStats.miss - miss, 0, 'miss +0');
                 assert.end();
