@@ -280,11 +280,14 @@ test('error -- _geometry too high resolution', function(t) {
 });
 
 test('error -- _zxy too large tile-cover', function(t) {
+    var tiles = [];
+    for (var i = 0; i < 10002; i++) { tiles.push('6/32/32'); }
     var docs = [{
-        id:2,
+        id: 1,
         properties: {
             'carmen:text': 'fake street',
-            'carmen:center': [0,0]
+            'carmen:center': [0,0],
+            'carmen:zxy': ['6/32/32']
         },
         geometry: {
             type: 'Point',
@@ -294,17 +297,12 @@ test('error -- _zxy too large tile-cover', function(t) {
         id:1,
         properties: {
             'carmen:text': 'fake street',
-            'carmen:center': [0,0]
+            'carmen:center': [0,0],
+            'carmen:zxy': tiles
         },
         geometry: {
-            type: "Polygon",
-            coordinates: [[
-                [-180,-90],
-                [-180,90],
-                [180,90],
-                [180,-90],
-                [-180,-90]
-            ]]
+            type: 'Point',
+            coordinates: [0,0]
         }
     }];
     var from = new mem(docs, {maxzoom: 6}, function() {});
@@ -314,7 +312,7 @@ test('error -- _zxy too large tile-cover', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: doc._zxy exceeded 10000, doc id:1', err.toString());
+        t.equal('Error: zxy exceeded 10000, doc id:1', err.toString());
         t.end();
     });
 });
