@@ -123,9 +123,11 @@ tape('west st, tonawanda, ny', function(t) {
         t.deepEqual(res.debug.spatialmatch_position, 0);
 
         // Debug feature not found in verifymatch
-        t.deepEqual(res.debug.verifymatch[0]._id, 5);
-        t.deepEqual(res.debug.verifymatch[0]._text, 'west st');
+        t.deepEqual(res.debug.verifymatch[0].id, 5);
+        t.deepEqual(res.debug.verifymatch[0].properties['carmen:text'], 'west st');
         t.deepEqual(res.debug.verifymatch_position, 0);
+
+        console.log(res.debug.verifymatch[0])
         t.end();
     });
 });
