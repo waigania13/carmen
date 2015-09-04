@@ -3,11 +3,11 @@ var token = require('../lib/util/token');
 var test = require('tape');
 
 test('termops.encodeTerm', function(assert) {
-    assert.deepEqual(termops.encodeTerm('main'), 3935363592, 'encodes term');
-    assert.deepEqual(termops.encodeTerm('1234'), 4257489661, 'encodes numeric term');
-    assert.deepEqual(termops.encodeTerm('2345b'), 1541883461, 'encodes seminumeric term');
-    assert.deepEqual(termops.encodeTerm('2345'), 784195493, 'encodes seminumeric differently from numeric term');
-    assert.deepEqual(termops.encodeTerm('LS24'), 651597038, 'encodes non-address numeric term with fnv1a');
+    assert.deepEqual(termops.encodeTerm('main'), 609659059851264, 'encodes term');
+    assert.deepEqual(termops.encodeTerm('1234'), 2249210822822873, 'encodes numeric term');
+    assert.deepEqual(termops.encodeTerm('2345b'), 2198583730836376, 'encodes seminumeric term');
+    assert.deepEqual(termops.encodeTerm('2345'), 2605743183338078, 'encodes seminumeric differently from numeric term');
+    assert.deepEqual(termops.encodeTerm('LS24'), 75998676524143, 'encodes non-address numeric term with fnv1a');
     assert.end();
 });
 
@@ -29,7 +29,8 @@ test('termops.encodeTerm collisions', function(assert) {
         texts++;
     }
     var rate = (collisions.length/sample);
-    assert.equal(rate < 0.001, true, 'Collision rate ' + (rate*100).toFixed(3) + '% < 0.1%');
+    var thresh = 1/1e6;
+    assert.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
     assert.end();
 });
 

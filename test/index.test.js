@@ -17,17 +17,17 @@ test('index.generateStats', function(assert) {
     assert.deepEqual(index.generateFrequency(docs, {}), {
         0: [ 4 ],           // 4 total
         1: [ 2 ],           // 2 maxscore
-        1025494171: [ 1 ],  // 1 road
-        1986331710: [ 1 ],  // 1 street
-        3935363592: [ 2 ]   // 2 main
+        1247264641460936: [ 1 ],  // 1 road
+        1804046053253033:  [ 1 ],  // 1 street
+        609659059851264: [ 2 ]   // 2 main
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
         0: [ 4 ],           // 4 total
         1: [ 2 ],           // 2 maxscore
-        1263673922: [ 1 ],  // 1 road
-        1498707683: [ 1 ],  // 1 street
-        3935363592: [ 2 ]   // 2 main
+        3363289958149993: [ 1 ],  // 1 road
+        441841902895320: [ 1 ],  // 1 street
+        609659059851264: [ 2 ]   // 2 main
     });
     assert.end();
 });
@@ -224,9 +224,11 @@ test('index phrase collection', function(assert) {
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(3826002216/65536)), [ '3826002216', '3826002217' ], '2 phrases');
-        assert.deepEqual(conf.test._geocoder.get('grid',3826002216), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
-        assert.deepEqual(conf.test._geocoder.get('grid',3826002217), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        var id1 = termops.encodePhrase('a', true);
+        var id2 = termops.encodePhrase('a', false);
+        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString(), id2.toString() ], '2 phrases');
+        assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.get('grid',id2), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });
