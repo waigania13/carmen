@@ -1,5 +1,9 @@
 # Changelog
 
+## 6.2.0
+
+- Update carmen-cache to 0.9.0, introduce `geocoder_cachesize` option.
+
 ## 6.1.0
 
 - Update mapnik to version 3.4.3

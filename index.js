@@ -42,7 +42,7 @@ function Geocoder(options) {
                 names.push(name);
                 this.byname[name] = [];
             }
-            source._geocoder = source._geocoder || new Cache(name);
+            source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
 
             if (!info.geocoder_address || typeof info.geocoder_address === "number" || info.geocoder_address.toString().match(/^\d$/)) {
                 source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
