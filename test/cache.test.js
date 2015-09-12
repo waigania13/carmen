@@ -18,7 +18,7 @@ test('.shard', function(s) {
 });
 
 test('#get', function(r) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 5, [0,1,2]);
     r.deepEqual([0, 1, 2], cache.get('grid', 5));
     r.throws(function() { cache.get('grid'); }, Error, 'throws on misuse');
@@ -26,21 +26,21 @@ test('#get', function(r) {
 });
 
 test('#list', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 5, [0,1,2]);
     s.deepEqual([0], cache.list('grid'));
     s.end();
 });
 
 test('#has', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 5, [0,1,2]);
     s.deepEqual(true, cache.has('grid', 0));
     s.end();
 });
 
 test('#get', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 5, [0,1,2]);
     s.deepEqual([0, 1, 2], cache._get('grid', 0, 5));
     s.deepEqual([0, 1, 2], cache.get('grid', 5));
@@ -49,7 +49,7 @@ test('#get', function(s) {
 });
 
 test('#pack', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 5, [0,1,2]);
     s.deepEqual(9, cache.pack('grid', 0).length);
     // set should replace data
@@ -58,13 +58,13 @@ test('#pack', function(s) {
     cache.set('grid', 5, []);
     s.deepEqual(4, cache.pack('grid', 0).length);
     // now test packing data created via load
-    var packer = new Cache('a', 1);
+    var packer = new Cache('a');
     var array = [];
     for (var i=0;i<10000;++i) {
         array.push(0);
     }
     packer.set('grid', 5, array);
-    var loader = new Cache('a', 1);
+    var loader = new Cache('a');
     loader.loadSync(packer.pack('grid',0), 'grid', 0);
     // grab data right back out
     s.deepEqual(10008, loader.pack('grid', 0).length);
@@ -74,7 +74,7 @@ test('#pack', function(s) {
 });
 
 test('#load', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     s.equal('a', cache.id);
 
     s.equal(undefined, cache.get('grid', 5));
@@ -91,7 +91,7 @@ test('#load', function(s) {
 
     // cache A serializes data, cache B loads serialized data.
     var pack = cache.pack('grid', 0);
-    var loader = new Cache('b', 1);
+    var loader = new Cache('b');
     loader.loadSync(pack, 'grid', 0);
     s.deepEqual([6,5], loader.get('grid', 21));
     s.deepEqual([0], loader.list('grid'), 'single shard');
@@ -100,14 +100,14 @@ test('#load', function(s) {
 });
 
 test('#unload on empty data', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     s.equal(false,cache.unload('grid',5));
     s.deepEqual(false, cache.has('grid', 5));
     s.end();
 });
 
 test('#unload after set', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 0, [0,1,2]);
     s.deepEqual(true, cache.has('grid', 0));
     s.equal(true,cache.unload('grid',0));
@@ -116,14 +116,14 @@ test('#unload after set', function(s) {
 });
 
 test('#unload after load', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     var array = [];
     for (var i=0;i<10000;++i) {
         array.push(0);
     }
     cache.set('grid', 5, array);
     var pack = cache.pack('grid', 0);
-    var loader = new Cache('b', 1);
+    var loader = new Cache('b');
     loader.loadSync(pack, 'grid', 0);
     s.deepEqual(array, loader.get('grid', 5));
     s.deepEqual([0], loader.list('grid'), 'single shard');
@@ -134,7 +134,7 @@ test('#unload after load', function(s) {
 });
 
 test('#unloadall', function(s) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     var array = [];
     for (var i=0;i<10000;++i) {
         array.push(0);
@@ -142,7 +142,7 @@ test('#unloadall', function(s) {
     cache.set('grid', 5, array);
     var pack = cache.pack('grid', 0);
 
-    var loader = new Cache('b', 1);
+    var loader = new Cache('b');
     loader.loadSync(pack, 'grid', 0);
     loader.loadSync(pack, 'grid', 1);
     loader.loadSync(pack, 'grid', 2);
@@ -158,7 +158,7 @@ test('#unloadall', function(s) {
 });
 
 test('#loadall', function(assert) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 1, [0]);
     cache.set('grid', 68719476736, [1]);
 
@@ -170,7 +170,7 @@ test('#loadall', function(assert) {
         return callback(null, packs[shard]);
     }
 
-    var loader = new Cache('b', 1);
+    var loader = new Cache('b');
     assert.equal(loader.has('grid', 0), false);
     assert.equal(loader.has('grid', 1), false);
     load1();
@@ -208,7 +208,7 @@ test('#loadall', function(assert) {
 });
 
 test('#dictall', function(assert) {
-    var cache = new Cache('a', 1);
+    var cache = new Cache('a');
     cache.set('grid', 1, [0]);
     cache.set('grid', 68719476736, [1]);
 
@@ -220,7 +220,7 @@ test('#dictall', function(assert) {
         return callback(null, packs[shard]);
     }
 
-    var loader = new Cache('b', 1);
+    var loader = new Cache('b');
     assert.equal(loader.has('grid', 0), false);
     assert.equal(loader.has('grid', 1), false);
     load1();
