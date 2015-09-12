@@ -12,7 +12,21 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
 test('index.generateStats', function(assert) {
-    var docs = [{_text:'main street', _score:2},{_text:'Main Road', _score:1}];
+    var docs = [{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'main street', 
+            "carmen:score": 2
+        },
+        geometry: {}
+    },{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'Main Road',
+            "carmen:score": 1
+        },
+        geometry: {}
+    }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
         0: [ 4 ],           // 4 total
@@ -39,12 +53,16 @@ test('index.update -- error', function(t) {
     var zoom = 6;
     t.test('update 1', function(q) {
         index.update(to, [{
-            _text:'main st',
-            _id:1,
-            _score:10,
-            _geometry:{type:'Point', coordinates:[0,0]},
-            _center:[0,0],
-            _zxy:['6/32/32']
+            id: 1,
+            properties: {
+                'carmen:text': 'main st',
+                'carmen:score': 10,
+                'carmen:center': [0,0]
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[0,0]
+            }
         }], zoom, function(err) {
             q.ifError(err);
             q.deepEqual(to._geocoder.get('freq', 0), [2]);
@@ -54,12 +72,16 @@ test('index.update -- error', function(t) {
     });
     t.test('update 2', function(q) {
         index.update(to, [{
-            _text:'main st',
-            _id:1,
-            _score:0,
-            _geometry:{type:'Point', coordinates:[0,0]},
-            _center:[0,0],
-            _zxy:['6/32/32']
+            id: 1,
+            properties: {
+                'carmen:text': 'main st',
+                'carmen:score': 0,
+                'carmen:center': [0,0],
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[0,0]
+            }
         }], zoom, function(err) {
             q.ifError(err);
             q.deepEqual(to._geocoder.get('freq', 0), [4]);
@@ -75,32 +97,32 @@ test('index.update freq', function(t) {
     var to = new mem(null, function() {});
     var carmen = new Carmen({ to: to });
     var zoom = 6;
-    t.test('error no _id', function(q) {
-        index.update(to, [{_text:'main st'}], zoom, function(err) {
-            q.equal('Error: doc has no _id', err.toString());
+    t.test('error no id', function(q) {
+        index.update(to, [{ properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+            q.equal('Error: doc has no id', err.toString());
             q.end();
         });
     });
-    t.test('error no _center', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0']}], zoom, function(err) {
-            q.equal('Error: doc has no _center or _geometry on _id:1', err.toString());
+    t.test('error no carmen:center', function(q) {
+        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+            q.equal('Error: doc has no geometry on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_zxy:['0/0/0'],_center:[0,0]}], zoom, function(err) {
+        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
     });
-    t.test('indexes doc with _geometry and no _center or _zxy', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]}}], zoom, function(err) {
-            q.ifError(err);
+    t.test('indexes doc with geometry and no carmen:center', function(q) {
+        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+            q.equal('Error: doc has no carmen:center on id:1', err.toString());
             q.end();
         });
     });
-    t.test('indexes doc with _geometry and _center, but no _zxy', function(q) {
-        index.update(to, [{_text:'main st',_id:1,_geometry:{type:'Point', coordinates:[-75.598211,38.367333]},_center:[-75.598211,38.367333]}], zoom, function(err) {
+    t.test('indexes doc with geometry and carmen:center', function(q) {
+        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
@@ -211,15 +233,25 @@ test('index phrase collection', function(assert) {
     var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
     var docs = [{
-        _id:1,
-        _text:'a',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'a',
+            'carmen:center': [0,0]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }, {
-        _id:2,
-        _text:'a',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text': 'a',
+            'carmen:center': [0,0]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }];
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
@@ -242,22 +274,36 @@ test('error -- _geometry too high resolution', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts.', err.toString());
+        t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1', err.toString());
         t.end();
     });
 });
 
 test('error -- _zxy too large tile-cover', function(t) {
+    var tiles = [];
+    for (var i = 0; i < 10002; i++) { tiles.push('6/32/32'); }
     var docs = [{
-        _id:2,
-        _text:'fake street',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id: 1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [0,0],
+            'carmen:zxy': ['6/32/32']
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }, {
-        _id:1,
-        _text:'fake street',
-        _zxy:new Array(10001),
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [0,0],
+            'carmen:zxy': tiles
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }];
     var from = new mem(docs, {maxzoom: 6}, function() {});
     var to = new mem(docs, null, function() {});
@@ -266,7 +312,7 @@ test('error -- _zxy too large tile-cover', function(t) {
         to: to
     });
     carmen.index(from, to, {}, function(err) {
-        t.equal('Error: doc._zxy exceeded 10000, doc id:1', err.toString());
+        t.equal('Error: zxy exceeded 10000, doc id:1', err.toString());
         t.end();
     });
 });
@@ -276,9 +322,9 @@ test('index.cleanDocs', function(assert) {
     var sourceWithAddress = {_geocoder:{geocoder_address:true}};
     var sourceWithoutAddress = {_geocoder:{geocoder_address:false}};
 
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{}}])[0]._geometry, 'object', 'with address: preserves geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{_geometry:{}}])[0]._geometry, 'undefined', 'without address: removes geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{_geometry:{},_cluster:{}}])[0]._geometry, 'undefined', 'with cluster: removes geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');
+    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{geometry:{},properties: { 'carmen:addressnumber':{}} }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
     assert.end();
 });
 

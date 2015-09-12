@@ -18,11 +18,17 @@ tape('worker.loadDoc', function(assert) {
     tokens = ['main', 'st'];
     zoom = 6;
     doc = {
-        _id: 1,
-        _text: 'main st',
-        _center: [0, 0],
-        _zxy: ['6/32/32', '14/16384/32'],
-        _score: 100
+        id: 1,
+        properties: {
+            'carmen:text': 'main st',
+            'carmen:center': [0, 0],
+            'carmen:zxy': ['6/32/32', '14/16384/32'],
+            'carmen:score': 100
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     };
 
     freq[0] = [101];
@@ -56,46 +62,65 @@ tape('worker.verifyCenter', function(assert) {
 
 tape('worker.runChecks', function(assert) {
     assert.equal(worker.runChecks({
-    }), 'doc has no _id');
+    }), 'doc has no id');
     assert.equal(worker.runChecks({
-        _id:1
-    }), 'doc has no _text on _id:1');
+        id:1,
+        properties: {},
+        geometry: {}
+    }), 'doc has no carmen:text on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street'
-    }), 'doc has no _center or _geometry on _id:1');
+        id:1,
+        properties: {
+            'carmen:text':'Main Street'
+        }
+    }), 'doc has no geometry on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0]
-    }), 'index has no zoom on _id:1');
+        id:1,
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center': [0,0]
+        },
+        geometry: {}
+    }), 'index has no zoom on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0]
-    }, -1), 'zoom must be greater than 0 --- zoom was -1 on _id:1');
+        id:1,
+        properties: {
+            'carmen:text': 'Main Street',
+            'carmen:center': [0,0]
+        },
+        geometry: {}
+    }, -1), 'zoom must be greater than 0 --- zoom was -1 on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0]
-    }, 15), 'zoom must be less than 15 --- zoom was 15 on _id:1');
+        id:1,
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: {}
+    }, 15), 'zoom must be less than 15 --- zoom was 15 on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0],
-        _geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
-    }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts.');
+        id:1,
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
+    }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0],
-        _geometry: { type: 'MultiPolygon', coordinates: [[new Array(30e3)],[new Array(30e3)]] }
-    }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts.');
+        id:1,
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'MultiPolygon', coordinates: [[new Array(30e3)],[new Array(30e3)]] }
+    }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
     assert.equal(worker.runChecks({
-        _id:1,
-        _text:'Main Street',
-        _center:[0,0],
-        _geometry: { type: 'Point', coordinates: [0,0] }
+        id:1,
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'Point', coordinates: [0,0] }
     }, 12), '');
     assert.end();
 });

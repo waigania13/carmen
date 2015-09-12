@@ -135,17 +135,7 @@ var addFeature = require('../lib/util/addfeature');
                 _id: 2,
                 _text:'B77 1AB',
                 _zxy:['6/32/32'],
-                _center:[0,0],
-                _geometry: {
-                    type: 'Polygon',
-                    coordinates: [
-                        [-1, -1],
-                        [101, -1],
-                        [101, 101],
-                        [-1, 101],
-                        [-1, -1]
-                    ]
-                }
+                _center:[0,0]
             };
             addFeature(conf.postcode, postcode, t.end);
     });

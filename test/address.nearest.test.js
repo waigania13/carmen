@@ -2,13 +2,16 @@ var fs = require('fs');
 var address = require('../lib/pure/applyaddress.js');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
+var feature = require('../lib/util/feature.js');
 
 test('nearest', function(t) {
     t.deepEqual(address({
-        _rangetype:'tiger',
-        _lfromhn: '1000',
-        _ltohn: '1100',
-        _geometry: {
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': '1000',
+            'carmen:ltohn': '1100'
+        },
+        geometry: {
             type:'LineString',
             coordinates:[[0,0],[0,100]]
         }
@@ -20,10 +23,12 @@ test('nearest', function(t) {
     }, 'nearest startpoint');
 
     t.deepEqual(address({
-        _rangetype:'tiger',
-        _lfromhn: '1000',
-        _ltohn: '1100',
-        _geometry: {
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': '1000',
+            'carmen:ltohn': '1100'
+        },
+        geometry: {
             type:'LineString',
             coordinates:[[0,0],[0,100]]
         }
@@ -35,10 +40,12 @@ test('nearest', function(t) {
     }, 'nearest endpoint');
 
     t.deepEqual(address({
-        _rangetype:'tiger',
-        _lfromhn: '1000',
-        _ltohn: '1100',
-        _geometry: {
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': '1000',
+            'carmen:ltohn': '1100'
+        },
+        geometry: {
             type:'LineString',
             coordinates:[[0,0],[0,100]]
         }
@@ -49,16 +56,16 @@ test('nearest', function(t) {
 });
 
 test('nearest stability 1', function(assert) {
-    var a = address(require('./fixtures/range-feature-1a.json'), 25);
-    var b = address(require('./fixtures/range-feature-1b.json'), 25);
+    var a = address(feature.transform(require('./fixtures/range-feature-1a.json')), 25);
+    var b = address(feature.transform(require('./fixtures/range-feature-1b.json')), 25);
     assert.deepEqual(a, b);
     assert.deepEqual(a.omitted, undefined);
     assert.end();
 });
 
 test('nearest stability 2', function(assert) {
-    var a = address(require('./fixtures/range-feature-3a.json'), 625);
-    var b = address(require('./fixtures/range-feature-3b.json'), 625);
+    var a = address(feature.transform(require('./fixtures/range-feature-3a.json')), 625);
+    var b = address(feature.transform(require('./fixtures/range-feature-3b.json')), 625);
     assert.deepEqual(a, b);
     assert.deepEqual(a.coordinates, [-103.368341,20.665601]);
     assert.deepEqual(a.omitted, undefined);
@@ -67,8 +74,8 @@ test('nearest stability 2', function(assert) {
 });
 
 test('nearest stability 3', function(assert) {
-    var a = address(require('./fixtures/range-feature-2a.json'), 100);
-    var b = address(require('./fixtures/range-feature-2b.json'), 100);
+    var a = address(feature.transform(require('./fixtures/range-feature-2a.json')), 100);
+    var b = address(feature.transform(require('./fixtures/range-feature-2b.json')), 100);
     assert.deepEqual(a, b);
     assert.deepEqual(a.omitted, undefined);
     assert.deepEqual(b.omitted, undefined);

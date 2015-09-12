@@ -148,35 +148,70 @@ you to page through documents.
 is a list of objects. Each object may have any attributes but the following are
 required:
 
-attribute | description
-----------|------------
-_id       | An integer ID for this feature.
-_text     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
-_geometry | A geojson geometry object. Required if no _zxy provided.
-_zxy      | An array of xyz tile coordinates covered by this feature. Required if no _geometry provided.
-_center   | An array in the form [lon,lat]. _center must be on the _geometry surface, or the _center will be recalculated. Required only if no _geometry provided.
-_bbox     | Optional. A bounding box in the form [minx,miny,maxx,maxy].
-_score    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
-_cluster  | Optional. Used with `geocoder_address`. A json object of clustered addresses in the format `{ number: { geojson point geom } }`
+Each document is a valid geojson `Feature`. Each feature should contain a unique `id` field
+as well as the following settings in the `properties` object.
+
+attribute         | description
+------------------|------------
+`carmen:text`     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+`carmen:center`   | Optional. An array in the form [lon,lat]. center must be on the geometry surface, or the center will be recalculated.
+`carmen:score`    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
+`carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresseses corresponding to the order of their geometries in the `GeometryCollection`
 
 ### TIGER address interpolation
 
 Carmen has basic support for interpolating geometries based on TIGER address
 range data. To make use of this feature the following additional keys must be
-present.
+present in the properties object.
 
-attribute | description
-----------|------------
-_rangetype| The type of range data available. Only possible value atm is 'tiger'.
-_geometry | A LineString or MultiLineString geometry object.
-_lfromhn  | Single (LineString) or array of values (Multi) of TIGER LFROMHN field.
-_ltohn    | Single (LineString) or array of values (Multi) of TIGER LTOHN field.
-_rfromhn  | Single (LineString) or array of values (Multi) of TIGER RFROMHN field.
-_rtohn    | Single (LineString) or array of values (Multi) of TIGER RTOHN field.
-_parityl  | Single (LineString) or array of values (Multi) of TIGER PARITYL field.
-_parityr  | Single (LineString) or array of values (Multi) of TIGER PARITYR field.
+attribute           | description
+--------------------|------------
+`carmen:rangetype`  | The type of range data available. Only possible value atm is 'tiger'.
+`carmen:lfromhn`    | Single (LineString) or array of values (GeometryCollection) of TIGER LFROMHN field.
+`carmen:ltohn`      | Single (LineString) or array of values (GeometryCollection) of TIGER LTOHN field.
+`carmen:rfromhn`    | Single (LineString) or array of values (GeometryCollection) of TIGER RFROMHN field.
+`carmen:rtohn`      | Single (LineString) or array of values (GeometryCollection) of TIGER RTOHN field.
+`carmen:parityl`    | Single (LineString) or array of values (GeometryCollection) of TIGER PARITYL field.
+`carmen:parityr`    | Single (LineString) or array of values (GeometryCollection) of TIGER PARITYR field.
 
 ------
+
+### Example
+
+```JSON
+{
+  "id": "7654",
+  "type": "Feature",
+  "properties": {
+    "carmen:text": "Main Street",
+    "carmen:center": [ -97.1, 37 ],
+    "carmen:score": 99,
+    "carmen:rangetype": "tiger",
+    "carmen:lfromhn": [ "100", "200" ],
+    "carmen:ltohn": ["198", "298"],
+    "carmen:rfromhn": ["101", "201"],
+    "carmen:rtohn": ["199", "299"],
+    "carmen:parityl": ["E", "E"],
+    "carmen:parityr": ["O", "B"],
+  },
+  "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+      [
+        [ -97, 37 ],
+        [ -97.2, 37 ],
+        [ -97.2, 37.2 ]
+      ],
+      [
+        [ -97.2, 37.2 ],
+        [ -97.4, 37.2 ],
+        [ -97.4, 37.4 ]
+      ]
+    ]
+  }
+}
+```
+
 
 ## How does carmen work?
 

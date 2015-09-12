@@ -16,7 +16,7 @@ tape('index province', function(t) {
     var province = {
         _id:1,
         _text:'new york, ny',
-        _zxy:['6/32/32','6/33/32'],
+        _zxy:['6/32/32','6/34/32'],
         _center:[0,0]
     };
     addFeature(conf.province, province, t.end);
@@ -34,8 +34,8 @@ tape('index city 2', function(t) {
     var city = {
         _id:3,
         _text:'tonawanda',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        _zxy:['6/34/32'],
+        _center:[14.0625, -2.8079929095776683]
     };
     addFeature(conf.city, city, t.end);
 });
@@ -52,8 +52,8 @@ tape('index street 2', function(t) {
     var street = {
         _id:5,
         _text:'west st',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        _zxy:['6/34/32'],
+        _center:[14.0625, -2.8079929095776683]
     };
     addFeature(conf.street, street, t.end);
 });
@@ -123,9 +123,11 @@ tape('west st, tonawanda, ny', function(t) {
         t.deepEqual(res.debug.spatialmatch_position, 0);
 
         // Debug feature not found in verifymatch
-        t.deepEqual(res.debug.verifymatch[0]._id, 5);
-        t.deepEqual(res.debug.verifymatch[0]._text, 'west st');
+        t.deepEqual(res.debug.verifymatch[0].id, 5);
+        t.deepEqual(res.debug.verifymatch[0].properties['carmen:text'], 'west st');
         t.deepEqual(res.debug.verifymatch_position, 0);
+
+        console.log(res.debug.verifymatch[0])
         t.end();
     });
 });
@@ -135,4 +137,5 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
+
 
