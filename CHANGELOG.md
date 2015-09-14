@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.0
+
+- Update indexer & feature objects to use fully compliant GeoJSON
+
 ## 6.2.0
 
 - Update carmen-cache to 0.9.0, introduce `geocoder_cachesize` option.

@@ -26,7 +26,7 @@ tape('index province', function(t) {
     var province = {
         _id:1,
         _text:'new york, ny',
-        _zxy:['6/32/32','6/33/32'],
+        _zxy:['6/32/32','6/34/32'],
         _center:[0,0]
     };
     addFeature(conf.province, province, t.end);
@@ -44,8 +44,8 @@ tape('index city 2', function(t) {
     var city = {
         _id:2,
         _text:'tonawanda',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        _zxy:['6/34/32'],
+        _center:[14.0625, -2.8079929095776683]
     };
     addFeature(conf.city, city, t.end);
 });
@@ -62,8 +62,8 @@ tape('index street 2', function(t) {
     var street = {
         _id:2,
         _text:'west st',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        _zxy:['6/34/32'],
+        _center:[14.0625, -2.8079929095776683]
     };
     addFeature(conf.street, street, t.end);
 });
