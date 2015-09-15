@@ -9,10 +9,10 @@ var mem = require('../lib/api-mem');
 var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
-//Test geocoder_address formatting
+// Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (function() {
     var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: '{name} {num}'}, function() {})
+        address: new mem({maxzoom: 6,  geocoder_address: '{address.name} {address.number} {place.name}, {region.name} {postcode.name}, {country.name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
@@ -51,47 +51,97 @@ var addFeature = require('../lib/util/addfeature');
 //Test geocoder_address formatting for multiple layers
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
-        address: new mem({maxzoom: 6, geocoder_address: '{name} {num}'}, function() {})
+        country: new mem({ maxzoom:6,  geocoder_address: '{country.name}' }, function() {}),
+        region: new mem({maxzoom: 6,   geocoder_address: '{region.name}, {country.name}' }, function() {}),
+        postcode: new mem({maxzoom: 6, geocoder_address: '{region.name}, {postcode.name}, {country.name}' }, function() {}),
+        place: new mem({maxzoom: 6,    geocoder_address: '{place.name}, {region.name} {postcode.name}, {country.name}' }, function() {}),
+        address: new mem({maxzoom: 6,  geocoder_address: '{address.number} {address.name} {place.name}, {region.name} {postcode.name}, {country.name}'}, function() {}),
+        poi: new mem({maxzoom: 6,      geocoder_address: '{poi.name}, {address.number} {address.name} {place.name}, {region.name} {postcode.name}, {country.name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index country', function(t) {
         var country = {
             _id:1,
-            _text:'czech republic',
+            _text:'united states',
             _zxy:['6/32/32'],
             _center:[0,0]
         };
         addFeature(conf.country, country, t.end);
     });
 
-    tape('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-                _cluster: {
-                    9: { type: "Point", coordinates: [0,0] },
-                    10: { type: "Point", coordinates: [0,0] },
-                    7: { type: "Point", coordinates: [0,0] }
-                }
-            };
-            addFeature(conf.address, address, t.end);
+    tape('index region', function(t) {
+        var region = {
+            _id:1,
+            _text:'maine',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.region, region, t.end);
     });
 
-    tape('Search for germany style address - multiple layers', function(t) {
-        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+    tape('index place', function(t) {
+        var place = {
+            _id:1,
+            _text:'springfield',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.place, place, t.end);
+    });
+
+    tape('index postcode', function(t) {
+        var postcode = {
+            _id:1,
+            _text:'12345',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.postcode, postcode, t.end);
+    });
+
+    tape('index address', function(t) {
+        var address = {
+            _id:1,
+            _text:'fake street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _cluster: {
+                9: { type: "Point", coordinates: [0,0] },
+                10: { type: "Point", coordinates: [0,0] },
+                7: { type: "Point", coordinates: [0,0] }
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+
+    tape('index poi', function(t) {
+        var poi = {
+            _id:1,
+            _text:'moes tavern',
+            _zxy:['6/32/32'],
+            _center:[0,0]
+        };
+        addFeature(conf.poi, poi, t.end);
+    });
+
+    tape('Search for an address (multiple layers)', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: '9 fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
-
-    tape('Search for us style address with german formatting - multiple layers', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+    tape('Search for an address without a number (multiple layers)', function(t) {
+        c.geocode('fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street springfield, maine 12345, united states', properties: {}, relevance: 0.79, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street' ], type: 'FeatureCollection' });
+            t.end();
+        });
+    });
+    tape('Search for a city (multiple layers)', function(t) {
+        c.geocode('springfield', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'place.1', place_name: 'springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'springfield', type: 'Feature' } ], query: [ 'springfield' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -174,4 +224,3 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
