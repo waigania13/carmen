@@ -145,6 +145,13 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
+    tape('Search for a poi (multiple layers)', function(t) {
+        c.geocode('moes tavern', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'address.1', text: 'fake street' }, { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'poi.1', place_name: 'moes tavern, fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'moes tavern', type: 'Feature' } ], query: [ 'moes', 'tavern' ], type: 'FeatureCollection' });
+            t.end();
+        });
+    });
 })();
 
 (function() {
