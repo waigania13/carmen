@@ -66,6 +66,7 @@ tape('transform', function(assert) {
                 "carmen:zxy": ['6/32/32'],
                 "carmen:text": "Main Street"
             },
+            bbox: [ 0, -5.615985819155337, 5.625, 0 ],
             geometry: {
                 type:"MultiPolygon",
                 coordinates: [[[[0,-5.615985819155337],[0,0],[5.625,0],[5.625,-5.615985819155337],[0,-5.615985819155337]]]]
