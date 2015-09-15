@@ -22,6 +22,7 @@
     "turf-center": "1.0.x",
     "turf-destination": "1.2.x",
     "turf-distance": "1.0.x",
+    "turf-extent": "^1.0.4",
     "turf-line-distance": "1.0.x",
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
