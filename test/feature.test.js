@@ -42,6 +42,7 @@ tape('transform', function(assert) {
         t.deepEquals(feat, { 
             id: 7654,
             type: 'Feature',
+            bbox: [ -97.2, 37, -97, 37],
             properties: {
                 'carmen:text': 'Main Street'
             },
@@ -66,6 +67,7 @@ tape('transform', function(assert) {
                 "carmen:zxy": ['6/32/32'],
                 "carmen:text": "Main Street"
             },
+            bbox: [ 0, -5.615985819155337, 5.625, 0 ],
             geometry: {
                 type:"MultiPolygon",
                 coordinates: [[[[0,-5.615985819155337],[0,0],[5.625,0],[5.625,-5.615985819155337],[0,-5.615985819155337]]]]
@@ -83,6 +85,7 @@ tape('transform', function(assert) {
         t.deepEquals(feat, {
             id: 7654,
             type: "Feature",
+            bbox: [ 0, 0, 0, 0 ],
             properties: {
                 'carmen:addressnumber': [ '2' ],
                 'carmen:text': 'Main Street'
@@ -122,6 +125,7 @@ tape('transform', function(assert) {
                 type: 'MultiLineString'
             },
             id: '7654',
+            bbox: [ -97.4, 37, -97, 37.4 ],
             properties: {
                 'carmen:center': [ -97.1, 37 ],
                 'carmen:lfromhn': [ '100', '200' ],
