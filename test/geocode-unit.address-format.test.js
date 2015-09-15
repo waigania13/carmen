@@ -33,7 +33,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for germany style address', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', bbox: [ 0, 0, 0, 0 ], center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -41,7 +41,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for us style address with german formatting', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', bbox: [ 0, 0, 0, 0 ], center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -82,7 +82,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for germany style address - multiple layers', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', bbox: [ 0, 0, 0, 0 ], center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -90,7 +90,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for us style address with german formatting - multiple layers', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', bbox: [ 0, 0, 0, 0 ], center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });

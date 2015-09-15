@@ -42,7 +42,6 @@ tape('transform', function(assert) {
         t.deepEquals(feat, { 
             id: 7654,
             type: 'Feature',
-            bbox: [ -97.2, 37, -97, 37],
             properties: {
                 'carmen:text': 'Main Street'
             },
@@ -85,7 +84,6 @@ tape('transform', function(assert) {
         t.deepEquals(feat, {
             id: 7654,
             type: "Feature",
-            bbox: [ 0, 0, 0, 0 ],
             properties: {
                 'carmen:addressnumber': [ '2' ],
                 'carmen:text': 'Main Street'
@@ -125,7 +123,6 @@ tape('transform', function(assert) {
                 type: 'MultiLineString'
             },
             id: '7654',
-            bbox: [ -97.4, 37, -97, 37.4 ],
             properties: {
                 'carmen:center': [ -97.1, 37 ],
                 'carmen:lfromhn': [ '100', '200' ],
