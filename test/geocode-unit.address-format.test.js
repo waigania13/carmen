@@ -61,54 +61,79 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index country', function(t) {
         var country = {
-            _id:1,
-            _text:'united states',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': 'united states',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.country, country, t.end);
     });
 
     tape('index region', function(t) {
         var region = {
-            _id:1,
-            _text:'maine',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': 'maine',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.region, region, t.end);
     });
 
     tape('index place', function(t) {
         var place = {
-            _id:1,
-            _text:'springfield',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': 'springfield',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.place, place, t.end);
     });
 
     tape('index postcode', function(t) {
         var postcode = {
-            _id:1,
-            _text:'12345',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': '12345',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.postcode, postcode, t.end);
     });
 
     tape('index address', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _cluster: {
-                9: { type: "Point", coordinates: [0,0] },
-                10: { type: "Point", coordinates: [0,0] },
-                7: { type: "Point", coordinates: [0,0] }
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9','10','7']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
             }
         };
         addFeature(conf.address, address, t.end);
@@ -116,39 +141,44 @@ var addFeature = require('../lib/util/addfeature');
 
     tape('index poi', function(t) {
         var poi = {
-            _id:1,
-            _text:'moes tavern',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': 'moes tavern',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.poi, poi, t.end);
     });
-
     tape('Search for an address (multiple layers)', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: '9 fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'address.1', place_name: '9 fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
     tape('Search for an address without a number (multiple layers)', function(t) {
         c.geocode('fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street springfield, maine 12345, united states', properties: {}, relevance: 0.79, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [[0,0],[0,0],[0,0]], type: 'MultiPoint' }, id: 'address.1', place_name: 'fake street springfield, maine 12345, united states', properties: {}, relevance: 0.79, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
         });
     });
     tape('Search for a city (multiple layers)', function(t) {
         c.geocode('springfield', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'place.1', place_name: 'springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'springfield', type: 'Feature' } ], query: [ 'springfield' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'place.1', place_name: 'springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'springfield', type: 'Feature' } ], query: [ 'springfield' ], type: 'FeatureCollection' });
             t.end();
         });
     });
     tape('Search for a poi (multiple layers)', function(t) {
         c.geocode('moes tavern', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'address.1', text: 'fake street' }, { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'poi.1', place_name: 'moes tavern, fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'moes tavern', type: 'Feature' } ], query: [ 'moes', 'tavern' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'address.1', text: 'fake street' }, { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'poi.1', place_name: 'moes tavern, fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'moes tavern', type: 'Feature' } ], query: [ 'moes', 'tavern' ], type: 'FeatureCollection' });
             t.end();
         });
     });
@@ -161,14 +191,15 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index address', function(t) {
             var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-                _cluster: {
-                    9: { type: "Point", coordinates: [0,0] },
-                    10: { type: "Point", coordinates: [0,0] },
-                    7: { type: "Point", coordinates: [0,0] }
+                id:1,
+                properties: {
+                    'carmen:text': 'fake street',
+                    'carmen:center': [0,0],
+                    'carmen:addressnumber': ['9','10','7']
+                },
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: [[0,0],[0,0],[0,0]]
                 }
             };
             addFeature(conf.address, address, t.end);
@@ -210,10 +241,16 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index address', function(t) {
             var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0]
+                id:1,
+                properties: {
+                    'carmen:text': 'fake street',
+                    'carmen:center': [0,0],
+                    'carmen:zxy': ['6/32/32']
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [0,0]
+                }
             };
             addFeature(conf.address, address, t.end);
     });
