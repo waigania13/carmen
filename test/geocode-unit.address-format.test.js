@@ -17,14 +17,15 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index address', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _cluster: {
-                9: { type: "Point", coordinates: [0,0] },
-                10: { type: "Point", coordinates: [0,0] },
-                7: { type: "Point", coordinates: [0,0] }
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9','10','7']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
             }
         };
         addFeature(conf.address, address, t.end);
