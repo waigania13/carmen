@@ -34,7 +34,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for germany style address', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'fake street 9');
             t.end();
         });
     });
@@ -42,7 +42,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for us style address with german formatting', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'fake street 9');
             t.end();
         });
     });
@@ -157,7 +157,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for an address (multiple layers)', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'address.1', place_name: '9 fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, '9 fake street springfield, maine 12345, united states');
             t.end();
         });
     });
@@ -171,14 +171,14 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for a city (multiple layers)', function(t) {
         c.geocode('springfield', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'place.1', place_name: 'springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'springfield', type: 'Feature' } ], query: [ 'springfield' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'springfield, maine 12345, united states');
             t.end();
         });
     });
     tape('Search for a poi (multiple layers)', function(t) {
         c.geocode('moes tavern', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'address.1', text: 'fake street' }, { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [0,0], type: 'Point' }, id: 'poi.1', place_name: 'moes tavern, fake street springfield, maine 12345, united states', properties: {}, relevance: 0.99, text: 'moes tavern', type: 'Feature' } ], query: [ 'moes', 'tavern' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'moes tavern, fake street springfield, maine 12345, united states');
             t.end();
         });
     });
