@@ -15,11 +15,16 @@ var c = new Carmen(conf);
 
 tape('index country', function(t) {
     var country = {
-        _id:2,
-        _text:'Russian Federation, Rossiyskaya Federatsiya',
-        _text_ru: 'Российская Федерация',
-        _zxy:['6/30/30'],
-        _center:[0,0]
+        type: 'Feature',
+        properties: {
+            'carmen:center': [ 0, 0 ],
+            'carmen:zxy': [ '6/30/30' ],
+            'carmen:text_ru': 'Российская Федерация',
+            'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya'
+        },
+        id: 2,
+        geometry: { type: 'MultiPolygon', coordinates: [] },
+        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
     addFeature(conf.country, country, t.end);
 });
