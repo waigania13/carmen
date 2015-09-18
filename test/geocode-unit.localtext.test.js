@@ -19,8 +19,10 @@ tape('index country', function(t) {
         properties: {
             'carmen:center': [ 0, 0 ],
             'carmen:zxy': [ '6/30/30' ],
+            'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya',
             'carmen:text_ru': 'Российская Федерация',
-            'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya'
+            'carmen:text_zh_Latn': 'Elousi',
+            'carmen:text_fake': 'beetlejuice'
         },
         id: 2,
         geometry: { type: 'MultiPolygon', coordinates: [] },
@@ -28,7 +30,8 @@ tape('index country', function(t) {
     };
     addFeature(conf.country, country, t.end);
 });
-tape('russia => russian federation', function(t) {
+
+tape('russia => Russian Federation', function(t) {
     c.geocode('russia', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
@@ -37,6 +40,7 @@ tape('russia => russian federation', function(t) {
         t.end();
     });
 });
+
 tape('Rossiyskaya => Russian Federation', function(t) {
     c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
@@ -53,6 +57,28 @@ tape('Российская => Russian Federation', function(t) {
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
         t.deepEqual(res.features[0].id, 'country.2');
         t.deepEqual(res.features[0].id, 'country.2');
+        t.end();
+    });
+});
+
+// carmen:text_zh_Latn should be indexed as a synonym for _text since
+// as zh_Latn is a valid language code with IETF tag
+tape('Elousi => Russian Federation', function(t) {
+    c.geocode('Elousi', { limit_verify:1 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Russian Federation');
+        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.2');
+        t.end();
+    });
+});
+
+// carmen:text_fake should be indexed as a synonym for _text since
+// 'fake' is not a valid language code
+tape('beetlejuice => [fail]', function(t) {
+    c.geocode('beetlejuice', { limit_verify:1 }, function(err, res) {
+        t.ifError(err);
+        t.notOk(res.features[0]);
         t.end();
     });
 });
