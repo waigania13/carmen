@@ -263,6 +263,61 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// Test to make sure cases of custom subproperties are accounted for
+(function() {
+    var conf = {
+        place: new mem({maxzoom: 6,  geocoder_address: '{place.name}'}, function() {}),
+        kitten: new mem({maxzoom: 6,  geocoder_address: '{kitten.name} {kitten.version} {kitten.color}, {place.name}'}, function() {}),
+    };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        var place = {
+            id:1,
+            properties: {
+                'carmen:text': 'springfield',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index kitten', function(t) {
+            var kitten = {
+                id:1,
+                properties: {
+                    'carmen:text': 'snowball',
+                    'carmen:center': [0,0],
+                    'carmen:zxy': ['6/32/32'],
+                    'version': 'II'
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [0,0]
+                }
+            };
+            addFeature(conf.kitten, kitten, t.end);
+    });
+
+    tape('Search for an address using a template that has nonstandard properites', function(t) {
+        c.geocode('springfield', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'springfield');
+            t.end();
+        });
+    });
+    tape('Search for a custom property with non-carmen templating', function(t) {
+        c.geocode('snowball', { limit_verify: 1 }, function (err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'snowball II, springfield');
+            t.end();
+        });
+    });
+})();
+
 tape('index.teardown', function(assert) {
     index.teardown();
     context.getTile.cache.reset();
