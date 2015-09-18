@@ -39,7 +39,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
 
-    tape('Search for us style address with german formatting', function(t) {
+    tape('Search for us style address, return with german formatting', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'fake street 9');
