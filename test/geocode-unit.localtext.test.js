@@ -73,7 +73,7 @@ tape('Elousi => Russian Federation', function(t) {
     });
 });
 
-// carmen:text_fake should be indexed as a synonym for _text since
+// carmen:text_fake should not be indexed as a synonym for _text since
 // 'fake' is not a valid language code
 tape('beetlejuice => [fail]', function(t) {
     c.geocode('beetlejuice', { limit_verify:1 }, function(err, res) {
