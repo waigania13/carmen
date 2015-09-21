@@ -16,7 +16,7 @@ var tape = require('tape');
         var docs = require('fs').readFileSync(__dirname + '/fixtures/lake-streetnames.txt', 'utf8')
             .split('\n')
             .filter(function(text) { return !!text; })
-            .slice(0,100)
+            .slice(0,50)
             .reduce(function(memo, text) {
                 // generate between 1-100 features with this text.
                 var seed = 2000;
@@ -24,18 +24,24 @@ var tape = require('tape');
                     var lat = Math.random() * 170 - 85;
                     var lon = Math.random() * 360 - 180;
                     memo.push({
-                        _id: ++seq,
-                        _text: text,
-                        _center: [lon, lat],
-                        _geometry: { type:'Point', coordinates:[lon,lat] }
+                        id: ++seq,
+                        properties: {
+                            'carmen:text': text,
+                            'carmen:center': [lon, lat]
+                        },
+                        geometry: { type:'Point', coordinates:[lon,lat] },
+                        bbox: []
                     });
                 }
                 return memo;
             }, []);
         index.update(conf.street, docs, 14, function(err) {
             if (err) throw err;
-            assert.ok(true, 'setup time ' + (+new Date - start) + 'ms');
-            assert.end();
+            index.store(conf.street, function(err) {
+                if (err) throw err;
+                assert.ok(true, 'setup time ' + (+new Date - start) + 'ms');
+                assert.end();
+            });
         });
     });
     tape('phrasematch', function(assert) {

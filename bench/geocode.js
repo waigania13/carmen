@@ -24,10 +24,13 @@ var tape = require('tape');
                     var lat = Math.random() * 170 - 85;
                     var lon = Math.random() * 360 - 180;
                     memo.push({
-                        _id: ++seq,
-                        _text: text,
-                        _center: [lon, lat],
-                        _geometry: { type:'Point', coordinates:[lon,lat] }
+                        id: ++seq,
+                        properties: {
+                            'carmen:text': text,
+                            'carmen:center': [lon, lat]
+                        },
+                        geometry: { type:'Point', coordinates:[lon,lat] },
+                        bbox: []
                     });
                 }
                 return memo;
