@@ -13,7 +13,11 @@ var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
 tape('index', function(assert) {
-    try { fs.unlinkSync(tmpindex); } catch(err) {}
+    try { 
+        fs.unlinkSync(tmpindex); 
+    } catch (err) {
+        //'file not found' 
+    }
     var mbtiles = new MBTiles(tmpindex, start);
     var carmen = new Carmen({ index: mbtiles });
     function start(err) {
@@ -49,7 +53,7 @@ tape('index', function(assert) {
     }
 });
 
-tape('bin/carmen DEBUG', function(t){
+tape('bin/carmen DEBUG', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', function(err, stdout, stderr) {
         t.ifError(err);
         t.equal(/0\.99 Canada/.test(stdout), true, 'finds canada');

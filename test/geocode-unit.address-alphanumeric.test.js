@@ -28,7 +28,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.address, address, t.end);
     });
     tape('test address index for alphanumerics', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -57,7 +57,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.address, address, t.end);
     });
     tape('test address query with alphanumeric', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -88,7 +88,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.address, address, t.end);
     });
     tape('test alphanumeric address query with address range', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -98,7 +98,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('test alphanumeric address query with invalid address number', function(t) {
-        c.geocode('9bc fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9bc fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
             t.ok((res.features[0].relevance < 0.6), 'appropriate relevance (9bc token should not be matched)');
@@ -140,7 +140,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.postcode, postcode, t.end);
     });
     tape('test UK postcode not getting confused w/ address range', function(t) {
-        c.geocode('B77 1AB', { limit_verify: 10 }, function (err, res) {
+        c.geocode('B77 1AB', { limit_verify: 10 }, function(err, res) {
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
             t.equals(res.features[0].relevance, 0.99);
             t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
@@ -173,7 +173,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.address, address, t.end);
     });
     tape('test hyphenated address query with address range', function(t) {
-        c.geocode('23-414 beach street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('23-414 beach street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
             t.equals(res.features[0].relevance, 0.99);

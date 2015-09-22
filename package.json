@@ -8,6 +8,7 @@
   "dependencies": {
     "carmen-cache": "0.9.0",
     "err-code": "0.1.2",
+    "eslint": "^1.5.0",
     "locking": "2.0.1",
     "mapnik": "~3.4.3",
     "minimist": "0.0.5",
@@ -45,9 +46,40 @@
   },
   "main": "./index.js",
   "scripts": {
-    "test": "retire -n && tape ./test/*.js",
+    "lint": "eslint lib test",
+    "test": "npm run lint && retire -n && tape ./test/*.js",
     "cov": "istanbul cover test/*.js",
     "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info"
+  },
+  "eslintConfig": {
+    "rules": {
+      "no-use-before-define": [ 2, "nofunc" ],
+      "space-before-function-paren": [2, "never"],
+      "space-in-parens": 2,
+      "space-before-blocks": 2,
+      "space-after-keywords": 2,
+      "comma-style": 2,
+      "no-lonely-if": 2,
+      "no-else-return": 0,
+      "new-cap": 0,
+      "no-empty": 2,
+      "no-new": 2,
+      "no-multi-spaces": 0,
+      "space-in-brackets": 0,
+      "brace-style": 0,
+      "quotes": 0,
+      "no-underscore-dangle": 0,
+      "curly": 0,
+      "no-constant-condition": 0,
+      "no-native-reassign": 0,
+      "no-shadow": 0,
+      "key-spacing": 0
+    },
+    "env": {
+      "node": true
+    },
+    "globals": {
+    }
   },
   "engines": {
     "node": "0.10.x"
