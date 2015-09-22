@@ -48,7 +48,7 @@ tape('index other address', function(t) {
     addFeature(conf.address, feature, t.end);
 });
 tape('test spatialmatch relev', function(t) {
-    c.geocode('1 fake street fakecity', { limit_verify: 1 }, function (err, res) {
+    c.geocode('1 fake street fakecity', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].relevance, 1);

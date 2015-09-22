@@ -21,7 +21,7 @@ test('copy', function(t) {
     t.test('update', function(q) {
         index.update(from, docs, zoom, function(err) {
             if (err) q.fail();
-            index.store(from, function(){
+            index.store(from, function() {
                 q.end();
             });
         });
@@ -78,7 +78,7 @@ test.skip('copy (shardlevel=5)', function(t) {
     t.test('update', function(q) {
         index.update(from, docs, zoom, function(err) {
             if (err) q.fail();
-            index.store(from, function(){
+            index.store(from, function() {
                 q.end();
             });
         });

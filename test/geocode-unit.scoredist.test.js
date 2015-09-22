@@ -46,14 +46,14 @@ tape('index address (noise)', function(t) {
     q.awaitAll(t.end);
 });
 tape('geocode proximity=10,10 => superscored', function(t) {
-    c.geocode('main st', { proximity:[10,10] }, function (err, res) {
+    c.geocode('main st', { proximity:[10,10] }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].id, 'address.200', 'found address.200');
         t.end();
     });
 });
 tape('geocode proximity=20,0 => nearest', function(t) {
-    c.geocode('main st', { proximity:[20,0] }, function (err, res) {
+    c.geocode('main st', { proximity:[20,0] }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].id, 'address.201', 'found address.201');
         t.end();
