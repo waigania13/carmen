@@ -46,7 +46,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "test": "retire -n && tape ./test/*.js",
+    "test": "retire -n && tape ./test/*.js && node bench/runbench.js",
     "cov": "istanbul cover test/*.js",
     "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "node bench/runbench.js"
