@@ -33,7 +33,7 @@ tape('index place', function(t) {
 });
 
 tape('query byid', function(t) {
-    c.geocode('country.1', {}, function (err, res) {
+    c.geocode('country.1', {}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'china', 'found by id');
@@ -43,7 +43,7 @@ tape('query byid', function(t) {
 });
 
 tape('query byid', function(t) {
-    c.geocode('place.1', {}, function (err, res) {
+    c.geocode('place.1', {}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'chicago', 'found by id');

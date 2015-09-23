@@ -25,7 +25,7 @@ tape('index address', function(t) {
 });
 
 tape('test address', function(t) {
-    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function (err, res) {
+    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
@@ -34,7 +34,7 @@ tape('test address', function(t) {
 
 // Real solution here is regex token for *strasse => *str
 tape.skip('test address', function(t) {
-    c.geocode('Brehmestr. 56', { limit_verify: 1 }, function (err, res) {
+    c.geocode('Brehmestr. 56', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
