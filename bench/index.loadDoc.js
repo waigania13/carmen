@@ -23,7 +23,7 @@ function benchmark(cb) {
     })
     .on('complete', function() {
       console.log();
-      cb();
+      cb(null, suite);
     })
     .run();
 }

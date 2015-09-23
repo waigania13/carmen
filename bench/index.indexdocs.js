@@ -68,7 +68,7 @@ function benchmark(cb) {
         + ' runs sampled)' );
       });
       console.log();
-      cb();
+      cb(null, suite);
   })
   .run({'async': true});
 }

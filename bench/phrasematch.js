@@ -65,7 +65,7 @@ function runphrasematch(cb) {
     .on('complete', function(event) {
         console.log(String(event.target), '\n');
         index.teardown();
-        cb();
+        cb(null, suite);
     })
     .run({'async': true});
 }

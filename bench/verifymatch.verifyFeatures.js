@@ -13,7 +13,7 @@ function benchmark(cb) {
     if (!cb) cb = function(){};
     console.log('# verifymatch.verifyFeatures');
 
-    suite.add('index', function() {
+    suite.add('verifymatch.verifyFeatures', function() {
         var l = JSON.parse(JSON.stringify(loaded));
         var query = ['1600','p'];
         var geocoder = { byidx: {} };
@@ -39,7 +39,7 @@ function benchmark(cb) {
     })
     .on('complete', function() {
       console.log();
-      cb();
+      cb(null, suite);
     })
     .run();
 }

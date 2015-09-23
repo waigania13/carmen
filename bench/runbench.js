@@ -10,6 +10,7 @@ files.forEach(function(d) {
     q.defer(require('./'+d));
 });
 
-q.awaitAll(function(err){
+q.awaitAll(function(err, data){
     console.log('benchmarking complete');
+    // do something with data
 });

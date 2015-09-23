@@ -30,7 +30,7 @@ function benchmark(cb) {
     })
     .on('complete', function() {
       console.log('Fastest is ' + suite.filter('fastest').pluck('name'), '\n');
-      cb();
+      cb(null, suite);
     })
     .run();
 }

@@ -10,7 +10,7 @@ function benchmark(cb) {
     if (!cb) cb = function(){};
     console.log('# index.generateFrequency');
 
-    suite.add('index', function() {
+    suite.add('index.generateFrequency', function() {
         index.generateFrequency(docs, {});
     })
     .on('cycle', function(event) {
@@ -18,7 +18,7 @@ function benchmark(cb) {
     })
     .on('complete', function() {
         console.log();
-        cb();
+        cb(null, suite);
     })
     .run();
 }

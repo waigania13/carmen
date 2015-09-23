@@ -39,7 +39,7 @@ function benchmark(cb) {
     .on('complete', function() {
         console.log();
         if (UPDATE) fs.writeFileSync(__dirname+'/expected/decollide.json', JSON.stringify(values, null, 2));
-        cb();
+        cb(null, this);
     })
     .run();
 }
