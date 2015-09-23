@@ -24,7 +24,7 @@ tape('index place', function(assert) {
     }, assert.end);
 });
 tape('query place', function(t) {
-    c.geocode('Chicago', { limit_verify: 1 }, function (err, res) {
+    c.geocode('Chicago', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 0.99);
@@ -32,7 +32,7 @@ tape('query place', function(t) {
     });
 });
 tape('reverse place', function(t) {
-    c.geocode('0,0', { limit_verify: 1 }, function (err, res) {
+    c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 1);

@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address query with address range', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -56,23 +56,23 @@ var addFeature = require('../lib/util/addfeature');
             _geometry: {
                 type:'MultiLineString',
                 coordinates:
-                [
                     [
+                        [
                         [0,0],
                         [0,10]
-                    ],
-                    [
+                        ],
+                        [
                         [0,11],
                         [0,20]
-                    ],
-                ]
+                        ],
+                    ]
             }
         };
         addFeature(conf.address, address, t.end);
     });
 
     tape('test tiger interpolation house number', function(t) {
-        c.geocode('102 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('102 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
             t.equals(res.features[0].relevance, 0.99);

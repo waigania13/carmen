@@ -3,7 +3,7 @@ var feature = require('../lib/util/feature.js');
 var Memsource = require('../lib/api-mem.js');
 var Carmen = require('../index.js');
 
-var source = new Memsource(null, function(){});
+var source = new Memsource(null, function() {});
 var carmen = new Carmen({source:source});
 
 tape('putFeatures', function(assert) {
