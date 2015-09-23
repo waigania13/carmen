@@ -35,7 +35,8 @@
     "tape": "^2.13.4",
     "mbtiles": "0.7.x",
     "tilelive-s3": "~0.14.0",
-    "benchmark": "~1.0.0"
+    "benchmark": "~1.0.0",
+    "simple-statistics": "^1.0.0"
   },
   "bin": {
     "carmen": "./scripts/carmen.js",
@@ -47,7 +48,8 @@
   "scripts": {
     "test": "retire -n && tape ./test/*.js",
     "cov": "istanbul cover test/*.js",
-    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info"
+    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
+    "bench": "node bench/runbench.js"
   },
   "engines": {
     "node": "0.10.x"
