@@ -9,8 +9,10 @@ var token = require('../lib/util/token');
 var replacer = token.createReplacer(tokens);
 
 suite.add('index', function() {
+    var l = JSON.parse(JSON.stringify(loaded));
     var query = ['1600','p'];
     var geocoder = { byidx: {} };
+
     for (var i = 0; i < 40; i++) geocoder.byidx[i] = {
         _geocoder: {
             token_replacer: replacer,
@@ -25,7 +27,7 @@ suite.add('index', function() {
         allow_dupes: false,
         limit_verify: 10
     };
-    verifymatch.verifyFeatures(query, geocoder, spatial, loaded, options);
+    var ver = verifymatch.verifyFeatures(query, geocoder, spatial, l, options);
 })
 .on('cycle', function(event) {
     console.log(String(event.target));
