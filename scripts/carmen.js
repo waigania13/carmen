@@ -58,11 +58,11 @@ if (argv.types) {
 if (argv.debug) argv.debug = parseInt(argv.debug)
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
+carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
