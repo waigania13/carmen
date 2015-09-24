@@ -4,10 +4,6 @@ var assert = require('assert');
 var termops = require('../lib/util/termops');
 var fs = require('fs');
 var UPDATE = process.env.UPDATE;
-var ss = require('simple-statistics');
-
-var expected = require('./expected/decollide');
-var values = {};
 
 module.exports = benchmark;
 
@@ -27,18 +23,10 @@ function benchmark(cb) {
         }, 'av francisco de aguirre'), true);
     })
     .on('cycle', function(event) {
-        var name = event.target.name;
-        values[name] = event.target.hz;
         console.log(String(event.target));
-
-        var compare = values[name]/expected[name];
-        // assert.ok(compare > 0.85);
-        if (compare >= 1) console.log('  ', ((compare - 1) * 100).toFixed(2) + '%', 'faster than previously recorded');
-        else console.log('  ', ((1 - compare) * 100).toFixed(2) + '%', 'slower than previously recorded');
     })
     .on('complete', function() {
         console.log();
-        if (UPDATE) fs.writeFileSync(__dirname+'/expected/decollide.json', JSON.stringify(values, null, 2));
         cb(null, this);
     })
     .run();
