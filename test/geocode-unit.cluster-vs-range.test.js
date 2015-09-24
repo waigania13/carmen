@@ -46,7 +46,7 @@ tape('index addressitp', function(t) {
     addFeature(conf.addressitp, addressitp, t.end);
 });
 tape('test address query with address range', function(t) {
-    c.geocode('100 fake street', { limit_verify: 2 }, function (err, res) {
+    c.geocode('100 fake street', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 0.99);
@@ -56,7 +56,7 @@ tape('test address query with address range', function(t) {
 
 //Reverse geocode will return a pt since it is futher down in the stack than itp
 tape('test reverse address query with address range', function(t) {
-    c.geocode('0,0', { limit_verify: 2 }, function (err, res) {
+    c.geocode('0,0', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 1);
