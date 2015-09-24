@@ -3,7 +3,6 @@ var suite = new Benchmark.Suite();
 var assert = require('assert');
 var termops = require('../lib/util/termops');
 var fs = require('fs');
-var UPDATE = process.env.UPDATE;
 
 module.exports = benchmark;
 
