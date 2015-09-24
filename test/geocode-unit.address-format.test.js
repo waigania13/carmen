@@ -32,7 +32,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('Search for germany style address', function(t) {
-        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake street 9', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
@@ -40,7 +40,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('Search for us style address with german formatting', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
@@ -81,7 +81,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('Search for germany style address - multiple layers', function(t) {
-        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake street 9', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
             t.end();
@@ -89,7 +89,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('Search for us style address with german formatting - multiple layers', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
             t.end();
@@ -118,7 +118,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('test address index for US relev', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99);
             t.end();
@@ -126,7 +126,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('test address index for DE relev', function(t) {
-        c.geocode('fake street 9', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake street 9', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99);
             t.end();
@@ -137,7 +137,7 @@ var addFeature = require('../lib/util/addfeature');
     // is found within the street name
     // Unclear whether this should work really...
     tape.skip('test address index for random relev', function(t) {
-        c.geocode('fake 9 street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake 9 street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.3225806451612903);
             t.end();
@@ -161,7 +161,7 @@ var addFeature = require('../lib/util/addfeature');
             addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function (err, res) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.6566666666666666);
             t.end();
