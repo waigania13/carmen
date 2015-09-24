@@ -47,9 +47,10 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && tape ./test/*.js",
+    "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
     "cov": "istanbul cover test/*.js",
-    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info"
+    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
+    "bench": "node bench/runbench.js"
   },
   "eslintConfig": {
     "rules": {
