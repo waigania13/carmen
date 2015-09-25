@@ -9,7 +9,7 @@ var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug' ],
+    string: [ 'config', 'proximity', 'query', 'debug', 'types' ],
     boolean: [ 'geojson', 'stats', 'help' ]
 });
 
@@ -18,6 +18,7 @@ if (argv.help) {
     console.log('[options]:');
     console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
+    console.log('  --types="{type},..."    Only return results of a given type');
     console.log('  --geojson               Return a geojson object');
     console.log('  --stats                 Generate Stats on the query');
     console.log('  --debug="feat id"       Follows a feature through geocode"');
@@ -50,14 +51,18 @@ if (argv.proximity) {
     argv.proximity = [ Number(argv.proximity.split(',')[0]), Number(argv.proximity.split(',')[1]) ];
 }
 
+if (argv.types) {
+    argv.types = argv.types.split(',');
+}
+
 if (argv.debug) argv.debug = parseInt(argv.debug)
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
+carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
+    carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');

@@ -80,6 +80,19 @@ tape('bin/carmen query', function(t) {
         t.end();
     });
 });
+tape('bin/carmen query types', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="test-carmen-index.mbtiles"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+tape('bin/carmen query wrong types', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="not a type"', function(err, stdout, stderr) {
+        t.ok(err, 'not a type');
+        t.end();
+    });
+});
 tape('bin/carmen-copy noargs', function(t) {
     exec(bin + '/carmen-copy.js', function(err, stdout, stderr) {
         t.equal(1, err.code);

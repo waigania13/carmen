@@ -1,7 +1,7 @@
 {
   "name": "carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "7.1.2",
+  "version": "7.1.4",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
@@ -47,14 +47,21 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && tape ./test/*.js",
+    "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
     "cov": "istanbul cover test/*.js",
-    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info"
+    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
+    "bench": "node bench/runbench.js"
   },
   "eslintConfig": {
     "rules": {
-      "no-use-before-define": [ 2, "nofunc" ],
-      "space-before-function-paren": [2, "never"],
+      "no-use-before-define": [
+        2,
+        "nofunc"
+      ],
+      "space-before-function-paren": [
+        2,
+        "never"
+      ],
       "space-in-parens": 2,
       "space-before-blocks": 2,
       "space-after-keywords": 2,
@@ -79,8 +86,7 @@
     "env": {
       "node": true
     },
-    "globals": {
-    }
+    "globals": {}
   },
   "engines": {
     "node": "0.10.x"
