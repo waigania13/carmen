@@ -21,6 +21,18 @@ function benchmark(cb) {
             properties: { 'carmen:text': 'av francisco de aguirre #'}
         }, 'av francisco de aguirre'), true);
     })
+    .add('decollide (with localization)', function() {
+        assert.equal(termops.decollide([], {
+            properties: { 'carmen:text': 'av francisco de aguirre #',
+            'carmen:text_en': 'Francisco de Aguirre Avenue'}
+        }, 'av francisco de aguirre'), true);
+    })
+    .add('decollide (with localization + unidecode)', function() {
+        assert.equal(termops.decollide([], {
+            properties: { 'carmen:text': 'av francisco de aguirre #',
+            'carmen:text_ru': 'пр-Франциско-де-Агирре'}
+        }, 'av francisco de aguirre'), true);
+    })
     .on('cycle', function(event) {
         console.log(String(event.target));
     })
