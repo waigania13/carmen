@@ -9,10 +9,10 @@ var mem = require('../lib/api-mem');
 var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
-//Test geocoder_address formatting
+// Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (function() {
     var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: '{name} {num}'}, function() {})
+        address: new mem({maxzoom: 6,  geocoder_address: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
@@ -34,15 +34,15 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for germany style address', function(t) {
         c.geocode('fake street 9', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'fake street 9');
             t.end();
         });
     });
 
-    tape('Search for us style address with german formatting', function(t) {
+    tape('Search for us style address, return with german formatting', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, 'fake street 9');
             t.end();
         });
     });
@@ -51,47 +51,134 @@ var addFeature = require('../lib/util/addfeature');
 //Test geocoder_address formatting for multiple layers
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
-        address: new mem({maxzoom: 6, geocoder_address: '{name} {num}'}, function() {})
+        country: new mem({ maxzoom:6,  geocoder_address: '{country._name}' }, function() {}),
+        region: new mem({maxzoom: 6,   geocoder_address: '{region._name}, {country._name}' }, function() {}),
+        postcode: new mem({maxzoom: 6, geocoder_address: '{region._name}, {postcode._name}, {country._name}' }, function() {}),
+        place: new mem({maxzoom: 6,    geocoder_address: '{place._name}, {region._name} {postcode._name}, {country._name}' }, function() {}),
+        address: new mem({maxzoom: 6,  geocoder_address: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
+        poi: new mem({maxzoom: 6,      geocoder_address: '{poi._name}, {address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index country', function(t) {
         var country = {
-            _id:1,
-            _text:'czech republic',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text': 'united states',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
         };
         addFeature(conf.country, country, t.end);
     });
 
-    tape('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-                _cluster: {
-                    9: { type: "Point", coordinates: [0,0] },
-                    10: { type: "Point", coordinates: [0,0] },
-                    7: { type: "Point", coordinates: [0,0] }
-                }
-            };
-            addFeature(conf.address, address, t.end);
+    tape('index region', function(t) {
+        var region = {
+            id:1,
+            properties: {
+                'carmen:text': 'maine',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.region, region, t.end);
     });
 
-    tape('Search for germany style address - multiple layers', function(t) {
-        c.geocode('fake street 9', { limit_verify: 1 }, function(err, res) {
+    tape('index place', function(t) {
+        var place = {
+            id:1,
+            properties: {
+                'carmen:text': 'springfield',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.place, place, t.end);
+    });
+
+    tape('index postcode', function(t) {
+        var postcode = {
+            id:1,
+            properties: {
+                'carmen:text': '12345',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.postcode, postcode, t.end);
+    });
+
+    tape('index address', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9','10','7']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+
+    tape('index poi', function(t) {
+        var poi = {
+            id:1,
+            properties: {
+                'carmen:text': 'moes tavern',
+                'carmen:center': [0,0],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.poi, poi, t.end);
+    });
+    tape('Search for an address (multiple layers)', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street', '9' ], type: 'FeatureCollection' });
+            t.equals(res.features[0].place_name, '9 fake street springfield, maine 12345, united states');
             t.end();
         });
     });
-
-    tape('Search for us style address with german formatting - multiple layers', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
+    tape('Search for an address without a number (multiple layers)', function(t) {
+        c.geocode('fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.deepEquals(res, { features: [ { address: '9', center: [ 0, 0 ], context: [ { id: 'country.1', text: 'czech republic' } ], geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 'address.1', place_name: 'fake street 9, czech republic', properties: {}, relevance: 0.99, text: 'fake street', type: 'Feature' } ], query: [ '9', 'fake', 'street' ], type: 'FeatureCollection' });
+            t.deepEquals(res, { features: [ { center: [ 0, 0 ], context: [ { id: 'place.1', text: 'springfield' }, { id: 'postcode.1', text: '12345' }, { id: 'region.1', text: 'maine' }, { id: 'country.1', text: 'united states' } ], geometry: { coordinates: [[0,0],[0,0],[0,0]], type: 'MultiPoint' }, id: 'address.1', place_name: 'fake street springfield, maine 12345, united states', properties: {}, relevance: 0.79, text: 'fake street', type: 'Feature' } ], query: [ 'fake', 'street' ], type: 'FeatureCollection' });
+            t.end();
+        });
+    });
+    tape('Search for a city (multiple layers)', function(t) {
+        c.geocode('springfield', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'springfield, maine 12345, united states');
+            t.end();
+        });
+    });
+    tape('Search for a poi (multiple layers)', function(t) {
+        c.geocode('moes tavern', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'moes tavern, fake street springfield, maine 12345, united states');
             t.end();
         });
     });
@@ -103,18 +190,19 @@ var addFeature = require('../lib/util/addfeature');
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0],
-                _cluster: {
-                    9: { type: "Point", coordinates: [0,0] },
-                    10: { type: "Point", coordinates: [0,0] },
-                    7: { type: "Point", coordinates: [0,0] }
-                }
-            };
-            addFeature(conf.address, address, t.end);
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9','10','7']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
+            }
+        };
+        addFeature(conf.address, address, t.end);
     });
 
     tape('test address index for US relev', function(t) {
@@ -152,13 +240,19 @@ var addFeature = require('../lib/util/addfeature');
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
-            var address = {
-                _id:1,
-                _text:'fake street',
-                _zxy:['6/32/32'],
-                _center:[0,0]
-            };
-            addFeature(conf.address, address, t.end);
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
@@ -169,9 +263,63 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// Test to make sure cases of custom subproperties are accounted for
+(function() {
+    var conf = {
+        place: new mem({maxzoom: 6,  geocoder_address: '{place._name}'}, function() {}),
+        kitten: new mem({maxzoom: 6,  geocoder_address: '{kitten._name} {kitten.version} {kitten.color}, {place._name}'}, function() {}),
+    };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        var place = {
+            id:1,
+            properties: {
+                'carmen:text': 'springfield',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.place, place, t.end);
+    });
+    tape('index kitten', function(t) {
+        var kitten = {
+            id:1,
+            properties: {
+                'carmen:text': 'snowball',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32'],
+                'version': 'II'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.kitten, kitten, t.end);
+    });
+
+    tape('Search for an address using a template that has nonstandard properites', function(t) {
+        c.geocode('springfield', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'springfield');
+            t.end();
+        });
+    });
+    tape('Search for a custom property with non-carmen templating', function(t) {
+        c.geocode('snowball', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'snowball II, springfield');
+            t.end();
+        });
+    });
+})();
+
 tape('index.teardown', function(assert) {
     index.teardown();
     context.getTile.cache.reset();
     assert.end();
 });
-

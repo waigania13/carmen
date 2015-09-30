@@ -138,7 +138,7 @@ test('address.standardize', function(assert) {
         },
         geometry: {
             type: "Point" }
-        }), []);
+    }), []);
     assert.deepEqual(address.standardize({
         properties: {
             'carmen:rangetype': 'tiger'
@@ -146,16 +146,16 @@ test('address.standardize', function(assert) {
         geometry: {
             type: "LineString",
             coordinates: [[1,2], [2,3]] }
-        }), [{
-            i: 0,
-            lf: null,
-            lt: null,
-            rf: null,
-            rt: null,
-            lp: '',
-            rp: '',
-            lines: [[1,2], [2,3]]
-        }]);
+    }), [{
+        i: 0,
+        lf: null,
+        lt: null,
+        rf: null,
+        rt: null,
+        lp: '',
+        rp: '',
+        lines: [[1,2], [2,3]]
+    }]);
     assert.deepEqual(address.standardize({
         properties: {
             'carmen:rangetype': 'tiger'
@@ -163,25 +163,25 @@ test('address.standardize', function(assert) {
         geometry: {
             type: "MultiLineString",
             coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
-        }), [{
-            i: 0,
-            lf: null,
-            lt: null,
-            rf: null,
-            rt: null,
-            lp: '',
-            rp: '',
-            lines: [[1,2], [2,3]]
-        }, {
-            i: 1,
-            lf: null,
-            lt: null,
-            rf: null,
-            rt: null,
-            lp: '',
-            rp: '',
-            lines: [[5,6], [8,10]]
-        }]);
+    }), [{
+        i: 0,
+        lf: null,
+        lt: null,
+        rf: null,
+        rt: null,
+        lp: '',
+        rp: '',
+        lines: [[1,2], [2,3]]
+    }, {
+        i: 1,
+        lf: null,
+        lt: null,
+        rf: null,
+        rt: null,
+        lp: '',
+        rp: '',
+        lines: [[5,6], [8,10]]
+    }]);
     assert.deepEqual(address.standardize({
         properties: {
             'carmen:rangetype': 'tiger',
@@ -195,16 +195,16 @@ test('address.standardize', function(assert) {
         geometry: {
             type: "LineString",
             coordinates: [[1,2], [2,3]] }
-        }), [{
-            i: 0,
-            lf: 4,
-            lt: 2,
-            rf: 3,
-            rt: 1,
-            lp: 'E',
-            rp: 'O',
-            lines: [[1,2], [2,3]]
-        }]);
+    }), [{
+        i: 0,
+        lf: 4,
+        lt: 2,
+        rf: 3,
+        rt: 1,
+        lp: 'E',
+        rp: 'O',
+        lines: [[1,2], [2,3]]
+    }]);
     assert.deepEqual(address.standardize({
         properties: {
             'carmen:rangetype': 'tiger',
@@ -218,25 +218,25 @@ test('address.standardize', function(assert) {
         geometry: {
             type: "MultiLineString",
             coordinates: [[[1,2], [2,3]], [[5,6], [8,10]]] }
-        }), [{
-            i: 0,
-            lf: 4,
-            lt: 2,
-            rf: 3,
-            rt: 1,
-            lp: 'E',
-            rp: 'O',
-            lines: [[1,2], [2,3]]
-        }, {
-            i: 1,
-            lf: 8,
-            lt: 6,
-            rf: 7,
-            rt: 5,
-            lp: 'E',
-            rp: 'O',
-            lines: [[5,6], [8,10]]
-        }]);
+    }), [{
+        i: 0,
+        lf: 4,
+        lt: 2,
+        rf: 3,
+        rt: 1,
+        lp: 'E',
+        rp: 'O',
+        lines: [[1,2], [2,3]]
+    }, {
+        i: 1,
+        lf: 8,
+        lt: 6,
+        rf: 7,
+        rt: 5,
+        lp: 'E',
+        rp: 'O',
+        lines: [[5,6], [8,10]]
+    }]);
     assert.end();
 });
 
@@ -289,7 +289,7 @@ test('address.setPoint', function(assert) {
         interpolated: true,
         coordinates:[0,0]
     }, 'x2, identity (address)');
-   assert.deepEqual(address.setPoint(3,0,12,[[0,0],[1,0],[2,0]],false), {
+    assert.deepEqual(address.setPoint(3,0,12,[[0,0],[1,0],[2,0]],false), {
         type: 'Point',
         interpolated: true,
         coordinates:[0.5,0]
@@ -319,7 +319,7 @@ test('address interpolation - noop', function(t) {
     t.end();
 });
 
- test('address interpolation - parity: even + both', function(t) {
+test('address interpolation - parity: even + both', function(t) {
     t.deepEqual({
         type:'Point',
         interpolated: true,
@@ -335,7 +335,7 @@ test('address interpolation - noop', function(t) {
             coordinates:[[0,0],[0,100]]
         }
     }, 9));
-     t.end();
+    t.end();
 });
 
 test('address point clustering', function(t) {
