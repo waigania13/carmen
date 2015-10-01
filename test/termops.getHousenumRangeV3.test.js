@@ -18,7 +18,7 @@ test('termops.getHousenumRangeV3', function(assert) {
     }), ['#','##'], 'carmen:addressnumber => 0,10');
 
     assert.deepEqual(getHousenumRangeV3({
-         properties: { 'carmen:addressnumber': [ 0, 10000000000 ] }
+        properties: { 'carmen:addressnumber': [ 0, 10000000000 ] }
     }), ['#','10#########'], 'carmen:addressnumber => [0,10000000000]');
 
     assert.deepEqual(getHousenumRangeV3({

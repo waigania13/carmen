@@ -44,14 +44,10 @@ function Geocoder(options) {
             }
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
 
-            if (!info.geocoder_address || typeof info.geocoder_address === "number" || info.geocoder_address.toString().match(/^\d$/)) {
-                source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
+            if (info.geocoder_address) {
+              source._geocoder.geocoder_address = info.geocoder_address;
             } else {
-                if (info.geocoder_address.indexOf('{name}') !== -1 && info.geocoder_address.indexOf('{num}') !== -1) {
-                    source._geocoder.geocoder_address = info.geocoder_address;
-                } else {
-                    source._geocoder.geocoder_address = false;
-                }
+              source._geocoder.geocoder_address = false;
             }
 
             if (info.geocoder_version) {

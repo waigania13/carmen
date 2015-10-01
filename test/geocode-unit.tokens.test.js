@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
-        c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake st', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement test, fake st');
             t.end();
@@ -60,14 +60,14 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
-        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function (err, res) {
+        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du 18e');
             t.end();
         });
     });
     tape('test address index for relev', function(t) {
-        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
+        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du dix-huitième régiment');
             t.end();
@@ -98,7 +98,7 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test token replacement', function(t) {
-        c.geocode('qabc', { limit_verify: 1 }, function (err, res) {
+        c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
             t.end();
