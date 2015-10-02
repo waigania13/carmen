@@ -210,3 +210,4 @@ Geocoder.prototype.copy = function(from, to, callback) {
 
 Geocoder.auto = loader.auto;
 Geocoder.autodir = loader.autodir;
+Geocoder.setVtCacheSize = getContext.getTile.setVtCacheSize;
