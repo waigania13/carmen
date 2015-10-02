@@ -1,5 +1,14 @@
 # Changelog
 
+## 8.0.1
+
+- Change `geocoder_address` field to `geocoder_format` to retain ability to differentiate between address and non-address indexes.
+- `geocoder_address` is not a binary `0` or `1` value.
+
+## 8.0.0
+
+- Update geocoder to accept templates for place name formatting
+
 ## 7.0.0
 
 - Update indexer & feature objects to use fully compliant GeoJSON
@@ -168,4 +177,3 @@
 
 - Improved suggestion/autocomplete support for partial queries.
 - **Breaking change:** Introduces `dataterm` term ID type. Any carmen indexes generated previously that contained numeric text (e.g. US zipcodes or addresses with housenumbers) need to be reindexed using carmen@3.x.
-

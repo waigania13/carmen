@@ -3419,6 +3419,7 @@
         "id": "to",
         "geocoder_address": false,
         "version": 4,
+        "geocoder_format": false,
         "geocoder_layer": "",
         "geocoder_tokens": {},
         "token_replacer": [],

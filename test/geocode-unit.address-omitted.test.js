@@ -56,16 +56,16 @@ var addFeature = require('../lib/util/addfeature');
             _geometry: {
                 type:'MultiLineString',
                 coordinates:
-                [
                     [
+                        [
                         [0,0],
                         [0,10]
-                    ],
-                    [
+                        ],
+                        [
                         [0,11],
                         [0,20]
-                    ],
-                ]
+                        ],
+                    ]
             }
         };
         addFeature(conf.address, address, t.end);

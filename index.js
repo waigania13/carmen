@@ -44,14 +44,10 @@ function Geocoder(options) {
             }
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
 
-            if (!info.geocoder_address || typeof info.geocoder_address === "number" || info.geocoder_address.toString().match(/^\d$/)) {
-                source._geocoder.geocoder_address = !!parseInt(info.geocoder_address||0,10);
+            if (info.geocoder_address) {
+              source._geocoder.geocoder_address = info.geocoder_address;
             } else {
-                if (info.geocoder_address.indexOf('{name}') !== -1 && info.geocoder_address.indexOf('{num}') !== -1) {
-                    source._geocoder.geocoder_address = info.geocoder_address;
-                } else {
-                    source._geocoder.geocoder_address = false;
-                }
+              source._geocoder.geocoder_address = false;
             }
 
             if (info.geocoder_version) {
@@ -65,6 +61,7 @@ function Geocoder(options) {
                 source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
             }
 
+            source._geocoder.geocoder_format = info.geocoder_format||false;
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
@@ -213,3 +210,4 @@ Geocoder.prototype.copy = function(from, to, callback) {
 
 Geocoder.auto = loader.auto;
 Geocoder.autodir = loader.autodir;
+Geocoder.setVtCacheSize = getContext.getTile.setVtCacheSize;

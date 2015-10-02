@@ -7,7 +7,7 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    test: new mem({ maxzoom:6, geocoder_address:'{name} {num}' }, function() {})
+    test: new mem({ maxzoom:6, geocoder_address: 1 }, function() {})
 };
 var c = new Carmen(conf);
 tape('index "av francisco de aguirre #"', function(t) {
