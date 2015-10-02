@@ -1,5 +1,10 @@
 # Changelog
 
+## 8.0.1
+
+- Change `geocoder_address` field to `geocoder_format` to retain ability to differentiate between address and non-address indexes.
+- `geocoder_address` is not a binary `0` or `1` value.
+
 ## 8.0.0
 
 - Update geocoder to accept templates for place name formatting
