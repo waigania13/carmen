@@ -61,6 +61,7 @@ function Geocoder(options) {
                 source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
             }
 
+            source._geocoder.geocoder_format = info.geocoder_format||false;
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
