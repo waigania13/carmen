@@ -22,7 +22,8 @@ tape('index country', function(t) {
             'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya',
             'carmen:text_ru': 'Российская Федерация',
             'carmen:text_zh_Latn': 'Elousi',
-            'carmen:text_fake': 'beetlejuice'
+            'carmen:text_fake': 'beetlejuice',
+            'carmen:text_es': null
         },
         id: 2,
         geometry: { type: 'MultiPolygon', coordinates: [] },
