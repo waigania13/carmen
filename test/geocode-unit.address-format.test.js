@@ -12,7 +12,7 @@ var addFeature = require('../lib/util/addfeature');
 // Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (function() {
     var conf = {
-        address: new mem({maxzoom: 6,  geocoder_address: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
+        address: new mem({maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
@@ -51,12 +51,12 @@ var addFeature = require('../lib/util/addfeature');
 //Test geocoder_address formatting for multiple layers
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6,  geocoder_address: '{country._name}' }, function() {}),
-        region: new mem({maxzoom: 6,   geocoder_address: '{region._name}, {country._name}' }, function() {}),
-        postcode: new mem({maxzoom: 6, geocoder_address: '{region._name}, {postcode._name}, {country._name}' }, function() {}),
-        place: new mem({maxzoom: 6,    geocoder_address: '{place._name}, {region._name} {postcode._name}, {country._name}' }, function() {}),
-        address: new mem({maxzoom: 6,  geocoder_address: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
-        poi: new mem({maxzoom: 6,      geocoder_address: '{poi._name}, {address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
+        country: new mem({ maxzoom:6,  geocoder_format: '{country._name}' }, function() {}),
+        region: new mem({maxzoom: 6,   geocoder_format: '{region._name}, {country._name}' }, function() {}),
+        postcode: new mem({maxzoom: 6, geocoder_format: '{region._name}, {postcode._name}, {country._name}' }, function() {}),
+        place: new mem({maxzoom: 6,    geocoder_format: '{place._name}, {region._name} {postcode._name}, {country._name}' }, function() {}),
+        address: new mem({maxzoom: 6,  geocoder_address: 1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
+        poi: new mem({maxzoom: 6,      geocoder_format: '{poi._name}, {address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index country', function(t) {
@@ -266,8 +266,8 @@ var addFeature = require('../lib/util/addfeature');
 // Test to make sure cases of custom subproperties are accounted for
 (function() {
     var conf = {
-        place: new mem({maxzoom: 6,  geocoder_address: '{place._name}'}, function() {}),
-        kitten: new mem({maxzoom: 6,  geocoder_address: '{kitten._name} {kitten.version} {kitten.color}, {place._name}'}, function() {}),
+        place: new mem({maxzoom: 6,  geocoder_format: '{place._name}'}, function() {}),
+        kitten: new mem({maxzoom: 6,  geocoder_format: '{kitten._name} {kitten.version} {kitten.color}, {place._name}'}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index place', function(t) {

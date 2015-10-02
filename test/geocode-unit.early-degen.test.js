@@ -7,7 +7,7 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    address: new mem({maxzoom: 6, geocoder_address: '{address._name} {address._number}', geocoder_name:'address'}, function() {})
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._name} {address._number}', geocoder_name:'address'}, function() {})
 };
 var c = new Carmen(conf);
 
