@@ -48,6 +48,56 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// Test geocoder_address formatting with multiple formats by language
+// + return place_name as germany style address (address number follows name)
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6,  geocoder_address:1,
+            geocoder_format_de: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}',
+            geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, function() {}),
+    };
+    var c = new Carmen(conf);
+    tape('index address', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text': 'fake street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9','10','7']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+
+    tape('Search for germany style address', function(t) {
+        c.geocode('fake street 9', { limit_verify: 1, language: 'de' }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'fake street 9');
+            t.end();
+        });
+    });
+
+    tape('Search for us style address, return with german formatting', function(t) {
+        c.geocode('fake street 9', { limit_verify: 1, language: 'de' }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'fake street 9');
+            t.end();
+        });
+    });
+
+    tape('Search for us style address, return with us formatting', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9 fake street');
+            t.end();
+        });
+    });
+})();
+
 //Test geocoder_address formatting for multiple layers
 (function() {
     var conf = {
