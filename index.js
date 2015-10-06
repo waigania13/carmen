@@ -63,9 +63,9 @@ function Geocoder(options) {
 
             var keys = Object.keys(info);
             for (var ix = 0; ix < keys.length; ix ++) {
-                if (/geocoder_format/.test(keys[ix])) source._geocoder[keys[ix]] = info[keys[ix]]||false;
+                if (/geocoder_format_/.test(keys[ix])) source._geocoder[keys[ix]] = info[keys[ix]]||false;
             }
-
+            source._geocoder.geocoder_format = info.geocoder_format||false;
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
