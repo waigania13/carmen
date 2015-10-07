@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.2.0
+- Synonymize `carmen:text_{ISO language code}` field in indicies with `carmen:text` field to support queries in multiple languages.
+
 ## 8.0.1
 
 - Change `geocoder_address` field to `geocoder_format` to retain ability to differentiate between address and non-address indexes.
