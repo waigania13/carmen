@@ -1,5 +1,8 @@
 # Changelog
 
+## 8.3.0
+- Add a `language` option that will return the values of `carmen:text_{ISO language code}` in the format of `geocoder_format_{ISO language code}` if available in the index.
+
 ## 8.2.0
 - Synonymize `carmen:text_{ISO language code}` field in indicies with `carmen:text` field to support queries in multiple languages.
 
