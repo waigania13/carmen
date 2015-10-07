@@ -20,6 +20,7 @@ if (argv.help) {
     console.log('  --proximity="lat,lng"   Favour results by proximity');
     console.log('  --types="{type},..."    Only return results of a given type');
     console.log('  --geojson               Return a geojson object');
+    console.log('  --language={ISO code}   Return responses in specified language (if available in index)');
     console.log('  --stats                 Generate Stats on the query');
     console.log('  --debug="feat id"       Follows a feature through geocode"');
     console.log('  --help                  Print this report');
@@ -55,14 +56,15 @@ if (argv.types) {
     argv.types = argv.types.split(',');
 }
 
-if (argv.debug) argv.debug = parseInt(argv.debug)
+if (argv.debug) argv.debug = parseInt(argv.debug);
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
+carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, 'language': argv.language }, function(err, data) {
     if (err) throw err;
 
     load = +new Date() - load;
-    carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
+
+    carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true, 'language': argv.language }, function(err, data) {
         if (err) throw err;
         if (data.features.length && !argv.geojson) {
             console.log('Tokens');
