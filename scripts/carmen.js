@@ -8,14 +8,16 @@ if (!process.argv[2]) {
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
+var settings = require('../package.json');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug', 'types' ],
+    string: [ 'config', 'proximity', 'query', 'debug', 'types', 'version' ],
     boolean: [ 'geojson', 'stats', 'help' ]
 });
 
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
     console.log('[options]:');
+    console.log('  --version               Print the carmen version');
     console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
     console.log('  --types="{type},..."    Only return results of a given type');
@@ -24,6 +26,11 @@ if (argv.help) {
     console.log('  --stats                 Generate Stats on the query');
     console.log('  --debug="feat id"       Follows a feature through geocode"');
     console.log('  --help                  Print this report');
+    process.exit(0);
+}
+
+if (argv.version) {
+    console.log('carmen@'+settings.version);
     process.exit(0);
 }
 

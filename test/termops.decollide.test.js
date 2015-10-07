@@ -44,6 +44,14 @@ test('termops.decollide', function(assert) {
         properties: { 'carmen:text': 'Грамада' }
     }, 'грамада'), true, 'decollides - unicode');
 
+    assert.deepEqual(termops.decollide([], {
+        properties: { 'carmen:text': 'United States', 'carmen:text_es': 'Estados Unidos' }
+    }, 'United States'), true, 'decollides - localization');
+
+    assert.deepEqual(termops.decollide([], {
+        properties: { 'carmen:text': 'United States', 'carmen:text_es': 'Estados Unidos' }
+    }, 'Estados Unidos'), true, 'decollides - localization');
+
     assert.end();
 });
 

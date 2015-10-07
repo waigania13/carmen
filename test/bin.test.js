@@ -73,6 +73,13 @@ tape('bin/carmen', function(t) {
         t.end();
     });
 });
+tape('bin/carmen version', function(t) {
+    exec(bin + '/carmen.js --version', function(err, stdout, stderr) {
+        t.error(err);
+        t.ok(stdout.indexOf('carmen@') !== -1);
+        t.end();
+    });
+});
 tape('bin/carmen query', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil', function(err, stdout, stderr) {
         t.ifError(err);
