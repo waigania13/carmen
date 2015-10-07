@@ -9,7 +9,8 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    country: new mem({ maxzoom:6 }, function() {})
+    country: new mem({ maxzoom:6 }, function() {}),
+    place: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
 
@@ -17,27 +18,50 @@ tape('index country', function(t) {
     var country = {
         type: 'Feature',
         properties: {
-            'carmen:center': [ 0, 0 ],
-            'carmen:zxy': [ '6/30/30' ],
-            'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya',
+            'carmen:center': [0,0],
+            'carmen:zxy': ['6/32/32'],
+            'carmen:text_es': null,
             'carmen:text_ru': 'Российская Федерация',
-            'carmen:text_zh_Latn': 'Elousi',
-            'carmen:text_fake': 'beetlejuice',
-            'carmen:text_es': null
+            'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya'
         },
-        id: 2,
-        geometry: { type: 'MultiPolygon', coordinates: [] },
-        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
+        id: 1,
+        geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+                [[[0,-5.615985819155337],[0,0],[5.625,0],[5.625,-5.615985819155337],[0,-5.615985819155337]]]
+            ]
+        },
+        bbox: [0,-5.615985819155337,5.625,0]
     };
     addFeature(conf.country, country, t.end);
+});
+
+tape('index city', function(t) {
+    var place = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [0,0],
+            'carmen:zxy': ['6/32/32'],
+            'carmen:text_ru': 'Санкт-Петербу́рг',
+            'carmen:text': 'Saint Petersburg, St Petersburg'
+        },
+        id: 1,
+        geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+                [[[0,-5.615985819155337],[0,0],[5.625,0],[5.625,-5.615985819155337],[0,-5.615985819155337]]]
+            ]
+        },
+        bbox: [0,-5.615985819155337,5.625,0]
+    };
+    addFeature(conf.place, place, t.end);
 });
 
 tape('russia => Russian Federation', function(t) {
     c.geocode('russia', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.1');
         t.end();
     });
 });
@@ -46,8 +70,7 @@ tape('Rossiyskaya => Russian Federation', function(t) {
     c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.1');
         t.end();
     });
 });
@@ -56,8 +79,7 @@ tape('Rossiyskaya => Российская Федерация - {language: "ru"}'
     c.geocode('Rossiyskaya', { limit_verify:1, language: 'ru' }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Российская Федерация');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.1');
         t.end();
     });
 });
@@ -65,10 +87,9 @@ tape('Rossiyskaya => Российская Федерация - {language: "ru"}'
 // 'fake' is not a valid language code
 tape('Rossiyskaya => Russian Federation - {language: "fake"}', function(t) {
     c.geocode('Rossiyskaya', { limit_verify:1, language: 'fake' }, function(err, res) {
-        t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.ok(err);
+        t.deepEqual(err.message, '\'fake\' is not a valid language code');
+        t.notOk(res);
         t.end();
     });
 });
@@ -78,19 +99,39 @@ tape('Rossiyskaya => Russian Federation - {language: "es"}', function(t) {
     c.geocode('Rossiyskaya', { limit_verify:1, language: 'es' }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.1');
         t.end();
     });
 });
 
-// no value for 'en'
-tape('Rossiyskaya => Russian Federation - {language: "en"}', function(t) {
-    c.geocode('Rossiyskaya', { limit_verify:1, language: 'en' }, function(err, res) {
+// no value for 'fr'
+tape('Rossiyskaya => Russian Federation - {language: "fr"}', function(t) {
+    c.geocode('Rossiyskaya', { limit_verify:1, language: 'fr' }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.deepEqual(res.features[0].id, 'country.2');
-        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.1');
+        t.end();
+    });
+});
+
+// also 'translate' the context when available
+tape('St Petersburg => Санкт-Петербу́рг, Российская Федерация - {language: "ru"}', function(t) {
+    c.geocode('St Petersburg', { language: 'ru'}, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Санкт-Петербу́рг, Российская Федерация');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context[0].text, 'Российская Федерация');
+        t.end();
+    });
+});
+
+// no value for 'fr'
+tape('St Petersberg => Saint Petersburg - {language: "fr"}', function(t) {
+    c.geocode('St Petersburg', { limit_verify:1, language: 'fr' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Saint Petersburg, Russian Federation');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context[0].text, 'Russian Federation');
         t.end();
     });
 });
