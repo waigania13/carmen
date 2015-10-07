@@ -9,7 +9,8 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    country: new mem({ maxzoom:6 }, function() {})
+    country: new mem({ maxzoom:6 }, function() {}),
+    region: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
 
@@ -22,7 +23,6 @@ tape('index country', function(t) {
             'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya',
             'carmen:text_ru': 'Российская Федерация',
             'carmen:text_zh_Latn': 'Elousi',
-            'carmen:text_fake': 'beetlejuice',
             'carmen:text_es': null
         },
         id: 2,
@@ -30,6 +30,25 @@ tape('index country', function(t) {
         bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
     addFeature(conf.country, country, t.end);
+});
+
+tape('index region with bad language code', function(t) {
+    var region = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [ 0, 0 ],
+            'carmen:zxy': [ '6/30/30' ],
+            'carmen:text_fake': 'beetlejuice',
+            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
+        },
+        id: 2,
+        geometry: { type: 'MultiPolygon', coordinates: [] },
+        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
+    };
+    addFeature(conf.region, region, function(err) {
+        t.equal(err.message, 'fake is an invalid language code');
+        t.end();
+    });
 });
 
 tape('russia => Russian Federation', function(t) {
