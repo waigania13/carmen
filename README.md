@@ -57,7 +57,7 @@ attribute               | description
 maxzoom                 | The assumed zoom level of the zxy geocoder grid index.
 geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
 geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0.
-geocoder_format         | Optional. A string containing how to format the resulting `place_name` field. Ie: `{address._number} {address._name} {place._name}` where `address`/`place` are the extid of a given index and `_name`/`_number` are internal carmen designators to replace with the first text value from `carmen:text` & the matched address. This string can also map to string properties on the geojson. ie `{extid.title}` would be replace with `feature.properties.title` for the indexed GeoJSON for the given extid. See `test/geocoder-unit.address-format.test.js` for more examples. 
+geocoder_format         | Optional. A string containing how to format the resulting `place_name` field. Ie: `{address._number} {address._name} {place._name}` where `address`/`place` are the extid of a given index and `_name`/`_number` are internal carmen designators to replace with the first text value from `carmen:text` & the matched address. This string can also map to string properties on the geojson. ie `{extid.title}` would be replace with `feature.properties.title` for the indexed GeoJSON for the given extid. By adding multiple `geocoder_format` keys with a language tag (e.g. `geocoder_format_zh`), multiple formats can be supported and engaged by using a `language` flag. See `test/geocoder-unit.address-format.test.js` for more examples.
 geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
 geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
@@ -91,6 +91,9 @@ as part of the `options` object:
   of the results.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
+- `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
+  are available on a features, response will be returned in that language and
+  appropriately formatted.
 
 ### index(from, to, pointer, callback)
 
@@ -154,7 +157,8 @@ as well as the following settings in the `properties` object.
 
 attribute         | description
 ------------------|------------
-`carmen:text`     | Text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+`carmen:text`     | Default text to index for this feature. Synonyms, translations, etc. should be separated using commas.
+`carmen:text_{language code}`     | Localized to index for this feature. Synonyms, translations, etc. should be separated using commas and will be synonymized with `carmen:text`.
 `carmen:center`   | Optional. An array in the form [lon,lat]. center must be on the geometry surface, or the center will be recalculated.
 `carmen:score`    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
 `carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresseses corresponding to the order of their geometries in the `GeometryCollection`
