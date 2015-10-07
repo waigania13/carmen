@@ -96,6 +96,14 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
+
+    tape('Bad language code', function(t) {
+        c.geocode('9 fake street', { limit_verify: 1, language: 'zh' }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9 fake street');
+            t.end();
+        });
+    });
 })();
 
 //Test geocoder_address formatting for multiple layers
