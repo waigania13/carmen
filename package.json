@@ -28,7 +28,7 @@
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
     "turf-point-on-surface": "1.0.x",
-    "unidecode-cxx": "https://github.com/mapbox/node-unidecode-cxx/archive/master.tar.gz",
+    "unidecode-cxx": "0.0.2",
     "model-un": "^0.0.3"
   },
   "devDependencies": {
