@@ -10,6 +10,7 @@ var addFeature = require('../lib/util/addfeature');
 
 var conf = {
     country: new mem({ maxzoom:6 }, function() {}),
+    region: new mem({ maxzoom: 6, geocoder_format_ru: '{country._name}, {region._name}'}, function() {}),
     place: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
@@ -132,6 +133,38 @@ tape('St Petersberg => Saint Petersburg - {language: "fr"}', function(t) {
         t.deepEqual(res.features[0].place_name, 'Saint Petersburg, Russian Federation');
         t.deepEqual(res.features[0].id, 'place.1');
         t.deepEqual(res.features[0].context[0].text, 'Russian Federation');
+        t.end();
+    });
+});
+
+tape('index region', function(t) {
+    var region = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [0,0],
+            'carmen:zxy': ['6/32/32'],
+            'carmen:text_ru': 'Северо-Западный федеральный округ',
+            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
+        },
+        id: 1,
+        geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+                [[[0,-5.615985819155337],[0,0],[5.625,0],[5.625,-5.615985819155337],[0,-5.615985819155337]]]
+            ]
+        },
+        bbox: [0,-5.615985819155337,5.625,0]
+    };
+    addFeature(conf.region, region, t.end);
+});
+
+// custom response format template
+tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
+    c.geocode('Northwestern', { limit_verify:1, language: 'ru' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Российская Федерация, Северо-Западный федеральный округ');
+        t.deepEqual(res.features[0].id, 'region.1');
+        t.deepEqual(res.features[0].context[0].text, 'Российская Федерация');
         t.end();
     });
 });
