@@ -10,7 +10,11 @@ var addFeature = require('../lib/util/addfeature');
 
 var conf = {
     country: new mem({ maxzoom:6, geocoder_name: 'country' }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format_ru: '{country._name}, {region._name}', geocoder_format_zh: '{country._name}{region._name}'}, function() {}),
+    region: new mem({ maxzoom: 6, geocoder_name: 'region',
+        geocoder_format_ru: '{country._name}, {region._name}',
+        geocoder_format_zh: '{country._name}{region._name}',
+        geocoder_format_es: '{region._name} {region._name} {country._name}'
+    }, function() {}),
     place: new mem({ maxzoom:6, geocoder_name: 'place' }, function() {}),
     place2: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}' }, function() {})
 };
@@ -171,6 +175,20 @@ tape('Northwestern Federal Distrct => Российская Федерация, �
     });
 });
 
+// if the response and the context do not have values in the language queried,
+// but do have a template for that language, use the default template.
+tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
+    c.geocode('Northwestern', { limit_verify:1, language: 'es' }, function(err, res) {
+        t.ifError(err);
+        console.log(res)
+
+        t.deepEqual(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
+        t.deepEqual(res.features[0].id, 'region.1');
+        t.deepEqual(res.features[0].context[0].text, 'Russian Federation');
+        t.end();
+    });
+});
+
 tape('index place2', function(t) {
     var place = {
         type: 'Feature',
@@ -217,6 +235,40 @@ tape('Shenzhen => Russian Federation西北部联邦管区深圳市', function(t)
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation西北部联邦管区深圳市');
         t.deepEqual(res.features[0].id, 'place.2');
+        t.deepEqual(res.features[0].context[0].text, '西北部联邦管区');
+        t.end();
+    });
+});
+
+tape('0,0 => Saint Petersburg, Northwestern Federal District, Russian Federation', function(t) {
+    c.geocode('0,0', { limit_verify:1, language: 'en' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Saint Petersburg, Northwestern Federal District, Russian Federation');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context[0].text, 'Northwestern Federal District');
+        t.end();
+    });
+});
+
+// if the most granular result (St Petersburg) doesn't have a template for the language,
+// use the default. Templates can go from specific -> general but not the other way around.
+tape('0,0 => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', function(t) {
+    c.geocode('0,0', { limit_verify:1, language: 'zh' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Saint Petersburg, 西北部联邦管区, Russian Federation');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context[0].text, '西北部联邦管区');
+        t.end();
+    });
+});
+
+// if the most granular result (St Petersburg) doesn't have a template for the language,
+// use the default. Templates can go from specific -> general but not the other way around.
+tape('Saint Petersburg => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', function(t) {
+    c.geocode('Saint Petersburg', { limit_verify:1, language: 'zh' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Saint Petersburg, 西北部联邦管区, Russian Federation');
+        t.deepEqual(res.features[0].id, 'place.1');
         t.deepEqual(res.features[0].context[0].text, '西北部联邦管区');
         t.end();
     });
