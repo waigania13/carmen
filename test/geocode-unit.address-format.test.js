@@ -73,18 +73,18 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
 
-    tape('Search for germany style address', function(t) {
+    tape('Search for germany style address - with language tag but no german vaue', function(t) {
         c.geocode('fake street 9', { limit_verify: 1, language: 'de' }, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'fake street 9');
+            t.equals(res.features[0].place_name, '9 fake street');
             t.end();
         });
     });
 
-    tape('Search for us style address, return with german formatting', function(t) {
+    tape('Search for us style address, return with german formatting --  with language tag but no german vaue', function(t) {
         c.geocode('fake street 9', { limit_verify: 1, language: 'de' }, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'fake street 9');
+            t.equals(res.features[0].place_name, '9 fake street');
             t.end();
         });
     });
