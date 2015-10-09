@@ -15,7 +15,7 @@ var conf = {
         geocoder_format_zh: '{country._name}{region._name}',
         geocoder_format_es: '{region._name} {region._name} {country._name}'
     }, function() {}),
-    place: new mem({ maxzoom:6, geocoder_name: 'place' }, function() {}),
+    place: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}' }, function() {}),
     place2: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}' }, function() {})
 };
 var c = new Carmen(conf);
@@ -150,7 +150,8 @@ tape('index region', function(t) {
             'carmen:zxy': ['6/32/32'],
             'carmen:text_zh': '西北部联邦管区',
             'carmen:text_ru': 'Северо-Западный федеральный округ',
-            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
+            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug',
+            'carmen:text_eo': '!!!!'
         },
         id: 1,
         geometry: {
@@ -180,11 +181,22 @@ tape('Northwestern Federal Distrct => Российская Федерация, �
 tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
     c.geocode('Northwestern', { limit_verify:1, language: 'es' }, function(err, res) {
         t.ifError(err);
-        console.log(res)
-
         t.deepEqual(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
         t.deepEqual(res.features[0].id, 'region.1');
         t.deepEqual(res.features[0].context[0].text, 'Russian Federation');
+        t.end();
+    });
+});
+
+// if the first response does not have values in the language queried,
+// but does have a template for that language, and there is a value in that language
+// in the context, use the localized template.
+tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
+    c.geocode('Saint Petersburg', { limit_verify:1, language: 'eo' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Russian Federation Saint Petersburg !!!!');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context[0].text, '!!!!');
         t.end();
     });
 });
