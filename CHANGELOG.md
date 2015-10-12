@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.3.2
+- Set better text templating failovers for localization support.
+
+## 8.3.1
+- Fail index builds with bad language codes.
+
 ## 8.3.0
 - Add a `language` option that will return the values of `carmen:text_{ISO language code}` in the format of `geocoder_format_{ISO language code}` if available in the index.
 
