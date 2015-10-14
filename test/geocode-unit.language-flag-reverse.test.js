@@ -92,7 +92,18 @@ tape('北京市, 中国 => Beijing, China', function(t) {
     });
 });
 
-tape('中国北京市 => Beijing, China', function(t) {
+//fails
+tape('北京市中国 (BeijingChina) => Beijing, China', function(t) {
+    c.geocode('北京市中国', { limit_verify:1}, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Beijing, China');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.end();
+    });
+});
+
+//fails
+tape('中国北京市 (ChinaBeijing) => Beijing, China', function(t) {
     c.geocode('中国北京市', { limit_verify:1}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Beijing, China');
