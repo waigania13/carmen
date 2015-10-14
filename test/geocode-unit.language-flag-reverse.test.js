@@ -74,7 +74,7 @@ tape('北京市 => Beijing', function(t) {
     });
 });
 
-tape('Beijing, China => Beijing, China', function(t) {
+tape('Beijing, China => 中国北京市', function(t) {
     c.geocode('Beijing, China', { limit_verify:1, language: 'zh'}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '中国北京市');
