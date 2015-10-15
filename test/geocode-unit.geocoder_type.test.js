@@ -62,8 +62,8 @@ var addFeature = require('../lib/util/addfeature');
 
 (function() {
     var conf = {
-        address:    new mem({maxzoom: 12, geocoder_type: 'address', geocoder_name: 'address', geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12, geocoder_type: 'address', geocoder_name: 'poi' }, function() {})
+        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, function() {}),
+        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
     };
     var c = new Carmen(conf);
     tape('index address', function(t) {
