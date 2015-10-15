@@ -5,6 +5,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
+var context = require('../lib/context');
 var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
