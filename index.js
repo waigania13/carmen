@@ -68,10 +68,10 @@ function Geocoder(options) {
             source._geocoder.geocoder_format = info.geocoder_format||false;
             source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
-            source._geocoder.geocoder_type = info.geocoder_type||info.geocoder_name||id;
             source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
             source._geocoder.maxzoom = info.maxzoom;
             source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+            source._geocoder.type = info.geocoder_type||info.geocoder_name||id;
             source._geocoder.name = name;
             source._geocoder.id = id;
             source._geocoder.idx = i;

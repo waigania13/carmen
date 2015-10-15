@@ -57,6 +57,7 @@ test('contextVector deflate', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 1
         }
@@ -90,6 +91,7 @@ test('contextVector gzip', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 1
         }
@@ -120,6 +122,7 @@ test('contextVector badbuffer', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 0
         }
@@ -150,6 +153,7 @@ test('contextVector empty VT buffer', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -191,6 +195,7 @@ test('contextVector ignores negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -228,6 +233,7 @@ test('contextVector only negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -265,6 +271,7 @@ test('contextVector matched negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -309,6 +316,7 @@ test('contextVector restricts distance', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -366,6 +374,7 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
@@ -392,6 +401,7 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
@@ -418,6 +428,7 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
@@ -456,6 +467,7 @@ test('contextVector caching', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }

@@ -3422,6 +3422,7 @@
         "geocoder_format": false,
         "geocoder_layer": "",
         "geocoder_tokens": {},
+        "geocoder_type": "to",
         "token_replacer": [],
         "maxzoom": 6,
         "zoom": 6,
