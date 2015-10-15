@@ -84,6 +84,12 @@ carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, '
                 console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id);
             });
             console.log('');
+            console.log('Indexes');
+            console.log('--------');
+            data.indexes.forEach(function(i) {
+                console.log('- %s', i.join(', '));
+            });
+            console.log('');
         }
         if (data.features.length && argv.geojson) {
             console.log(JSON.stringify(data, null, 2));
