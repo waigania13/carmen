@@ -83,7 +83,7 @@ carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, '
         console.log('Indexes');
         console.log('--------');
         data.indexes.forEach(function(i) {
-            console.log('- %s', i.join(', '));
+            console.log('- %s', i);
         });
         console.log('');
     }
