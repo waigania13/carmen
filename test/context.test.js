@@ -66,6 +66,7 @@ test('contextVector deflate', function(t) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:extid': 'test.5',
                 'carmen:dbidx': 1,
                 'carmen:tmpid': Math.pow(2,25) + 5,
@@ -100,6 +101,7 @@ test('contextVector gzip', function(t) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:dbidx': 1,
                 'carmen:extid': 'test.5',
                 'carmen:tmpid': Math.pow(2,25) + 5,
