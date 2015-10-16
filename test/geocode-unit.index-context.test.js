@@ -97,14 +97,14 @@ var addFeature = require('../lib/util/addfeature');
     });
 
     tape('Search for an address & check indexes', function(t) {
-        c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
+        c.geocode('9 fake street', { limit_verify: 1, indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();
         });
     });
     tape('Search for a point & check indexes', function(t) {
-        c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
+        c.geocode('0,0', { limit_verify: 1, indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();
