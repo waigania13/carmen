@@ -143,7 +143,7 @@ var addFeature = require('../lib/util/addfeature');
     };
     var c = new Carmen(conf);
     tape('index place', function(t) {
-        var address = {
+        var place = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -165,11 +165,11 @@ var addFeature = require('../lib/util/addfeature');
 				]]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        addFeature(conf.place, place, t.end);
     });
     tape('index place', function(t) {
-        var address = {
-            id:1,
+        var place = {
+            id:2,
             type: 'Feature',
             properties:  {
                 'carmen:text': 'Dupont Circle',
@@ -190,12 +190,12 @@ var addFeature = require('../lib/util/addfeature');
 				]]]
 			}
         };
-        addFeature(conf.address, address, t.end);
+        addFeature(conf.place, place, t.end);
     });
     tape('Overlapping places return closest centroid', function(t) {
         c.geocode('-77.0378065109253,38.909836107628074', {}, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '', 'found POI');
+            t.equals(res.features[0].place_name, 'Logan Circle', 'found Logan Circle');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
