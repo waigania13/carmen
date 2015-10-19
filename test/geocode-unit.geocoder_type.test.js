@@ -108,7 +108,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('address query returns address', function(t) {
         c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
+            t.equals(res.features[0].place_name, '100 fake street', 'found address');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
@@ -116,7 +116,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('poi query returns poi', function(t) {
         c.geocode('-77.04441547393799,38.909427030614665', {}, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
+            t.equals(res.features[0].place_name, 'big bank', 'found POI');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
@@ -124,16 +124,14 @@ var addFeature = require('../lib/util/addfeature');
     tape('query on address with type poi', function(t) {
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features.length, 0);
             t.end();
         });
     });
     tape('query on poi with type address', function(t) {
         c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '100 fake street', 'found address');
-            t.equals(res.features[0].relevance, 1);
+            t.equals(res.features.length, 0);
             t.end();
         });
     });
