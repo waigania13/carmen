@@ -139,6 +139,72 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+(function() {
+    var conf = {
+        place:    new mem({maxzoom: 12}, function() {})
+    };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        var address = {
+            id:1,
+            type: 'Feature',
+            properties:  {
+                'carmen:text': 'Logan Circle',
+                'carmen:center': [-77.03463077545165,38.90976931970528]
+            },
+            geometry: {
+	           type: "Polygon",
+				coordinates: [[[
+              		-77.0387077331543, 38.90803281165565
+				],[
+					-77.0387077331543,38.91167275087875
+				],[
+					-77.02815055847168,38.91167275087875
+				],[
+					-77.02815055847168,38.90803281165565
+				],[
+					-77.0387077331543,38.90803281165565
+				]]]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('index place', function(t) {
+        var address = {
+            id:1,
+            type: 'Feature',
+            properties:  {
+                'carmen:text': 'Dupont Circle',
+                'carmen:center': [-77.04342842102051,38.90963574367117]
+            },
+            geometry: {
+	           type: "Polygon",
+				coordinates: [[[
+              		-77.0387077331543, 38.90803281165565
+				],[
+					-77.0387077331543,38.91167275087875
+				],[
+					-77.02815055847168,38.91167275087875
+				],[
+					-77.02815055847168,38.90803281165565
+				],[
+					-77.0387077331543,38.90803281165565
+				]]]
+			}
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('Overlapping places return closest centroid', function(t) {
+        c.geocode('-77.0378065109253,38.909836107628074', {}, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '', 'found POI');
+            t.equals(res.features[0].relevance, 1);
+            t.end();
+        });
+    });
+})();
+
+
 tape('index.teardown', function(assert) {
     index.teardown();
     context.getTile.cache.reset();
