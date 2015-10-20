@@ -24,7 +24,7 @@
             "carmen:extid": "province.3427",
             "carmen:tmpid": 33557859,
             "carmen:dbidx": 1,
-            "carmen:contextdist": 0,
+            "carmen:vtquerydist": 0,
             "carmen:geomtype": "Polygon"
         },
         "bbox": [
@@ -283,7 +283,7 @@
             "carmen:extid": "country.33",
             "carmen:tmpid": 33,
             "carmen:dbidx": 0,
-            "carmen:contextdist": 0,
+            "carmen:vtquerydist": 0,
             "carmen:geomtype": "Polygon"
         },
         "bbox": [

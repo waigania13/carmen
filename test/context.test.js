@@ -69,7 +69,7 @@ test('contextVector deflate', function(t) {
                 'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:extid': 'test.5',
                 'carmen:dbidx': 1,
-                'carmen:contextdist': 0,
+                'carmen:vtquerydist': 0,
                 'carmen:geomtype': 'Polygon',
                 'carmen:tmpid': Math.pow(2,25) + 5,
                 'carmen:text': 'United States of America, United States, America, USA, US'
@@ -107,7 +107,7 @@ test('contextVector gzip', function(t) {
                 'carmen:dbidx': 1,
                 'carmen:extid': 'test.5',
                 'carmen:tmpid': Math.pow(2,25) + 5,
-                'carmen:contextdist': 0,
+                'carmen:vtquerydist': 0,
                 'carmen:geomtype': 'Polygon',
                 'carmen:text': 'United States of America, United States, America, USA, US'
             }
