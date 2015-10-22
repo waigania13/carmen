@@ -22,7 +22,7 @@ test('context vector', function(t) {
 
     geocoder._open(function() {
         t.test('context vt full', function(q) {
-            context(geocoder, {}, 0, 40, { full: true }, function(err, contexts) {
+            context(geocoder, 0, 40, { full: true }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
@@ -31,7 +31,7 @@ test('context vector', function(t) {
             });
         });
         t.test('context vt light', function(q) {
-            context(geocoder, {}, 0, 40, { full: false }, function(err, contexts) {
+            context(geocoder, 0, 40, { full: false }, function(err, contexts) {
                 q.ifError(err);
                 q.equal(contexts.length, 2);
                 if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
