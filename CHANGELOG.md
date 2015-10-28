@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.5.2
+
+- Update to locking@2.0.2.
+
 ## 8.5.1
 
 - Perform type filtering for reverse geocodes at the context.js level instead of after the context stack has been generated.
