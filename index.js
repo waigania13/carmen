@@ -141,7 +141,13 @@ function Geocoder(options) {
             if (err) return callback(err);
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
-            q.defer(function(done) { source.getGeocoderData('stat', 0, done); });
+            q.defer(function(done) {
+                if (!source.getGeocoderData) {
+                    done();
+                } else {
+                    source.getGeocoderData('stat', 0, done);
+                }
+            });
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);
                 callback(null, {
