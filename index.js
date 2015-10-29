@@ -2,6 +2,7 @@ var path = require('path'),
     EventEmitter = require('events').EventEmitter,
     queue = require('queue-async');
 
+var Dictcache = require('./lib/util/dictcache');
 var Cache = require('./lib/util/cxxcache'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
@@ -36,7 +37,10 @@ function Geocoder(options) {
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
-        results.forEach(function(info, i) {
+        results.forEach(function(data, i) {
+            var info = data.info;
+            var dict = data.dict;
+
             var id = indexes[i][0];
             var source = indexes[i][1];
             var name = info.geocoder_name || id;
@@ -49,7 +53,9 @@ function Geocoder(options) {
                 types.push(type);
                 this.bytype[type] = [];
             }
+
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
+            source._dictcache = source._dictcache || new Dictcache(data.dictBuffer);
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
@@ -127,13 +133,22 @@ function Geocoder(options) {
 
         source = source.source ? source.source : source;
 
-        if (source.open === true) return source.getInfo(callback);
+        if (source.open === true) return opened();
         if (typeof source.open === 'function') return source.open(opened);
         return source.once('open', opened);
 
         function opened(err) {
             if (err) return callback(err);
-            source.getInfo(callback);
+            var q = queue();
+            q.defer(function(done) { source.getInfo(done); });
+            q.defer(function(done) { source.getGeocoderData('dict', 0, done); });
+            q.awaitAll(function(err, loaded) {
+                if (err) return callback(err);
+                callback(null, {
+                    info: loaded[0],
+                    dict: loaded[1]
+                });
+            });
         }
     }
 }
