@@ -183,11 +183,11 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('loadall stat uses Dict', function(q) {
+    t.test('loadall stat ignores Dict', function(q) {
         q.ok(!to._geocoder.hasDict('stat', 0));
         carmen.loadall(to, 'stat', 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.hasDict('stat', 0));
+            q.ok(!to._geocoder.hasDict('stat', 0));
             q.end();
         });
     });
