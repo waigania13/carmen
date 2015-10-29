@@ -1,11 +1,12 @@
 var tape = require('tape');
 var zlib = require('zlib');
+var encodePhrase = require('../lib/util/termops').encodePhrase;
 var Dictcache = require('../lib/util/dictcache');
 
 tape('create', function(assert) {
     var dict = new Dictcache();
-    assert.equal(dict.cache.length, 33554432, 'created 32MB cache');
-    for (var i = 0; i < 33554432; i++) {
+    assert.equal(dict.cache.length, 2097152, 'created 2MB cache');
+    for (var i = 0; i < 2097152; i++) {
         if (dict.cache[i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
@@ -49,22 +50,23 @@ tape('set/has/del', function(assert) {
     assert.equal(dict.set(0), undefined, 'set 0');
     assert.equal(dict.cache[0], 1, 'sets buffer[0] === 1');
     assert.equal(dict.has(0), true, 'has 0 = true');
-    assert.equal(dict.has(268435456), true, 'truncates to 2^28');
+    assert.equal(dict.has(Dictcache.size), true, 'truncates to 2^24');
     // del 0
     assert.equal(dict.del(0), undefined, 'del 0');
     assert.equal(dict.cache[0], 0, 'sets buffer[0] === 0');
     assert.equal(dict.has(0), false, 'has 0 = true');
 
     // initial state
-    assert.equal(dict.has(268435455), false);
+    var last = Dictcache.size - 1;
+    assert.equal(dict.has(last), false);
     // set 0
-    assert.equal(dict.set(268435455), undefined);
-    assert.equal(dict.cache[33554431], 128, 'sets buffer[33554431] === 128');
-    assert.equal(dict.has(268435455), true);
+    assert.equal(dict.set(last), undefined);
+    assert.equal(dict.cache[dict.cache.length-1], 128, 'sets last byte === 128');
+    assert.equal(dict.has(last), true);
     // del 0
-    assert.equal(dict.del(268435455), undefined, 'del 268435455');
-    assert.equal(dict.cache[33554431], 0, 'sets buffer[33554431] === 0');
-    assert.equal(dict.has(268435455), false, 'has 268435455 = false');
+    assert.equal(dict.del(last), undefined, 'del biggest');
+    assert.equal(dict.cache[dict.cache.length-1], 0, 'sets last byte === 0');
+    assert.equal(dict.has(last), false, 'has biggest = false');
 
     // test within byte bounds
     for (var id = 0; id < 8; id++) {
@@ -81,10 +83,10 @@ tape('set/has/del', function(assert) {
     var used = {};
     var count = 0;
     for (var i = 0; i < 10000; i++) {
-        var id = Math.floor(Math.random() * Math.pow(2,51)) + Math.floor(Math.random() * Math.pow(2,8));
-        if (used[id%Math.pow(2,28)]) continue;
+        var id = encodePhrase([Math.random().toString()]);
+        if (used[id%Dictcache.size]) continue;
         count++;
-        used[id%Math.pow(2,28)] = true;
+        used[id%Dictcache.size] = true;
         if (dict.has(id) !== false) assert.fail('fuzz test pre has(): ' + id)
         if (dict.set(id) !== undefined) assert.fail('fuzz test set(): ' + id)
         if (dict.has(id) !== true) assert.fail('fuzz test post has(): ' + id)
