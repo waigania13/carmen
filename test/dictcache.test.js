@@ -3,14 +3,39 @@ var zlib = require('zlib');
 var encodePhrase = require('../lib/util/termops').encodePhrase;
 var Dictcache = require('../lib/util/dictcache');
 
-tape('create', function(assert) {
+tape('create (24 bit)', function(assert) {
     var dict = new Dictcache();
-    assert.equal(dict.cache.length, 2097152, 'created 2MB cache');
+    assert.equal(dict.cache.length, 2097152, 'created 2MiB cache');
     for (var i = 0; i < 2097152; i++) {
         if (dict.cache[i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
     }
+    assert.end();
+});
+
+tape('create (28 bit)', function(assert) {
+    var dict = new Dictcache(null, 28);
+    assert.equal(dict.cache.length, 33554432, 'created 32MiB cache');
+    for (var i = 0; i < 33554432; i++) {
+        if (dict.cache[i] !== 0) {
+            assert.fail('buffer filled with 0s');
+        }
+    }
+    assert.end();
+});
+
+tape('create (err: size)', function(assert) {
+    assert.throws(function() {
+        var dict = new Dictcache(null, 20);
+    });
+    assert.end();
+});
+
+tape('create (err: bufferlength)', function(assert) {
+    assert.throws(function() {
+        var dict = new Dictcache(new Buffer(50));
+    });
     assert.end();
 });
 
@@ -50,14 +75,14 @@ tape('set/has/del', function(assert) {
     assert.equal(dict.set(0), undefined, 'set 0');
     assert.equal(dict.cache[0], 1, 'sets buffer[0] === 1');
     assert.equal(dict.has(0), true, 'has 0 = true');
-    assert.equal(dict.has(Dictcache.size), true, 'truncates to 2^24');
+    assert.equal(dict.has(dict.size), true, 'truncates to 2^24');
     // del 0
     assert.equal(dict.del(0), undefined, 'del 0');
     assert.equal(dict.cache[0], 0, 'sets buffer[0] === 0');
     assert.equal(dict.has(0), false, 'has 0 = true');
 
     // initial state
-    var last = Dictcache.size - 1;
+    var last = dict.size - 1;
     assert.equal(dict.has(last), false);
     // set 0
     assert.equal(dict.set(last), undefined);

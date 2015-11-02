@@ -55,7 +55,7 @@ function Geocoder(options) {
             }
 
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = new Dictcache(dict);
+            source._dictcache = new Dictcache(dict, info.geocoder_dictsize);
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
