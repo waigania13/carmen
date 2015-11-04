@@ -1,5 +1,17 @@
 # Changelog
 
+## 8.5.4
+
+- Clean up context handling of various feature encoding methods from VTs.
+
+## 8.5.3
+
+- Catch unhandled error case for debugging purposes.
+
+## 8.5.2
+
+- Update to locking@2.0.2.
+
 ## 8.5.1
 
 - Perform type filtering for reverse geocodes at the context.js level instead of after the context stack has been generated.
