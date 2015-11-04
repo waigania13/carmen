@@ -25,6 +25,20 @@ tape('create (28 bit)', function(assert) {
     assert.end();
 });
 
+tape('create (2 MiB buffer)', function(assert) {
+    var dict = new Dictcache(new Buffer(2097152));
+    assert.equal(dict.cache.length, 2097152, 'created 2MiB cache');
+    assert.equal(dict.size, Math.pow(2,24), 'created 24 bitsize cache');
+    assert.end();
+});
+
+tape('create (32 MiB buffer)', function(assert) {
+    var dict = new Dictcache(new Buffer(33554432));
+    assert.equal(dict.cache.length, 33554432, 'created 32MiB cache');
+    assert.equal(dict.size, Math.pow(2,28), 'created 28 bitsize cache');
+    assert.end();
+});
+
 tape('create (err: size)', function(assert) {
     assert.throws(function() {
         var dict = new Dictcache(null, 20);
@@ -109,9 +123,9 @@ tape('set/has/del', function(assert) {
     var count = 0;
     for (var i = 0; i < 10000; i++) {
         var id = encodePhrase([Math.random().toString()]);
-        if (used[id%Dictcache.size]) continue;
+        if (used[id%dict.size]) continue;
         count++;
-        used[id%Dictcache.size] = true;
+        used[id%dict.size] = true;
         if (dict.has(id) !== false) assert.fail('fuzz test pre has(): ' + id)
         if (dict.set(id) !== undefined) assert.fail('fuzz test set(): ' + id)
         if (dict.has(id) !== true) assert.fail('fuzz test post has(): ' + id)
