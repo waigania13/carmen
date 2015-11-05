@@ -80,8 +80,9 @@ tape('dump/load', function(assert) {
     });
 });
 
+[24,28,30].forEach(function(bitSize) {
 tape('set/has/del', function(assert) {
-    var dict = new Dictcache();
+    var dict = new Dictcache(null, bitSize);
 
     // initial state
     assert.equal(dict.has(0), false, 'has 0 = false');
@@ -121,7 +122,7 @@ tape('set/has/del', function(assert) {
     // fuzz test
     var used = {};
     var count = 0;
-    for (var i = 0; i < 10000; i++) {
+    for (var i = 0; i < 100000; i++) {
         var id = encodePhrase([Math.random().toString()]);
         if (used[id%dict.size]) continue;
         count++;
@@ -134,5 +135,5 @@ tape('set/has/del', function(assert) {
 
     assert.end();
 });
-
+});
 
