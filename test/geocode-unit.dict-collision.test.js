@@ -62,10 +62,10 @@ tape('find collisions (coalesceSingle)', function(t) {
                 t.equal(res.features.length, 0, 'not in index')
                 if (c.indexes.place._dictcache.has(termops.encodeTerm(query))) {
                     // this should collide
-                    t.equal(res.collidingIndexes.length, 1, 'collides');
+                    t.equal(res.waste.length, 1, 'collides');
                 } else {
                     // this should not collide
-                    t.equal(res.collidingIndexes, undefined, 'does not collide');
+                    t.equal(res.waste, undefined, 'does not collide');
                 }
                 callback();
             });
@@ -83,10 +83,10 @@ tape('find collisions (coalesceMulti)', function(t) {
                 t.equal(res.features.length, 0, 'not in index')
                 if (c.indexes.place._dictcache.has(termops.encodeTerm(query))) {
                     // this should collide
-                    t.equal(res.collidingIndexes.length, 1, 'collides');
+                    t.equal(res.waste.length, 1, 'collides');
                 } else {
                     // this should not collide
-                    t.equal(res.collidingIndexes, undefined, 'does not collide');
+                    t.equal(res.waste, undefined, 'does not collide');
                 }
                 callback();
             });
