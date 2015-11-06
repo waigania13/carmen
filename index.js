@@ -55,7 +55,7 @@ function Geocoder(options) {
             }
 
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = new Dictcache(dict, info.geocoder_dictsize);
+            source._dictcache = source._dictcache || new Dictcache(dict, info.geocoder_dictsize);
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
@@ -142,7 +142,7 @@ function Geocoder(options) {
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
-                if (!source.getGeocoderData) {
+                if (source._dictcache || !source.getGeocoderData) {
                     done();
                 } else {
                     source.getGeocoderData('stat', 0, done);
