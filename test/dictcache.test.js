@@ -125,7 +125,7 @@ tape('auto', function(assert) {
     assert.equal(Dictcache.auto(5e5), 26, '500 thous => 26 bit');
     assert.equal(Dictcache.auto(1e6), 27, '1 million => 27 bit');
     assert.equal(Dictcache.auto(6e6), 30, '6 million => 30 bit');
-    assert.equal(Dictcache.auto(100e6), 32, '100 million => 32 bit');
+    assert.equal(Dictcache.auto(100e6), 30, '100 million => 30 bit (capped at 30 bits)');
     assert.end();
 });
 
@@ -150,7 +150,7 @@ tape('auto', function(assert) {
 });
 
 // fuzz test
-[32,30,28,24].forEach(function(bitSize) {
+[30,28,24].forEach(function(bitSize) {
     tape('fuzz: ' + bitSize, function(assert) {
         var dict = new Dictcache(null, bitSize);
         var used = {};
