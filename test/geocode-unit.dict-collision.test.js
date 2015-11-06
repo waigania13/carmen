@@ -12,8 +12,14 @@ var conf = {
     place: new mem(null, function() {}),
 };
 var c = new Carmen(conf);
-// shrink the dictcache a lot
-c.indexes.place._dictcache = new Dictcache(null, 10);
+
+tape('setup', function(t) {
+    // shrink the dictcache a lot
+    Dictcache.sizes[10] = Math.pow(2,10);
+    Dictcache.bufferSizes[Math.pow(2,10)/8] = 10;
+    c.indexes.place._dictcache = new Dictcache(null, 10);
+    t.end();
+});
 
 tape('index junk places', function(t) {
     var q = queue(1);
@@ -90,6 +96,10 @@ tape('find collisions (coalesceMulti)', function(t) {
 });
 
 tape('index.teardown', function(assert) {
+    // cleanup dictcache size override
+    delete Dictcache.sizes[10];
+    delete Dictcache.bufferSizes[Math.pow(2,10)/8];
+
     index.teardown();
     context.getTile.cache.reset();
     assert.end();
