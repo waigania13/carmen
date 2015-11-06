@@ -21,7 +21,7 @@ module.exports = Geocoder;
 function Geocoder(options) {
     if (!options) throw new Error('Geocoder options required.');
 
-    var q = queue(),
+    var q = queue(4),
         indexes = pairs(options);
 
     this.indexes = indexes.reduce(toObject, {});
@@ -37,7 +37,7 @@ function Geocoder(options) {
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
-        results.forEach(function(data, i) {
+        if (results) results.forEach(function(data, i) {
             var info = data.info;
             var dict = data.dict;
 
