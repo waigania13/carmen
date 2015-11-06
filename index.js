@@ -21,7 +21,7 @@ module.exports = Geocoder;
 function Geocoder(options) {
     if (!options) throw new Error('Geocoder options required.');
 
-    var q = queue(),
+    var q = queue(4),
         indexes = pairs(options);
 
     this.indexes = indexes.reduce(toObject, {});
@@ -37,7 +37,7 @@ function Geocoder(options) {
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
-        results.forEach(function(data, i) {
+        if (results) results.forEach(function(data, i) {
             var info = data.info;
             var dict = data.dict;
 
@@ -55,7 +55,7 @@ function Geocoder(options) {
             }
 
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = new Dictcache(dict, info.geocoder_dictsize);
+            source._dictcache = source._dictcache || new Dictcache(dict, info.geocoder_dictsize);
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
@@ -142,7 +142,7 @@ function Geocoder(options) {
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
-                if (!source.getGeocoderData) {
+                if (source._dictcache || !source.getGeocoderData) {
                     done();
                 } else {
                     source.getGeocoderData('stat', 0, done);
