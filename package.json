@@ -12,6 +12,7 @@
     "locking": "2.0.2",
     "mapnik": "~3.4.3",
     "minimist": "0.0.5",
+    "mmap": "2.0.2",
     "murmur": "0.0.2",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
