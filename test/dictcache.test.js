@@ -148,7 +148,7 @@ tape('auto', function(assert) {
 });
 
 // fuzz test
-[32,30,28].forEach(function(bitSize) {
+[32,31,30].forEach(function(bitSize) {
     tape('fuzz: ' + bitSize, function(assert) {
         var dict = new Dictcache(null, bitSize);
         var used = {};
