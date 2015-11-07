@@ -3,10 +3,10 @@ var zlib = require('zlib');
 var encodePhrase = require('../lib/util/termops').encodePhrase;
 var Dictcache = require('../lib/util/dictcache');
 
-tape('create (24 bit)', function(assert) {
-    var dict = new Dictcache();
-    assert.equal(dict.cache.length, 2097152, 'created 2MiB cache');
-    for (var i = 0; i < 2097152; i++) {
+tape('create (30 bit)', function(assert) {
+    var dict = new Dictcache(null, 30);
+    assert.equal(dict.cache.length, 134217728, 'created 128MiB cache');
+    for (var i = 0; i < 134217728; i++) {
         if (dict.cache[i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
@@ -14,10 +14,10 @@ tape('create (24 bit)', function(assert) {
     assert.end();
 });
 
-tape('create (28 bit)', function(assert) {
-    var dict = new Dictcache(null, 28);
-    assert.equal(dict.cache.length, 33554432, 'created 32MiB cache');
-    for (var i = 0; i < 33554432; i++) {
+tape('create (31 bit)', function(assert) {
+    var dict = new Dictcache(null, 31);
+    assert.equal(dict.cache.length, 268435456, 'created 256MiB cache');
+    for (var i = 0; i < 268435456; i++) {
         if (dict.cache[i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
@@ -25,17 +25,17 @@ tape('create (28 bit)', function(assert) {
     assert.end();
 });
 
-tape('create (2 MiB buffer)', function(assert) {
-    var dict = new Dictcache(new Buffer(2097152));
-    assert.equal(dict.cache.length, 2097152, 'created 2MiB cache');
-    assert.equal(dict.size, Math.pow(2,24), 'created 24 bitsize cache');
+tape('create (128 MiB buffer)', function(assert) {
+    var dict = new Dictcache(new Buffer(134217728));
+    assert.equal(dict.cache.length, 134217728, 'created 128MiB cache');
+    assert.equal(dict.size, Math.pow(2,30), 'created 30 bitsize cache');
     assert.end();
 });
 
-tape('create (32 MiB buffer)', function(assert) {
-    var dict = new Dictcache(new Buffer(33554432));
-    assert.equal(dict.cache.length, 33554432, 'created 32MiB cache');
-    assert.equal(dict.size, Math.pow(2,28), 'created 28 bitsize cache');
+tape('create (256 MiB buffer)', function(assert) {
+    var dict = new Dictcache(new Buffer(268435456));
+    assert.equal(dict.cache.length, 268435456, 'created 256MiB cache');
+    assert.equal(dict.size, Math.pow(2,31), 'created 31 bitsize cache');
     assert.end();
 });
 
@@ -66,7 +66,7 @@ tape('dump/load', function(assert) {
 
     zlib.gzip(dict.dump(), function(err, zdata) {
         assert.ifError(err);
-        assert.ok(zdata.length < 40e3, 'gzipped dictcache < 40k');
+        assert.ok(zdata.length < 200e3, 'gzipped dictcache < 200k');
         zlib.gunzip(zdata, function(err, data) {
             assert.ifError(err);
             var loaded = new Dictcache(data);
@@ -120,12 +120,10 @@ tape('set/has/del', function(assert) {
 });
 
 tape('auto', function(assert) {
-    assert.equal(Dictcache.auto(1e5), 24, '100 thous => 24 bit');
-    assert.equal(Dictcache.auto(2e5), 25, '200 thous => 25 bit');
-    assert.equal(Dictcache.auto(5e5), 26, '500 thous => 26 bit');
-    assert.equal(Dictcache.auto(1e6), 27, '1 million => 27 bit');
-    assert.equal(Dictcache.auto(6e6), 30, '6 million => 30 bit');
-    assert.equal(Dictcache.auto(100e6), 30, '100 million => 30 bit (capped at 30 bits)');
+    assert.equal(Dictcache.auto(1e5), 30, '100 thous => 30 bit');
+    assert.equal(Dictcache.auto(1e6), 30, '1 million => 30 bit');
+    assert.equal(Dictcache.auto(2e6), 31, '2 million => 31 bit');
+    assert.equal(Dictcache.auto(100e6), 32, '100 million => 32 bit (capped at 32 bits)');
     assert.end();
 });
 
@@ -150,7 +148,7 @@ tape('auto', function(assert) {
 });
 
 // fuzz test
-[30,28,24].forEach(function(bitSize) {
+[32,30,28].forEach(function(bitSize) {
     tape('fuzz: ' + bitSize, function(assert) {
         var dict = new Dictcache(null, bitSize);
         var used = {};
