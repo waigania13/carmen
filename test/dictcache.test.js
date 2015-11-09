@@ -5,9 +5,9 @@ var Dictcache = require('../lib/util/dictcache');
 
 tape('create (30 bit)', function(assert) {
     var dict = new Dictcache(null, 30);
-    assert.equal(dict.cache.length, 134217728, 'created 128MiB cache');
-    for (var i = 0; i < 134217728; i++) {
-        if (dict.cache[i] !== 0) {
+    assert.equal(dict.cache.length, 4, 'created 128MiB cache');
+    for (var i = 0; i < Dictcache.shardLength; i++) {
+        if (dict.cache[0][i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
     }
@@ -16,9 +16,9 @@ tape('create (30 bit)', function(assert) {
 
 tape('create (31 bit)', function(assert) {
     var dict = new Dictcache(null, 31);
-    assert.equal(dict.cache.length, 268435456, 'created 256MiB cache');
-    for (var i = 0; i < 268435456; i++) {
-        if (dict.cache[i] !== 0) {
+    assert.equal(dict.cache.length, 8, 'created 256MiB cache');
+    for (var i = 0; i < Dictcache.shardLength; i++) {
+        if (dict.cache[0][i] !== 0) {
             assert.fail('buffer filled with 0s');
         }
     }
@@ -27,14 +27,14 @@ tape('create (31 bit)', function(assert) {
 
 tape('create (128 MiB buffer)', function(assert) {
     var dict = new Dictcache(new Buffer(134217728));
-    assert.equal(dict.cache.length, 134217728, 'created 128MiB cache');
+    assert.equal(dict.cache.length * Dictcache.shardLength, 134217728, 'created 128MiB cache');
     assert.equal(dict.size, Math.pow(2,30), 'created 30 bitsize cache');
     assert.end();
 });
 
 tape('create (256 MiB buffer)', function(assert) {
     var dict = new Dictcache(new Buffer(268435456));
-    assert.equal(dict.cache.length, 268435456, 'created 256MiB cache');
+    assert.equal(dict.cache.length * Dictcache.shardLength, 268435456, 'created 256MiB cache');
     assert.equal(dict.size, Math.pow(2,31), 'created 31 bitsize cache');
     assert.end();
 });
@@ -83,15 +83,17 @@ tape('dump/load', function(assert) {
 tape('set/has/del', function(assert) {
     var dict = new Dictcache();
 
+    assert.equal(dict.cache.length, 4, '4 shards');
+
     // initial state
     assert.equal(dict.has(0), false, 'has 0 = false');
     // set 0
     assert.equal(dict.set(0), undefined, 'set 0');
-    assert.equal(dict.cache[0], 1, 'sets buffer[0] === 1');
+    assert.equal(dict.cache[0][0], 1, 'sets buffer[0] === 1');
     assert.equal(dict.has(0), true, 'has 0 = true');
     // del 0
     assert.equal(dict.del(0), undefined, 'del 0');
-    assert.equal(dict.cache[0], 0, 'sets buffer[0] === 0');
+    assert.equal(dict.cache[0][0], 0, 'sets buffer[0] === 0');
     assert.equal(dict.has(0), false, 'has 0 = true');
 
     // initial state
@@ -99,11 +101,11 @@ tape('set/has/del', function(assert) {
     assert.equal(dict.has(last), false);
     // set 0
     assert.equal(dict.set(last), undefined);
-    assert.equal(dict.cache[dict.cache.length-1], 128, 'sets last byte === 128');
+    assert.equal(dict.cache[3][dict.cache[3].length-1], 128, 'sets last byte === 128');
     assert.equal(dict.has(last), true);
     // del 0
     assert.equal(dict.del(last), undefined, 'del biggest');
-    assert.equal(dict.cache[dict.cache.length-1], 0, 'sets last byte === 0');
+    assert.equal(dict.cache[3][dict.cache[3].length-1], 0, 'sets last byte === 0');
     assert.equal(dict.has(last), false, 'has biggest = false');
 
     // test within byte bounds
@@ -116,6 +118,18 @@ tape('set/has/del', function(assert) {
         assert.equal(dict.del(id), undefined, 'del ' + id);
         assert.equal(dict.has(id), false, 'has ' + id + ' = false');
     }
+
+    // test within byte bounds
+    for (var id = 0; id < 8; id++) {
+        assert.equal(dict.has(id), false, 'has ' + id + ' = false');
+        assert.equal(dict.set(id), undefined, 'set ' + id);
+        assert.equal(dict.has(id), true, 'has ' + id + ' = true');
+    }
+    for (var id = 0; id < 8; id++) {
+        assert.equal(dict.del(id), undefined, 'del ' + id);
+        assert.equal(dict.has(id), false, 'has ' + id + ' = false');
+    }
+
     assert.end();
 });
 
