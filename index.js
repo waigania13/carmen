@@ -17,13 +17,15 @@ require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
 // Initialize and load Geocoder, with a selection of indexes.
-function Geocoder(options) {
-    if (!options) throw new Error('Geocoder options required.');
+function Geocoder(indexes, options) {
+    if (!indexes) throw new Error('Geocoder indexes required.');
+    options = options || {};
 
     var q = queue(),
-        indexes = pairs(options);
+        indexes = pairs(indexes);
 
     this.indexes = indexes.reduce(toObject, {});
+    this.replacer = token.createReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
     this.byidx = [];
