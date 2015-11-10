@@ -22,7 +22,7 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(4),
+    var q = queue(10),
         indexes = pairs(indexes);
 
     this.indexes = indexes.reduce(toObject, {});
@@ -152,10 +152,17 @@ function Geocoder(indexes, options) {
             });
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);
-                callback(null, {
-                    info: loaded[0],
-                    dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
-                });
+
+                // if dictcache is already initialized don't recreate
+                if (source._dictcache) {
+                    callback(null, { info: loaded[0] });
+                // create dictcache at load time to allow incremental gc
+                } else {
+                    callback(null, {
+                        info: loaded[0],
+                        dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
+                    });
+                }
             });
         }
     }
