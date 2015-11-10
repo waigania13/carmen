@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.7.0
+
+- Expose custom feature properties in `context` entries.
+
 ## 8.5.4
 
 - Clean up context handling of various feature encoding methods from VTs.
