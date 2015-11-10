@@ -10,7 +10,9 @@
                 -0.751446,
                 39.311412
             ],
-            "carmen:text": "Comunidad Valenciana,VC"
+            "carmen:text": "Comunidad Valenciana,VC",
+            "title": "Comunidad Valenciana",
+            "area": 23043674283
         }
     },
     {
@@ -24,7 +26,10 @@
                 -3.47836,
                 39.909167
             ],
-            "carmen:text": "Spain"
+            "carmen:text": "Spain",
+            "title": "Spain",
+            "population": 40525002,
+            "iso2": "ES"
         }
     }
 ]

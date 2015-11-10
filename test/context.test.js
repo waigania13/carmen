@@ -72,7 +72,10 @@ test('contextVector deflate', function(t) {
                 'carmen:vtquerydist': 0,
                 'carmen:geomtype': 'Polygon',
                 'carmen:tmpid': Math.pow(2,25) + 5,
-                'carmen:text': 'United States of America, United States, America, USA, US'
+                'carmen:text': 'United States of America, United States, America, USA, US',
+                'iso2': 'US',
+                'population': 307212123,
+                'title': 'United States of America'
             }
         });
         t.end();
@@ -109,7 +112,10 @@ test('contextVector gzip', function(t) {
                 'carmen:tmpid': Math.pow(2,25) + 5,
                 'carmen:vtquerydist': 0,
                 'carmen:geomtype': 'Polygon',
-                'carmen:text': 'United States of America, United States, America, USA, US'
+                'carmen:text': 'United States of America, United States, America, USA, US',
+                'iso2': 'US',
+                'population': 307212123,
+                'title': 'United States of America'
             }
         });
         t.end();
