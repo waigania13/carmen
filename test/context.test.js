@@ -8,6 +8,10 @@ var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
+var addFeature = require('../lib/util/addfeature');
+var queue = require('queue-async');
+var mem = require('../lib/api-mem');
+var index = require('../lib/index');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
@@ -505,3 +509,60 @@ test('contextVector caching', function(assert) {
     });
 });
 
+test('Context eliminates correct properties', function(assert) {
+    var conf = {
+        country: new mem({ maxzoom:6 }, function() {}),
+        region: new mem({maxzoom: 6 }, function() {})
+    };
+    var c = new Carmen(conf);
+
+    var country = {
+        id: 1,
+        properties: {
+            'carmen:text': 'united states',
+            'carmen:center': [0,0],
+            'carmen:zxy':['6/32/32'],
+            'id': '2',
+            'idaho_potatoes': 'are an important agricultural resource',
+            'short_code': 'us'
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
+    };
+    var region = {
+        id: 2,
+        properties: {
+            'carmen:text': 'maine',
+            'carmen:center': [0,0],
+            'carmen:zxy':['6/32/32']
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
+    };
+
+    var q = queue(1);
+    q.defer(function(cb) { addFeature(conf.country, country, cb); });
+    q.defer(function(cb) { addFeature(conf.region, region, cb); });
+    q.awaitAll(function() {
+        c._open(function() {
+            context(c, 0, 0, { full: false }, function(err, contexts) {
+                assert.ifError(err);
+                var contextObj = contexts.pop();
+                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:dbidx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'], 'found expected keys on country object');
+                contextObj = contexts.pop();
+                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:dbidx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:center', 'carmen:text'], 'found expected keys on region object');
+                assert.end();
+            });
+        });
+    });
+});
+
+test('teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});
