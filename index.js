@@ -41,7 +41,7 @@ function Geocoder(indexes, options) {
         var types = [];
         if (results) results.forEach(function(data, i) {
             var info = data.info;
-            var dict = data.dict;
+            var dictcache = data.dictcache;
 
             var id = indexes[i][0];
             var source = indexes[i][1];
@@ -57,7 +57,7 @@ function Geocoder(indexes, options) {
             }
 
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = source._dictcache || new Dictcache(dict, info.geocoder_dictsize);
+            source._dictcache = source._dictcache || dictcache;
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
@@ -154,7 +154,7 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
                 callback(null, {
                     info: loaded[0],
-                    dict: loaded[1]
+                    dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
                 });
             });
         }
