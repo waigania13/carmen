@@ -8,6 +8,10 @@ var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
+var addFeature = require('../lib/util/addfeature');
+var queue = require('queue-async');
+var mem = require('../lib/api-mem');
+var index = require('../lib/index');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
@@ -57,18 +61,25 @@ test('contextVector deflate', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:extid': 'test.5',
                 'carmen:dbidx': 1,
+                'carmen:vtquerydist': 0,
+                'carmen:geomtype': 'Polygon',
                 'carmen:tmpid': Math.pow(2,25) + 5,
-                'carmen:text': 'United States of America, United States, America, USA, US'
+                'carmen:text': 'United States of America, United States, America, USA, US',
+                'iso2': 'US',
+                'population': 307212123,
+                'title': 'United States of America'
             }
         });
         t.end();
@@ -90,18 +101,25 @@ test('contextVector gzip', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 1
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:dbidx': 1,
                 'carmen:extid': 'test.5',
                 'carmen:tmpid': Math.pow(2,25) + 5,
-                'carmen:text': 'United States of America, United States, America, USA, US'
+                'carmen:vtquerydist': 0,
+                'carmen:geomtype': 'Polygon',
+                'carmen:text': 'United States of America, United States, America, USA, US',
+                'iso2': 'US',
+                'population': 307212123,
+                'title': 'United States of America'
             }
         });
         t.end();
@@ -120,11 +138,12 @@ test('contextVector badbuffer', function(t) {
             maxzoom: 0,
             minzoom: 0,
             name: 'test',
+            type: 'test',
             id: 'testA',
             idx: 0
         }
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -135,10 +154,6 @@ test('contextVector empty VT buffer', function(assert) {
     context.getTile.cache.reset();
 
     var vtile = new mapnik.VectorTile(0,0,0);
-    vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": []
-    }),"data");
     zlib.gzip(vtile.getData(), function(err, buffer) {
         assert.ifError(err);
         var source = {
@@ -150,11 +165,12 @@ test('contextVector empty VT buffer', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, {}, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -191,11 +207,12 @@ test('contextVector ignores negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, {}, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'B');
             assert.end();
@@ -228,11 +245,12 @@ test('contextVector only negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, {}, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -265,11 +283,12 @@ test('contextVector matched negative score', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
         };
-        context.contextVector(source, 0, 0, false, { 1:{} }, function(err, data) {
+        context.contextVector(source, 0, 0, false, { 1:{} }, null, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
@@ -309,11 +328,12 @@ test('contextVector restricts distance', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
         };
-        context.contextVector(source, 170, 80, false, {}, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, null, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -366,11 +386,12 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
             };
-            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -392,11 +413,12 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
             };
-            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -418,11 +440,12 @@ test('contextVector restricts distance', function(assert) {
                     maxzoom: 0,
                     minzoom: 0,
                     name: 'test',
+                    type: 'test',
                     id: 'testA',
                     idx: 0
                 }
             };
-            context.contextVector(source, 0, 0, false, { 2:true }, function(err, data) {
+            context.contextVector(source, 0, 0, false, { 2:true }, null, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'B');
                 assert.end();
@@ -456,6 +479,7 @@ test('contextVector caching', function(assert) {
                 maxzoom: 0,
                 minzoom: 0,
                 name: 'test',
+                type: 'test',
                 id: 'testA',
                 idx: 0
             }
@@ -463,14 +487,14 @@ test('contextVector caching', function(assert) {
         var hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
-        context.contextVector(source, 0, 0, false, {}, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:extid'], 'test.1');
             assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
-            context.contextVector(source, 0, 0, false, {}, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:extid'], 'test.1');
                 assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
@@ -481,3 +505,60 @@ test('contextVector caching', function(assert) {
     });
 });
 
+test('Context eliminates correct properties', function(assert) {
+    var conf = {
+        country: new mem({ maxzoom:6 }, function() {}),
+        region: new mem({maxzoom: 6 }, function() {})
+    };
+    var c = new Carmen(conf);
+
+    var country = {
+        id: 1,
+        properties: {
+            'carmen:text': 'united states',
+            'carmen:center': [0,0],
+            'carmen:zxy':['6/32/32'],
+            'id': '2',
+            'idaho_potatoes': 'are an important agricultural resource',
+            'short_code': 'us'
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
+    };
+    var region = {
+        id: 2,
+        properties: {
+            'carmen:text': 'maine',
+            'carmen:center': [0,0],
+            'carmen:zxy':['6/32/32']
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
+    };
+
+    var q = queue(1);
+    q.defer(function(cb) { addFeature(conf.country, country, cb); });
+    q.defer(function(cb) { addFeature(conf.region, region, cb); });
+    q.awaitAll(function() {
+        c._open(function() {
+            context(c, 0, 0, { full: false }, function(err, contexts) {
+                assert.ifError(err);
+                var contextObj = contexts.pop();
+                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:dbidx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'], 'found expected keys on country object');
+                contextObj = contexts.pop();
+                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:dbidx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:center', 'carmen:text'], 'found expected keys on region object');
+                assert.end();
+            });
+        });
+    });
+});
+
+test('teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});

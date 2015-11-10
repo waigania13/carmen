@@ -8,10 +8,24 @@ var freq = { 0:[100], 1:[1] };
 var zoom = 14;
 var token_replacer = [];
 
-suite.add('loadDoc', function() {
-    worker.loadDoc(patch, doc, freq, zoom, token_replacer);
-})
-.on('cycle', function(event) {
-    console.log(String(event.target));
-})
-.run();
+
+module.exports = benchmark;
+
+function benchmark(cb) {
+    if (!cb) cb = function(){};
+    console.log('# index.loadDoc');
+
+    suite.add('loadDoc', function() {
+        worker.loadDoc(patch, doc, freq, zoom, token_replacer);
+    })
+    .on('cycle', function(event) {
+        console.log(String(event.target));
+    })
+    .on('complete', function() {
+      console.log();
+      cb(null, suite);
+    })
+    .run();
+}
+
+if (!process.env.runSuite) benchmark();

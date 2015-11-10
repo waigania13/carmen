@@ -25,7 +25,7 @@ tape('index address (dataterm only)', function(t) {
 });
 
 tape('test address', function(t) {
-    c.geocode('100', { limit_verify: 1 }, function (err, res) {
+    c.geocode('100', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 0);
         t.end();

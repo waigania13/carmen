@@ -7,7 +7,7 @@ var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
-    address: new mem({maxzoom: 6, geocoder_address: '{name} {num}', geocoder_name:'address'}, function() {})
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._name} {address._number}', geocoder_name:'address'}, function() {})
 };
 var c = new Carmen(conf);
 
@@ -25,7 +25,7 @@ tape('index address', function(t) {
 });
 
 tape('test address', function(t) {
-    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function (err, res) {
+    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
@@ -34,7 +34,7 @@ tape('test address', function(t) {
 
 // Real solution here is regex token for *strasse => *str
 tape.skip('test address', function(t) {
-    c.geocode('Brehmestr. 56', { limit_verify: 1 }, function (err, res) {
+    c.geocode('Brehmestr. 56', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
@@ -46,4 +46,3 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

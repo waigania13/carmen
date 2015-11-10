@@ -29,7 +29,7 @@ tape('index', function(assert) {
 });
 
 tape('query', function(t) {
-    c.geocode('22209', { limit_verify: 2 }, function (err, res) {
+    c.geocode('22209', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         // 22209 does not win here until we have suggest vs final modes.
         t.equals(res.features[0].place_name, '22209', 'found 22209');
@@ -41,7 +41,7 @@ tape('query', function(t) {
 });
 
 tape('indexes degen', function(t) {
-    c.geocode('222', { limit_verify: 1 }, function (err, res) {
+    c.geocode('222', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();
@@ -49,7 +49,7 @@ tape('indexes degen', function(t) {
 });
 
 tape('does index degens for non-numeric terms', function(t) {
-    c.geocode('22209 rest', { limit_verify: 2 }, function (err, res) {
+    c.geocode('22209 rest', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '22209 restaurant', 'found 22209 restaurant');
         t.end();

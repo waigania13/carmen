@@ -1,5 +1,50 @@
 # Changelog
 
+## 8.7.0
+
+- Expose custom feature properties in `context` entries.
+
+## 8.5.4
+
+- Clean up context handling of various feature encoding methods from VTs.
+
+## 8.5.3
+
+- Catch unhandled error case for debugging purposes.
+
+## 8.5.2
+
+- Update to locking@2.0.2.
+
+## 8.5.1
+
+- Perform type filtering for reverse geocodes at the context.js level instead of after the context stack has been generated.
+
+## 8.5.0
+
+- Add `geocoder_type` flag which allows non-similiar indexes to compete for the lowest result in a reverse geocode.
+
+## 8.3.2
+- Set better text templating failovers for localization support.
+
+## 8.3.1
+- Fail index builds with bad language codes.
+
+## 8.3.0
+- Add a `language` option that will return the values of `carmen:text_{ISO language code}` in the format of `geocoder_format_{ISO language code}` if available in the index.
+
+## 8.2.0
+- Synonymize `carmen:text_{ISO language code}` field in indicies with `carmen:text` field to support queries in multiple languages.
+
+## 8.0.1
+
+- Change `geocoder_address` field to `geocoder_format` to retain ability to differentiate between address and non-address indexes.
+- `geocoder_address` is not a binary `0` or `1` value.
+
+## 8.0.0
+
+- Update geocoder to accept templates for place name formatting
+
 ## 7.0.0
 
 - Update indexer & feature objects to use fully compliant GeoJSON
@@ -168,4 +213,3 @@
 
 - Improved suggestion/autocomplete support for partial queries.
 - **Breaking change:** Introduces `dataterm` term ID type. Any carmen indexes generated previously that contained numeric text (e.g. US zipcodes or addresses with housenumbers) need to be reindexed using carmen@3.x.
-

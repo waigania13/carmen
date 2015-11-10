@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
-        c.geocode('fake st', { limit_verify: 1 }, function (err, res) {
+        c.geocode('fake st', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement test, fake st');
             t.end();
@@ -60,14 +60,14 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test address index for relev', function(t) {
-        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function (err, res) {
+        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du 18e');
             t.end();
         });
     });
     tape('test address index for relev', function(t) {
-        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function (err, res) {
+        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du dix-huitième régiment');
             t.end();
@@ -98,9 +98,71 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
     tape('test token replacement', function(t) {
-        c.geocode('qabc', { limit_verify: 1 }, function (err, res) {
+        c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_tokens: {
+                "Road": "Rd",
+                "Street": "St"
+            }
+        }, function() {})
+    };
+    var opts = {
+        tokens: {
+            'Suite [0-9]+': '',
+            'Lot [0-9]+': ''
+        }
+    }
+    var c = new Carmen(conf, opts);
+    addFeature.setOptions(opts);
+    tape('geocoder token test', function(t) {
+        var address = {
+            _id:1,
+            _text:'fake street',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('geocoder token test', function(t) {
+        var address = {
+            _id:2,
+            _text:'main road lot 42 suite 432',
+            _zxy:['6/32/32'],
+            _center:[0,0],
+            _geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('test address index for relev', function(t) {
+        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'fake street');
+            t.end();
+        });
+    });
+    tape('test address index for relev', function(t) {
+        c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });

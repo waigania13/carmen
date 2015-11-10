@@ -50,7 +50,7 @@ tape('index postcode', function(t) {
 });
 
 tape('test address', function(t) {
-    c.geocode('2000 Austria', { limit_verify: 5 }, function (err, res) {
+    c.geocode('2000 Austria', { limit_verify: 5 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].id, 'postcode.1');
         t.end();

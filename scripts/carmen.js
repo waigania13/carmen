@@ -8,20 +8,29 @@ if (!process.argv[2]) {
 var fs = require('fs');
 var path = require('path');
 var Carmen = require('../index');
+var settings = require('../package.json');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug' ],
+    string: [ 'config', 'proximity', 'query', 'debug', 'types', 'version' ],
     boolean: [ 'geojson', 'stats', 'help' ]
 });
 
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
     console.log('[options]:');
+    console.log('  --version               Print the carmen version');
     console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
+    console.log('  --types="{type},..."    Only return results of a given type');
     console.log('  --geojson               Return a geojson object');
+    console.log('  --language={ISO code}   Return responses in specified language (if available in index)');
     console.log('  --stats                 Generate Stats on the query');
     console.log('  --debug="feat id"       Follows a feature through geocode"');
     console.log('  --help                  Print this report');
+    process.exit(0);
+}
+
+if (argv.version) {
+    console.log('carmen@'+settings.version);
     process.exit(0);
 }
 
@@ -50,46 +59,52 @@ if (argv.proximity) {
     argv.proximity = [ Number(argv.proximity.split(',')[0]), Number(argv.proximity.split(',')[1]) ];
 }
 
-if (argv.debug) argv.debug = parseInt(argv.debug)
+if (argv.types) {
+    argv.types = argv.types.split(',');
+}
+
+if (argv.debug) argv.debug = parseInt(argv.debug);
 
 var load = +new Date();
-carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug }, function(err, data) {
+
+carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true, 'language': argv.language, indexes: true }, function(err, data) {
     if (err) throw err;
+    if (data.features.length && !argv.geojson) {
+        console.log('Tokens');
+        console.log('------');
+        console.log(data.query.join(', '));
+        console.log('');
+        console.log('Features');
+        console.log('--------');
+        data.features.forEach(function(f) {
+            console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id);
+        });
+        console.log('');
+        console.log('Indexes');
+        console.log('--------');
+        data.indexes.forEach(function(i) {
+            console.log('- %s', i);
+        });
+        console.log('');
+    }
+    if (data.features.length && argv.geojson) {
+        console.log(JSON.stringify(data, null, 2));
+    }
 
-    load = +new Date() - load;
-    carmen.geocode(argv.query, { 'proximity': argv.proximity, 'debug': argv.debug, stats:true }, function(err, data) {
-        if (err) throw err;
-        if (data.features.length && !argv.geojson) {
-            console.log('Tokens');
-            console.log('------');
-            console.log(data.query.join(', '));
-            console.log('');
-            console.log('Features');
-            console.log('--------');
-            data.features.forEach(function(f) {
-                console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id);
-            });
-            console.log('');
-        }
-        if (data.features.length && argv.geojson) {
-            console.log(JSON.stringify(data, null, 2));
-        }
+    if (argv.debug) {
+        console.log('Debug\n-----');
+        console.log(data.debug);
+        console.log();
+    }
 
-        if (argv.debug) {
-            console.log('Debug\n-----');
-            console.log(data.debug);
-            console.log();
-        }
-
-        if (!argv.stats) return;
-        console.log('Stats');
-        console.log('-----');
-        console.log('- warmup:       %sms', load);
-        console.log('- phrasematch:  %sms', data.stats.phrasematch.time);
-        console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
-        console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
-        console.log('- totaltime:    %sms', data.stats.time);
-    });
+    if (!argv.stats) return;
+    console.log('Stats');
+    console.log('-----');
+    console.log('- warmup:       %sms', load);
+    console.log('- phrasematch:  %sms', data.stats.phrasematch.time);
+    console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
+    console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
+    console.log('- totaltime:    %sms', data.stats.time);
 });
 
 function rpad(str, len) {
