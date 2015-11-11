@@ -12,6 +12,7 @@
     "locking": "2.0.2",
     "mapnik": "~3.4.10",
     "minimist": "0.0.5",
+    "model-un": "0.0.3",
     "murmur": "0.0.2",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
@@ -28,7 +29,6 @@
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
     "turf-point-on-surface": "1.0.x",
-    "model-un": "0.0.3",
     "unidecode-cxx": "0.0.2"
   },
   "devDependencies": {
@@ -37,6 +37,8 @@
     "tape": "^2.13.4",
     "mbtiles": "0.7.x",
     "tilelive-s3": "~0.14.0",
+    "istanbul": "^0.4.0",
+    "coveralls": "^2.11.4",
     "benchmark": "~1.0.0"
   },
   "bin": {
@@ -50,8 +52,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
-    "cov": "istanbul cover test/*.js",
-    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
+    "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "node bench/runbench.js"
   },
   "eslintConfig": {

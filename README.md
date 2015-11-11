@@ -4,6 +4,8 @@
 This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
 [![Build Status](https://travis-ci.org/mapbox/carmen.svg?branch=master)](https://travis-ci.org/mapbox/carmen)
+[![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
+
 
 ## Depends
 
