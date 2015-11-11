@@ -22,7 +22,7 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(4),
+    var q = queue(10),
         indexes = pairs(indexes);
 
     this.indexes = indexes.reduce(toObject, {});
@@ -41,7 +41,7 @@ function Geocoder(indexes, options) {
         var types = [];
         if (results) results.forEach(function(data, i) {
             var info = data.info;
-            var dict = data.dict;
+            var dictcache = data.dictcache;
 
             var id = indexes[i][0];
             var source = indexes[i][1];
@@ -57,7 +57,7 @@ function Geocoder(indexes, options) {
             }
 
             source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = source._dictcache || new Dictcache(dict, info.geocoder_dictsize);
+            source._dictcache = source._dictcache || dictcache;
 
             if (info.geocoder_address) {
               source._geocoder.geocoder_address = info.geocoder_address;
@@ -152,10 +152,17 @@ function Geocoder(indexes, options) {
             });
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);
-                callback(null, {
-                    info: loaded[0],
-                    dict: loaded[1]
-                });
+
+                // if dictcache is already initialized don't recreate
+                if (source._dictcache) {
+                    callback(null, { info: loaded[0] });
+                // create dictcache at load time to allow incremental gc
+                } else {
+                    callback(null, {
+                        info: loaded[0],
+                        dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
+                    });
+                }
             });
         }
     }
