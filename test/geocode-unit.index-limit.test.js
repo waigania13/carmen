@@ -17,10 +17,12 @@ var c = new Carmen(conf);
 tape('index place', function(assert) {
     assert.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
     addFeature(conf.place, {
-        _id:1,
-        _text:'Chicago',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'Chicago',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, assert.end);
 });
 tape('query place', function(t) {

@@ -17,26 +17,32 @@ var conf = {
 var c = new Carmen(conf);
 tape('index country', function(t) {
     addFeature(conf.country, {
-        _id:1,
-        _text:'australia',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'australia',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index province', function(t) {
     addFeature(conf.province, {
-        _id:2,
-        _text:'western australia',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'western australia',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index place', function(t) {
     addFeature(conf.place, {
-        _id:3,
-        _text:'albany',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:3,
+        properties: {
+            'carmen:text':'albany',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 // should reflect relevance of albany + australia (relev ~ 1), not albany + western australia (relev ~ 0.8)

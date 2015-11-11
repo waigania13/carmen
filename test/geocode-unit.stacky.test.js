@@ -18,28 +18,34 @@ var conf = {
 var c = new Carmen(conf);
 tape('index province', function(t) {
     var province = {
-        _id:1,
-        _text:'connecticut, ct',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'connecticut, ct',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     };
     addFeature(conf.province, province, t.end);
 });
 tape('index city', function(t) {
     var city = {
-        _id:1,
-        _text:'windsor',
-        _zxy:['6/32/32','6/33/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'windsor',
+            'carmen:zxy': ['6/32/32','6/33/32'],
+            'carmen:center': [0,0]
+        }
     };
     addFeature(conf.city, city, t.end);
 });
 tape('index street', function(t) {
     var street = {
-        _id:1,
-        _text:'windsor ct',
-        _zxy:['6/33/32'],
-        _center:[360/64,0]
+        id:1,
+        properties: {
+            'carmen:text':'windsor ct',
+            'carmen:zxy':['6/33/32'],
+            'carmen:center':[360/64,0]
+        }
     };
     addFeature(conf.street, street, t.end);
 });

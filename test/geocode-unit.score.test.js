@@ -13,53 +13,63 @@ var addFeature = require('../lib/util/addfeature');
     var conf = { place: new mem(null, function() {}) };
     var c = new Carmen(conf);
     tape('index place', function(t) {
-        var place = { 
-            _id:1,
-            _score: 100,
-            _text:'fairfax',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+        var place = {
+            id:1,
+            properties: {
+                'carmen:score': 100,
+                'carmen:text':'fairfax',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         };
         addFeature(conf.place, place, t.end);
     });
     tape('index ghost place', function(t) {
-        var place = { 
-            _id:2,
-            _score: -1,
-            _text:'mclean',
-            _zxy:['6/32/32'],
-            _center:[0,0]
-        };  
+        var place = {
+            id:2,
+            properties: {
+                'carmen:score': -1,
+                'carmen:text':'mclean',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
         addFeature(conf.place, place, t.end);
     });
     tape('index zip+4', function(t) {
-        var place = { 
-            _id:3,
-            _score: -1,
-            _text:'20003-2004',
-            _zxy:['6/32/32'],
-            _center:[0,0]
-        };  
+        var place = {
+            id:3,
+            properties: {
+                'carmen:score': -1,
+                'carmen:text':'20003-2004',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
         addFeature(conf.place, place, t.end);
     });
     tape('index zip', function(t) {
-        var place = { 
-            _id:4,
-            _score: 100,
-            _text:'20009',
-            _zxy:['6/32/32'],
-            _center:[0,0]
-        };  
+        var place = {
+            id:4,
+            properties: {
+                'carmen:score': 100,
+                'carmen:text':'20009',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
         addFeature(conf.place, place, t.end);
     });
     tape('index ghost zip', function(t) {
-        var place = { 
-            _id:5,
-            _score: -1,
-            _text:'20009',
-            _zxy:['6/32/32'],
-            _center:[0,0]
-        };  
+        var place = {
+            id:5,
+            properties: {
+                'carmen:score': -1,
+                'carmen:text':'20009',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
         addFeature(conf.place, place, t.end);
     });
     tape('fairfax', function(t) {
@@ -68,16 +78,16 @@ var addFeature = require('../lib/util/addfeature');
             t.deepEqual(res.features[0].place_name, 'fairfax');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
-        }); 
-    }); 
+        });
+    });
     tape('mclean', function(t) {
         c.geocode('mclean', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'mclean');
             t.deepEqual(res.features[0].id, 'place.2');
             t.end();
-        }); 
-    }); 
+        });
+    });
     tape('scored feature beats ghost', function(t) {
         c.geocode('20009', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
@@ -85,16 +95,16 @@ var addFeature = require('../lib/util/addfeature');
             t.deepEqual(res.features[0].place_name, '20009');
             t.deepEqual(res.features[0].id, 'place.4');
             t.end();
-        }); 
-    }); 
+        });
+    });
     tape('exact match bests score', function(t) {
         c.geocode('20003-2004', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, '20003-2004');
             t.deepEqual(res.features[0].id, 'place.3');
             t.end();
-        }); 
-    }); 
+        });
+    });
 })();
 
 
@@ -109,28 +119,34 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index country', function(t) {
         var country = {
-            _id:1,
-            _text:'china',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text':'china',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         };
         addFeature(conf.country, country, t.end);
     });
     tape('index province', function(t) {
         var province = {
-            _id:1,
-            _text:'china',
-            _zxy:['6/33/32'],
-            _center:[360/64,0]
+            id:1,
+            properties: {
+                'carmen:text':'china',
+                'carmen:zxy':['6/33/32'],
+                'carmen:center':[360/64,0]
+            }
         };
         addFeature(conf.province, province, t.end);
     });
     tape('index city', function(t) {
         var city = {
-            _id:1,
-            _text:'china',
-            _zxy:['6/34/32'],
-            _center:[360/64*2,0]
+            id:1,
+            properties: {
+                'carmen:text':'china',
+                'carmen:zxy':['6/34/32'],
+                'carmen:center':[360/64*2,0]
+            }
         };
         addFeature(conf.city, city, t.end);
     });
@@ -155,31 +171,37 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index country', function(t) {
         var country = {
-            _id:1,
-            _score: 5,
-            _text:'china',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:score': 5,
+                'carmen:text':'china',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         };
         addFeature(conf.country, country, t.end);
     });
     tape('index province', function(t) {
         var province = {
-            _id:2,
-            _score: 10,
-            _text:'china',
-            _zxy:['6/33/32'],
-            _center:[360/64,0]
+            id:2,
+            properties: {
+                'carmen:score': 10,
+                'carmen:text':'china',
+                'carmen:zxy':['6/33/32'],
+                'carmen:center':[360/64,0]
+            }
         };
         addFeature(conf.province, province, t.end);
     });
     tape('index city', function(t) {
         var city = {
-            _id:3,
-            _score: 6,
-            _text:'china',
-            _zxy:['6/34/32'],
-            _center:[360/64*2,0]
+            id:3,
+            properties: {
+                'carmen:score': 6,
+                'carmen:text':'china',
+                'carmen:zxy':['6/34/32'],
+                'carmen:center':[360/64*2,0]
+            }
         };
         addFeature(conf.city, city, t.end);
     });

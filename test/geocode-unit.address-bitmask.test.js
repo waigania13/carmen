@@ -14,38 +14,45 @@ var conf = {
 var c = new Carmen(conf);
 tape('index address', function(t) {
     var address = {
-        _id:1,
-        _text:'1 test street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            100: { type: "Point", coordinates: [0,0] }
+        id:1,
+        properties: {
+            'carmen:text': '1 test street',
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['100']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);
 });
 tape('index address', function(t) {
     var address = {
-        _id:2,
-        _text:'baker street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            '500': { type: "Point", coordinates: [0,0] },
-            '500b': { type: "Point", coordinates: [0,0] }
+        id:2,
+        properties: {
+            'carmen:text': 'baker street',
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['500', '500b']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0], [0,0]]
         }
     };
     addFeature(conf.address, address, t.end);
 });
 tape('index address', function(t) {
     var address = {
-        _id:3,
-        _text:'15th street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            '500': { type: "Point", coordinates: [0,0] },
-            '500b': { type: "Point", coordinates: [0,0] }
+        id:3,
+        properties: {
+            'carmen:text': '15th street',
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['500', '500b']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0],[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);

@@ -12,20 +12,30 @@ var conf = {
 var c = new Carmen(conf);
 tape('index "av francisco de aguirre #"', function(t) {
     addFeature(conf.test, {
-        _id:1,
-        _text:'av francisco de aguirre',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: { 2: { type: "Point", coordinates: [0,0] } }
+        id:1,
+        properties: {
+            'carmen:text':'av francisco de aguirre',
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['2']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
+        }
     }, t.end);
 });
 tape('index "# r ademar da silva neiva"', function(t) {
     addFeature(conf.test, {
-        _id:2,
-        _text:'r ademar da silva neiva',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: { 2: { type: "Point", coordinates: [0,0] } }
+        id:2,
+        properties: {
+            'carmen:text':'r ademar da silva neiva',
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['2']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
+        }
     }, t.end);
 });
 // partial unidecoded terms do not match
