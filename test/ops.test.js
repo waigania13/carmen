@@ -7,7 +7,8 @@ test('ops#toFeature', function(t) {
             "carmen:center": [-99.392855, 63.004759],
             "carmen:text": "Canada, CA",
             "carmen:extid": "country.1833980151",
-            "carmen:relevance": 1
+            "carmen:relevance": 1,
+            "short_code": "ca"
         }
     }]), {
         id: 'country.1833980151',
@@ -16,8 +17,8 @@ test('ops#toFeature', function(t) {
         place_name: 'Canada',
         relevance: undefined,
         center: [ -99.392855, 63.004759 ],
+        properties: { short_code: "ca" },
         geometry: { type: 'Point', coordinates: [ -99.392855, 63.004759 ] },
-        properties: {}
     });
 
     //Test Address formatting
@@ -40,7 +41,7 @@ test('ops#toFeature', function(t) {
             "carmen:relevance": 1
         }
     }], "{address._number} {address._name}").place_name, '9 Fake Street', 'Address number & name exist');
-    
+
     t.deepEqual(ops.toFeature([{
         properties: {
             "carmen:center": [-99.392855,63.004759],
@@ -91,8 +92,8 @@ test('ops#toFeature', function(t) {
             "carmen:extid": "place.1"
         }
     }], "{address._number} {address._name}, {place.name}").place_name, '9 Fake Street', 'Address & no Place');
-    
-    
+
+
     t.deepEqual(ops.toFeature([{
         properties: {
             "carmen:center": [-99.392855,63.004759],
@@ -108,8 +109,8 @@ test('ops#toFeature', function(t) {
             "carmen:extid": "place.1"
         }
     }], "{address._number} {address.name}, {place._name}").place_name, '9, Andor', 'No Address street & Place');
-    
-    
+
+
     t.deepEqual(ops.toFeature([{
         properties: {
             "carmen:center": [-99.392855,63.004759],
@@ -151,11 +152,18 @@ test('ops#toFeature', function(t) {
             "carmen:text": "1234",
             "carmen:extid": "postcode.1"
         }
-    }]
+    },{
+        properties: {
+            "carmen:center": [ -99.392855, 63.004759 ],
+            "carmen:text": "Canada",
+            "carmen:extid": "country.1",
+            "short_code": "ca"
+        }
+    }];
 
     t.deepEqual(ops.toFeature(fullStack, "{address._number} {address._name}, {place._name}, {region._name} {postcode._name}").place_name, 'Fake Street, Caemlyn, Andor 1234', 'Full stack');
     t.deepEqual(ops.toFeature(fullStack, "{address._number} {address._name}, {place.name}, {region._name} {postcode._name}").place_name, 'Fake Street, Andor 1234', 'Full stack');
-
+    t.equals(ops.toFeature(fullStack).context.pop().short_code, 'ca', 'short_code property made it into context array');
 
     t.end();
 });
