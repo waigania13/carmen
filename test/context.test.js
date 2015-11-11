@@ -148,10 +148,6 @@ test('contextVector empty VT buffer', function(assert) {
     context.getTile.cache.reset();
 
     var vtile = new mapnik.VectorTile(0,0,0);
-    vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": []
-    }),"data");
     zlib.gzip(vtile.getData(), function(err, buffer) {
         assert.ifError(err);
         var source = {
