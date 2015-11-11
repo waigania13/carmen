@@ -18,8 +18,7 @@ var confB = {
     region: region,
     place: place
 };
-var a = new Carmen(confA);
-var b = new Carmen(confB);
+var pre = new Carmen(confA);
 
 tape('index province', function(t) {
     addFeature(confA.country, {
@@ -38,6 +37,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 tape('chicago (conf a)', function(t) {
+    var a = new Carmen(confA);
     a.geocode('chicago', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
@@ -46,6 +46,7 @@ tape('chicago (conf a)', function(t) {
     });
 });
 tape('chicago (conf b)', function(t) {
+    var b = new Carmen(confB);
     b.geocode('chicago', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
