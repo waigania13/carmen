@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.7.1
+
+- Catch more unhandled error cases for debugging.
+
 ## 8.7.0
 
 - Expose custom feature properties in `context` entries.
