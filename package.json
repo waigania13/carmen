@@ -52,7 +52,6 @@
   "scripts": {
     "lint": "eslint lib test",
     "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
-    "cov": "istanbul cover test/*.js",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "node bench/runbench.js"
   },

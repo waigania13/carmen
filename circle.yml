@@ -6,4 +6,6 @@ machine:
 
 test:
   override:
+    - npm run lint
     - npm run coveralls
+    - npm run bench
