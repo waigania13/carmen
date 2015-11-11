@@ -22,29 +22,28 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(10),
-        indexes = pairs(indexes);
+    var q = queue(10);
 
-    this.indexes = indexes.reduce(toObject, {});
+    this.indexes = indexes;
     this.replacer = token.createReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
     this.byidx = [];
     this.names = [];
 
-    indexes.forEach(function(index) {
-        q.defer(loadIndex, index);
-    });
+    for (var k in indexes) {
+        indexes[k] = clone(indexes[k]);
+        q.defer(loadIndex, k, indexes[k]);
+    }
 
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
         if (results) results.forEach(function(data, i) {
+            var id = data.id;
             var info = data.info;
             var dictcache = data.dictcache;
-
-            var id = indexes[i][0];
-            var source = indexes[i][1];
+            var source = indexes[id];
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
             if (names.indexOf(name) === -1) {
@@ -129,17 +128,8 @@ function Geocoder(indexes, options) {
         this.emit('open', err);
     }.bind(this));
 
-    function loadIndex(sourceindex, callback) {
-        var source = sourceindex[1],
-            key = sourceindex[0];
-
-        source = source.source ? source.source : source;
-
-        if (source.open === true) return opened();
-        if (typeof source.open === 'function') return source.open(opened);
-        return source.once('open', opened);
-
-        function opened(err) {
+    function loadIndex(id, source, callback) {
+        source.open(function opened(err) {
             if (err) return callback(err);
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
@@ -159,13 +149,31 @@ function Geocoder(indexes, options) {
                 // create dictcache at load time to allow incremental gc
                 } else {
                     callback(null, {
+                        id: id,
                         info: loaded[0],
                         dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
                     });
                 }
             });
-        }
+        });
     }
+}
+
+function clone(source) {
+    var cloned = {};
+    cloned.getInfo = source.getInfo.bind(source);
+    cloned.getTile = source.getTile.bind(source);
+    cloned.putTile = source.putTile.bind(source);
+    cloned.getGeocoderData = source.getGeocoderData.bind(source);
+    cloned.putGeocoderData = source.putGeocoderData.bind(source);
+    cloned.startWriting = source.startWriting.bind(source);
+    cloned.stopWriting = source.stopWriting.bind(source);
+    cloned.open = function(callback) {
+        if (source.open === true) return callback();
+        if (typeof source.open === 'function') return source.open(callback);
+        return source.once('open', callback);
+    };
+    return cloned;
 }
 
 function boundsIntersect(a, b) {
@@ -174,17 +182,6 @@ function boundsIntersect(a, b) {
     if (a[3] < b[1]) return false; // a is below b
     if (a[1] > b[3]) return false; // a is above b
     return true;
-}
-
-function pairs(o) {
-    var a = [];
-    for (var k in o) a.push([k, o[k]]);
-    return a;
-}
-
-function toObject(mem, s) {
-    mem[s[0]] = s[1].source ? s[1].source : s[1];
-    return mem;
 }
 
 // Ensure that all carmen sources are opened.
