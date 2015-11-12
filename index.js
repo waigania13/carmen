@@ -22,7 +22,7 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(4);
+    var q = queue(10);
 
     this.indexes = indexes;
     this.replacer = token.createReplacer(options.tokens || {});
@@ -139,7 +139,7 @@ function Geocoder(indexes, options) {
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
-                if (source._dictcache || !source.getGeocoderData) {
+                if (source._original._dictcache || !source.getGeocoderData) {
                     done();
                 } else {
                     source.getGeocoderData('stat', 0, done);
@@ -149,8 +149,11 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
 
                 // if dictcache is already initialized don't recreate
-                if (source._dictcache) {
-                    callback(null, { info: loaded[0] });
+                if (source._original._dictcache) {
+                    callback(null, {
+                        id: id,
+                        info: loaded[0]
+                    });
                 // create dictcache at load time to allow incremental gc
                 } else {
                     callback(null, {
