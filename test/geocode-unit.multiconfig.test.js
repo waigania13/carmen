@@ -22,18 +22,22 @@ var pre = new Carmen(confA);
 
 tape('index province', function(t) {
     addFeature(confA.country, {
-        _id:1,
-        _text:'america',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'america',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index place', function(t) {
     addFeature(confA.place, {
-        _id:1,
-        _text:'chicago',
-        _zxy:['6/32/32','6/33/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'chicago',
+            'carmen:zxy':['6/32/32','6/33/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('chicago (conf a)', function(t) {

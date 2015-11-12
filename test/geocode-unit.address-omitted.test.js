@@ -15,14 +15,15 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('index address', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _rangetype:'tiger',
-            _lfromhn: '0',
-            _ltohn: '100',
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+                'carmen:rangetype':'tiger',
+                'carmen:lfromhn': '0',
+                'carmen:ltohn': '100',
+            },
+            geometry: {
                 type:'LineString',
                 coordinates:[[0,0],[0,100]]
             }
@@ -46,14 +47,15 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('tiger, between the lines', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _rangetype:'tiger',
-            _lfromhn: ['0','104'],
-            _ltohn: ['100','200'],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+                'carmen:rangetype':'tiger',
+                'carmen:lfromhn': ['0','104'],
+                'carmen:ltohn': ['100','200'],
+            },
+            geometry: {
                 type:'MultiLineString',
                 coordinates:
                     [

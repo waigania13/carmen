@@ -29,7 +29,7 @@ var addFeature = require('../lib/util/addfeature');
         q.awaitAll(t.end);
     });
     tape('index big score (noise)', function(t) {
-        addFeature(conf.country, { 
+        addFeature(conf.country, {
             _id:1,
             _score: 1e9,
             _text:'ignoreme',
@@ -38,12 +38,14 @@ var addFeature = require('../lib/util/addfeature');
         }, t.end);
     });
     tape('index big score (signal)', function(t) {
-        addFeature(conf.country, { 
-            _id:2,
-            _score: 1e6,
-            _text:'testplace',
-            _zxy:['6/33/32'],
-            _center:[360/64+0.001,0]
+        addFeature(conf.country, {
+            id:2,
+            properties: {
+                'carmen:score': 1e6,
+                'carmen:text': 'testplace',
+                'carmen:zxy': ['6/33/32'],
+                'carmen:center': [360/64+0.001,0]
+            }
         }, t.end);
     });
     tape('query', function(t) {
@@ -52,7 +54,7 @@ var addFeature = require('../lib/util/addfeature');
             t.deepEqual(res.features[0].place_name, 'testplace');
             t.deepEqual(res.features[0].id, 'country.2');
             t.end();
-        }); 
+        });
     });
 })();
 

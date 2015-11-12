@@ -18,11 +18,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -48,11 +49,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'avenue du 18e régiment',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'avenue du 18e régiment',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -86,11 +88,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'cba',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'cba',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -126,11 +129,13 @@ var addFeature = require('../lib/util/addfeature');
     addFeature.setOptions(opts);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -139,11 +144,12 @@ var addFeature = require('../lib/util/addfeature');
     });
     tape('geocoder token test', function(t) {
         var address = {
-            _id:2,
-            _text:'main road lot 42 suite 432',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:2,
+            properties: {
+                'carmen:text':'main road lot 42 suite 432',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }

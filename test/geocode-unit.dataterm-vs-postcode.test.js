@@ -18,12 +18,16 @@ tape('index address (noise)', function(t) {
     var q = queue(1);
     for (var i = 1; i < 20; i++) q.defer(function(i, done) {
         var address = {
-            _id:i,
-            _text:'Austria St',
-            _zxy:['6/32/32'],
-            _center:[i,0],
-            _cluster: {
-                2000: { type: "Point", coordinates: [i,0] }
+            id:i,
+            properties: {
+                'carmen:text': 'Austria St',
+                'carmen:zxy': ['6/32/32'],
+                'carmen:center': [i,0],
+                'carmen:addressnumber': ['2000']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[i,0]]
             }
         };
         addFeature(conf.address, address, done);
@@ -33,19 +37,23 @@ tape('index address (noise)', function(t) {
 
 tape('index country', function(t) {
     addFeature(conf.country, {
-        _id:1,
-        _text:'Austria',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        id:1,
+        properties: {
+            'carmen:text':'Austria',
+            'carmen:zxy':['6/33/32'],
+            'carmen:center':[360/64+0.001,0]
+        }
     }, t.end);
 });
 
 tape('index postcode', function(t) {
     addFeature(conf.postcode, {
-        _id:1,
-        _text:'2000',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        id:1,
+        properties: {
+            'carmen:text':'2000',
+            'carmen:zxy':['6/33/32'],
+            'carmen:center':[360/64+0.001,0]
+        }
     }, t.end);
 });
 

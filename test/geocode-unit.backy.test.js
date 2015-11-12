@@ -16,37 +16,45 @@ var conf = {
 var c = new Carmen(conf);
 tape('index postcode', function(t) {
     var doc = {
-        _id:1,
-        _text:'50825',
-        _zxy:['6/32/32','6/33/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': '50825',
+            'carmen:zxy': ['6/32/32','6/33/32'],
+            'carmen:center': [0,0]
+        }
     };
     addFeature(conf.postcode, doc, t.end);
 });
 tape('index city', function(t) {
     var city = {
-        _id:1,
-        _text:'koln',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'koln',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     };
     addFeature(conf.city, city, t.end);
 });
 tape('index street 1', function(t) {
     var street = {
-        _id:1,
-        _text:'lessingstrasse',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'lessingstrasse',
+            'carmen:zxy': ['6/32/32'],
+            'carmen:center': [0,0]
+        }
     };
     addFeature(conf.street, street, t.end);
 });
 tape('index street 2', function(t) {
     var street = {
-        _id:2,
-        _text:'lessingstrasse',
-        _zxy:['6/33/32'],
-        _center:[360/64+0.001,0]
+        id:2,
+        properties: {
+            'carmen:text': 'lessingstrasse',
+            'carmen:zxy': ['6/33/32'],
+            'carmen:center': [360/64+0.001,0]
+        }
     };
     addFeature(conf.street, street, t.end);
 });

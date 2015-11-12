@@ -13,12 +13,15 @@ var c = new Carmen(conf);
 
 tape('index address', function(t) {
     var address = {
-        _id:1,
-        _text:'Brehmestraße',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            56: { type: "Point", coordinates: [0,0] }
+        id:1,
+        properties: {
+            'carmen:text':'Brehmestraße',
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['56']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);

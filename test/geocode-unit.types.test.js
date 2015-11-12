@@ -17,26 +17,32 @@ var conf = {
 var c = new Carmen(conf);
 tape('index country', function(t) {
     addFeature(conf.country, {
-        _id:1,
-        _text:'china',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'china',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index region', function(t) {
     addFeature(conf.region, {
-        _id:1,
-        _text:'china',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'china',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index place', function(t) {
     addFeature(conf.place, {
-        _id:1,
-        _text:'china',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'china',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 // invalid options.types type
@@ -81,7 +87,7 @@ tape('china', function(t) {
         t.end();
     });
 });
-// types: region, place 
+// types: region, place
 tape('china', function(t) {
     c.geocode('china', { limit_verify:3, types:['region','place'] }, function(err, res) {
         t.ifError(err);
