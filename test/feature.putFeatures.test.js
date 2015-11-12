@@ -4,10 +4,11 @@ var Memsource = require('../lib/api-mem.js');
 var Carmen = require('../index.js');
 
 var source = new Memsource(null, function() {});
-var carmen = new Carmen({source:source});
+var conf = { source: source };
+var carmen = new Carmen(conf);
 
 tape('putFeatures', function(assert) {
-    feature.putFeatures(source, [
+    feature.putFeatures(conf.source, [
         {
             _id: 1,
             _text: 'a',
@@ -41,21 +42,21 @@ tape('putFeatures', function(assert) {
 });
 
 tape('getFeatureByCover', function(assert) {
-    feature.getFeatureByCover(source, { id:1, x:32, y:32 }, function(err, data) {
+    feature.getFeatureByCover(conf.source, { id:1, x:32, y:32 }, function(err, data) {
         assert.equal(data.id, 1);
         assert.end();
     });
 });
 
 tape('getFeatureByCover', function(assert) {
-    feature.getFeatureByCover(source, { id:1, x:33, y:32 }, function(err, data) {
+    feature.getFeatureByCover(conf.source, { id:1, x:33, y:32 }, function(err, data) {
         assert.equal(data.id, 1048577);
         assert.end();
     });
 });
 
 tape('getFeatureById', function(assert) {
-    feature.getFeatureById(source, 1, function(err, data) {
+    feature.getFeatureById(conf.source, 1, function(err, data) {
         assert.equal(data.id, 1);
         assert.end();
     });
