@@ -15,23 +15,19 @@ var c = new Carmen(conf);
 
 tape('index country', function(t) {
     var country = {
-        id:1,
-        properties: {
-            'carmen:text':'country',
-            'carmen:zxy':['1/0/0'],
-            'carmen:center':[-100,60]
-        }
+        _id:1,
+        _text:'country',
+        _zxy:['1/0/0'],
+        _center:[-100,60]
     };
     addFeature(conf.country, country, t.end);
 });
 tape('index country', function(t) {
     var country = {
-        id:2,
-        properties: {
-            'carmen:text':'country',
-            'carmen:zxy':['1/0/1'],
-            'carmen:center':[-60,-20]
-        }
+        _id:2,
+        _text:'country',
+        _zxy:['1/0/1'],
+        _center:[-60,-20]
     };
     addFeature(conf.country, country, t.end);
 });
@@ -39,45 +35,37 @@ tape('index country', function(t) {
 //Across layers
 tape('index province', function(t) {
     var province = {
-        id:1,
-        properties: {
-            'carmen:text':'province',
-            'carmen:zxy':['6/17/24'],
-            'carmen:center':[-80,40]
-        }
+        _id:1,
+        _text:'province',
+        _zxy:['6/17/24'],
+        _center:[-80,40]
     };
     addFeature(conf.province, province, t.end);
 });
 tape('index province', function(t) {
     var country = {
-        id:3,
-        properties: {
-            'carmen:text':'province',
-            'carmen:zxy':['1/1/0'],
-            'carmen:center':[145,70]
-        }
+        _id:3,
+        _text:'province',
+        _zxy:['1/1/0'],
+        _center:[145,70]
     };
     addFeature(conf.country, country, t.end);
 });
 tape('index province', function(t) {
     var province = {
-        id:2,
-        properties: {
-            'carmen:text':'fakeprov',
-            'carmen:zxy':['6/14/18'],
-            'carmen:center':[-100,60]
-        }
+        _id:2,
+        _text:'fakeprov',
+        _zxy:['6/14/18'],
+        _center:[-100,60]
     };
     addFeature(conf.province, province, t.end);
 });
 tape('index province', function(t) {
     var province = {
-        id:3,
-        properties: {
-            'carmen:text':'fakeprov',
-            'carmen:zxy':['6/21/35'],
-            'carmen:center':[-60,-20]
-        }
+        _id:3,
+        _text:'fakeprov',
+        _zxy:['6/21/35'],
+        _center:[-60,-20]
     };
     addFeature(conf.province, province, t.end);
 });
