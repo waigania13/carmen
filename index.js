@@ -22,7 +22,7 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(10);
+    var q = queue(4);
 
     this.indexes = indexes;
     this.replacer = token.createReplacer(options.tokens || {});
