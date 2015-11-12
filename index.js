@@ -84,6 +84,7 @@ function Geocoder(indexes, options) {
             for (var ix = 0; ix < keys.length; ix ++) {
                 if (/geocoder_format_/.test(keys[ix])) source[keys[ix]] = info[keys[ix]]||false;
             }
+            source.geocoder_stack = info.geocoder_stack||false;
             source.geocoder_format = info.geocoder_format||false;
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};
