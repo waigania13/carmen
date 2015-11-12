@@ -18,15 +18,16 @@ tape('index', function(assert) {
     } catch (err) {
         //'file not found' 
     }
-    var mbtiles = new MBTiles(tmpindex, start);
-    var carmen = new Carmen({ index: mbtiles });
+    var conf = { index: new MBTiles(tmpindex, function() {}) };
+    var carmen = new Carmen(conf);
+    carmen.on('open', start);
     function start(err) {
         assert.ifError(err);
-        mbtiles.startWriting(write1);
+        conf.index.startWriting(write1);
     }
     function write1(err) {
         assert.ifError(err);
-        addFeature(mbtiles, {
+        addFeature(conf.index, {
             _id:38,
             _text:'Canada',
             _zxy:['6/32/32'],
@@ -35,7 +36,7 @@ tape('index', function(assert) {
     }
     function write2(err) {
         assert.ifError(err);
-        addFeature(mbtiles, {
+        addFeature(conf.index, {
             _id:39,
             _text:'Brazil',
             _zxy:['6/32/32'],
@@ -45,11 +46,11 @@ tape('index', function(assert) {
     function store(err) {
         assert.ifError(err);
         require('../lib/index.js').teardown();
-        require('../lib/index.js').store(mbtiles, stop);
+        require('../lib/index.js').store(conf.index, stop);
     }
     function stop(err) {
         assert.ifError(err);
-        mbtiles.stopWriting(assert.end);
+        conf.index.stopWriting(assert.end);
     }
 });
 

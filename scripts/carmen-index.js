@@ -17,9 +17,11 @@ if (nogrids) console.log('Indexing without grids.');
 
 console.log('Indexing %s ...', f);
 
-var from = Carmen.auto(f);
-var to = t ? Carmen.auto(t) : from;
-var carmen = new Carmen({ from: from, to: to });
+var conf = {};
+conf.from = Carmen.auto(f);
+conf.to = t ? Carmen.auto(t) : from;
+
+var carmen = new Carmen(conf);
 var last = +new Date;
 var total = 0;
 
@@ -30,7 +32,7 @@ carmen.on('index', function(num) {
 carmen.on('store', function(num) {
     last = +new Date;
 });
-carmen.index(from, to, {nogrids:nogrids}, function(err) {
+carmen.index(conf.from, conf.to, {nogrids:nogrids}, function(err) {
     if (err) throw err;
     console.log('Stored in %ss', Math.floor((+new Date - last) * 0.001));
     console.log('Done.');
