@@ -55,8 +55,13 @@ function Geocoder(indexes, options) {
                 this.bytype[type] = [];
             }
 
-            source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = source._dictcache || dictcache;
+            source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
+            source._dictcache = source._original._dictcache || dictcache;
+
+            // Set references to _geocoder, _dictcache on original source to
+            // avoid duplication if it's loaded again.
+            source._original._geocoder = source._geocoder;
+            source._original._dictcache = source._dictcache;
 
             if (info.geocoder_address) {
               source.geocoder_address = info.geocoder_address;
@@ -120,7 +125,7 @@ function Geocoder(indexes, options) {
                     bmask[j] = 1;
                 }
             }
-            this.byidx[i]._geocoder.bmask = bmask;
+            this.byidx[i].bmask = bmask;
         }
 
         this._error = err;
@@ -134,7 +139,7 @@ function Geocoder(indexes, options) {
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
-                if (source._dictcache || !source.getGeocoderData) {
+                if (source._original._dictcache || !source.getGeocoderData) {
                     done();
                 } else {
                     source.getGeocoderData('stat', 0, done);
@@ -144,8 +149,11 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
 
                 // if dictcache is already initialized don't recreate
-                if (source._dictcache) {
-                    callback(null, { info: loaded[0] });
+                if (source._original._dictcache) {
+                    callback(null, {
+                        id: id,
+                        info: loaded[0]
+                    });
                 // create dictcache at load time to allow incremental gc
                 } else {
                     callback(null, {
@@ -179,6 +187,8 @@ function clone(source) {
             cloned[method] = source[method].bind(source);
         }
     });
+    // Include reference to original
+    cloned._original = source;
     return cloned;
 }
 
