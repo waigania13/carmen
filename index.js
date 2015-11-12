@@ -55,8 +55,13 @@ function Geocoder(indexes, options) {
                 this.bytype[type] = [];
             }
 
-            source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
-            source._dictcache = source._dictcache || dictcache;
+            source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
+            source._dictcache = source._original._dictcache || dictcache;
+
+            // Set references to _geocoder, _dictcache on original source to
+            // avoid duplication if it's loaded again.
+            source._original._geocoder = source._geocoder;
+            source._original._dictcache = source._dictcache;
 
             if (info.geocoder_address) {
               source.geocoder_address = info.geocoder_address;
@@ -120,7 +125,7 @@ function Geocoder(indexes, options) {
                     bmask[j] = 1;
                 }
             }
-            this.byidx[i]._geocoder.bmask = bmask;
+            this.byidx[i].bmask = bmask;
         }
 
         this._error = err;
@@ -179,6 +184,8 @@ function clone(source) {
             cloned[method] = source[method].bind(source);
         }
     });
+    // Include reference to original
+    cloned._original = source;
     return cloned;
 }
 
