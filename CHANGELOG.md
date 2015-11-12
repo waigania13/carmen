@@ -1,5 +1,11 @@
 # Changelog
 
+## 9.0.0
+
+- Refactored dict cache using bit arrays and `mmap` for lower runtime memory profile.
+- Refactored index loading to cleanly handle multiple configurations from the same source instances.
+- Supported `geocoder_version` is now 5.
+
 ## 8.7.1
 
 - Catch more unhandled error cases for debugging.
