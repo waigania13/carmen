@@ -171,18 +171,21 @@ function clone(source) {
     var cloned = {};
     cloned.getInfo = source.getInfo.bind(source);
     cloned.getTile = source.getTile.bind(source);
-    cloned.putTile = source.putTile.bind(source);
     cloned.getGeocoderData = source.getGeocoderData.bind(source);
-    cloned.putGeocoderData = source.putGeocoderData.bind(source);
-    cloned.startWriting = source.startWriting.bind(source);
-    cloned.stopWriting = source.stopWriting.bind(source);
     cloned.open = function(callback) {
         if (source.open === true) return callback();
         if (typeof source.open === 'function') return source.open(callback);
         return source.once('open', callback);
     };
     // Optional methods
-    ['getIndexableDocs', 'serialize'].forEach(function(method) {
+    [
+        'putTile',
+        'putGeocoderData',
+        'startWriting',
+        'stopWriting',
+        'getIndexableDocs',
+        'serialize'
+    ].forEach(function(method) {
         if (typeof source[method] === 'function') {
             cloned[method] = source[method].bind(source);
         }
