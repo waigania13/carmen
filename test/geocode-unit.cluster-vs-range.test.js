@@ -15,30 +15,35 @@ var conf = {
 var c = new Carmen(conf);
 tape('index address', function(t) {
     var address = {
-        _id:1,
-        _text:'fake street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            100: { type: "Point", coordinates: [0,0] }
+        id:1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['100']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);
 });
 tape('index addressitp', function(t) {
     var addressitp = {
-        _id:1,
-        _text:'fake street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _rangetype:'tiger',
-        _parityr: 'O',
-        _rfromhn: '1',
-        _rtohn: '91',
-        _parityl: 'E',
-        _lfromhn: '0',
-        _ltohn: '90',
-        _geometry: {
+        id:1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:zxy': ['6/32/32'],
+            'carmen:center': [0,0],
+            'carmen:rangetype' :'tiger',
+            'carmen:parityr': 'O',
+            'carmen:rfromhn': '1',
+            'carmen:rtohn': '91',
+            'carmen:parityl': 'E',
+            'carmen:lfromhn': '0',
+            'carmen:ltohn': '90',
+        },
+        geometry: {
             type:'LineString',
             coordinates:[[0,0],[0,1]]
         }

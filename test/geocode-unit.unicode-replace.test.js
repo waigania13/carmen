@@ -20,10 +20,12 @@ var conf = {
 var c = new Carmen(conf);
 tape('index Maréchal', function(t) {
     addFeature(conf.test, {
-        _id:1,
-        _text:'Maréchal',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'Maréchal',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('Mal => Maréchal', function(t) {

@@ -15,19 +15,23 @@ var conf = {
 var c = new Carmen(conf);
 tape('index country', function(t) {
     var country = {
-        _id:1,
-        _text:'czech republic',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'czech republic',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     };
     addFeature(conf.country, country, t.end);
 });
 tape('index country2', function(t) {
     var country = {
-        _id:2,
-        _text:'fake country two',
-        _zxy:['7/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'fake country two',
+            'carmen:zxy':['7/32/32'],
+            'carmen:center':[0,0]
+        }
     };
     addFeature(conf.country, country, t.end);
 });

@@ -48,11 +48,11 @@ test('index.generateStats', function(assert) {
 
 test('index.update -- error', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var to = new mem(docs, null, function() {});
-    var carmen = new Carmen({ to: to });
+    var conf = { to: new mem(docs, null, function() {}) };
+    var carmen = new Carmen(conf);
     var zoom = 6;
     t.test('update 1', function(q) {
-        index.update(to, [{
+        index.update(conf.to, [{
             id: 1,
             properties: {
                 'carmen:text': 'main st',
@@ -65,13 +65,13 @@ test('index.update -- error', function(t) {
             }
         }], zoom, function(err) {
             q.ifError(err);
-            q.deepEqual(to._geocoder.get('freq', 0), [2]);
-            q.deepEqual(to._geocoder.get('freq', 1), [10]);
+            q.deepEqual(conf.to._geocoder.get('freq', 0), [2]);
+            q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
             q.end();
         });
     });
     t.test('update 2', function(q) {
-        index.update(to, [{
+        index.update(conf.to, [{
             id: 1,
             properties: {
                 'carmen:text': 'main st',
@@ -84,8 +84,8 @@ test('index.update -- error', function(t) {
             }
         }], zoom, function(err) {
             q.ifError(err);
-            q.deepEqual(to._geocoder.get('freq', 0), [4]);
-            q.deepEqual(to._geocoder.get('freq', 1), [10]);
+            q.deepEqual(conf.to._geocoder.get('freq', 0), [4]);
+            q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
             q.end();
         });
     });
@@ -94,35 +94,35 @@ test('index.update -- error', function(t) {
 
 test('index.update freq', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var to = new mem(null, function() {});
-    var carmen = new Carmen({ to: to });
+    var conf = { to: new mem(null, function() {}) };
+    var carmen = new Carmen(conf);
     var zoom = 6;
     t.test('error no id', function(q) {
-        index.update(to, [{ properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+        index.update(conf.to, [{ properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
             q.equal('Error: doc has no id', err.toString());
             q.end();
         });
     });
     t.test('error no carmen:center', function(q) {
-        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+        index.update(conf.to, [{ id: 1, properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
             q.equal('Error: doc has no geometry on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(to, [{ id: 1, properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
+        index.update(conf.to, [{ id: 1, properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
     });
     t.test('indexes doc with geometry and no carmen:center', function(q) {
-        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.equal('Error: doc has no carmen:center on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes doc with geometry and carmen:center', function(q) {
-        index.update(to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
@@ -132,23 +132,22 @@ test('index.update freq', function(t) {
 
 test('index', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var from = new mem(docs, {maxzoom:6}, function() {});
-    var to = new mem(docs, null, function() {});
-    var carmen = new Carmen({
-        from: from,
-        to: to
-    });
+    var conf = {
+        from: new mem(docs, {maxzoom:6}, function() {}),
+        to: new mem(docs, null, function() {})
+    };
+    var carmen = new Carmen(conf);
     t.test('indexes a document', function(q) {
-        carmen.index(from, to, {}, function(err) {
+        carmen.index(conf.from, conf.to, {}, function(err) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(to.serialize(), null, 4));
-            q.equal(JSON.stringify(to.serialize()).length, JSON.stringify(memFixture).length);
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(conf.to.serialize(), null, 4));
+            q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(memFixture).length);
             q.end();
         });
     });
     t.test('analyzes index', function(q) {
-        carmen.analyze(to, function(err, stats) {
+        carmen.analyze(conf.to, function(err, stats) {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
@@ -157,44 +156,44 @@ test('index', function(t) {
         });
     });
     t.test('loadall index', function(q) {
-        to._geocoder.unloadall('freq');
-        q.ok(!to._geocoder.has('freq', 0));
-        carmen.loadall(to, 'freq', 1, function(err) {
+        conf.to._geocoder.unloadall('freq');
+        q.ok(!conf.to._geocoder.has('freq', 0));
+        carmen.loadall(conf.to, 'freq', 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('freq', 0));
+            q.ok(conf.to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
-        to._geocoder.unloadall('freq');
-        q.ok(!to._geocoder.has('freq', 0));
-        carmen.loadall(to, 'freq', 10, function(err) {
+        conf.to._geocoder.unloadall('freq');
+        q.ok(!conf.to._geocoder.has('freq', 0));
+        carmen.loadall(conf.to, 'freq', 10, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('freq', 0));
+            q.ok(conf.to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 0.5)', function(q) {
-        to._geocoder.unloadall('freq');
-        q.ok(!to._geocoder.has('freq', 0));
-        carmen.loadall(to, 'freq', 0.5, function(err) {
+        conf.to._geocoder.unloadall('freq');
+        q.ok(!conf.to._geocoder.has('freq', 0));
+        carmen.loadall(conf.to, 'freq', 0.5, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.has('freq', 0));
+            q.ok(conf.to._geocoder.has('freq', 0));
             q.end();
         });
     });
-    t.test('loadall stat uses Dict', function(q) {
-        q.ok(!to._geocoder.hasDict('stat', 0));
-        carmen.loadall(to, 'stat', 1, function(err) {
+    t.test('loadall stat ignores Dict', function(q) {
+        q.ok(!conf.to._geocoder.hasDict('stat', 0));
+        carmen.loadall(conf.to, 'stat', 1, function(err) {
             q.ifError(err);
-            q.ok(to._geocoder.hasDict('stat', 0));
+            q.ok(!conf.to._geocoder.hasDict('stat', 0));
             q.end();
         });
     });
     t.test('unloadall index', function(q) {
-        carmen.unloadall(to, 'freq', function(err) {
+        carmen.unloadall(conf.to, 'freq', function(err) {
             q.ifError(err);
-            q.equal(to._geocoder.has('freq', 0), false);
+            q.equal(conf.to._geocoder.has('freq', 0), false);
             q.end();
         });
     });
@@ -203,13 +202,12 @@ test('index', function(t) {
 
 test('error -- zoom too high', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var from = new mem(docs, {maxzoom: 15}, function() {});
-    var to = new mem(docs, null, function() {});
-    var carmen = new Carmen({
-        from: from,
-        to: to
-    });
-    carmen.index(from, to, {}, function(err) {
+    var conf = {
+        from: new mem(docs, {maxzoom: 15}, function() {}),
+        to: new mem(docs, null, function() {})
+    };
+    var carmen = new Carmen(conf);
+    carmen.index(conf.from, conf.to, {}, function(err) {
         t.equal('Error: zoom must be less than 15 --- zoom was 15', err.toString());
         t.end();
     });
@@ -217,13 +215,12 @@ test('error -- zoom too high', function(t) {
 
 test('error -- zoom too low', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var from = new mem(docs, {maxzoom: -1}, function() {});
-    var to = new mem(docs, {maxzoom:10}, function() {});
-    var carmen = new Carmen({
-        from: from,
-        to: to
-    });
-    carmen.index(from, to, {}, function(err) {
+    var conf = {
+        from: new mem(docs, {maxzoom: -1}, function() {}),
+        to: new mem(docs, {maxzoom:10}, function() {})
+    };
+    var carmen = new Carmen(conf);
+    carmen.index(conf.from, conf.to, {}, function(err) {
         t.equal('Error: zoom must be greater than 0 --- zoom was -1', err.toString());
         t.end();
     });
@@ -267,13 +264,12 @@ test('index phrase collection', function(assert) {
 
 test('error -- _geometry too high resolution', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/hugedoc.json'));
-    var from = new mem(docs, {maxzoom: 6}, function() {});
-    var to = new mem(docs, null, function() {});
-    var carmen = new Carmen({
-        from: from,
-        to: to
-    });
-    carmen.index(from, to, {}, function(err) {
+    var conf = {
+        from: new mem(docs, {maxzoom: 6}, function() {}),
+        to: new mem(docs, null, function() {})
+    };
+    var carmen = new Carmen(conf);
+    carmen.index(conf.from, conf.to, {}, function(err) {
         t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1', err.toString());
         t.end();
     });
@@ -305,13 +301,12 @@ test('error -- _zxy too large tile-cover', function(t) {
             coordinates: [0,0]
         }
     }];
-    var from = new mem(docs, {maxzoom: 6}, function() {});
-    var to = new mem(docs, null, function() {});
-    var carmen = new Carmen({
-        from: from,
-        to: to
-    });
-    carmen.index(from, to, {}, function(err) {
+    var conf = {
+        from: new mem(docs, {maxzoom: 6}, function() {}),
+        to: new mem(docs, null, function() {})
+    };
+    var carmen = new Carmen(conf);
+    carmen.index(conf.from, conf.to, {}, function(err) {
         t.equal('Error: zxy exceeded 10000, doc id:1', err.toString());
         t.end();
     });
@@ -319,8 +314,8 @@ test('error -- _zxy too large tile-cover', function(t) {
 
 test('index.cleanDocs', function(assert) {
     var docs;
-    var sourceWithAddress = {_geocoder:{geocoder_address:true}};
-    var sourceWithoutAddress = {_geocoder:{geocoder_address:false}};
+    var sourceWithAddress = {geocoder_address:true};
+    var sourceWithoutAddress = {geocoder_address:false};
 
     assert.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
     assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');

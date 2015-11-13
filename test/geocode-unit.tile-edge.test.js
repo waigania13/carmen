@@ -14,10 +14,12 @@ var c = new Carmen(conf);
 
 tape('index test', function(t) {
     var feature = {
-        _id:1,
-        _text:'test',
-        _zxy:['14/8093/5301'],
-        _center:[-2.17405858745506,53.4619151830114]
+        id:1,
+        properties: {
+            'carmen:text':'test',
+            'carmen:zxy':['14/8093/5301'],
+            'carmen:center':[-2.17405858745506,53.4619151830114]
+        }
     };
     addFeature(conf.test, feature, t.end);
 });

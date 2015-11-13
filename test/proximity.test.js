@@ -32,4 +32,3 @@ test('proximity.scoredist', function(assert) {
     assert.equal(proximity.scoredist([0,0], [10.00,0], 1000), 57.8745, 'll scoredist');
     assert.end();
 });
-

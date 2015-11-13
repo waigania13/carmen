@@ -16,31 +16,37 @@ var queue = require('queue-async');
     var c = new Carmen(conf);
     tape('index address (signal 1)', function(t) {
         addFeature(conf.address, {
-            _id:200,
-            _text:'main st',
-            _zxy:['6/0/0'],
-            _score:1000,
-            _center:[-179.99,85]
+            id:200,
+            properties: {
+                'carmen:text':'main st',
+                'carmen:zxy':['6/0/0'],
+                'carmen:score':1000,
+                'carmen:center':[-179.99,85]
+            }
         }, t.end);
     });
     tape('index address (signal 2)', function(t) {
         addFeature(conf.address, {
-            _id:201,
-            _text:'main st',
-            _zxy:['6/35/32'],
-            _score:1000,
-            _center:[20,0]
+            id:201,
+            properties: {
+                'carmen:text':'main st',
+                'carmen:zxy':['6/35/32'],
+                'carmen:score':1000,
+                'carmen:center':[20,0]
+            }
         }, t.end);
     });
     tape('index address (noise)', function(t) {
         var q = queue(1);
         for (var i = 1; i < 100; i++) q.defer(function(i, done) {
             addFeature(conf.address, {
-                _id:i,
-                _text:'main st',
-                _zxy:['6/32/32'],
-                _score:50,
-                _center:[0,0]
+                id:i,
+                properties: {
+                    'carmen:text':'main st',
+                    'carmen:zxy':['6/32/32'],
+                    'carmen:scorei':50,
+                    'carmen:center':[0,0]
+                }
             }, done);
         }, i);
         q.awaitAll(t.end);

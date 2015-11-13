@@ -207,39 +207,3 @@ test('#loadall', function(assert) {
     }
 });
 
-test('#dictall', function(assert) {
-    var cache = new Cache('a');
-    cache.set('grid', 1, [0]);
-    cache.set('grid', 68719476736, [1]);
-
-    var packs = [];
-    packs[0] = cache.pack('grid', 0);
-    packs[1] = cache.pack('grid', 1);
-
-    function getter(type, shard, callback) {
-        return callback(null, packs[shard]);
-    }
-
-    var loader = new Cache('b');
-    assert.equal(loader.has('grid', 0), false);
-    assert.equal(loader.has('grid', 1), false);
-    load1();
-
-    function load1() {
-        loader.dictall(getter, 'grid', [1,68719476736], function(err) {
-            assert.ifError(err);
-            assert.deepEqual(loader.dict('grid', 1), true);
-            assert.deepEqual(loader.dict('grid', 68719476736), true);
-            load2();
-        });
-    }
-    function load2() {
-        loader.dictall(getter, 'grid', [1,68719476736], function(err) {
-            assert.ifError(err);
-            assert.deepEqual(loader.dict('grid', 1), true);
-            assert.deepEqual(loader.dict('grid', 68719476736), true);
-            assert.end();
-        });
-    }
-});
-

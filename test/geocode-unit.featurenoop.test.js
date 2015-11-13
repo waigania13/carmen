@@ -15,10 +15,12 @@ var conf = {
 var c = new Carmen(conf);
 tape('index', function(t) {
     addFeature.vt(conf.a, {
-        _id:1,
-        _text:'\n',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'\n',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('reverse geocode', function(t) {

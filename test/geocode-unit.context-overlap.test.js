@@ -16,34 +16,42 @@ var conf = {
 var c = new Carmen(conf);
 tape('index place_a', function(t) {
     addFeature(conf.place_a, {
-        _id:1,
-        _text:'sadtown',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text': 'sadtown',
+            'carmen:zxy': ['6/32/32'],
+            'carmen:center': [0,0]
+        }
     }, t.end);
 });
 tape('index place_b', function(t) {
     addFeature(conf.place_b, {
-        _id:2,
-        _text:'funtown',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'funtown',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index street_a', function(t) {
     addFeature(conf.street_a, {
-        _id:2,
-        _text:'wall street',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'wall street',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index street_b', function(t) {
     addFeature(conf.street_b, {
-        _id:1,
-        _text:'main street',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'main street',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('geocoder_name dedupe', function(t) {

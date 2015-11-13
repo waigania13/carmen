@@ -15,12 +15,15 @@ tape('index address (noise)', function(t) {
     var q = queue(1);
     for (var i = 1; i < 41; i++) q.defer(function(i, done) {
         var address = {
-            _id:i,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _cluster: {
-                600: { type: "Point", coordinates: [0,0] }
+            id:i,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+                'carmen:addressnumber': ['600']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
             }
         };
         addFeature(conf.address, address, done);
@@ -30,12 +33,15 @@ tape('index address (noise)', function(t) {
 
 tape('index address (signal)', function(t) {
     var address = {
-        _id:101,
-        _text:'fake street',
-        _zxy:['6/32/32'],
-        _center:[0,0],
-        _cluster: {
-            1500: { type: "Point", coordinates: [0,0] }
+        id:101,
+        properties: {
+            'carmen:text':'fake street',
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['1500']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);

@@ -18,11 +18,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'fake street',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -48,11 +49,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'avenue du 18e régiment',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'avenue du 18e régiment',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -86,11 +88,12 @@ var addFeature = require('../lib/util/addfeature');
     var c = new Carmen(conf);
     tape('geocoder token test', function(t) {
         var address = {
-            _id:1,
-            _text:'cba',
-            _zxy:['6/32/32'],
-            _center:[0,0],
-            _geometry: {
+            id:1,
+            properties: {
+                'carmen:text':'cba',
+                'carmen:center':[0,0],
+            },
+            geometry: {
                 type: "Point",
                 coordinates: [0,0]
             }
@@ -101,6 +104,71 @@ var addFeature = require('../lib/util/addfeature');
         c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_tokens: {
+                "Road": "Rd",
+                "Street": "St"
+            }
+        }, function() {})
+    };
+    var opts = {
+        tokens: {
+            'Suite [0-9]+': '',
+            'Lot [0-9]+': ''
+        }
+    }
+    var c = new Carmen(conf, opts);
+    addFeature.setOptions(opts);
+    tape('geocoder token test', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('geocoder token test', function(t) {
+        var address = {
+            id:2,
+            properties: {
+                'carmen:text':'main road lot 42 suite 432',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('test address index for relev', function(t) {
+        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'fake street');
+            t.end();
+        });
+    });
+    tape('test address index for relev', function(t) {
+        c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });

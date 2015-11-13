@@ -1,7 +1,7 @@
 {
   "name": "carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "8.5.4",
+  "version": "9.0.0",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
@@ -10,8 +10,10 @@
     "err-code": "0.1.2",
     "eslint": "^1.5.0",
     "locking": "2.0.2",
-    "mapnik": "~3.4.3",
+    "mapnik": "~3.4.10",
     "minimist": "0.0.5",
+    "mmap": "2.0.2",
+    "model-un": "0.0.3",
     "murmur": "0.0.2",
     "queue-async": "1.0.x",
     "sphericalmercator": "~1.0.1",
@@ -28,29 +30,30 @@
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
     "turf-point-on-surface": "1.0.x",
-    "model-un": "0.0.3",
     "unidecode-cxx": "0.0.2"
   },
   "devDependencies": {
     "retire": "0.4.x",
     "bytes": "^1.0.0",
     "tape": "^2.13.4",
-    "mbtiles": "0.7.x",
+    "mbtiles": "~0.8.2",
     "tilelive-s3": "~0.14.0",
+    "istanbul": "^0.4.0",
+    "coveralls": "^2.11.4",
     "benchmark": "~1.0.0"
   },
   "bin": {
     "carmen": "./scripts/carmen.js",
     "carmen-analyze": "./scripts/carmen-analyze.js",
     "carmen-copy": "./scripts/carmen-copy.js",
-    "carmen-index": "./scripts/carmen-index.js"
+    "carmen-index": "./scripts/carmen-index.js",
+    "carmen-degenize": "./scripts/carmen-degenize.js"
   },
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
     "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
-    "cov": "istanbul cover test/*.js",
-    "coveralls": "istanbul cover test/*.js && coveralls < ./coverage/lcov.info",
+    "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "node bench/runbench.js"
   },
   "eslintConfig": {

@@ -15,26 +15,32 @@ var conf = {
 var c = new Carmen(conf);
 tape('index 京都市', function(t) {
     addFeature(conf.test, {
-        _id:1,
-        _text:'京都市',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'京都市',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index москва', function(t) {
     addFeature(conf.test, {
-        _id:2,
-        _text:'москва',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'москва',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index josé', function(t) {
     addFeature(conf.test, {
-        _id:3,
-        _text:'josé',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:3,
+        properties: {
+            'carmen:text':'josé',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 
