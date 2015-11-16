@@ -44,8 +44,22 @@ tape('index country us', function(t) {
     }, t.end);
 });
 
+tape('Invalid stack - not a stack name', function(t) {
+    c.geocode('0,0', { stacks: ['zz'] }, function(err, res) {
+        t.ok(err, 'throws error');
+        t.end();
+    });
+});
+
+tape('Invalid stack - not an array', function(t) {
+    c.geocode('0,0', { stacks: 'zz' }, function(err, res) {
+        t.ok(err, 'throws error');
+        t.end();
+    });
+});
+
 tape('query filter', function(t) {
-    c.geocode('0,0', { stack: 'ca' }, function(err, res) {
+    c.geocode('0,0', { stacks: ['ca'] }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Canada');
         t.end();
@@ -53,7 +67,7 @@ tape('query filter', function(t) {
 });
 
 tape('query filter', function(t) {
-    c.geocode('United States', { stack: 'ca' }, function(err, res) {
+    c.geocode('United States', { stacks: ['ca'] }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 0);
         t.end();

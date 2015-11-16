@@ -28,6 +28,7 @@ function Geocoder(indexes, options) {
     this.replacer = token.createReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
+    this.bystack = {};
     this.byidx = [];
     this.names = [];
 
@@ -39,6 +40,7 @@ function Geocoder(indexes, options) {
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
+        var stacks = [];
         if (results) results.forEach(function(data, i) {
             var id = data.id;
             var info = data.info;
@@ -46,6 +48,7 @@ function Geocoder(indexes, options) {
             var source = indexes[id];
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
+            var stack = info.geocoder_stack || id;
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
@@ -53,6 +56,10 @@ function Geocoder(indexes, options) {
             if (types.indexOf(type) === -1) {
                 types.push(type);
                 this.bytype[type] = [];
+            }
+            if (stacks.indexOf(stack) === -1) {
+                stacks.push(stack);
+                this.bystack[stack] = [];
             }
 
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
@@ -106,6 +113,9 @@ function Geocoder(indexes, options) {
 
             // add bytype index lookup
             this.bytype[type].push(source);
+
+            // add bystack index lookup
+            this.bystack[stack].push(source);
 
             // add byidx index lookup
             this.byidx[i] = source;
