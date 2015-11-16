@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.0.1
+
+- Bugfixes to multiconf approach.
+
 ## 9.0.0
 
 - Refactored dict cache using bit arrays and `mmap` for lower runtime memory profile.
