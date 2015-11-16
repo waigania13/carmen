@@ -171,7 +171,6 @@ function clone(source) {
     var cloned = {};
     cloned.getInfo = source.getInfo.bind(source);
     cloned.getTile = source.getTile.bind(source);
-    cloned.getGeocoderData = source.getGeocoderData.bind(source);
     cloned.open = function(callback) {
         if (source.open === true) return callback();
         if (typeof source.open === 'function') return source.open(callback);
@@ -180,6 +179,7 @@ function clone(source) {
     // Optional methods
     [
         'putTile',
+        'getGeocoderData',
         'putGeocoderData',
         'startWriting',
         'stopWriting',
