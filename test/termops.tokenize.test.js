@@ -26,7 +26,7 @@ test('tokenizes basic strings', function(assert) {
     assert.deepEqual(termops.tokenize('San José'), ['san', 'josé']);
     assert.deepEqual(termops.tokenize('Chamonix-Mont-Blanc'), ['chamonix','mont','blanc']);
     assert.deepEqual(termops.tokenize('Москва'), ['москва']);
-    assert.deepEqual(termops.tokenize('京都市'), ['京都市']);
+    assert.deepEqual(termops.tokenize('京都市'), ['京','都','市']);
     assert.end();
 });
 test('tokenizes lonlat', function(assert) {
