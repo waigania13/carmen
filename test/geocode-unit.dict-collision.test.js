@@ -5,7 +5,7 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('queue-async');
 var addFeature = require('../lib/util/addfeature');
-var Dictcache = require('../lib/util/dictcache');
+var Bitcache = require('../lib/util/dictcache').bitcache;
 var termops = require('../lib/util/termops.js');
 
 var conf = {
@@ -15,9 +15,9 @@ var c = new Carmen(conf);
 
 tape('setup', function(t) {
     // shrink the dictcache a lot
-    Dictcache.sizes[10] = Math.pow(2,10);
-    Dictcache.bufferSizes[Math.pow(2,10)/8] = 10;
-    c.indexes.place._dictcache = new Dictcache(null, 10);
+    Bitcache.sizes[10] = Math.pow(2,10);
+    Bitcache.bufferSizes[Math.pow(2,10)/8] = 10;
+    c.indexes.place._dictcache = new Bitcache(null, 10);
     t.end();
 });
 
@@ -60,7 +60,7 @@ tape('find collisions (coalesceSingle)', function(t) {
             var query = 'b' + j;
             c.geocode(query, { limit_verify:1, debug:4 }, function(err, res) {
                 t.equal(res.features.length, 0, 'not in index')
-                if (c.indexes.place._dictcache.has(termops.encodeTerm(query))) {
+                if (c.indexes.place._dictcache.hasId(termops.encodeTerm(query))) {
                     // this should collide
                     t.equal(res.waste.length, 1, 'collides');
                 } else {
@@ -81,7 +81,7 @@ tape('find collisions (coalesceMulti)', function(t) {
             var query = 'b' + j + ' x' + j;
             c.geocode(query, { limit_verify:1, debug:4 }, function(err, res) {
                 t.equal(res.features.length, 0, 'not in index')
-                if (c.indexes.place._dictcache.has(termops.encodeTerm(query))) {
+                if (c.indexes.place._dictcache.hasId(termops.encodeTerm(query))) {
                     // this should collide
                     t.equal(res.waste.length, 1, 'collides');
                 } else {
@@ -97,8 +97,8 @@ tape('find collisions (coalesceMulti)', function(t) {
 
 tape('index.teardown', function(assert) {
     // cleanup dictcache size override
-    delete Dictcache.sizes[10];
-    delete Dictcache.bufferSizes[Math.pow(2,10)/8];
+    delete Bitcache.sizes[10];
+    delete Bitcache.bufferSizes[Math.pow(2,10)/8];
 
     index.teardown();
     context.getTile.cache.reset();

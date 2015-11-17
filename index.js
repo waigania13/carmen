@@ -2,7 +2,7 @@ var path = require('path'),
     EventEmitter = require('events').EventEmitter,
     queue = require('queue-async');
 
-var Dictcache = require('./lib/util/dictcache');
+var dictcache = require('./lib/util/dictcache');
 var Cache = require('./lib/util/cxxcache'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
@@ -156,10 +156,11 @@ function Geocoder(indexes, options) {
                     });
                 // create dictcache at load time to allow incremental gc
                 } else {
+                    var geocoder_type = loaded[0].geocoder_dictcache_type || 'bitcache';
                     callback(null, {
                         id: id,
                         info: loaded[0],
-                        dictcache: new Dictcache(loaded[1], loaded[0].geocoder_dictsize)
+                        dictcache: new dictcache[geocoder_type](loaded[1], loaded[0].geocoder_dictsize)
                     });
                 }
             });

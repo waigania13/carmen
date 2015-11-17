@@ -15,7 +15,7 @@ test('index.generateStats', function(assert) {
     var docs = [{
         type: "Feature",
         properties: {
-            "carmen:text": 'main street', 
+            "carmen:text": 'main street',
             "carmen:score": 2
         },
         geometry: {}
@@ -253,8 +253,8 @@ test('index phrase collection', function(assert) {
     index.update(conf.test, docs, 6, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        var id1 = termops.encodePhrase('a', true);
-        var id2 = termops.encodePhrase('a', false);
+        var id1 = termops.encodePhrase('a', true).id;
+        var id2 = termops.encodePhrase('a', false).id;
         assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString(), id2.toString() ], '2 phrases');
         assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.deepEqual(conf.test._geocoder.get('grid',id2), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');

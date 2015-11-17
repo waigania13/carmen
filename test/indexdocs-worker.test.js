@@ -3,6 +3,7 @@ var grid = require('../lib/util/grid.js');
 var tape = require('tape');
 var termops = require('../lib/util/termops.js');
 var token = require('../lib/util/token.js');
+var Bitcache = require('../lib/util/bitcache.js');
 
 tape('worker.loadDoc', function(assert) {
     var token_replacer = token.createReplacer({});
@@ -13,7 +14,7 @@ tape('worker.loadDoc', function(assert) {
     var doc;
     var err;
 
-    patch = { grid:{}, docs:[] };
+    patch = { grid:{data:{}, text:{}}, docs:[] };
     freq = {};
     tokens = ['main', 'st'];
     zoom = 6;
@@ -37,11 +38,11 @@ tape('worker.loadDoc', function(assert) {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = worker.loadDoc(patch, doc, freq, zoom, token_replacer);
+    err = worker.loadDoc(patch, doc, freq, zoom, token_replacer, Bitcache.prototype.properties);
     assert.ifError(err);
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
+    assert.deepEqual(Object.keys(patch.grid.data).length, 8);
+    assert.deepEqual(patch.grid.data[Object.keys(patch.grid.data)[0]].length, 1);
+    assert.deepEqual(grid.decode(patch.grid.data[Object.keys(patch.grid.data)[0]][0]), {
         id: 1,
         relev: 1,
         score: 4, // scales score based on max score value (100)
