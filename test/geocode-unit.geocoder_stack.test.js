@@ -97,12 +97,10 @@ var addFeature = require('../lib/util/addfeature');
     var conf = {
         country: new mem({
             maxzoom: 6,
-            geocoder_name: 'country',
             geocoder_stack: [ 'us', 'ca' ]
         }, function() {}),
         place: new mem({
             maxzoom: 6,
-            geocoder_name: 'country',
             geocoder_stack: [ 'ca', 'us' ]
         }, function() {})
     };
@@ -159,7 +157,15 @@ var addFeature = require('../lib/util/addfeature');
         c.geocode('Place', { stacks: ['us'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
-            t.equals(res.features[0].place_name, 'United States');
+            t.equals(res.features[0].id, 'place.1');
+            t.end();
+        });
+    });
+    tape('dual filter', function(t) {
+        c.geocode('Place', { stacks: ['ca'] }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'place.2');
             t.end();
         });
     });
