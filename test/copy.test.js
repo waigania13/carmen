@@ -1,7 +1,6 @@
 var fs = require('fs');
 var util = require('util');
 var Carmen = require('..');
-var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var index = require('../lib/index');
@@ -43,6 +42,7 @@ test('copy', function(t) {
     t.test('copies', function(q) {
         carmen.copy(conf.from, conf.to, function(err) {
             q.ifError(err);
+            var memFixture = require('./fixtures/mem-' + conf.to._dictcache.properties.type + '.json');
             q.deepEqual(JSON.stringify(conf.to.serialize()).length, JSON.stringify(memFixture).length);
             q.end();
         });
