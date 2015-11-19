@@ -57,9 +57,12 @@ function Geocoder(indexes, options) {
                 types.push(type);
                 this.bytype[type] = [];
             }
-            if (stacks.indexOf(stack) === -1) {
-                stacks.push(stack);
-                this.bystack[stack] = [];
+            if (typeof stack === 'string') stack = [stack];
+            for (var j = 0; j < stack.length; j++) {
+                if (stacks.indexOf(stack[j]) === -1) {
+                    stacks.push(stack[j]);
+                    this.bystack[stack[j]] = [];
+                }
             }
 
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
@@ -115,7 +118,9 @@ function Geocoder(indexes, options) {
             this.bytype[type].push(source);
 
             // add bystack index lookup
-            this.bystack[stack].push(source);
+            for (var j = 0; j < stack.length; j++) {
+                this.bystack[stack[j]].push(source);
+            }
 
             // add byidx index lookup
             this.byidx[i] = source;
