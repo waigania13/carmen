@@ -23,12 +23,12 @@ tape('dump/load', function(assert) {
             assert.ifError(err);
             var loaded = new DawgCache(data);
             for (var i = 1; i <= 4; i++) {
-                assert.equal(loaded.hasPhrase({text: "a" + i, degen: false}), true, 'has a' + i);
+                assert.equal(loaded.hasPhrase({text: "a" + i, ender: false}), true, 'has a' + i);
             }
-            assert.equal(loaded.hasPhrase({text: "a5", degen: false}), false, 'not a5');
+            assert.equal(loaded.hasPhrase({text: "a5", ender: false}), false, 'not a5');
 
-            assert.equal(loaded.hasPhrase({text: "a", degen: false}), false, 'not a');
-            assert.equal(loaded.hasPhrase({text: "a", degen: true}), true, 'has a as degen');
+            assert.equal(loaded.hasPhrase({text: "a", ender: false}), false, 'not a');
+            assert.equal(loaded.hasPhrase({text: "a", ender: true}), true, 'has a as degen');
             assert.end();
         });
     });
