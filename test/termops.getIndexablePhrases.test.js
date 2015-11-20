@@ -125,10 +125,10 @@ test('termops.getIndexablePhrases (京都市)', function(assert) {
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
-        { degen: true, phrase: termops.encodePhrase('京', true), relev: 1, text: '京' },
-        { degen: true, phrase: termops.encodePhrase('京都', true), relev: 1, text: '京都' },
-        { degen: true, phrase: termops.encodePhrase('京都市', true), relev: 1, text: '京都市' },
-        { degen: false, phrase: termops.encodePhrase('京都市', false), relev: 1, text: '京都市' }
+        { degen: true, phrase: termops.encodePhrase('京', true), relev: 1, text: 'jing' },
+        { degen: true, phrase: termops.encodePhrase('京都', true), relev: 1, text: 'jing du' },
+        { degen: true, phrase: termops.encodePhrase('京都市', true), relev: 1, text: 'jing du shi' },
+        { degen: false, phrase: termops.encodePhrase('京都市', false), relev: 1, text: 'jing du shi' }
     ]);
 
     assert.end();
@@ -144,13 +144,13 @@ test('termops.getIndexablePhrases (москва)', function(assert) {
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
-        { degen: true, phrase: termops.encodePhrase('м', true), relev: 1, text: 'м' },
-        { degen: true, phrase: termops.encodePhrase('мо', true), relev: 1, text: 'мо' },
-        { degen: true, phrase: termops.encodePhrase('мос', true), relev: 1, text: 'мос' },
-        { degen: true, phrase: termops.encodePhrase('моск', true), relev: 1, text: 'моск' },
-        { degen: true, phrase: termops.encodePhrase('москв', true), relev: 1, text: 'москв' },
-        { degen: true, phrase: termops.encodePhrase('москва', true), relev: 1, text: 'москва' },
-        { degen: false, phrase: termops.encodePhrase('москва', false), relev: 1, text: 'москва' }
+        { degen: true, phrase: termops.encodePhrase('м', true), relev: 1, text: 'm' },
+        { degen: true, phrase: termops.encodePhrase('мо', true), relev: 1, text: 'mo' },
+        { degen: true, phrase: termops.encodePhrase('мос', true), relev: 1, text: 'mos' },
+        { degen: true, phrase: termops.encodePhrase('моск', true), relev: 1, text: 'mosk' },
+        { degen: true, phrase: termops.encodePhrase('москв', true), relev: 1, text: 'moskv' },
+        { degen: true, phrase: termops.encodePhrase('москва', true), relev: 1, text: 'moskva' },
+        { degen: false, phrase: termops.encodePhrase('москва', false), relev: 1, text: 'moskva' }
     ]);
 
     assert.end();
@@ -169,8 +169,8 @@ test('termops.getIndexablePhrases (josé)', function(assert) {
         { degen: true, phrase: termops.encodePhrase('j',true), relev: 1, text: 'j' },
         { degen: true, phrase: termops.encodePhrase('jo',true), relev: 1, text: 'jo' },
         { degen: true, phrase: termops.encodePhrase('jos',true), relev: 1, text: 'jos' },
-        { degen: true, phrase: termops.encodePhrase('josé',true), relev: 1, text: 'josé' },
-        { degen: false, phrase: termops.encodePhrase('josé',false), relev: 1, text: 'josé' }
+        { degen: true, phrase: termops.encodePhrase('josé',true), relev: 1, text: 'jose' },
+        { degen: false, phrase: termops.encodePhrase('josé',false), relev: 1, text: 'jose' }
     ]);
 
     assert.end();
