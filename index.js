@@ -156,7 +156,7 @@ function Geocoder(indexes, options) {
                     });
                 // create dictcache at load time to allow incremental gc
                 } else {
-                    var geocoder_type = loaded[0].geocoder_dictcache_type || 'bitcache';
+                    var geocoder_type = loaded[0].geocoder_dictcache_type || process.env.CARMEN_DEFAULT_DICTCACHE || 'bitcache';
                     callback(null, {
                         id: id,
                         info: loaded[0],
