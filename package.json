@@ -53,7 +53,7 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
+    "test": "npm run lint && retire -n && CARMEN_DEFAULT_DICTCACHE=\"bitcache\" tape ./test/*.js && CARMEN_DEFAULT_DICTCACHE=\"dawg\" tape ./test/*.js && node bench/runbench.js",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "node bench/runbench.js"
   },
