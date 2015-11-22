@@ -14,7 +14,7 @@ tape('worker.loadDoc', function(assert) {
     var doc;
     var err;
 
-    patch = { grid:{data:{}, text:{}}, docs:[] };
+    patch = { grid:{}, docs:[], text:[] };
     freq = {};
     tokens = ['main', 'st'];
     zoom = 6;
@@ -38,11 +38,11 @@ tape('worker.loadDoc', function(assert) {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = worker.loadDoc(patch, doc, freq, zoom, token_replacer, Bitcache.prototype.properties);
+    err = worker.loadDoc(patch, doc, freq, zoom, token_replacer);
     assert.ifError(err);
-    assert.deepEqual(Object.keys(patch.grid.data).length, 8);
-    assert.deepEqual(patch.grid.data[Object.keys(patch.grid.data)[0]].length, 1);
-    assert.deepEqual(grid.decode(patch.grid.data[Object.keys(patch.grid.data)[0]][0]), {
+    assert.deepEqual(Object.keys(patch.grid).length, 8);
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
+    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
         id: 1,
         relev: 1,
         score: 4, // scales score based on max score value (100)
@@ -51,6 +51,7 @@ tape('worker.loadDoc', function(assert) {
     });
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
+    assert.deepEqual(patch.text, ['main st', 'main']);
 
     assert.end();
 });
