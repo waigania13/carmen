@@ -52,9 +52,9 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && tape ./test/*.js && node bench/runbench.js",
+    "test": "npm run lint && retire -n && tape ./test/*.js && npm run bench",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
-    "bench": "node bench/runbench.js"
+    "bench": "for file in bench/*.js; do node $file; done"
   },
   "eslintConfig": {
     "rules": {
