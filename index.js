@@ -160,7 +160,7 @@ function Geocoder(indexes, options) {
                     callback(null, {
                         id: id,
                         info: loaded[0],
-                        dictcache: new dictcache[geocoder_type](loaded[1], loaded[0].geocoder_dictcache_opts)
+                        dictcache: new dictcache[geocoder_type](loaded[1], loaded[0].geocoder_dictsize)
                     });
                 }
             });
