@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.0
+
+- CJK characters in an indexable word or phrase are now indexed individually to support the practice of addresses being written from largest -> smallest geographical entity and without delimeters.
+
 ## 9.0.1
 
 - Bugfixes to multiconf approach.
