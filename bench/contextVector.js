@@ -23,14 +23,12 @@ var source = {
             'content-encoding': 'gzip'
         });
     },
-    _geocoder: {
-        geocoder_layer: 'data',
-        maxzoom: 0,
-        minzoom: 0,
-        name: 'test',
-        id: 'testA',
-        idx: 1
-    }
+    geocoder_layer: 'data',
+    maxzoom: 0,
+    minzoom: 0,
+    name: 'test',
+    id: 'testA',
+    idx: 1
 };
 
 suite.add('context vector', {

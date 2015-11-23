@@ -1,7 +1,7 @@
 {
   "name": "carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "9.0.1",
+  "version": "10.0.0",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
@@ -53,9 +53,9 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && CARMEN_DEFAULT_DICTCACHE=\"bitcache\" tape ./test/*.js && CARMEN_DEFAULT_DICTCACHE=\"dawg\" tape ./test/*.js && node bench/runbench.js",
+    "test": "npm run lint && retire -n && CARMEN_DEFAULT_DICTCACHE=\"bitcache\" tape ./test/*.js && CARMEN_DEFAULT_DICTCACHE=\"dawg\" tape ./test/*.js && npm run bench",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
-    "bench": "node bench/runbench.js"
+    "bench": "for file in bench/*.js; do node $file; done"
   },
   "eslintConfig": {
     "rules": {
