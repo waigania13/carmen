@@ -10,7 +10,7 @@
     "err-code": "0.1.2",
     "eslint": "^1.5.0",
     "locking": "2.0.2",
-    "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/1741a7cf5ee5466e7e77a5584f7692c7a3ee8274",
+    "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/dd46fe11b275c7f231c3b78274523fe293b5dcd4",
     "mapnik": "~3.4.10",
     "minimist": "0.0.5",
     "mmap": "2.0.2",
