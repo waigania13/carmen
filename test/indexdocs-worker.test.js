@@ -13,7 +13,7 @@ tape('worker.loadDoc', function(assert) {
     var doc;
     var err;
 
-    patch = { grid:{}, docs:[] };
+    patch = { grid:{}, docs:[], text:[] };
     freq = {};
     tokens = ['main', 'st'];
     zoom = 6;
@@ -50,6 +50,7 @@ tape('worker.loadDoc', function(assert) {
     });
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
+    assert.deepEqual(patch.text, ['main st', 'main']);
 
     assert.end();
 });

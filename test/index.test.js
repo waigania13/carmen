@@ -2,7 +2,6 @@ var fs = require('fs');
 var util = require('util');
 var Carmen = require('..');
 var index = require('../lib/index');
-var memFixture = require('./fixtures/mem.json');
 var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 
@@ -15,7 +14,7 @@ test('index.generateStats', function(assert) {
     var docs = [{
         type: "Feature",
         properties: {
-            "carmen:text": 'main street', 
+            "carmen:text": 'main street',
             "carmen:score": 2
         },
         geometry: {}
@@ -141,8 +140,9 @@ test('index', function(t) {
         carmen.index(conf.from, conf.to, {}, function(err) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem.json', JSON.stringify(conf.to.serialize(), null, 4));
-            q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(memFixture).length);
+            var memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
+            if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
+            q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
         });
     });

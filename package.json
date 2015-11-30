@@ -10,6 +10,7 @@
     "err-code": "0.1.2",
     "eslint": "^1.5.0",
     "locking": "2.0.2",
+    "dawg-cache": "0.2.0",
     "mapnik": "~3.4.10",
     "minimist": "0.0.5",
     "mmap": "2.0.2",
@@ -52,7 +53,7 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && retire -n && tape ./test/*.js && npm run bench",
+    "test": "npm run lint && retire -n && CARMEN_DEFAULT_DICTCACHE=\"bitcache\" tape ./test/*.js && CARMEN_DEFAULT_DICTCACHE=\"dawg\" tape ./test/*.js && npm run bench",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "for file in bench/*.js; do node $file; done"
   },
