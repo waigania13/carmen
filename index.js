@@ -126,19 +126,25 @@ function Geocoder(indexes, options) {
             this.byidx[i] = source;
         }.bind(this));
 
-        // Second pass -- generate bmask (bounds mask) per index.
-        // The bmask of an index represents a mask of all indexes that its
-        // bounds do not intersect with -- ie. a spatialmatch with any of
+        // Second pass -- generate bmask (geocoder_stack) per index.
+        // The bmask of an index represents a mask of all indexes that their
+        // geocoder_stacks do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
         for (var i = 0; i < this.byidx.length; i++) {
             var bmask = [];
             var a = this.byidx[i];
             for (var j = 0; j < this.byidx.length; j++) {
                 var b = this.byidx[j];
-                if (boundsIntersect(a.bounds, b.bounds)) {
-                    bmask[j] = 0;
-                } else {
-                    bmask[j] = 1;
+                var a_it = a.stack.length;
+                while (a_it--) {
+                    var b_it = b.stack.length;
+                    while (b_it--) {
+                        if (a.stack[a_it], b.stack[b_it]) {
+                            bmask[j] = 0;
+                        } else {
+                            bmask[j] = 1;
+                        }
+                    }
                 }
             }
             this.byidx[i].bmask = bmask;
