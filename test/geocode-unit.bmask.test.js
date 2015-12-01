@@ -10,9 +10,9 @@ var addFeature = require('../lib/util/addfeature');
 
 tape('boundsmask', function(assert) {
     var conf = {
-        small: new mem({maxzoom:6, bounds:[-10,-10,10,10]}, function() {}),
-        west: new mem({maxzoom:6, bounds:[-180,-85,-1,85]}, function() {}),
-        east: new mem({maxzoom:6, bounds:[1,-85,180,85]}, function() {})
+        small: new mem({maxzoom:6, geocoder_stack: ['west', 'small', 'east']}, function() {}),
+        west: new mem({maxzoom:6, geocoder_stack: ['west', 'small']}, function() {}),
+        east: new mem({maxzoom:6, geocoder_stack: ['east', 'small']}, function() {})
     };
     var c = new Carmen(conf);
     assert.deepEqual(conf.small.bmask, [0,0,0], 'small overlaps with all');
