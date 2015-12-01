@@ -209,6 +209,15 @@ test('token replacement', function(q) {
     q.end();
 });
 
+
+test('token replacement', function(q) {
+    var replacer = token.createReplacer({
+        "(de|a)": ""
+    });
+    q.deepEqual(token.replaceToken(replacer, 'Avenida de América 54 Zaragoza'),'Avenida América 54 Zaragoza');
+    q.end();
+});
+
 test('replacer', function(q) {
     q.deepEqual(token.createReplacer({
         'Road': 'Rd',
