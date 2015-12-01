@@ -212,9 +212,16 @@ test('token replacement', function(q) {
 
 test('token replacement', function(q) {
     var replacer = token.createReplacer({
-        "(de|a)": ""
+        // 0 capture groups
+        'P\\.?\\ ?O\\.? Box [0-9]+': '',
+        // 1 capture group
+        '(de|a)': '',
+        // 2 capture groups
+        '(?:STE|Suite) (?:[0-9]+|[A-Z|a-z])': ''
     });
-    q.deepEqual(token.replaceToken(replacer, 'Avenida de América 54 Zaragoza'),'Avenida América 54 Zaragoza');
+    q.deepEqual(token.replaceToken(replacer, '1500 Main St PO Box 1500 Chicago'),'1500 Main St  Chicago', 'removes 0 capture groups');
+    q.deepEqual(token.replaceToken(replacer, 'Best View Suite 503 Awesome Dr'),'Best View Awesome Dr', 'removes 2 capture groups');
+    q.deepEqual(token.replaceToken(replacer, 'Avenida de América 54 Zaragoza'),'Avenida  América 54 Zaragoza', 'removes 1 capture group');
     q.end();
 });
 
