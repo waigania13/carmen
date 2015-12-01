@@ -215,11 +215,15 @@ test('regex groups - token replacement', function(q) {
         // 1 capture group
         '(Street|Str)': 'st',
         // 3 capture groups
-        '(Doctor |Dr )?(Martin Luther King)( Junior| Jr)?': 'MLK'
+        '(Doctor |Dr )?(Martin Luther King)( Junior| Jr)?': 'MLK',
+        // to backref
+        'q([a-z])([a-z])([a-z])': "$3$2$1"
     });
+    q.deepEqual(token.replaceToken(replacer, 'Main Street'), 'Main st', 'Replaces 1 capture group');
     q.deepEqual(token.replaceToken(replacer, 'Martin Luther King Junior Rd'), 'MLK Rd', 'Replaces capture groups');
     q.deepEqual(token.replaceToken(replacer, 'Martin Luther King Rd'), 'MLK Rd', 'Replaces capture groups');
     q.deepEqual(token.replaceToken(replacer, 'Doctor Martin Luther King Rd'), 'MLK Rd', 'Replaces capture groups');
+    q.deepEqual(token.replaceToken(replacer, 'qabc'), 'cba', 'Replaces 1 capture group');
     q.end();
 });
 
