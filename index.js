@@ -139,9 +139,9 @@ function Geocoder(indexes, options) {
                 while (a_it--) {
                     var b_it = b.stack.length;
                     while (b_it--) {
-                        if (a.stack[a_it], b.stack[b_it]) {
+                        if (a.stack[a_it] === b.stack[b_it]) {
                             bmask[j] = 0;
-                        } else {
+                        } else if (bmask[j] !== 0) {
                             bmask[j] = 1;
                         }
                     }
