@@ -210,21 +210,43 @@ test('token replacement', function(q) {
 });
 
 test('replacer', function(q) {
-    q.deepEqual(token.createReplacer({
+
+    // deepEqual doesn't compare regex objects intelligently / accurately
+    // so we have to roll our own :-&
+    var rep = token.createReplacer({
         'Road': 'Rd',
         'Street': 'St'
-    }), [
-        { from: /(\W|^)Road(\W|$)/gi, to: '$1Rd$2' },
-        { from: /(\W|^)Street(\W|$)/gi, to: '$1St$2' }
-    ]);
-    q.deepEqual(token.createReplacer({
+    });
+    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false]);
+    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Rd$2', '$1St$2']);
+    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
+
+    rep = token.createReplacer({
         'Maréchal': 'Mal',
         'Monsieur': 'M'
-    }), [
-        { from: /(\W|^)Maréchal(\W|$)/gi, to: '$1Mal$2' },
-        { from: /(\W|^)Marechal(\W|$)/gi, to: '$1Mal$2' },
-        { from: /(\W|^)Monsieur(\W|$)/gi, to: '$1M$2' }
-    ]);
+    });
+    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false, false]);
+    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
+    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
+
     q.end();
 });
 
+test('named/numbered group replacement', function(q) {
+    var tokens = token.createReplacer({
+        "abc": "xyz",
+        "(1\\d+)": "@@@$1@@@",
+        "(?<number>2\\d+)": "###${number}###"
+    });
+    q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
+    q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
+
+    q.end();
+});
+
+test('throw on mixed name/num replacement groups', function(q) {
+    q.throws(function() {
+        token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
+    });
+    q.end();
+});
