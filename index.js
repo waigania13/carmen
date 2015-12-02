@@ -48,7 +48,7 @@ function Geocoder(indexes, options) {
             var source = indexes[id];
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
-            var stack = info.geocoder_stack || '';
+            var stack = info.geocoder_stack || false;
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
@@ -58,10 +58,12 @@ function Geocoder(indexes, options) {
                 this.bytype[type] = [];
             }
             if (typeof stack === 'string') stack = [stack];
-            for (var j = 0; j < stack.length; j++) {
-                if (stacks.indexOf(stack[j]) === -1) {
-                    stacks.push(stack[j]);
-                    this.bystack[stack[j]] = [];
+            if (stack) {
+                for (var j = 0; j < stack.length; j++) {
+                    if (stacks.indexOf(stack[j]) === -1) {
+                        stacks.push(stack[j]);
+                        this.bystack[stack[j]] = [];
+                    }
                 }
             }
 

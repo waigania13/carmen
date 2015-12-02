@@ -238,7 +238,77 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('Place', function(t) {
-        c.geocode('Tess, Canada', { stacks: ['us'] }, function(err, res) {
+        c.geocode('Tess, Canada', { stacks: ['ca'] }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'place.1');
+            t.end();
+        });
+    });
+})();
+
+//Test existing/non-existing index level geocoder_stack
+(function() {
+    var conf = {
+        country: new mem({
+            maxzoom: 6
+        }, function() {}),
+        place: new mem({
+            maxzoom: 6,
+            geocoder_stack: [ 'ca', 'us' ]
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+
+    tape('index country ca', function(t) {
+        addFeature(conf.country, {
+            id:1,
+            properties: {
+                'carmen:text':'Canada',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        }, t.end);
+    });
+    tape('index country us', function(t) {
+        addFeature(conf.country, {
+            id:2,
+            properties: {
+                'carmen:text':'United States',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        }, t.end);
+    });
+    tape('index place ca', function(t) {
+        addFeature(conf.place, {
+            id:1,
+            properties: {
+                'carmen:text':'Tess',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        }, t.end);
+    });
+
+    tape('Canada', function(t) {
+        c.geocode('Canada', { stacks: ['ca'] }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+    tape('United States', function(t) {
+        c.geocode('United States', { stacks: ['us'] }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'country.2');
+            t.end();
+        });
+    });
+    tape('Place', function(t) {
+        c.geocode('Tess, Canada', { stacks: ['ca'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.1');
