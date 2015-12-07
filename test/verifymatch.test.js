@@ -1,6 +1,104 @@
 var verifymatch = require('../lib/verifymatch');
 var tape = require('tape');
 
+tape('verifymatch.dropFeature', function(t) {
+    t.test('dropFeature source undefined', function(q) {
+        var geocoder = {
+            byidx: []
+        };
+        var options = {
+            types: ['country']
+        };
+        var results = [
+            [{ idx: 0 }]
+        ];
+        verifymatch.dropFeature(geocoder, options, results, function(err, res) {
+            q.ok(err, 'throws source undefined for idx');
+            q.notok(res, 'no results');
+            q.end();
+        });
+    });
+
+    t.test('dropFeature types', function(q) {
+        var geocoder = {
+            byidx: [
+                {
+                    type: 'country'
+                },{
+                    type: 'region'
+                }
+            ]
+        };
+        var options = {
+            types: ['country']
+        };
+        var results = [
+            [{ idx: 0, id: 0 }],
+            [{ idx: 1, id: 1 }]
+        ];
+        var res = verifymatch.dropFeature(geocoder, options, results);
+        t.equals(res.length, 1);
+        t.equals(res[0][0].id, 0);
+        q.end();
+    });
+
+    t.test('dropFeature stacks', function(q) {
+        var geocoder = {
+            byidx: [
+                {
+                    stack: ['ca']
+                },
+                {
+                    stack: ['us']
+                }
+            ]
+        };
+        var options = {
+            stacks: ['ca']
+        };
+        var results = [
+            [{ idx: 0, id: 0 }],
+            [{ idx: 1, id: 1 }]
+        ];
+        var res = verifymatch.dropFeature(geocoder, options, results);
+        t.equals(res.length, 1);
+        t.equals(res[0][0].id, 0);
+        q.end()
+    });
+
+    t.test('dropFeature types & stacks', function(q) {
+        var geocoder = {
+            byidx: [
+                {
+                    stack: ['ca'],
+                    type: 'place'
+                },
+                {
+                    stack: ['us'],
+                    type: 'place'
+                },
+                {
+                    stack: ['zz'],
+                    type: 'other'
+                }
+            ]
+        };
+        var options = {
+            stacks: ['zz'],
+            types: ['place']
+        };
+        var results = [
+            [{ idx: 0, id: 0 }],
+            [{ idx: 1, id: 1 }],
+            [{ idx: 2, id: 2 }]
+        ];
+        var res = verifymatch.dropFeature(geocoder, options, results);
+        t.equals(res.length, 0);
+        q.end()
+    });
+    t.end();
+});
+
 tape('verifymatch.sortFeature', function(assert) {
     var arr = [
         { id: 7, properties: { 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null } },
