@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.1.0
+
+- Drop `mmap` dependency.
+- Reintroduce `XRegExp` dependency for limited circumstances where named capture groups are necessary.
+
 ## 11.0.0
 
 - Carmen's dict cache now uses [directed acyclic word graphs](https://en.wikipedia.org/wiki/Deterministic_acyclic_finite_state_automaton) instead of the bit array cache introduced in carmen 9.0.0. As before, they are generated at index time and stored and can be dumped and loaded in a single contiguous-memory chunk, so fast start times should be preserved as compared to bit cache, but with more memory compactness and lower collision rates.
