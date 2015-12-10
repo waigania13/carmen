@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.2.0
+
+- Add support for feature/index level `geocoder_stack` parameter. This parameter allows for stack based filtering (as opposed to type filtering)
+- Also uses stack for building stackable phrase list instead of bounds
+
 ## 11.1.0
 
 - Drop `mmap` dependency.
