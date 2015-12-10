@@ -28,6 +28,7 @@ function Geocoder(indexes, options) {
     this.replacer = token.createReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
+    this.bystack = {};
     this.byidx = [];
     this.names = [];
 
@@ -39,6 +40,7 @@ function Geocoder(indexes, options) {
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
+        var stacks = [];
         if (results) results.forEach(function(data, i) {
             var id = data.id;
             var info = data.info;
@@ -46,6 +48,7 @@ function Geocoder(indexes, options) {
             var source = indexes[id];
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
+            var stack = info.geocoder_stack || false;
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
@@ -53,6 +56,15 @@ function Geocoder(indexes, options) {
             if (types.indexOf(type) === -1) {
                 types.push(type);
                 this.bytype[type] = [];
+            }
+            if (typeof stack === 'string') stack = [stack];
+            if (stack) {
+                for (var j = 0; j < stack.length; j++) {
+                    if (stacks.indexOf(stack[j]) === -1) {
+                        stacks.push(stack[j]);
+                        this.bystack[stack[j]] = [];
+                    }
+                }
             }
 
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
@@ -89,6 +101,7 @@ function Geocoder(indexes, options) {
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
             source.maxzoom = info.maxzoom;
+            source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
             source.type = type;
             source.name = name;
@@ -106,23 +119,34 @@ function Geocoder(indexes, options) {
             // add bytype index lookup
             this.bytype[type].push(source);
 
+            // add bystack index lookup
+            for (var j = 0; j < stack.length; j++) {
+                this.bystack[stack[j]].push(source);
+            }
+
             // add byidx index lookup
             this.byidx[i] = source;
         }.bind(this));
 
-        // Second pass -- generate bmask (bounds mask) per index.
-        // The bmask of an index represents a mask of all indexes that its
-        // bounds do not intersect with -- ie. a spatialmatch with any of
+        // Second pass -- generate bmask (geocoder_stack) per index.
+        // The bmask of an index represents a mask of all indexes that their
+        // geocoder_stacks do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
         for (var i = 0; i < this.byidx.length; i++) {
             var bmask = [];
             var a = this.byidx[i];
             for (var j = 0; j < this.byidx.length; j++) {
                 var b = this.byidx[j];
-                if (boundsIntersect(a.bounds, b.bounds)) {
-                    bmask[j] = 0;
-                } else {
-                    bmask[j] = 1;
+                var a_it = a.stack.length;
+                while (a_it--) {
+                    var b_it = b.stack.length;
+                    while (b_it--) {
+                        if (a.stack[a_it] === b.stack[b_it]) {
+                            bmask[j] = 0;
+                        } else if (bmask[j] !== 0) {
+                            bmask[j] = 1;
+                        }
+                    }
                 }
             }
             this.byidx[i].bmask = bmask;
