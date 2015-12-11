@@ -13,10 +13,10 @@ var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
 tape('index', function(assert) {
-    try { 
-        fs.unlinkSync(tmpindex); 
+    try {
+        fs.unlinkSync(tmpindex);
     } catch (err) {
-        //'file not found' 
+        //'file not found'
     }
     var conf = { index: new MBTiles(tmpindex, function() {}) };
     var carmen = new Carmen(conf);
@@ -98,6 +98,12 @@ tape('bin/carmen query types', function(t) {
 tape('bin/carmen query wrong types', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="not a type"', function(err, stdout, stderr) {
         t.ok(err, 'not a type');
+        t.end();
+    });
+});
+tape('bin/carmen query wrong stacks', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --stacks="not a stack"', function(err, stdout, stderr) {
+        t.ok(err, 'not a stack');
         t.end();
     });
 });
