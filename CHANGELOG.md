@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.2.1
+
+- Stop addFeature() in unit tests from overwiting VT. Instead decode and append to it.
+
 ## 11.2.0
 
 - Add support for feature/index level `geocoder_stack` parameter. This parameter allows for stack based filtering (as opposed to type filtering)
