@@ -156,15 +156,14 @@ var addFeature = require('../lib/util/addfeature');
         c.geocode('-79.37745451927184,38.83420867393712', {  }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 2, 'returns 1 result of 2 context');
-            t.equal(res.features[0].place_name, 'seneca rocks 1, west virginia');
+            t.equal(res.features[0].place_name, 'seneca rocks 5, west virginia');
             t.equal(res.features[1].place_name, 'west virginia');
             t.end();
         });
     });
     tape('Limit only works with type (reverse)', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 2 }, function(err, res) {
-            t.ifError(err);
-            t.equal(res.features.length, 1, 'returns 1 result');
+            t.equals(err, 'limit must be combined with a single type paramater when reverse geocoding');
             t.end();
         });
     });
