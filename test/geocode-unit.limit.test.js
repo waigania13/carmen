@@ -19,14 +19,14 @@ var addFeature = require('../lib/util/addfeature');
     };
     var c = new Carmen(conf);
     tape('index country', function(t) {
-            addFeature(conf.country, {
-                id: 1,
-                properties: {
-                    'carmen:text':'United States',
-                    'carmen:center': [0,0],
-                    'carmen:zxy': ['6/32/32']
-                }
-            }, t.end);
+        addFeature(conf.country, {
+            id: 1,
+            properties: {
+                'carmen:text':'United States',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            }
+        }, t.end);
     });
     tape('index place', function(t) {
         var q = queue(1);
@@ -114,20 +114,20 @@ var addFeature = require('../lib/util/addfeature');
         }, function() {}),
         address: new mem({
             maxzoom: 12,
-            geocoder_name: 'address',
-            geocoder_type: 'poi'
+            geocoder_name: 'poi',
+            geocoder_type: 'address'
         }, function() {})
     };
     var c = new Carmen(conf);
     tape('index place', function(t) {
-            addFeature(conf.place, {
-                id: 1,
-                properties: {
-                    'carmen:text':'west virginia',
-                    'carmen:center': [-79.37922477722168,38.832871481546036],
-                    'carmen:zxy': ['6/17/24']
-                }
-            }, t.end);
+        addFeature(conf.place, {
+            id: 1,
+            properties: {
+                'carmen:text':'west virginia',
+                'carmen:center': [-79.37922477722168,38.832871481546036],
+                'carmen:zxy': ['6/17/24']
+            }
+        }, t.end);
     });
 
     var coords = [
