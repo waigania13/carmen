@@ -108,7 +108,14 @@ var addFeature = require('../lib/util/addfeature');
             maxzoom: 6
         }, function() {}),
         poi: new mem({
-            maxzoom: 12
+            maxzoom: 12,
+            geocoder_name: 'poi',
+            geocoder_type: 'poi'
+        }, function() {}),
+        address: new mem({
+            maxzoom: 12,
+            geocoder_name: 'address',
+            geocoder_type: 'poi'
         }, function() {})
     };
     var c = new Carmen(conf);
@@ -122,25 +129,45 @@ var addFeature = require('../lib/util/addfeature');
                 }
             }, t.end);
     });
+
+    var coords = [
+        [-79.37663912773132,38.83417524443351],
+        [-79.37698781490326,38.83414599360498],
+        [-79.37705218791960,38.83398302448309],
+        [-79.37690734863281,38.83439671460232],
+        [-79.37739551067352,38.83437582121962],
+        [-79.37776565551758,38.83445939471365],
+        [-79.37820553779602,38.83435910650903],
+        [-79.37737405300139,38.83381587627815],
+        [-79.37737941741943,38.83361111919213],
+        [-79.37780320644379,38.83375319560010]
+    ]
+
     tape('index poi', function(t) {
         var q = queue(1);
-        var coords = [
-            [-79.37663912773132,38.83417524443351],
-            [-79.37698781490326,38.83414599360498],
-            [-79.37705218791960,38.83398302448309],
-            [-79.37690734863281,38.83439671460232],
-            [-79.37739551067352,38.83437582121962],
-            [-79.37776565551758,38.83445939471365],
-            [-79.37820553779602,38.83435910650903],
-            [-79.37737405300139,38.83381587627815],
-            [-79.37737941741943,38.83361111919213],
-            [-79.37780320644379,38.83375319560010]
-        ]
-        for (var i = 1; i < 11; i++) q.defer(function(i, done) {
+        for (var i = 1; i < 6; i++) q.defer(function(i, done) {
             addFeature(conf.poi, {
                 id:i,
                 properties: {
                     'carmen:text':'seneca rocks ' + i,
+                    'carmen:center': coords[i-1],
+                },
+                geometry: {
+                    type: "Point",
+                    coordinates: coords[i-1]
+                }
+            }, done);
+            q.awaitAll(t.end);
+        }, i);
+    });
+
+    tape('index address', function(t) {
+        var q = queue(1);
+        for (var i = 6; i < 11; i++) q.defer(function(i, done) {
+            addFeature(conf.address, {
+                id: i-5,
+                properties: {
+                    'carmen:text':'address ' + i,
                     'carmen:center': coords[i-1],
                 },
                 geometry: {
