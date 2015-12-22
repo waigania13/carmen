@@ -190,7 +190,7 @@ var addFeature = require('../lib/util/addfeature');
     });
     tape('Limit only works with type (reverse)', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 2 }, function(err, res) {
-            t.equals(err, 'limit must be combined with a single type paramater when reverse geocoding');
+            t.ok(err);
             t.end();
         });
     });
