@@ -62,7 +62,7 @@ tape('winding river rd springfield', function(t) {
         t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, ['grid,62799'], 'place1: loads 1 grid');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData, ['grid,52975','grid,8765','feature,1','feature,2'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,1','feature,2','grid,52975','grid,8765'], 'street1: loads 1 grid, 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
