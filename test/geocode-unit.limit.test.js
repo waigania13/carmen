@@ -222,3 +222,71 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
+
+//Handle addressclusters
+(function() {
+    var conf = {
+        place: new mem({
+            maxzoom: 6
+        }, function() {}),
+        address: new mem({
+            maxzoom: 12,
+            geocoder_address: 1
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        addFeature(conf.place, {
+            id: 1,
+            properties: {
+                'carmen:text':'west virginia',
+                'carmen:center': [-79.37922477722168,38.832871481546036],
+                'carmen:zxy': ['6/17/24']
+            }
+        }, t.end);
+    });
+
+    var coords = [
+        [-79.37663912773132,38.83417524443351],
+        [-79.37698781490326,38.83414599360498],
+        [-79.37705218791960,38.83398302448309],
+        [-79.37690734863281,38.83439671460232],
+        [-79.37739551067352,38.83437582121962],
+        [-79.37776565551758,38.83445939471365],
+        [-79.37820553779602,38.83435910650903],
+        [-79.37737405300139,38.83381587627815],
+        [-79.37737941741943,38.83361111919213],
+        [-79.37780320644379,38.83375319560010]
+    ]
+
+    tape('index address', function(t) {
+        addFeature(conf.address, {
+            id:1,
+            properties: {
+                'carmen:text':'main street',
+                'carmen:center': coords[0],
+                'carmen:addressnumber': [
+                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
+                ]
+            },
+            geometry: {
+                type: "MultiPoint",
+                coordinates: coords
+            }
+        }, t.end);
+    });
+
+    tape('Reverse Cluster', function(t) {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
+            t.equal(res.features.length, 5, 'returns 5 results - hard limit');
+            t.ifError(err);
+            t.end();
+        });
+    });
+})();
+
+tape('index.teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});
