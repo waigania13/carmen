@@ -23,16 +23,18 @@ test('index - streaming interface', function(assert) {
     var carmen = new Carmen(conf);
     assert.test('indexes a document', function(q) {
         carmen.index(null, conf.to, {
-            config: {},
+            config: {
+                zoom: 6
+            },
             index: conf.to,
             input: inputStream,
             output: outputStream
         }, function(err) {
             q.ifError(err);
-
+            q.end();
         });
     });
-
+    assert.end();
 });
 
 test('index.generateStats', function(assert) {
