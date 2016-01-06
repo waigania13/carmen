@@ -21,7 +21,7 @@ test('index - streaming interface', function(assert) {
     };
 
     var carmen = new Carmen(conf);
-    assert.test('indexes a document', function(q) {
+    assert.test('index docs.json', function(q) {
         carmen.index(null, conf.to, {
             config: {
                 zoom: 6
@@ -31,6 +31,13 @@ test('index - streaming interface', function(assert) {
             output: outputStream
         }, function(err) {
             q.ifError(err);
+            q.end();
+        });
+    });
+    assert.test('ensure index was successful', function(q) {
+        carmen.analyze(conf.to, function(err, stats) {
+            q.ifError(err);
+            q.deepEqual(require('./fixtures/mem-analyze.json'), stats);
             q.end();
         });
     });
