@@ -13,7 +13,7 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
 test('index - streaming interface', function(assert) {
-    var inputStream = fs.createReadStream(path.resolve(process.cwd(), './fixtures/docs.json'), { encoding: 'utf8' });
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
     var outputStream = new Stream();
 
     var conf = {
