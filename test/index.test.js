@@ -14,7 +14,13 @@ var token = require('../lib/util/token');
 
 test('index - streaming interface', function(assert) {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
-    var outputStream = new Stream();
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function (chunk, encoding, done) {
+        var doc = JSON.parse(chunk.toString());
+        assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
+    };
 
     var conf = {
         to: new mem([], null, function() {})
