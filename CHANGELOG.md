@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.2.3
+
+- Fix bad reference in verifymatch leading to crashing error.
+
 ## 11.2.2
 
 - Fix wasteful duplicate I/O when loading grid cache shards.
