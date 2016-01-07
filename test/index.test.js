@@ -17,8 +17,12 @@ test('index - streaming interface', function(assert) {
 
     var outputStream = new Stream.Writable();
     outputStream._write = function (chunk, encoding, done) {
+        if (chunk.toString().indexOf('FeatureCollection') > -1) return done();
+        if (chunk.toString() === ']}') return done();
         var doc = JSON.parse(chunk.toString());
-        assert.ok(doc.id, 'has id: ' + doc.id);
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
