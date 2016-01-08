@@ -20,8 +20,8 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('wait for carmen init', function(t) {
-    c.on('open', t.end);
+tape('ready', function(assert) {
+    c._open(assert.end);
 });
 
 [1,2,3].forEach(function(i) {
