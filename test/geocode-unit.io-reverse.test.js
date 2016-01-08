@@ -19,7 +19,7 @@ var conf = {
 var c = new Carmen(conf);
 
 tape('ready', function(assert) {
-    c.on('open', assert.end);
+    c._open(assert.end);
 });
 
 tape('index country', function(t) {
