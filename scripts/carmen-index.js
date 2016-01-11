@@ -64,10 +64,10 @@ if (!argv._[2]) {
 	var from = argv._[2];
 	var to = argv._[3]
 
-	var conf = {
-		to: to,
-		from: from
-	};
+    var conf = {
+        to: Carmen.auto(to),
+        from: Carmen.auto(from)
+    };
 
 	var carmen = new Carmen(conf);
 
