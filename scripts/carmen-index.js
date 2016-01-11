@@ -39,9 +39,6 @@ if (!argv._[2]) {
 
     var outputStream = process.stdout;
 
-    process.stdin.setEncoding('utf8');
-    process.stdin.resume();
-
 	argv.index = Carmen.auto(argv.index);
 
 	var conf = {
