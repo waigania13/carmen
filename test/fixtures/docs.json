@@ -3,6 +3,7 @@
     "features": [
         {
             "id": 1,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Siachen Glacier",
                 "iso2": "-99",
@@ -43,6 +44,7 @@
         },
         {
             "id": 2,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cyprus No Mans Area",
                 "iso2": "-99",
@@ -83,6 +85,7 @@
         },
         {
             "id": 3,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "China",
                 "iso2": "CN",
@@ -123,6 +126,7 @@
         },
         {
             "id": 4,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "India",
                 "iso2": "IN",
@@ -163,6 +167,7 @@
         },
         {
             "id": 5,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United States of America, United States, America, USA, US",
                 "iso2": "US",
@@ -597,6 +602,7 @@
         },
         {
             "id": 6,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Indonesia",
                 "iso2": "ID",
@@ -797,6 +803,7 @@
         },
         {
             "id": 7,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Brazil",
                 "iso2": "BR",
@@ -957,6 +964,7 @@
         },
         {
             "id": 8,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Pakistan",
                 "iso2": "PK",
@@ -997,6 +1005,7 @@
         },
         {
             "id": 9,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bangladesh",
                 "iso2": "BD",
@@ -1037,6 +1046,7 @@
         },
         {
             "id": 10,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Nigeria",
                 "iso2": "NG",
@@ -1077,6 +1087,7 @@
         },
         {
             "id": 11,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Russia",
                 "iso2": "RU",
@@ -1711,6 +1722,7 @@
         },
         {
             "id": 12,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Japan",
                 "iso2": "JP",
@@ -1977,6 +1989,7 @@
         },
         {
             "id": 13,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mexico",
                 "iso2": "MX",
@@ -2097,6 +2110,7 @@
         },
         {
             "id": 14,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Philippines",
                 "iso2": "PH",
@@ -2217,6 +2231,7 @@
         },
         {
             "id": 15,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Vietnam",
                 "iso2": "VN",
@@ -2257,6 +2272,7 @@
         },
         {
             "id": 16,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ethiopia",
                 "iso2": "ET",
@@ -2297,6 +2313,7 @@
         },
         {
             "id": 17,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Egypt",
                 "iso2": "EG",
@@ -2337,6 +2354,7 @@
         },
         {
             "id": 18,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Germany, DE",
                 "iso2": "DE",
@@ -2377,6 +2395,7 @@
         },
         {
             "id": 19,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Turkey",
                 "iso2": "TR",
@@ -2417,6 +2436,7 @@
         },
         {
             "id": 20,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Democratic Republic of the Congo, DRC",
                 "iso2": "CD",
@@ -2457,6 +2477,7 @@
         },
         {
             "id": 21,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Iran",
                 "iso2": "IR",
@@ -2497,6 +2518,7 @@
         },
         {
             "id": 22,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Thailand",
                 "iso2": "TH",
@@ -2537,6 +2559,7 @@
         },
         {
             "id": 23,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "France, FR",
                 "iso2": "FR",
@@ -2675,6 +2698,7 @@
         },
         {
             "id": 24,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United Kingdom, UK",
                 "iso2": "GB",
@@ -2835,6 +2859,7 @@
         },
         {
             "id": 25,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Italy",
                 "iso2": "IT",
@@ -2955,6 +2980,7 @@
         },
         {
             "id": 26,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "South Africa",
                 "iso2": "ZA",
@@ -3021,6 +3047,7 @@
         },
         {
             "id": 27,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "South Korea, Korea",
                 "iso2": "KR",
@@ -3061,6 +3088,7 @@
         },
         {
             "id": 28,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Myanmar",
                 "iso2": "MM",
@@ -3101,6 +3129,7 @@
         },
         {
             "id": 29,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ukraine",
                 "iso2": "UA",
@@ -3141,6 +3170,7 @@
         },
         {
             "id": 30,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Colombia, Columbia",
                 "iso2": "CO",
@@ -3181,6 +3211,7 @@
         },
         {
             "id": 31,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United Republic of Tanzania",
                 "iso2": "TZ",
@@ -3221,6 +3252,7 @@
         },
         {
             "id": 32,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Argentina",
                 "iso2": "AR",
@@ -3341,6 +3373,7 @@
         },
         {
             "id": 33,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Spain",
                 "iso2": "ES",
@@ -3407,6 +3440,7 @@
         },
         {
             "id": 34,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kenya",
                 "iso2": "KE",
@@ -3447,6 +3481,7 @@
         },
         {
             "id": 35,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Poland",
                 "iso2": "PL",
@@ -3487,6 +3522,7 @@
         },
         {
             "id": 36,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Morocco",
                 "iso2": "MA",
@@ -3527,6 +3563,7 @@
         },
         {
             "id": 37,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Algeria",
                 "iso2": "DZ",
@@ -3567,6 +3604,7 @@
         },
         {
             "id": 38,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Canada, CA",
                 "iso2": "CA",
@@ -3967,6 +4005,7 @@
         },
         {
             "id": 39,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Uganda",
                 "iso2": "UG",
@@ -4007,6 +4046,7 @@
         },
         {
             "id": 40,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sudan",
                 "iso2": "SD",
@@ -4047,6 +4087,7 @@
         },
         {
             "id": 41,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Peru",
                 "iso2": "PE",
@@ -4087,6 +4128,7 @@
         },
         {
             "id": 42,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Iraq",
                 "iso2": "IQ",
@@ -4127,6 +4169,7 @@
         },
         {
             "id": 43,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saudi Arabia",
                 "iso2": "SA",
@@ -4167,6 +4210,7 @@
         },
         {
             "id": 44,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Nepal",
                 "iso2": "NP",
@@ -4207,6 +4251,7 @@
         },
         {
             "id": 45,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Afghanistan",
                 "iso2": "AF",
@@ -4247,6 +4292,7 @@
         },
         {
             "id": 46,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Uzbekistan",
                 "iso2": "UZ",
@@ -4287,6 +4333,7 @@
         },
         {
             "id": 47,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Venezuela",
                 "iso2": "VE",
@@ -4327,6 +4374,7 @@
         },
         {
             "id": 48,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Malaysia",
                 "iso2": "MY",
@@ -4367,6 +4415,7 @@
         },
         {
             "id": 49,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ghana",
                 "iso2": "GH",
@@ -4407,6 +4456,7 @@
         },
         {
             "id": 50,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Yemen",
                 "iso2": "YE",
@@ -4447,6 +4497,7 @@
         },
         {
             "id": 51,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Taiwan",
                 "iso2": "TW",
@@ -4487,6 +4538,7 @@
         },
         {
             "id": 52,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "North Korea",
                 "iso2": "KP",
@@ -4527,6 +4579,7 @@
         },
         {
             "id": 53,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Romania",
                 "iso2": "RO",
@@ -4567,6 +4620,7 @@
         },
         {
             "id": 54,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mozambique",
                 "iso2": "MZ",
@@ -4607,6 +4661,7 @@
         },
         {
             "id": 55,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sri Lanka",
                 "iso2": "LK",
@@ -4647,6 +4702,7 @@
         },
         {
             "id": 56,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Australia, AU",
                 "iso2": "AU",
@@ -4873,6 +4929,7 @@
         },
         {
             "id": 57,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Madagascar",
                 "iso2": "MG",
@@ -4913,6 +4970,7 @@
         },
         {
             "id": 58,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ivory Coast",
                 "iso2": "CI",
@@ -4953,6 +5011,7 @@
         },
         {
             "id": 59,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Syria",
                 "iso2": "SY",
@@ -4993,6 +5052,7 @@
         },
         {
             "id": 60,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cameroon",
                 "iso2": "CM",
@@ -5033,6 +5093,7 @@
         },
         {
             "id": 61,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Netherlands",
                 "iso2": "NL",
@@ -5123,6 +5184,7 @@
         },
         {
             "id": 62,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Chile",
                 "iso2": "CL",
@@ -5429,6 +5491,7 @@
         },
         {
             "id": 63,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Burkina Faso",
                 "iso2": "BF",
@@ -5469,6 +5532,7 @@
         },
         {
             "id": 64,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kazakhstan",
                 "iso2": "KZ",
@@ -5509,6 +5573,7 @@
         },
         {
             "id": 65,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Niger",
                 "iso2": "NE",
@@ -5549,6 +5614,7 @@
         },
         {
             "id": 66,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ecuador",
                 "iso2": "EC",
@@ -5669,6 +5735,7 @@
         },
         {
             "id": 67,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cambodia",
                 "iso2": "KH",
@@ -5709,6 +5776,7 @@
         },
         {
             "id": 68,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Malawi",
                 "iso2": "MW",
@@ -5749,6 +5817,7 @@
         },
         {
             "id": 69,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Senegal",
                 "iso2": "SN",
@@ -5789,6 +5858,7 @@
         },
         {
             "id": 70,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guatemala",
                 "iso2": "GT",
@@ -5829,6 +5899,7 @@
         },
         {
             "id": 71,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Angola",
                 "iso2": "AO",
@@ -5909,6 +5980,7 @@
         },
         {
             "id": 72,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mali",
                 "iso2": "ML",
@@ -5949,6 +6021,7 @@
         },
         {
             "id": 73,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Zambia",
                 "iso2": "ZM",
@@ -5989,6 +6062,7 @@
         },
         {
             "id": 74,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cuba",
                 "iso2": "CU",
@@ -6029,6 +6103,7 @@
         },
         {
             "id": 75,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Zimbabwe",
                 "iso2": "ZW",
@@ -6069,6 +6144,7 @@
         },
         {
             "id": 76,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Greece",
                 "iso2": "GR",
@@ -6149,6 +6225,7 @@
         },
         {
             "id": 77,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Portugal",
                 "iso2": "PT",
@@ -6255,6 +6332,7 @@
         },
         {
             "id": 78,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Tunisia",
                 "iso2": "TN",
@@ -6295,6 +6373,7 @@
         },
         {
             "id": 79,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Rwanda",
                 "iso2": "RW",
@@ -6335,6 +6414,7 @@
         },
         {
             "id": 80,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Belgium",
                 "iso2": "BE",
@@ -6375,6 +6455,7 @@
         },
         {
             "id": 81,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Chad",
                 "iso2": "TD",
@@ -6415,6 +6496,7 @@
         },
         {
             "id": 82,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Czech Republic",
                 "iso2": "CZ",
@@ -6455,6 +6537,7 @@
         },
         {
             "id": 83,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guinea",
                 "iso2": "GN",
@@ -6495,6 +6578,7 @@
         },
         {
             "id": 84,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Hungary",
                 "iso2": "HU",
@@ -6535,6 +6619,7 @@
         },
         {
             "id": 85,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Somalia",
                 "iso2": "SO",
@@ -6575,6 +6660,7 @@
         },
         {
             "id": 86,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bolivia",
                 "iso2": "BO",
@@ -6615,6 +6701,7 @@
         },
         {
             "id": 87,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Dominican Republic",
                 "iso2": "DO",
@@ -6655,6 +6742,7 @@
         },
         {
             "id": 88,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Belarus",
                 "iso2": "BY",
@@ -6695,6 +6783,7 @@
         },
         {
             "id": 89,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sweden",
                 "iso2": "SE",
@@ -6735,6 +6824,7 @@
         },
         {
             "id": 90,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Haiti",
                 "iso2": "HT",
@@ -6775,6 +6865,7 @@
         },
         {
             "id": 91,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Burundi",
                 "iso2": "BI",
@@ -6815,6 +6906,7 @@
         },
         {
             "id": 92,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Benin",
                 "iso2": "BJ",
@@ -6855,6 +6947,7 @@
         },
         {
             "id": 93,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "South Sudan",
                 "iso2": "SS",
@@ -6895,6 +6988,7 @@
         },
         {
             "id": 94,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Azerbaijan",
                 "iso2": "AZ",
@@ -6975,6 +7069,7 @@
         },
         {
             "id": 95,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Austria",
                 "iso2": "AT",
@@ -7015,6 +7110,7 @@
         },
         {
             "id": 96,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Honduras",
                 "iso2": "HN",
@@ -7095,6 +7191,7 @@
         },
         {
             "id": 97,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Switzerland",
                 "iso2": "CH",
@@ -7135,6 +7232,7 @@
         },
         {
             "id": 98,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Republic of Serbia",
                 "iso2": "RS",
@@ -7175,6 +7273,7 @@
         },
         {
             "id": 99,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Tajikistan",
                 "iso2": "TJ",
@@ -7215,6 +7314,7 @@
         },
         {
             "id": 100,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Israel",
                 "iso2": "IL",
@@ -7255,6 +7355,7 @@
         },
         {
             "id": 101,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bulgaria",
                 "iso2": "BG",
@@ -7295,6 +7396,7 @@
         },
         {
             "id": 102,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "El Salvador",
                 "iso2": "SV",
@@ -7335,6 +7437,7 @@
         },
         {
             "id": 103,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Hong Kong S.A.R.",
                 "iso2": "HK",
@@ -7375,6 +7478,7 @@
         },
         {
             "id": 104,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Paraguay",
                 "iso2": "PY",
@@ -7415,6 +7519,7 @@
         },
         {
             "id": 105,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Laos",
                 "iso2": "LA",
@@ -7455,6 +7560,7 @@
         },
         {
             "id": 106,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sierra Leone",
                 "iso2": "SL",
@@ -7495,6 +7601,7 @@
         },
         {
             "id": 107,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Jordan",
                 "iso2": "JO",
@@ -7535,6 +7642,7 @@
         },
         {
             "id": 108,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Libya",
                 "iso2": "LY",
@@ -7575,6 +7683,7 @@
         },
         {
             "id": 109,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Papua New Guinea",
                 "iso2": "PG",
@@ -7655,6 +7764,7 @@
         },
         {
             "id": 110,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Togo",
                 "iso2": "TG",
@@ -7695,6 +7805,7 @@
         },
         {
             "id": 111,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Nicaragua",
                 "iso2": "NI",
@@ -7735,6 +7846,7 @@
         },
         {
             "id": 112,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Eritrea",
                 "iso2": "ER",
@@ -7775,6 +7887,7 @@
         },
         {
             "id": 113,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Denmark",
                 "iso2": "DK",
@@ -7815,6 +7928,7 @@
         },
         {
             "id": 114,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Slovakia",
                 "iso2": "SK",
@@ -7855,6 +7969,7 @@
         },
         {
             "id": 115,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kyrgyzstan",
                 "iso2": "KG",
@@ -7895,6 +8010,7 @@
         },
         {
             "id": 116,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Finland",
                 "iso2": "FI",
@@ -7935,6 +8051,7 @@
         },
         {
             "id": 117,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Turkmenistan",
                 "iso2": "TM",
@@ -7975,6 +8092,7 @@
         },
         {
             "id": 118,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United Arab Emirates, UAE",
                 "iso2": "AE",
@@ -8015,6 +8133,7 @@
         },
         {
             "id": 119,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Norway",
                 "iso2": "NO",
@@ -8265,6 +8384,7 @@
         },
         {
             "id": 120,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Georgia",
                 "iso2": "GE",
@@ -8305,6 +8425,7 @@
         },
         {
             "id": 121,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bosnia and Herzegovina",
                 "iso2": "BA",
@@ -8345,6 +8466,7 @@
         },
         {
             "id": 122,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Central African Republic",
                 "iso2": "CF",
@@ -8385,6 +8507,7 @@
         },
         {
             "id": 123,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Croatia",
                 "iso2": "HR",
@@ -8425,6 +8548,7 @@
         },
         {
             "id": 124,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Moldova",
                 "iso2": "MD",
@@ -8465,6 +8589,7 @@
         },
         {
             "id": 125,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Costa Rica",
                 "iso2": "CR",
@@ -8545,6 +8670,7 @@
         },
         {
             "id": 126,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "New Zealand",
                 "iso2": "NZ",
@@ -8755,6 +8881,7 @@
         },
         {
             "id": 127,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Ireland",
                 "iso2": "IE",
@@ -8795,6 +8922,7 @@
         },
         {
             "id": 128,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Lebanon",
                 "iso2": "LB",
@@ -8835,6 +8963,7 @@
         },
         {
             "id": 129,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Republic of the Congo",
                 "iso2": "CG",
@@ -8875,6 +9004,7 @@
         },
         {
             "id": 130,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Puerto Rico",
                 "iso2": "PR",
@@ -8915,6 +9045,7 @@
         },
         {
             "id": 131,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Albania",
                 "iso2": "AL",
@@ -8955,6 +9086,7 @@
         },
         {
             "id": 132,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Lithuania",
                 "iso2": "LT",
@@ -8995,6 +9127,7 @@
         },
         {
             "id": 133,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Somaliland",
                 "iso2": "-99",
@@ -9035,6 +9168,7 @@
         },
         {
             "id": 134,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Uruguay",
                 "iso2": "UY",
@@ -9075,6 +9209,7 @@
         },
         {
             "id": 135,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Liberia",
                 "iso2": "LR",
@@ -9115,6 +9250,7 @@
         },
         {
             "id": 136,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Oman",
                 "iso2": "OM",
@@ -9155,6 +9291,7 @@
         },
         {
             "id": 137,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Panama",
                 "iso2": "PA",
@@ -9195,6 +9332,7 @@
         },
         {
             "id": 138,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mauritania",
                 "iso2": "MR",
@@ -9235,6 +9373,7 @@
         },
         {
             "id": 139,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mongolia",
                 "iso2": "MN",
@@ -9275,6 +9414,7 @@
         },
         {
             "id": 140,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Armenia",
                 "iso2": "AM",
@@ -9315,6 +9455,7 @@
         },
         {
             "id": 141,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Jamaica",
                 "iso2": "JM",
@@ -9355,6 +9496,7 @@
         },
         {
             "id": 142,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kuwait",
                 "iso2": "KW",
@@ -9395,6 +9537,7 @@
         },
         {
             "id": 143,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "West Bank",
                 "iso2": "PS",
@@ -9435,6 +9578,7 @@
         },
         {
             "id": 144,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Latvia",
                 "iso2": "LV",
@@ -9475,6 +9619,7 @@
         },
         {
             "id": 145,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Lesotho",
                 "iso2": "LS",
@@ -9515,6 +9660,7 @@
         },
         {
             "id": 146,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Namibia",
                 "iso2": "NA",
@@ -9555,6 +9701,7 @@
         },
         {
             "id": 147,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Macedonia",
                 "iso2": "MK",
@@ -9595,6 +9742,7 @@
         },
         {
             "id": 148,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Slovenia",
                 "iso2": "SI",
@@ -9635,6 +9783,7 @@
         },
         {
             "id": 149,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Botswana",
                 "iso2": "BW",
@@ -9675,6 +9824,7 @@
         },
         {
             "id": 150,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kosovo",
                 "iso2": "-99",
@@ -9715,6 +9865,7 @@
         },
         {
             "id": 151,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Gambia",
                 "iso2": "GM",
@@ -9755,6 +9906,7 @@
         },
         {
             "id": 152,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Gaza",
                 "iso2": "PS",
@@ -9795,6 +9947,7 @@
         },
         {
             "id": 153,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guinea Bissau",
                 "iso2": "GW",
@@ -9835,6 +9988,7 @@
         },
         {
             "id": 154,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Gabon",
                 "iso2": "GA",
@@ -9875,6 +10029,7 @@
         },
         {
             "id": 155,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Trinidad and Tobago",
                 "iso2": "TT",
@@ -9955,6 +10110,7 @@
         },
         {
             "id": 156,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Estonia",
                 "iso2": "EE",
@@ -9995,6 +10151,7 @@
         },
         {
             "id": 157,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Mauritius",
                 "iso2": "MU",
@@ -10061,6 +10218,7 @@
         },
         {
             "id": 158,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "East Timor",
                 "iso2": "TL",
@@ -10101,6 +10259,7 @@
         },
         {
             "id": 159,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Swaziland",
                 "iso2": "SZ",
@@ -10141,6 +10300,7 @@
         },
         {
             "id": 160,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Fiji",
                 "iso2": "FJ",
@@ -10181,6 +10341,7 @@
         },
         {
             "id": 161,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Qatar",
                 "iso2": "QA",
@@ -10221,6 +10382,7 @@
         },
         {
             "id": 162,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guyana",
                 "iso2": "GY",
@@ -10261,6 +10423,7 @@
         },
         {
             "id": 163,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Comoros",
                 "iso2": "KM",
@@ -10301,6 +10464,7 @@
         },
         {
             "id": 164,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bahrain",
                 "iso2": "BH",
@@ -10341,6 +10505,7 @@
         },
         {
             "id": 165,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bhutan",
                 "iso2": "BT",
@@ -10381,6 +10546,7 @@
         },
         {
             "id": 166,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Montenegro",
                 "iso2": "ME",
@@ -10421,6 +10587,7 @@
         },
         {
             "id": 167,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Equatorial Guinea",
                 "iso2": "GQ",
@@ -10541,6 +10708,7 @@
         },
         {
             "id": 168,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Solomon Islands",
                 "iso2": "SB",
@@ -10661,6 +10829,7 @@
         },
         {
             "id": 169,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Macau S.A.R",
                 "iso2": "MO",
@@ -10701,6 +10870,7 @@
         },
         {
             "id": 170,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cyprus",
                 "iso2": "CY",
@@ -10741,6 +10911,7 @@
         },
         {
             "id": 171,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Djibouti",
                 "iso2": "DJ",
@@ -10781,6 +10952,7 @@
         },
         {
             "id": 172,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Luxembourg",
                 "iso2": "LU",
@@ -10821,6 +10993,7 @@
         },
         {
             "id": 173,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Suriname",
                 "iso2": "SR",
@@ -10861,6 +11034,7 @@
         },
         {
             "id": 174,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cape Verde",
                 "iso2": "CV",
@@ -10901,6 +11075,7 @@
         },
         {
             "id": 175,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Brunei",
                 "iso2": "BN",
@@ -10941,6 +11116,7 @@
         },
         {
             "id": 176,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "The Bahamas",
                 "iso2": "BS",
@@ -11021,6 +11197,7 @@
         },
         {
             "id": 177,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Belize",
                 "iso2": "BZ",
@@ -11061,6 +11238,7 @@
         },
         {
             "id": 178,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Iceland",
                 "iso2": "IS",
@@ -11101,6 +11279,7 @@
         },
         {
             "id": 179,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Barbados",
                 "iso2": "BB",
@@ -11141,6 +11320,7 @@
         },
         {
             "id": 180,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Northern Cyprus",
                 "iso2": "-99",
@@ -11181,6 +11361,7 @@
         },
         {
             "id": 181,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "New Caledonia",
                 "iso2": "NC",
@@ -11261,6 +11442,7 @@
         },
         {
             "id": 182,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Samoa",
                 "iso2": "WS",
@@ -11301,6 +11483,7 @@
         },
         {
             "id": 183,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Vanuatu",
                 "iso2": "VU",
@@ -11381,6 +11564,7 @@
         },
         {
             "id": 184,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sao Tome and Principe",
                 "iso2": "ST",
@@ -11421,6 +11605,7 @@
         },
         {
             "id": 185,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Lucia",
                 "iso2": "LC",
@@ -11461,6 +11646,7 @@
         },
         {
             "id": 186,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Kiribati",
                 "iso2": "KI",
@@ -11607,6 +11793,7 @@
         },
         {
             "id": 187,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Vincent and the Grenadines",
                 "iso2": "VC",
@@ -11647,6 +11834,7 @@
         },
         {
             "id": 188,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Grenada",
                 "iso2": "GD",
@@ -11687,6 +11875,7 @@
         },
         {
             "id": 189,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Seychelles",
                 "iso2": "SC",
@@ -11807,6 +11996,7 @@
         },
         {
             "id": 190,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Antigua and Barbuda",
                 "iso2": "AG",
@@ -11847,6 +12037,7 @@
         },
         {
             "id": 191,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Dominica",
                 "iso2": "DM",
@@ -11887,6 +12078,7 @@
         },
         {
             "id": 192,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Baykonur Cosmodrome",
                 "iso2": "-99",
@@ -11927,6 +12119,7 @@
         },
         {
             "id": 193,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Greenland",
                 "iso2": "GL",
@@ -11967,6 +12160,7 @@
         },
         {
             "id": 194,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cayman Islands",
                 "iso2": "KY",
@@ -12007,6 +12201,7 @@
         },
         {
             "id": 195,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Kitts and Nevis",
                 "iso2": "KN",
@@ -12047,6 +12242,7 @@
         },
         {
             "id": 196,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Liechtenstein",
                 "iso2": "LI",
@@ -12087,6 +12283,7 @@
         },
         {
             "id": 197,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Aland",
                 "iso2": "-99",
@@ -12127,6 +12324,7 @@
         },
         {
             "id": 198,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Palau",
                 "iso2": "PW",
@@ -12167,6 +12365,7 @@
         },
         {
             "id": 199,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Anguilla",
                 "iso2": "AI",
@@ -12207,6 +12406,7 @@
         },
         {
             "id": 200,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Antarctica",
                 "iso2": "AQ",
@@ -12327,6 +12527,7 @@
         },
         {
             "id": 201,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Falkland Islands",
                 "iso2": "FK",
@@ -12367,6 +12568,7 @@
         },
         {
             "id": 202,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Korea No Mans Area",
                 "iso2": "-99",
@@ -12407,6 +12609,7 @@
         },
         {
             "id": 203,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Western Sahara",
                 "iso2": "-99",
@@ -12447,6 +12650,7 @@
         },
         {
             "id": 204,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Singapore",
                 "iso2": "SG",
@@ -12487,6 +12691,7 @@
         },
         {
             "id": 205,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Malta",
                 "iso2": "MT",
@@ -12527,6 +12732,7 @@
         },
         {
             "id": 206,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Maldives",
                 "iso2": "MV",
@@ -12567,6 +12773,7 @@
         },
         {
             "id": 207,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "French Polynesia",
                 "iso2": "PF",
@@ -12793,6 +13000,7 @@
         },
         {
             "id": 208,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guam",
                 "iso2": "GU",
@@ -12833,6 +13041,7 @@
         },
         {
             "id": 209,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Curaçao",
                 "iso2": "CW",
@@ -12873,6 +13082,7 @@
         },
         {
             "id": 210,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Tonga",
                 "iso2": "TO",
@@ -12953,6 +13163,7 @@
         },
         {
             "id": 211,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United States Virgin Islands",
                 "iso2": "VI",
@@ -12993,6 +13204,7 @@
         },
         {
             "id": 212,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Federated States of Micronesia",
                 "iso2": "FM",
@@ -13113,6 +13325,7 @@
         },
         {
             "id": 213,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Aruba",
                 "iso2": "AW",
@@ -13153,6 +13366,7 @@
         },
         {
             "id": 214,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Northern Mariana Islands",
                 "iso2": "MP",
@@ -13193,6 +13407,7 @@
         },
         {
             "id": 215,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Andorra",
                 "iso2": "AD",
@@ -13233,6 +13448,7 @@
         },
         {
             "id": 216,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Isle of Man",
                 "iso2": "IM",
@@ -13273,6 +13489,7 @@
         },
         {
             "id": 217,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Bermuda",
                 "iso2": "BM",
@@ -13313,6 +13530,7 @@
         },
         {
             "id": 218,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "American Samoa",
                 "iso2": "AS",
@@ -13393,6 +13611,7 @@
         },
         {
             "id": 219,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Faroe Islands",
                 "iso2": "FO",
@@ -13433,6 +13652,7 @@
         },
         {
             "id": 220,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Sint Maarten",
                 "iso2": "SX",
@@ -13473,6 +13693,7 @@
         },
         {
             "id": 221,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "San Marino",
                 "iso2": "SM",
@@ -13513,6 +13734,7 @@
         },
         {
             "id": 222,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Martin",
                 "iso2": "MF",
@@ -13553,6 +13775,7 @@
         },
         {
             "id": 223,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "British Virgin Islands",
                 "iso2": "VG",
@@ -13593,6 +13816,7 @@
         },
         {
             "id": 224,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Turks and Caicos Islands",
                 "iso2": "TC",
@@ -13633,6 +13857,7 @@
         },
         {
             "id": 225,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Dhekelia Sovereign Base Area",
                 "iso2": "-99",
@@ -13673,6 +13898,7 @@
         },
         {
             "id": 226,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Akrotiri Sovereign Base Area",
                 "iso2": "-99",
@@ -13713,6 +13939,7 @@
         },
         {
             "id": 227,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Wallis and Futuna",
                 "iso2": "WF",
@@ -13753,6 +13980,7 @@
         },
         {
             "id": 228,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Nauru",
                 "iso2": "NR",
@@ -13793,6 +14021,7 @@
         },
         {
             "id": 229,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Cook Islands",
                 "iso2": "CK",
@@ -13859,6 +14088,7 @@
         },
         {
             "id": 230,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Helena",
                 "iso2": "SH",
@@ -13949,6 +14179,7 @@
         },
         {
             "id": 231,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Barthelemy",
                 "iso2": "BL",
@@ -13989,6 +14220,7 @@
         },
         {
             "id": 232,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Saint Pierre and Miquelon",
                 "iso2": "PM",
@@ -14029,6 +14261,7 @@
         },
         {
             "id": 233,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Montserrat",
                 "iso2": "MS",
@@ -14069,6 +14302,7 @@
         },
         {
             "id": 234,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "British Indian Ocean Territory",
                 "iso2": "IO",
@@ -14109,6 +14343,7 @@
         },
         {
             "id": 235,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Niue",
                 "iso2": "NU",
@@ -14149,6 +14384,7 @@
         },
         {
             "id": 236,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "French Southern and Antarctic Lands",
                 "iso2": "TF",
@@ -14263,6 +14499,7 @@
         },
         {
             "id": 237,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Pitcairn Islands",
                 "iso2": "PN",
@@ -14303,6 +14540,7 @@
         },
         {
             "id": 238,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "South Georgia and South Sandwich Islands",
                 "iso2": "GS",
@@ -14409,6 +14647,7 @@
         },
         {
             "id": 239,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "US Naval Base Guantanamo Bay",
                 "iso2": "-99",
@@ -14449,6 +14688,7 @@
         },
         {
             "id": 240,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Jersey",
                 "iso2": "JE",
@@ -14489,6 +14729,7 @@
         },
         {
             "id": 241,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Guernsey",
                 "iso2": "GG",
@@ -14529,6 +14770,7 @@
         },
         {
             "id": 242,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "United States Minor Outlying Islands",
                 "iso2": "UM",
@@ -14667,6 +14909,7 @@
         },
         {
             "id": 243,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Marshall Islands",
                 "iso2": "MH",
@@ -14707,6 +14950,7 @@
         },
         {
             "id": 244,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Monaco",
                 "iso2": "MC",
@@ -14747,6 +14991,7 @@
         },
         {
             "id": 245,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Gibraltar",
                 "iso2": "GI",
@@ -14787,6 +15032,7 @@
         },
         {
             "id": 246,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Tuvalu",
                 "iso2": "TV",
@@ -14827,6 +15073,7 @@
         },
         {
             "id": 247,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Indian Ocean Territories",
                 "iso2": "-99",
@@ -14893,6 +15140,7 @@
         },
         {
             "id": 248,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Norfolk Island",
                 "iso2": "NF",
@@ -14933,6 +15181,7 @@
         },
         {
             "id": 249,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Vatican",
                 "iso2": "VA",
@@ -14973,6 +15222,7 @@
         },
         {
             "id": 250,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Coral Sea Islands",
                 "iso2": "-99",
@@ -15093,6 +15343,7 @@
         },
         {
             "id": 251,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Australia, AU",
                 "iso2": "AU",
@@ -15133,6 +15384,7 @@
         },
         {
             "id": 252,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Clipperton Island",
                 "iso2": "-99",
@@ -15173,6 +15425,7 @@
         },
         {
             "id": 253,
+            "type": "Feature",
             "properties": {
                 "carmen:text": "Heard Island and McDonald Islands",
                 "iso2": "HM",

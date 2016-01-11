@@ -76,22 +76,23 @@ if (!argv._[2]) {
 	var carmen = new Carmen(conf);
 
 	carmen.index(conf.from, conf.to, {}, complete);
+
+    var last = +new Date;
+    var total = 0;
+
+    carmen.on('index', function(num) {
+        console.log('Indexed %s docs @ %s/s', num, Math.floor(num * 1000 / (+new Date - last)));
+        last = +new Date;
+    });
+    carmen.on('store', function(num) {
+        last = +new Date;
+    });
+
+    function complete(err) {
+        if (err) throw err;
+        console.log('Stored in %ss', Math.floor((+new Date - last) * 0.001));
+        console.log('Done.');
+        process.exit(0);
+    }
 }
 
-var last = +new Date;
-var total = 0;
-
-carmen.on('index', function(num) {
-    console.log('Indexed %s docs @ %s/s', num, Math.floor(num * 1000 / (+new Date - last)));
-    last = +new Date;
-});
-carmen.on('store', function(num) {
-    last = +new Date;
-});
-
-function complete(err) {
-	if (err) throw err;
-	console.log('Stored in %ss', Math.floor((+new Date - last) * 0.001));
-	console.log('Done.');
-	process.exit(0);
-}

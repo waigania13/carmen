@@ -70,7 +70,8 @@ tape('bin/carmen-index', function(t) {
 });
 
 tape('bin/carmen-index', function(t) {
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'"', function(err, stdout, stderr) {
+    console.log(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'"');
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'" < ./test/fixtures/docs.json', function(err, stdout, stderr) {
         t.ifError(err);
         t.end();
     });
