@@ -41,7 +41,6 @@ if (!argv._[2]) {
 
     process.stdin.setEncoding('utf8');
     process.stdin.resume();
-    var inputStream = process.stdin;
 
 	argv.index = Carmen.auto(argv.index);
 
@@ -53,7 +52,7 @@ if (!argv._[2]) {
 
     var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 	carmen.index(null, conf.to, {
-        input: inputStream,
+        input: process.stdin,
         output: outputStream,
         config: config
     }, function(err) {
