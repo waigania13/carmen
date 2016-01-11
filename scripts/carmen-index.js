@@ -10,18 +10,21 @@ var argv = require('minimist')(process.argv, {
 });
 var settings = require('../package.json');
 
-if (argv.help) {
+function help() {
     console.log('carmen-copy.js --config=<path> --index=<path> [options]');
     console.log('[options]:');
     console.log('  --help                  Prints this message');
     console.log('  --version               Print the carmen version');
-    console.log('  --config="<path>"       Path to JSON document with index settings');
+    console.log('  --config="<path>"       path to JSON document with index settings');
 	console.log('  --index="<path>"        Tilelive path to output index to');
     console.log('');
 	console.log('Deprecated:');
     console.log('carmen-copy.js [from] [to]');
     process.exit(0);
 }
+
+
+if (argv.help) help();
 
 if (argv.version) {
     console.log('carmen@'+settings.version);
@@ -31,7 +34,8 @@ if (argv.version) {
 
 //New Streaming
 if (!argv._[2]) {
-	if (!argv.config) throw new Error('--settings argument required');
+	if (!argv.config) help();
+    if (!argv.index) throw new Error('--index argument required');
 
     var outputStream = process.stdout;
 
@@ -47,12 +51,15 @@ if (!argv._[2]) {
 
 	var carmen = new Carmen(conf);
 
-	carmen.index(null, conf.index, {
+    var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
+	carmen.index(null, conf.to, {
         input: inputStream,
         output: outputStream,
         config: config
-
-    }, complete);
+    }, function(err) {
+        if (err) throw err;
+        process.exit(0);
+    });
 } else {
 	//Legacy Indexer
 	if (!argv._[2]) throw new Error('[From] argument required');

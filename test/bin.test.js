@@ -54,6 +54,28 @@ tape('index', function(assert) {
     }
 });
 
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="/tmp"', function(err, stdout, stderr) {
+        t.ok(err);
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.end();
+    });
+});
+
 tape('bin/carmen DEBUG', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', function(err, stdout, stderr) {
         t.ifError(err);
@@ -132,3 +154,4 @@ tape('bin/carmen-copy', function(t) {
         t.end();
     });
 });
+
