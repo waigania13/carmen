@@ -19,6 +19,7 @@ test('index - streaming interface', function(assert) {
     outputStream._write = function(chunk, encoding, done) {
         if (chunk.toString().indexOf('FeatureCollection') > -1) return done();
         if (chunk.toString() === ']}') return done();
+        if (chunk.toString() === ',') return done();
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
