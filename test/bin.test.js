@@ -10,6 +10,7 @@ var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
 var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
+var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
 tape('index', function(assert) {
@@ -70,8 +71,7 @@ tape('bin/carmen-index', function(t) {
 });
 
 tape('bin/carmen-index', function(t) {
-    console.log(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'"');
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex+'" < ./test/fixtures/docs.json', function(err, stdout, stderr) {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.json', function(err, stdout, stderr) {
         t.ifError(err);
         t.end();
     });
