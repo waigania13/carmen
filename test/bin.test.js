@@ -10,7 +10,6 @@ var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
 var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
-var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
 tape('index', function(assert) {
@@ -53,28 +52,6 @@ tape('index', function(assert) {
         assert.ifError(err);
         conf.index.stopWriting(assert.end);
     }
-});
-
-tape('bin/carmen-index', function(t) {
-    exec(bin + '/carmen-index.js', function(err, stdout, stderr) {
-        t.ifError(err);
-        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
-        t.end();
-    });
-});
-
-tape('bin/carmen-index', function(t) {
-    exec(bin + '/carmen-index.js --config="/tmp"', function(err, stdout, stderr) {
-        t.ok(err);
-        t.end();
-    });
-});
-
-tape('bin/carmen-index', function(t) {
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.json', function(err, stdout, stderr) {
-        t.ifError(err);
-        t.end();
-    });
 });
 
 tape('bin/carmen DEBUG', function(t) {
@@ -155,4 +132,3 @@ tape('bin/carmen-copy', function(t) {
         t.end();
     });
 });
-
