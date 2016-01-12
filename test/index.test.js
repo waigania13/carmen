@@ -1,4 +1,6 @@
 var fs = require('fs');
+var path = require('path');
+var Stream = require('stream');
 var util = require('util');
 var Carmen = require('..');
 var index = require('../lib/index');
