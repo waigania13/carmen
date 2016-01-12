@@ -5,7 +5,7 @@ var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var docs = require('./fixtures/docs.json').features;
+var docs = require('./fixtures/docs.json');
 var test = require('tape');
 
 test('copy', function(t) {
