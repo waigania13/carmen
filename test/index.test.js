@@ -13,13 +13,10 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
 test('index - streaming interface', function(assert) {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.json'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
     outputStream._write = function(chunk, encoding, done) {
-        if (chunk.toString().indexOf('FeatureCollection') > -1) return done();
-        if (chunk.toString() === ']}') return done();
-        if (chunk.toString() === ',') return done();
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
