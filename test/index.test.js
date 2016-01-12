@@ -1,5 +1,7 @@
 var fs = require('fs');
+var path = require('path');
 var util = require('util');
+var Stream = require('stream');
 var Carmen = require('..');
 var index = require('../lib/index');
 var MBTiles = require('mbtiles');
@@ -9,6 +11,49 @@ var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
+
+test('index - streaming interface', function(assert) {
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function(chunk, encoding, done) {
+        if (chunk.toString().indexOf('FeatureCollection') > -1) return done();
+        if (chunk.toString() === ']}') return done();
+        if (chunk.toString() === ',') return done();
+        var doc = JSON.parse(chunk.toString());
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
+    };
+
+    var conf = {
+        to: new mem([], null, function() {})
+    };
+
+    var carmen = new Carmen(conf);
+    assert.test('index docs.json', function(q) {
+        carmen.index(null, conf.to, {
+            config: {
+                zoom: 6
+            },
+            index: conf.to,
+            input: inputStream,
+            output: outputStream
+        }, function(err) {
+            q.ifError(err);
+            q.end();
+        });
+    });
+    assert.test('ensure index was successful', function(q) {
+        carmen.analyze(conf.to, function(err, stats) {
+            q.ifError(err);
+            q.deepEqual(require('./fixtures/mem-analyze.json'), stats);
+            q.end();
+        });
+    });
+    assert.end();
+});
 
 test('index.generateStats', function(assert) {
     var docs = [{
@@ -46,7 +91,7 @@ test('index.generateStats', function(assert) {
 });
 
 test('index.update -- error', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json')).features;
     var conf = { to: new mem(docs, null, function() {}) };
     var carmen = new Carmen(conf);
     var zoom = 6;
@@ -92,7 +137,7 @@ test('index.update -- error', function(t) {
 });
 
 test('index.update freq', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json')).features;
     var conf = { to: new mem(null, function() {}) };
     var carmen = new Carmen(conf);
     var zoom = 6;
@@ -130,7 +175,7 @@ test('index.update freq', function(t) {
 });
 
 test('index', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json')).features;
     var conf = {
         from: new mem(docs, {maxzoom:6}, function() {}),
         to: new mem(docs, null, function() {})
@@ -201,7 +246,7 @@ test('index', function(t) {
 });
 
 test('error -- zoom too high', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json')).features;
     var conf = {
         from: new mem(docs, {maxzoom: 15}, function() {}),
         to: new mem(docs, null, function() {})
@@ -214,7 +259,7 @@ test('error -- zoom too high', function(t) {
 });
 
 test('error -- zoom too low', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json')).features;
     var conf = {
         from: new mem(docs, {maxzoom: -1}, function() {}),
         to: new mem(docs, {maxzoom:10}, function() {})

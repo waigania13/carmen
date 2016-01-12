@@ -7,9 +7,11 @@
   "license": "BSD",
   "dependencies": {
     "carmen-cache": "0.10.0",
+    "concat-stream": "^1.5.1",
     "dawg-cache": "0.2.0",
     "err-code": "0.1.2",
     "eslint": "^1.5.0",
+    "geojson-stream": "0.0.1",
     "locking": "2.0.2",
     "mapnik": "~3.4.10",
     "minimist": "0.0.5",

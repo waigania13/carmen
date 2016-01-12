@@ -19,6 +19,11 @@ var conf = {
     street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {})
 };
 var c = new Carmen(conf);
+
+tape('ready', function(assert) {
+    c._open(assert.end);
+});
+
 [1,2,3].forEach(function(i) {
     tape('index place ' + i, function(t) {
         addFeature(conf['place'+i], {
@@ -123,4 +128,3 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
