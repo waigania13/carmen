@@ -45,7 +45,9 @@ test('index - streaming interface', function(assert) {
     assert.test('ensure index was successful', function(q) {
         carmen.analyze(conf.to, function(err, stats) {
             q.ifError(err);
-            q.deepEqual(require('./fixtures/mem-analyze.json'), stats);
+            // Updates the mem-analyze.json fixture on disk.
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze-small.json', JSON.stringify(stats, null, 4));
+            q.deepEqual(require('./fixtures/mem-analyze-small.json'), stats);
             q.end();
         });
     });
