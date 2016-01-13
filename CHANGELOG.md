@@ -1,5 +1,22 @@
 # Changelog
 
+## 11.3.0
+
+- Add streaming interface for indexing
+- Output transformed GeoJSON features for vector tiles as stream
+
+## 11.2.4
+
+- Optimize/reduce I/O when types filter is used.
+
+## 11.2.3
+
+- Fix bad reference in verifymatch leading to crashing error.
+
+## 11.2.2
+
+- Fix wasteful duplicate I/O when loading grid cache shards.
+
 ## 11.2.1
 
 - Stop addFeature() in unit tests from overwiting VT. Instead decode and append to it.

@@ -1,4 +1,6 @@
 var fs = require('fs');
+var path = require('path');
+var Stream = require('stream');
 var util = require('util');
 var Carmen = require('..');
 var index = require('../lib/index');
@@ -9,6 +11,48 @@ var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
+
+test('index - streaming interface', function(assert) {
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.json'), { encoding: 'utf8' });
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function(chunk, encoding, done) {
+        var doc = JSON.parse(chunk.toString());
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
+    };
+
+    var conf = {
+        to: new mem([], null, function() {})
+    };
+
+    var carmen = new Carmen(conf);
+    assert.test('index docs.json', function(q) {
+        carmen.index(null, conf.to, {
+            config: {
+                zoom: 6
+            },
+            index: conf.to,
+            input: inputStream,
+            output: outputStream
+        }, function(err) {
+            q.ifError(err);
+            q.end();
+        });
+    });
+    assert.test('ensure index was successful', function(q) {
+        carmen.analyze(conf.to, function(err, stats) {
+            q.ifError(err);
+            // Updates the mem-analyze.json fixture on disk.
+            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze-small.json', JSON.stringify(stats, null, 4));
+            q.deepEqual(require('./fixtures/mem-analyze-small.json'), stats);
+            q.end();
+        });
+    });
+    assert.end();
+});
 
 test('index.generateStats', function(assert) {
     var docs = [{
