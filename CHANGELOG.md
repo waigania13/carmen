@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.3.0
+
+- Add streaming interface for indexing
+- Output transformed GeoJSON features for vector tiles as stream
+
 ## 11.2.4
 
 - Optimize/reduce I/O when types filter is used.
