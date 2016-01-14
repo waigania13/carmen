@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.3.1
+
+- Cleanup unused code as well as add additional JSDoc comments
+
 ## 11.3.0
 
 - Add streaming interface for indexing
