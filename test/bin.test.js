@@ -13,6 +13,17 @@ var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
 var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
+tape('clean tmp index', function(assert) {
+    try {
+        fs.unlinkSync(tmpindex)
+        fs.unlinkSync(tmpindex2)
+    } catch (err) {
+        //File does not exist
+    } finally {
+        assert.end();
+    }
+});
+
 tape('index', function(assert) {
     try {
         fs.unlinkSync(tmpindex);

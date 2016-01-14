@@ -1,6 +1,6 @@
 var Benchmark = require('benchmark'),
     suite = new Benchmark.Suite();
-var address = require('../lib/pure/applyaddress');
+var address = require('../lib/pure/addressitp');
 
 var bytes = require('bytes');
 

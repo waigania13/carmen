@@ -79,30 +79,6 @@ tape('worker.runChecks', function(assert) {
         id:1,
         properties: {
             'carmen:text':'Main Street',
-            'carmen:center': [0,0]
-        },
-        geometry: {}
-    }), 'index has no zoom on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text': 'Main Street',
-            'carmen:center': [0,0]
-        },
-        geometry: {}
-    }, -1), 'zoom must be greater than 0 --- zoom was -1 on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text':'Main Street',
-            'carmen:center':[0,0]
-        },
-        geometry: {}
-    }, 15), 'zoom must be less than 15 --- zoom was 15 on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text':'Main Street',
             'carmen:center':[0,0]
         },
         geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
