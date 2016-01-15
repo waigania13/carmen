@@ -10,8 +10,8 @@ var path = require('path');
 var Carmen = require('../index');
 var settings = require('../package.json');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug', 'types', 'version' ],
-    boolean: [ 'geojson', 'stats', 'help' ]
+    string: [ 'config', 'proximity', 'query', 'debug', 'types' ],
+    boolean: [ 'geojson', 'stats', 'help', 'version' ]
 });
 
 if (argv.help) {
