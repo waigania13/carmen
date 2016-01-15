@@ -27,34 +27,42 @@ tape('ready', function(assert) {
 [1,2,3].forEach(function(i) {
     tape('index place ' + i, function(t) {
         addFeature(conf['place'+i], {
-            _id:1,
-            _text:'springfield',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text':'springfield',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, t.end);
     });
     tape('index street ' + i, function(t) {
         addFeature(conf['street'+i], {
-            _id:1,
-            _text:'winding river rd',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:text':'winding river rd',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, t.end);
     });
     tape('index street ' + i, function(t) {
         addFeature(conf['street'+i], {
-            _id:2,
-            _text:'river rd',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:2,
+            properties: {
+                'carmen:text':'river rd',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, t.end);
     });
     tape('index street ' + i, function(t) {
         addFeature(conf['street'+i], {
-            _id:3,
-            _text:'springfield st',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:3,
+            properties: {
+                'carmen:text':'springfield st',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, t.end);
     });
 });
