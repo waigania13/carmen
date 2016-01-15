@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.4.0
+
+- Migrate all unit tests to GeoJSON
+- Internal addFeature function now only accests GeoJSON
+
 ## 11.3.1
 
 - Cleanup unused code as well as add additional JSDoc comments
