@@ -40,19 +40,23 @@ tape('index', function(assert) {
     function write1(err) {
         assert.ifError(err);
         addFeature(conf.index, {
-            _id:38,
-            _text:'Canada',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:38,
+            properties: {
+                'carmen:text':'Canada',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, write2);
     }
     function write2(err) {
         assert.ifError(err);
         addFeature(conf.index, {
-            _id:39,
-            _text:'Brazil',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:39,
+            properties: {
+                'carmen:text':'Brazil',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, store);
     }
     function store(err) {

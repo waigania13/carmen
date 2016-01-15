@@ -24,34 +24,42 @@ tape('ready', function(assert) {
 
 tape('index country', function(t) {
     addFeature(conf.country, {
-        _id:1,
-        _text:'us',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'us',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index region', function(t) {
     addFeature(conf.region, {
-        _id:1,
-        _text:'ohio',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'ohio',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index place', function(t) {
     addFeature(conf.place, {
-        _id:1,
-        _text:'springfield',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'springfield',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, t.end);
 });
 tape('index street', function(t) {
     addFeature(conf.street, {
-        _id:1,
-        _text:'river rd',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'river rd',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center': [0,0]
+        }
     }, t.end);
 });
 

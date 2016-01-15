@@ -14,10 +14,12 @@ var c = new Carmen(conf);
 
 tape('index unicode place', function(t) {
     var place = {
-        _id: 1,
-        _text: '京都市',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id: 1,
+        properties: {
+            'carmen:text': '京都市',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     };
     addFeature(conf.place, place, t.end);
 });
