@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.4.1
+
+- Update deps in anticipation of deprecating Node 0.10 in favour of 4.0
+
 ## 11.4.0
 
 - Migrate all unit tests to GeoJSON
