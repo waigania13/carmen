@@ -19,22 +19,26 @@ var addFeature = require('../lib/util/addfeature');
         var q = queue(1);
         for (var i = 1; i < 41; i++) q.defer(function(i, done) {
             addFeature(conf.place, {
-                _id:i,
-                _score:10,
-                _text:'testplace',
-                _zxy:['6/32/32'],
-                _center:[0,0]
+                id:i,
+                properties: {
+                    'carmen:score':10,
+                    'carmen:text':'testplace',
+                    'carmen:zxy':['6/32/32'],
+                    'carmen:center':[0,0]
+                }
             }, done);
         }, i);
         q.awaitAll(t.end);
     });
     tape('index big score (noise)', function(t) {
         addFeature(conf.country, {
-            _id:1,
-            _score: 1e9,
-            _text:'ignoreme',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:1,
+            properties: {
+                'carmen:score': 1e9,
+                'carmen:text':'ignoreme',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, t.end);
     });
     tape('index big score (signal)', function(t) {

@@ -1,5 +1,27 @@
 # Changelog
 
+## 12.0.0
+
+- Upgrade to Node 4, dropping 0.10
+
+## 11.4.1
+
+- Update deps in anticipation of deprecating Node 0.10 in favour of 4.0
+
+## 11.4.0
+
+- Migrate all unit tests to GeoJSON
+- Internal addFeature function now only accests GeoJSON
+
+## 11.3.1
+
+- Cleanup unused code as well as add additional JSDoc comments
+
+## 11.3.0
+
+- Add streaming interface for indexing
+- Output transformed GeoJSON features for vector tiles as stream
+
 ## 11.2.4
 
 - Optimize/reduce I/O when types filter is used.

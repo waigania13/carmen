@@ -1,9 +1,9 @@
-var address = require('../lib/pure/applyaddress.js');
+var address = require('../lib/pure/addressitp');
 var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
 test('address.reverse', function(assert) {
-    assert.deepEqual(address.reverse({ 
+    assert.deepEqual(address.reverse({
         _id: 75018674165319,
         properties: {
             "carmen:center":[-77.031953,38.919952],
@@ -347,7 +347,7 @@ test('address point clustering', function(t) {
             geometry: {
                 type: 'MultiPoint',
                 coordinates: [ [1,1], [2,2], [0,0] ]
-            } 
+            }
         },9), {
             type:'Point',
             coordinates:[1,1]
@@ -362,7 +362,7 @@ test('reverse address point clustering', function(t) {
                 'carmen:text': "test",
                 'carmen:addressnumber': [9,10,7]
             },
-            geometry: { 
+            geometry: {
                 type: 'MultiPoint',
                 coordinates: [ [1,3], [2,4], [0,1] ]
             }
