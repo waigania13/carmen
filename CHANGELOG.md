@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.0
+
+- Upgrade to Node 4, dropping 0.10
+
 ## 11.4.1
 
 - Update deps in anticipation of deprecating Node 0.10 in favour of 4.0
