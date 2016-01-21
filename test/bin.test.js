@@ -10,7 +10,19 @@ var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
 var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
+var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
+
+tape('clean tmp index', function(assert) {
+    try {
+        fs.unlinkSync(tmpindex)
+        fs.unlinkSync(tmpindex2)
+    } catch (err) {
+        //File does not exist
+    } finally {
+        assert.end();
+    }
+});
 
 tape('index', function(assert) {
     try {
@@ -28,19 +40,23 @@ tape('index', function(assert) {
     function write1(err) {
         assert.ifError(err);
         addFeature(conf.index, {
-            _id:38,
-            _text:'Canada',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:38,
+            properties: {
+                'carmen:text':'Canada',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, write2);
     }
     function write2(err) {
         assert.ifError(err);
         addFeature(conf.index, {
-            _id:39,
-            _text:'Brazil',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+            id:39,
+            properties: {
+                'carmen:text':'Brazil',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, store);
     }
     function store(err) {
@@ -52,6 +68,28 @@ tape('index', function(assert) {
         assert.ifError(err);
         conf.index.stopWriting(assert.end);
     }
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="/tmp"', function(err, stdout, stderr) {
+        t.ok(err);
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.json', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.end();
+    });
 });
 
 tape('bin/carmen DEBUG', function(t) {

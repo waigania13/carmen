@@ -16,36 +16,6 @@ var index = require('../lib/index');
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
-test('context vector', function(t) {
-    context.getTile.cache.reset();
-
-    var geocoder = new Carmen({
-        country: Carmen.auto(__dirname + '/fixtures/01-ne.country.s3'),
-        province: Carmen.auto(__dirname + '/fixtures/02-ne.province.s3')
-    });
-
-    geocoder._open(function() {
-        t.test('context vt full', function(q) {
-            context(geocoder, 0, 40, { full: true }, function(err, contexts) {
-                q.ifError(err);
-                q.equal(contexts.length, 2);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-full.json'));
-                q.end();
-            });
-        });
-        t.test('context vt light', function(q) {
-            context(geocoder, 0, 40, { full: false }, function(err, contexts) {
-                q.ifError(err);
-                q.equal(contexts.length, 2);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-light.json'));
-                q.end();
-            });
-        });
-    });
-});
-
 test('contextVector deflate', function(t) {
     context.getTile.cache.reset();
 
