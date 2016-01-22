@@ -289,7 +289,6 @@ var addFeature = require('../lib/util/addfeature');
     tape('check stack/idx agreement', function(t) {
         c.geocode('XXX', { stacks: ['ca'] }, function(err, res) {
             t.ifError(err);
-            console.log(res);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.2');
             t.end();
