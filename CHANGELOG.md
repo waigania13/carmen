@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.1
+
+- Update addFeature.js to index and then vectorize using output from stream.
+
 ## 12.0.0
 
 - Upgrade to Node 4, dropping 0.10
