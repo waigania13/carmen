@@ -247,6 +247,56 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// Test idx assignment
+(function() {
+    var conf = {
+        country: new mem({
+            maxzoom: 6,
+            geocoder_stack: [ 'us', 'ca' ]
+        }, function() {}),
+        place: new mem({
+            maxzoom: 6,
+            geocoder_stack: [ 'us', 'ca' ]
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+
+    tape('index country high score (us)', function(t) {
+        addFeature(conf.country, {
+            id:1,
+            properties: {
+                'carmen:text': 'XXX',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0],
+                'carmen:score': 999,
+                'carmen:geocoder_stack': 'us'
+            }
+        }, t.end);
+    });
+    tape('index place low score (ca)', function(t) {
+        addFeature(conf.place, {
+            id:2,
+            properties: {
+                'carmen:text':'XXX',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0],
+                'carmen:score': 0,
+                'carmen:geocoder_stack': 'ca'
+            }
+        }, t.end);
+    });
+
+    tape('check stack/idx agreement', function(t) {
+        c.geocode('XXX', { stacks: ['ca'] }, function(err, res) {
+            t.ifError(err);
+            console.log(res);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'place.2');
+            t.end();
+        });
+    });
+})();
+
 //Test existing/non-existing index level geocoder_stack
 (function() {
     var conf = {
