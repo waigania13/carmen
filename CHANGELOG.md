@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.2
+
+- Fix bug where a feature with a stack name could be discareded, giving the next feature an incorrect carmen:idx
+
 ## 12.0.1
 
 - Update addFeature.js to index and then vectorize using output from stream.
