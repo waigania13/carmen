@@ -1,5 +1,10 @@
 # Changelog
 
+## 12.1.0
+
+- Enforce max query length of 256 chars
+- Enforce max token length of 20 tokens
+
 ## 12.0.2
 
 - Fix bug where a feature with a stack name could be discareded, giving the next feature an incorrect carmen:idx
