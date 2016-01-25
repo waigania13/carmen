@@ -204,6 +204,11 @@ var addFeature = require('../lib/util/addfeature');
     tape('limit 5 results (reverse)', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['poi'] }, function(err, res) {
             t.ifError(err);
+            t.equal(res.features[0].place_name, 'seneca rocks 5, west virginia');
+            t.equal(res.features[1].place_name, 'seneca rocks 2, west virginia');
+            t.equal(res.features[2].place_name, 'seneca rocks 3, west virginia');
+            t.equal(res.features[3].place_name, 'seneca rocks 4, west virginia');
+            t.equal(res.features[4].place_name, 'seneca rocks 1, west virginia');
             t.equal(res.features.length, 5, 'returns 5 results');
             t.end();
         });
@@ -211,6 +216,11 @@ var addFeature = require('../lib/util/addfeature');
     tape('limit 6 results (reverse)', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 6, types: ['poi'] }, function(err, res) {
             t.ifError(err);
+            t.equal(res.features[0].place_name, 'seneca rocks 5, west virginia');
+            t.equal(res.features[1].place_name, 'seneca rocks 2, west virginia');
+            t.equal(res.features[2].place_name, 'seneca rocks 3, west virginia');
+            t.equal(res.features[3].place_name, 'seneca rocks 4, west virginia');
+            t.equal(res.features[4].place_name, 'seneca rocks 1, west virginia');
             t.equal(res.features.length, 5, 'returns 5 results - hard limit');
             t.end();
         });
