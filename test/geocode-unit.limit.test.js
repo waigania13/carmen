@@ -355,10 +355,10 @@ tape('index.teardown', function(assert) {
 
     tape('Reverse ITP', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
-            t.equal(res.features[0].place_name, '5 main street, west virginia');
-            t.equal(res.features[1].place_name, '6 main street, west virginia');
-            t.equal(res.features[2].place_name, '2 main street, west virginia');
-            t.equal(res.features[3].place_name, '3 main street, west virginia');
+            t.equal(res.features[0].place_name, '13 main street, west virginia');
+            t.equal(res.features[1].place_name, '10 main street, west virginia');
+            t.equal(res.features[2].place_name, '6 main street, west virginia');
+            t.equal(res.features[3].place_name, '1 main street, west virginia');
             t.equal(res.features.length, 4, 'returns 4 results');
             t.ifError(err);
             t.end();
