@@ -303,3 +303,72 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
+
+//Handle ITP lines 
+(function() {
+    var conf = {
+        place: new mem({
+            maxzoom: 6
+        }, function() {}),
+        address: new mem({
+            maxzoom: 12,
+            geocoder_address: 1
+        }, function() {})
+    };
+    var c = new Carmen(conf);
+    tape('index place', function(t) {
+        addFeature(conf.place, {
+            id: 1,
+            properties: {
+                'carmen:text':'west virginia',
+                'carmen:center': [-79.37922477722168,38.832871481546036],
+                'carmen:zxy': ['6/17/24']
+            }
+        }, t.end);
+    });
+
+    tape('index address', function(t) {
+        addFeature(conf.address, {
+            id:1,
+            properties: {
+                'carmen:text':'main street',
+                'carmen:center': [-79.37729358673094, 38.834651613377574],
+                'carmen:rangetype': 'tiger',
+                'carmen:parityl': ['E','E','E','E'],
+                'carmen:parityr': ['O','O','O','O'],
+                'carmen:rfromhm': ['1','5','9','13'],
+                'carmen:rtohn':   ['3','7','11','15'],
+                'carmen:lfromhn': ['2','6','10','14'],
+                'carmen:ltohn':   ['4','8','12','16']
+            },
+            geometry: {
+                type: "MultiLineString",
+                coordinates: [
+                    [[-79.378382563591,38.83475190117003],[-79.37798023223877,38.83472265057851]],
+                    [[-79.37795341014862,38.83472265057851],[-79.37729358673094,38.834651613377574]],
+                    [[-79.37725603580475,38.83463907739358],[-79.3767088651657,38.834593112100016]],
+                    [[-79.37676787376404,38.834430144001914],[-79.37698245048523,38.833962130978954]]
+                ]
+            }
+        }, t.end);
+    });
+
+    tape('Reverse Cluster', function(t) {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
+            t.equal(res.features[0].place_name, '5 main street, west virginia');
+            t.equal(res.features[1].place_name, '6 main street, west virginia');
+            t.equal(res.features[2].place_name, '2 main street, west virginia');
+            t.equal(res.features[3].place_name, '3 main street, west virginia');
+            t.equal(res.features[4].place_name, '8 main street, west virginia');
+            t.equal(res.features.length, 5, 'returns 5 results - hard limit');
+            t.ifError(err);
+            t.end();
+        });
+    });
+})();
+
+tape('index.teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});
