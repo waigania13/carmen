@@ -358,7 +358,7 @@ tape('index.teardown', function(assert) {
             t.equal(res.features[0].place_name, '13 main street, west virginia');
             t.equal(res.features[1].place_name, '10 main street, west virginia');
             t.equal(res.features[2].place_name, '6 main street, west virginia');
-            t.equal(res.features[3].place_name, '1 main street, west virginia');
+            t.equal(res.features[3].place_name, '2 main street, west virginia');
             t.equal(res.features.length, 4, 'returns 4 results');
             t.ifError(err);
             t.end();
