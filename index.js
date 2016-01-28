@@ -202,6 +202,7 @@ function clone(source) {
     };
     // Optional methods
     [
+        'putInfo',
         'putTile',
         'getGeocoderData',
         'putGeocoderData',

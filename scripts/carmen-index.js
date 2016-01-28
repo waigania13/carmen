@@ -23,14 +23,12 @@ function help() {
     process.exit(0);
 }
 
-
 if (argv.help) help();
 
 if (argv.version) {
     console.log('carmen@'+settings.version);
     process.exit(0);
 }
-
 
 //New Streaming
 if (!argv._[2]) {
@@ -52,10 +50,24 @@ if (!argv._[2]) {
         input: process.stdin,
         output: outputStream,
         config: config
-    }, function(err) {
+    }, startWriting);
+
+    function startWriting(err) {
         if (err) throw err;
-        process.exit(0);
-    });
+        carmen.indexes.to.startWriting(writeMeta);
+    }
+
+    function writeMeta(err) {
+        if (err) throw err;
+        carmen.indexes.to.putInfo(config, stopWriting);
+    }
+
+    function stopWriting(err) {
+        if (err) throw err;
+        carmen.indexes.to.startWriting(function(err) {
+            process.exit(0);
+        });
+    }
 } else {
 	//Legacy Indexer
 	if (!argv._[2]) throw new Error('[From] argument required');
