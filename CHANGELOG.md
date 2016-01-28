@@ -1,5 +1,18 @@
 # Changelog
 
+## 12.1.0
+
+- Enforce max query length of 256 chars
+- Enforce max token length of 20 tokens
+
+## 12.0.2
+
+- Fix bug where a feature with a stack name could be discareded, giving the next feature an incorrect carmen:idx
+
+## 12.0.1
+
+- Update addFeature.js to index and then vectorize using output from stream.
+
 ## 12.0.0
 
 - Upgrade to Node 4, dropping 0.10
