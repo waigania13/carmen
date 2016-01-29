@@ -1,8 +1,8 @@
 var fs = require('fs');
-var address = require('../lib/pure/applyaddress.js');
-var addressCluster = require('../lib/pure/addresscluster.js');
+var address = require('../lib/pure/addressitp');
+var addressCluster = require('../lib/pure/addresscluster');
 var test = require('tape');
-var feature = require('../lib/util/feature.js');
+var feature = require('../lib/util/feature');
 
 test('nearest', function(t) {
     t.deepEqual(address({

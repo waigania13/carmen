@@ -10,8 +10,8 @@ var path = require('path');
 var Carmen = require('../index');
 var settings = require('../package.json');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug', 'types', 'version' ],
-    boolean: [ 'geojson', 'stats', 'help' ]
+    string: [ 'config', 'proximity', 'query', 'debug', 'types' ],
+    boolean: [ 'geojson', 'stats', 'help', 'version' ]
 });
 
 if (argv.help) {
@@ -21,6 +21,7 @@ if (argv.help) {
     console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
     console.log('  --types="{type},..."    Only return results of a given type');
+    console.log('  --stacks="{stack},..."  Only return results of a given stack');
     console.log('  --geojson               Return a geojson object');
     console.log('  --language={ISO code}   Return responses in specified language (if available in index)');
     console.log('  --stats                 Generate Stats on the query');
@@ -63,11 +64,15 @@ if (argv.types) {
     argv.types = argv.types.split(',');
 }
 
+if (argv.stacks) {
+    argv.stacks = argv.stacks.split(',');
+}
+
 if (argv.debug) argv.debug = parseInt(argv.debug);
 
 var load = +new Date();
 
-carmen.geocode(argv.query, { 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true, 'language': argv.language, indexes: true }, function(err, data) {
+carmen.geocode(argv.query, { 'stacks': argv.stacks, 'types': argv.types, 'proximity': argv.proximity, 'debug': argv.debug, stats:true, 'language': argv.language, indexes: true }, function(err, data) {
     if (err) throw err;
     if (data.features.length && !argv.geojson) {
         console.log('Tokens');

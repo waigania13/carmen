@@ -2,10 +2,10 @@ var proximity = require('../lib/util/proximity');
 var test = require('tape');
 
 test('proximity.center2zxy', function(assert) {
-    assert.deepEqual(proximity.center2zxy(0,0,5), [5,16,16]);
-    assert.deepEqual(proximity.center2zxy(-90,45,5), [5,8,11]);
-    assert.deepEqual(proximity.center2zxy(-181,90.1,5), [5,0,0], 'respects world extents');
-    assert.deepEqual(proximity.center2zxy(181,-90.1,5), [5,32,31], 'respects world extents');
+    assert.deepEqual(proximity.center2zxy([0,0],5), [5,16,16]);
+    assert.deepEqual(proximity.center2zxy([-90,45],5), [5,8,11]);
+    assert.deepEqual(proximity.center2zxy([-181,90.1],5), [5,0,0], 'respects world extents');
+    assert.deepEqual(proximity.center2zxy([181,-90.1],5), [5,32,31], 'respects world extents');
     assert.end();
 });
 
@@ -32,4 +32,3 @@ test('proximity.scoredist', function(assert) {
     assert.equal(proximity.scoredist([0,0], [10.00,0], 1000), 57.8745, 'll scoredist');
     assert.end();
 });
-

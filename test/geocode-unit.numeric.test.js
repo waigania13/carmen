@@ -12,19 +12,23 @@ var c = new Carmen(conf);
 
 tape('index', function(assert) {
     addFeature(conf.postcode, {
-        _id:1,
-        _text:'22209',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:1,
+        properties: {
+            'carmen:text':'22209',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, assert.end);
 });
 
 tape('index', function(assert) {
     addFeature(conf.postcode, {
-        _id:2,
-        _text:'22209 restaurant',
-        _zxy:['6/32/32'],
-        _center:[0,0]
+        id:2,
+        properties: {
+            'carmen:text':'22209 restaurant',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
     }, assert.end);
 });
 

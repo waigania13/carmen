@@ -13,7 +13,7 @@ tape('worker.loadDoc', function(assert) {
     var doc;
     var err;
 
-    patch = { grid:{}, docs:[] };
+    patch = { grid:{}, docs:[], text:[] };
     freq = {};
     tokens = ['main', 'st'];
     zoom = 6;
@@ -50,6 +50,7 @@ tape('worker.loadDoc', function(assert) {
     });
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
+    assert.deepEqual(patch.text, ['main st', 'main']);
 
     assert.end();
 });
@@ -74,30 +75,6 @@ tape('worker.runChecks', function(assert) {
             'carmen:text':'Main Street'
         }
     }), 'doc has no geometry on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text':'Main Street',
-            'carmen:center': [0,0]
-        },
-        geometry: {}
-    }), 'index has no zoom on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text': 'Main Street',
-            'carmen:center': [0,0]
-        },
-        geometry: {}
-    }, -1), 'zoom must be greater than 0 --- zoom was -1 on id:1');
-    assert.equal(worker.runChecks({
-        id:1,
-        properties: {
-            'carmen:text':'Main Street',
-            'carmen:center':[0,0]
-        },
-        geometry: {}
-    }, 15), 'zoom must be less than 15 --- zoom was 15 on id:1');
     assert.equal(worker.runChecks({
         id:1,
         properties: {

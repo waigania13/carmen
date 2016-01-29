@@ -2,6 +2,7 @@ var path = require('path'),
     EventEmitter = require('events').EventEmitter,
     queue = require('queue-async');
 
+var dawgcache = require('./lib/util/dawg');
 var Cache = require('./lib/util/cxxcache'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
@@ -21,28 +22,33 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(),
-        indexes = pairs(indexes);
+    var q = queue(10);
 
-    this.indexes = indexes.reduce(toObject, {});
+    this.indexes = indexes;
     this.replacer = token.createReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
+    this.bystack = {};
     this.byidx = [];
     this.names = [];
 
-    indexes.forEach(function(index) {
-        q.defer(loadIndex, index);
-    });
+    for (var k in indexes) {
+        indexes[k] = clone(indexes[k]);
+        q.defer(loadIndex, k, indexes[k]);
+    }
 
     q.awaitAll(function(err, results) {
         var names = [];
         var types = [];
-        results.forEach(function(info, i) {
-            var id = indexes[i][0];
-            var source = indexes[i][1];
+        var stacks = [];
+        if (results) results.forEach(function(data, i) {
+            var id = data.id;
+            var info = data.info;
+            var dictcache = data.dictcache;
+            var source = indexes[id];
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
+            var stack = info.geocoder_stack || false;
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
@@ -51,41 +57,58 @@ function Geocoder(indexes, options) {
                 types.push(type);
                 this.bytype[type] = [];
             }
-            source._geocoder = source._geocoder || new Cache(name, info.geocoder_cachesize);
+            if (typeof stack === 'string') stack = [stack];
+            if (stack) {
+                for (var j = 0; j < stack.length; j++) {
+                    if (stacks.indexOf(stack[j]) === -1) {
+                        stacks.push(stack[j]);
+                        this.bystack[stack[j]] = [];
+                    }
+                }
+            }
+
+            source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
+            source._dictcache = source._original._dictcache || dictcache;
+
+            // Set references to _geocoder, _dictcache on original source to
+            // avoid duplication if it's loaded again.
+            source._original._geocoder = source._geocoder;
+            source._original._dictcache = source._dictcache;
 
             if (info.geocoder_address) {
-              source._geocoder.geocoder_address = info.geocoder_address;
+              source.geocoder_address = info.geocoder_address;
             } else {
-              source._geocoder.geocoder_address = false;
+              source.geocoder_address = false;
             }
 
             if (info.geocoder_version) {
-                source._geocoder.version = parseInt(info.geocoder_version, 10);
-                if (source._geocoder.version !== 4) {
-                    err = new Error('geocoder version is not 4, index: ' + id);
+                source.version = parseInt(info.geocoder_version, 10);
+                if (source.version !== 6) {
+                    err = new Error('geocoder version is not 6, index: ' + id);
                     return;
                 }
             } else {
-                source._geocoder.version = 0;
-                source._geocoder.shardlevel = info.geocoder_shardlevel || 0;
+                source.version = 0;
+                source.shardlevel = info.geocoder_shardlevel || 0;
             }
 
             var keys = Object.keys(info);
             for (var ix = 0; ix < keys.length; ix ++) {
-                if (/geocoder_format_/.test(keys[ix])) source._geocoder[keys[ix]] = info[keys[ix]]||false;
+                if (/geocoder_format_/.test(keys[ix])) source[keys[ix]] = info[keys[ix]]||false;
             }
-            source._geocoder.geocoder_format = info.geocoder_format||false;
-            source._geocoder.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
-            source._geocoder.geocoder_tokens = info.geocoder_tokens||{};
-            source._geocoder.token_replacer = token.createReplacer(info.geocoder_tokens||{});
-            source._geocoder.maxzoom = info.maxzoom;
-            source._geocoder.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
-            source._geocoder.type = type;
-            source._geocoder.name = name;
-            source._geocoder.id = id;
-            source._geocoder.idx = i;
-            source._geocoder.ndx = names.indexOf(name);
-            source._geocoder.bounds = info.bounds || [ -180, -85, 180, 85 ];
+            source.geocoder_format = info.geocoder_format||false;
+            source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
+            source.geocoder_tokens = info.geocoder_tokens||{};
+            source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
+            source.maxzoom = info.maxzoom;
+            source.stack = stack;
+            source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+            source.type = type;
+            source.name = name;
+            source.id = id;
+            source.idx = i;
+            source.ndx = names.indexOf(name);
+            source.bounds = info.bounds || [ -180, -85, 180, 85 ];
 
             // add index idx => name idx lookup
             this.names[i] = names.indexOf(name);
@@ -96,26 +119,37 @@ function Geocoder(indexes, options) {
             // add bytype index lookup
             this.bytype[type].push(source);
 
+            // add bystack index lookup
+            for (var j = 0; j < stack.length; j++) {
+                this.bystack[stack[j]].push(source);
+            }
+
             // add byidx index lookup
             this.byidx[i] = source;
         }.bind(this));
 
-        // Second pass -- generate bmask (bounds mask) per index.
-        // The bmask of an index represents a mask of all indexes that its
-        // bounds do not intersect with -- ie. a spatialmatch with any of
+        // Second pass -- generate bmask (geocoder_stack) per index.
+        // The bmask of an index represents a mask of all indexes that their
+        // geocoder_stacks do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
         for (var i = 0; i < this.byidx.length; i++) {
             var bmask = [];
-            var a = this.byidx[i]._geocoder;
+            var a = this.byidx[i];
             for (var j = 0; j < this.byidx.length; j++) {
-                var b = this.byidx[j]._geocoder;
-                if (boundsIntersect(a.bounds, b.bounds)) {
-                    bmask[j] = 0;
-                } else {
-                    bmask[j] = 1;
+                var b = this.byidx[j];
+                var a_it = a.stack.length;
+                while (a_it--) {
+                    var b_it = b.stack.length;
+                    while (b_it--) {
+                        if (a.stack[a_it] === b.stack[b_it]) {
+                            bmask[j] = 0;
+                        } else if (bmask[j] !== 0) {
+                            bmask[j] = 1;
+                        }
+                    }
                 }
             }
-            this.byidx[i]._geocoder.bmask = bmask;
+            this.byidx[i].bmask = bmask;
         }
 
         this._error = err;
@@ -123,21 +157,66 @@ function Geocoder(indexes, options) {
         this.emit('open', err);
     }.bind(this));
 
-    function loadIndex(sourceindex, callback) {
-        var source = sourceindex[1],
-            key = sourceindex[0];
-
-        source = source.source ? source.source : source;
-
-        if (source.open === true) return source.getInfo(callback);
-        if (typeof source.open === 'function') return source.open(opened);
-        return source.once('open', opened);
-
-        function opened(err) {
+    function loadIndex(id, source, callback) {
+        source.open(function opened(err) {
             if (err) return callback(err);
-            source.getInfo(callback);
-        }
+            var q = queue();
+            q.defer(function(done) { source.getInfo(done); });
+            q.defer(function(done) {
+                if (source._original._dictcache || !source.getGeocoderData) {
+                    done();
+                } else {
+                    source.getGeocoderData('stat', 0, done);
+                }
+            });
+            q.awaitAll(function(err, loaded) {
+                if (err) return callback(err);
+
+                // if dictcache is already initialized don't recreate
+                if (source._original._dictcache) {
+                    callback(null, {
+                        id: id,
+                        info: loaded[0]
+                    });
+                // create dictcache at load time to allow incremental gc
+                } else {
+                    callback(null, {
+                        id: id,
+                        info: loaded[0],
+                        dictcache: new dawgcache(loaded[1])
+                    });
+                }
+            });
+        });
     }
+}
+
+function clone(source) {
+    var cloned = {};
+    cloned.getInfo = source.getInfo.bind(source);
+    cloned.getTile = source.getTile.bind(source);
+    cloned.open = function(callback) {
+        if (source.open === true) return callback();
+        if (typeof source.open === 'function') return source.open(callback);
+        return source.once('open', callback);
+    };
+    // Optional methods
+    [
+        'putTile',
+        'getGeocoderData',
+        'putGeocoderData',
+        'startWriting',
+        'stopWriting',
+        'getIndexableDocs',
+        'serialize'
+    ].forEach(function(method) {
+        if (typeof source[method] === 'function') {
+            cloned[method] = source[method].bind(source);
+        }
+    });
+    // Include reference to original
+    cloned._original = source;
+    return cloned;
 }
 
 function boundsIntersect(a, b) {
@@ -146,17 +225,6 @@ function boundsIntersect(a, b) {
     if (a[3] < b[1]) return false; // a is below b
     if (a[1] > b[3]) return false; // a is above b
     return true;
-}
-
-function pairs(o) {
-    var a = [];
-    for (var k in o) a.push([k, o[k]]);
-    return a;
-}
-
-function toObject(mem, s) {
-    mem[s[0]] = s[1].source ? s[1].source : s[1];
-    return mem;
 }
 
 // Ensure that all carmen sources are opened.

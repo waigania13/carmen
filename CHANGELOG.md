@@ -1,5 +1,84 @@
 # Changelog
 
+## 12.1.0
+
+- Enforce max query length of 256 chars
+- Enforce max token length of 20 tokens
+
+## 12.0.2
+
+- Fix bug where a feature with a stack name could be discareded, giving the next feature an incorrect carmen:idx
+
+## 12.0.1
+
+- Update addFeature.js to index and then vectorize using output from stream.
+
+## 12.0.0
+
+- Upgrade to Node 4, dropping 0.10
+
+## 11.4.1
+
+- Update deps in anticipation of deprecating Node 0.10 in favour of 4.0
+
+## 11.4.0
+
+- Migrate all unit tests to GeoJSON
+- Internal addFeature function now only accests GeoJSON
+
+## 11.3.1
+
+- Cleanup unused code as well as add additional JSDoc comments
+
+## 11.3.0
+
+- Add streaming interface for indexing
+- Output transformed GeoJSON features for vector tiles as stream
+
+## 11.2.4
+
+- Optimize/reduce I/O when types filter is used.
+
+## 11.2.3
+
+- Fix bad reference in verifymatch leading to crashing error.
+
+## 11.2.2
+
+- Fix wasteful duplicate I/O when loading grid cache shards.
+
+## 11.2.1
+
+- Stop addFeature() in unit tests from overwiting VT. Instead decode and append to it.
+
+## 11.2.0
+
+- Add support for feature/index level `geocoder_stack` parameter. This parameter allows for stack based filtering (as opposed to type filtering)
+- Also uses stack for building stackable phrase list instead of bounds
+
+## 11.1.0
+
+- Drop `mmap` dependency.
+- Reintroduce `XRegExp` dependency for limited circumstances where named capture groups are necessary.
+
+## 11.0.0
+
+- Carmen's dict cache now uses [directed acyclic word graphs](https://en.wikipedia.org/wiki/Deterministic_acyclic_finite_state_automaton) instead of the bit array cache introduced in carmen 9.0.0. As before, they are generated at index time and stored and can be dumped and loaded in a single contiguous-memory chunk, so fast start times should be preserved as compared to bit cache, but with more memory compactness and lower collision rates.
+
+## 10.0.0
+
+- CJK characters in an indexable word or phrase are now indexed individually to support the practice of addresses being written from largest -> smallest geographical entity and without delimeters.
+
+## 9.0.1
+
+- Bugfixes to multiconf approach.
+
+## 9.0.0
+
+- Refactored dict cache using bit arrays and `mmap` for lower runtime memory profile.
+- Refactored index loading to cleanly handle multiple configurations from the same source instances.
+- Supported `geocoder_version` is now 5.
+
 ## 8.7.1
 
 - Catch more unhandled error cases for debugging.

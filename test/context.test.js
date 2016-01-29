@@ -16,36 +16,6 @@ var index = require('../lib/index');
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
-test('context vector', function(t) {
-    context.getTile.cache.reset();
-
-    var geocoder = new Carmen({
-        country: Carmen.auto(__dirname + '/fixtures/01-ne.country.s3'),
-        province: Carmen.auto(__dirname + '/fixtures/02-ne.province.s3')
-    });
-
-    geocoder._open(function() {
-        t.test('context vt full', function(q) {
-            context(geocoder, 0, 40, { full: true }, function(err, contexts) {
-                q.ifError(err);
-                q.equal(contexts.length, 2);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-full.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-full.json'));
-                q.end();
-            });
-        });
-        t.test('context vt light', function(q) {
-            context(geocoder, 0, 40, { full: false }, function(err, contexts) {
-                q.ifError(err);
-                q.equal(contexts.length, 2);
-                if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/context-vt-light.json', JSON.stringify(contexts, null, 4));
-                q.deepEqual(contexts, require(__dirname + '/fixtures/context-vt-light.json'));
-                q.end();
-            });
-        });
-    });
-});
-
 test('contextVector deflate', function(t) {
     context.getTile.cache.reset();
 
@@ -56,15 +26,13 @@ test('contextVector deflate', function(t) {
                 'content-encoding': 'deflate'
             });
         },
-        _geocoder: {
-            geocoder_layer: 'data',
-            maxzoom: 0,
-            minzoom: 0,
-            name: 'test',
-            type: 'test',
-            id: 'testA',
-            idx: 1
-        }
+        geocoder_layer: 'data',
+        maxzoom: 0,
+        minzoom: 0,
+        name: 'test',
+        type: 'test',
+        id: 'testA',
+        idx: 1
     };
     context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.ifError(err);
@@ -96,15 +64,13 @@ test('contextVector gzip', function(t) {
                 'content-encoding': 'gzip'
             });
         },
-        _geocoder: {
-            geocoder_layer: 'data',
-            maxzoom: 0,
-            minzoom: 0,
-            name: 'test',
-            type: 'test',
-            id: 'testA',
-            idx: 1
-        }
+        geocoder_layer: 'data',
+        maxzoom: 0,
+        minzoom: 0,
+        name: 'test',
+        type: 'test',
+        id: 'testA',
+        idx: 1
     };
     context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.ifError(err);
@@ -133,15 +99,13 @@ test('contextVector badbuffer', function(t) {
         getTile: function(z,x,y,callback) {
             return callback(null, new Buffer('lkzvjlkajsdf'));
         },
-        _geocoder: {
-            geocoder_layer: 'data',
-            maxzoom: 0,
-            minzoom: 0,
-            name: 'test',
-            type: 'test',
-            id: 'testA',
-            idx: 0
-        }
+        geocoder_layer: 'data',
+        maxzoom: 0,
+        minzoom: 0,
+        name: 'test',
+        type: 'test',
+        id: 'testA',
+        idx: 0
     };
     context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
@@ -160,15 +124,13 @@ test('contextVector empty VT buffer', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
@@ -202,15 +164,13 @@ test('contextVector ignores negative score', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
@@ -240,15 +200,13 @@ test('contextVector only negative score', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
@@ -278,15 +236,13 @@ test('contextVector matched negative score', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         context.contextVector(source, 0, 0, false, { 1:{} }, null, function(err, data) {
             assert.ifError(err);
@@ -323,15 +279,13 @@ test('contextVector restricts distance', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         context.contextVector(source, 170, 80, false, {}, null, function(err, data) {
             assert.ifError(err);
@@ -381,15 +335,13 @@ test('contextVector restricts distance', function(assert) {
                 getTile: function(z,x,y,callback) {
                     return callback(null, buffer);
                 },
-                _geocoder: {
-                    geocoder_layer: 'data',
-                    maxzoom: 0,
-                    minzoom: 0,
-                    name: 'test',
-                    type: 'test',
-                    id: 'testA',
-                    idx: 0
-                }
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                type: 'test',
+                id: 'testA',
+                idx: 0
             };
             context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
                 assert.ifError(err);
@@ -408,15 +360,13 @@ test('contextVector restricts distance', function(assert) {
                 getTile: function(z,x,y,callback) {
                     return callback(null, buffer);
                 },
-                _geocoder: {
-                    geocoder_layer: 'data',
-                    maxzoom: 0,
-                    minzoom: 0,
-                    name: 'test',
-                    type: 'test',
-                    id: 'testA',
-                    idx: 0
-                }
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                type: 'test',
+                id: 'testA',
+                idx: 0
             };
             context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
                 assert.ifError(err);
@@ -435,15 +385,13 @@ test('contextVector restricts distance', function(assert) {
                 getTile: function(z,x,y,callback) {
                     return callback(null, buffer);
                 },
-                _geocoder: {
-                    geocoder_layer: 'data',
-                    maxzoom: 0,
-                    minzoom: 0,
-                    name: 'test',
-                    type: 'test',
-                    id: 'testA',
-                    idx: 0
-                }
+                geocoder_layer: 'data',
+                maxzoom: 0,
+                minzoom: 0,
+                name: 'test',
+                type: 'test',
+                id: 'testA',
+                idx: 0
             };
             context.contextVector(source, 0, 0, false, { 2:true }, null, function(err, data) {
                 assert.ifError(err);
@@ -474,15 +422,13 @@ test('contextVector caching', function(assert) {
             getTile: function(z,x,y,callback) {
                 return callback(null, buffer);
             },
-            _geocoder: {
-                geocoder_layer: 'data',
-                maxzoom: 0,
-                minzoom: 0,
-                name: 'test',
-                type: 'test',
-                id: 'testA',
-                idx: 0
-            }
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
         };
         var hit, miss;
         hit = context.getTile.cacheStats.hit;

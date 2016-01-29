@@ -10,47 +10,86 @@ var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
 var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
+var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
 
-tape('index', function(assert) {
-    try { 
-        fs.unlinkSync(tmpindex); 
+tape('clean tmp index', function(assert) {
+    try {
+        fs.unlinkSync(tmpindex)
+        fs.unlinkSync(tmpindex2)
     } catch (err) {
-        //'file not found' 
+        //File does not exist
+    } finally {
+        assert.end();
     }
-    var mbtiles = new MBTiles(tmpindex, start);
-    var carmen = new Carmen({ index: mbtiles });
+});
+
+tape('index', function(assert) {
+    try {
+        fs.unlinkSync(tmpindex);
+    } catch (err) {
+        //'file not found'
+    }
+    var conf = { index: new MBTiles(tmpindex, function() {}) };
+    var carmen = new Carmen(conf);
+    carmen.on('open', start);
     function start(err) {
         assert.ifError(err);
-        mbtiles.startWriting(write1);
+        conf.index.startWriting(write1);
     }
     function write1(err) {
         assert.ifError(err);
-        addFeature(mbtiles, {
-            _id:38,
-            _text:'Canada',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+        addFeature(conf.index, {
+            id:38,
+            properties: {
+                'carmen:text':'Canada',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, write2);
     }
     function write2(err) {
         assert.ifError(err);
-        addFeature(mbtiles, {
-            _id:39,
-            _text:'Brazil',
-            _zxy:['6/32/32'],
-            _center:[0,0]
+        addFeature(conf.index, {
+            id:39,
+            properties: {
+                'carmen:text':'Brazil',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
         }, store);
     }
     function store(err) {
         assert.ifError(err);
         require('../lib/index.js').teardown();
-        require('../lib/index.js').store(mbtiles, stop);
+        require('../lib/index.js').store(conf.index, stop);
     }
     function stop(err) {
         assert.ifError(err);
-        mbtiles.stopWriting(assert.end);
+        conf.index.stopWriting(assert.end);
     }
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="/tmp"', function(err, stdout, stderr) {
+        t.ok(err);
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', function(t) {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.json', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.end();
+    });
 });
 
 tape('bin/carmen DEBUG', function(t) {
@@ -97,6 +136,12 @@ tape('bin/carmen query types', function(t) {
 tape('bin/carmen query wrong types', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="not a type"', function(err, stdout, stderr) {
         t.ok(err, 'not a type');
+        t.end();
+    });
+});
+tape('bin/carmen query wrong stacks', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --stacks="not a stack"', function(err, stdout, stderr) {
+        t.ok(err, 'not a stack');
         t.end();
     });
 });
