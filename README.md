@@ -9,7 +9,7 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 ## Depends
 
-- Node v0.10.x
+- Node v4.2.x
 
 ## Install
 
