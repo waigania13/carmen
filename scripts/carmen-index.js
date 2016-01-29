@@ -57,7 +57,8 @@ if (!argv._[2]) {
         conf.to.stopWriting(index);
     }
 
-    function index() {
+    function index(err) {
+        if (err) throw err;
         var carmen = new Carmen(conf);
         carmen.on('open', function() {
             carmen.index(null, conf.to, {
@@ -65,6 +66,7 @@ if (!argv._[2]) {
                 output: outputStream,
                 config: config
             }, function(err) {
+                if (err) throw err;
                 process.exit(0);
             });
         });
