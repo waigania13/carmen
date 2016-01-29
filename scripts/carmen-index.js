@@ -37,41 +37,38 @@ if (!argv._[2]) {
 
     var outputStream = process.stdout;
 
-	argv.index = Carmen.auto(argv.index);
-
-	var conf = {
-		to: argv.index
-	};
-
-	var carmen = new Carmen(conf);
-
+    var conf;
     var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 
-    carmen.on('open', function() {
-        carmen.indexes.to.startWriting(writeMeta);
+	argv.index = Carmen.auto(argv.index, function() {
+        conf = {
+            to: argv.index
+        };
+        conf.to.startWriting(writeMeta);
     });
 
     function writeMeta(err) {
         if (err) throw err;
-        carmen.indexes.to.putInfo(config, stopWriting);
+        conf.to.putInfo(config, stopWriting);
     }
 
     function stopWriting(err) {
         if (err) throw err;
-        carmen.indexes.to.stopWriting(function(err) {
+        conf.to.stopWriting(index);
+    }
+
+    function index() {
+        var carmen = new Carmen(conf);
+        carmen.on('open', function() {
             carmen.index(null, conf.to, {
                 input: process.stdin,
                 output: outputStream,
                 config: config
             }, function(err) {
-                process.exit();
+                process.exit(0);
             });
         });
     }
-
-
-
-
 } else {
 	//Legacy Indexer
 	if (!argv._[2]) throw new Error('[From] argument required');
