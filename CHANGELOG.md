@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.1.1
+
+- Upgraded to use latest node-mapnik API for decoding and encoding Vector Tiles
+
 ## 12.1.0
 
 - Enforce max query length of 256 chars
