@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.2.1
+
+- Ensure addressitp parity exists
+
 ## 12.2.0
 
 - Allow up to 10 forward geocodes (default 5) specified by the limit param
