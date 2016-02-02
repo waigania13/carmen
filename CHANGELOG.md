@@ -1,5 +1,12 @@
 # Changelog
 
+## 12.2.0
+
+- Allow up to 10 forward geocodes (default 5) specified by the limit param
+- Allow up to 5 reverse geocodes (default 1) when only querying for a single type
+- Update indexer to transform ITP & Clusters for vectorization and output to stream
+- Add new limit tests
+
 ## 12.1.1
 
 - Upgraded to use latest node-mapnik API for decoding and encoding Vector Tiles
