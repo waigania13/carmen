@@ -23,14 +23,12 @@ function help() {
     process.exit(0);
 }
 
-
 if (argv.help) help();
 
 if (argv.version) {
     console.log('carmen@'+settings.version);
     process.exit(0);
 }
-
 
 //New Streaming
 if (!argv._[2]) {
@@ -39,23 +37,40 @@ if (!argv._[2]) {
 
     var outputStream = process.stdout;
 
-	argv.index = Carmen.auto(argv.index);
-
-	var conf = {
-		to: argv.index
-	};
-
-	var carmen = new Carmen(conf);
-
+    var conf;
     var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
-	carmen.index(null, conf.to, {
-        input: process.stdin,
-        output: outputStream,
-        config: config
-    }, function(err) {
-        if (err) throw err;
-        process.exit(0);
+
+	argv.index = Carmen.auto(argv.index, function() {
+        conf = {
+            to: argv.index
+        };
+        conf.to.startWriting(writeMeta);
     });
+
+    function writeMeta(err) {
+        if (err) throw err;
+        conf.to.putInfo(config, stopWriting);
+    }
+
+    function stopWriting(err) {
+        if (err) throw err;
+        conf.to.stopWriting(index);
+    }
+
+    function index(err) {
+        if (err) throw err;
+        var carmen = new Carmen(conf);
+        carmen.on('open', function() {
+            carmen.index(null, conf.to, {
+                input: process.stdin,
+                output: outputStream,
+                config: config
+            }, function(err) {
+                if (err) throw err;
+                process.exit(0);
+            });
+        });
+    }
 } else {
 	//Legacy Indexer
 	if (!argv._[2]) throw new Error('[From] argument required');
