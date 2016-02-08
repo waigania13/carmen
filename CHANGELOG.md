@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.2.2
+
+- Enforce GeoJSON compliance on indexing
+
 ## 12.2.1
 
 - Ensure addressitp parity exists
