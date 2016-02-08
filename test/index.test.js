@@ -97,6 +97,7 @@ test('index.update -- error', function(t) {
     t.test('update 1', function(q) {
         index.update(conf.to, [{
             id: 1,
+            type: "Feature",
             properties: {
                 'carmen:text': 'main st',
                 'carmen:score': 10,
@@ -116,6 +117,7 @@ test('index.update -- error', function(t) {
     t.test('update 2', function(q) {
         index.update(conf.to, [{
             id: 1,
+            type: "Feature",
             properties: {
                 'carmen:text': 'main st',
                 'carmen:score': 0,
@@ -147,25 +149,25 @@ test('index.update freq', function(t) {
         });
     });
     t.test('error no carmen:center', function(q) {
-        index.update(conf.to, [{ id: 1, properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
-            q.equal('Error: doc has no geometry on id:1', err.toString());
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+            q.equal('Error: "geometry" property required on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(conf.to, [{ id: 1, properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
     });
     t.test('indexes doc with geometry and no carmen:center', function(q) {
-        index.update(conf.to, [{ id:1, properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.equal('Error: doc has no carmen:center on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes doc with geometry and carmen:center', function(q) {
-        index.update(conf.to, [{ id:1, properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
             q.ifError(err);
             q.end();
         });
@@ -275,6 +277,7 @@ test('index phrase collection', function(assert) {
     var c = new Carmen(conf);
     var docs = [{
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text': 'a',
             'carmen:center': [0,0]
@@ -285,6 +288,7 @@ test('index phrase collection', function(assert) {
         }
     }, {
         id:2,
+        type: 'Feature',
         properties: {
             'carmen:text': 'a',
             'carmen:center': [0,0]
@@ -324,6 +328,7 @@ test('error -- _zxy too large tile-cover', function(t) {
     for (var i = 0; i < 10002; i++) { tiles.push('6/32/32'); }
     var docs = [{
         id: 1,
+        type: 'Feature',
         properties: {
             'carmen:text': 'fake street',
             'carmen:center': [0,0],
@@ -335,6 +340,7 @@ test('error -- _zxy too large tile-cover', function(t) {
         }
     }, {
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text': 'fake street',
             'carmen:center': [0,0],
