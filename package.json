@@ -54,7 +54,7 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint lib test",
-    "test": "npm run lint && (retire -n || echo 'WARNING: retire found insecure packages') && CARMEN_DEFAULT_DICTCACHE=\"bitcache\" tape ./test/*.js && CARMEN_DEFAULT_DICTCACHE=\"dawg\" tape ./test/*.js && npm run bench",
+    "test": "npm run lint && (retire -n || echo 'WARNING: retire found insecure packages') && tape ./test/*.js && npm run bench",
     "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "for file in bench/*.js; do node $file; done"
   },
