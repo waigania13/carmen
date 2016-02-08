@@ -98,7 +98,7 @@ tape('worker.runChecks', function(assert) {
             'carmen:text':'Main Street',
             'carmen:center':[0,0]
         },
-        geometry: { type: 'Polygon', coordinates: [Array.apply(null, Array(50001)).map(function(){return [1.1,1.1]})] }
+        geometry: { type: 'Polygon', coordinates: [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})] }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
     assert.equal(worker.runChecks({
         id:1,
@@ -119,8 +119,8 @@ tape('worker.runChecks', function(assert) {
         geometry: {
             type: 'MultiPolygon',
             coordinates: [
-                [Array.apply(null, Array(50001)).map(function(){return [1.1,1.1]})],
-                [Array.apply(null, Array(50001)).map(function(){return [1.1,1.1]})]
+                [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})],
+                [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})]
             ]
         }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
