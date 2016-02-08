@@ -164,7 +164,7 @@ attribute         | description
 `carmen:text_{language code}`     | Localized to index for this feature. Synonyms, translations, etc. should be separated using commas and will be synonymized with `carmen:text`.
 `carmen:center`   | Optional. An array in the form [lon,lat]. center must be on the geometry surface, or the center will be recalculated.
 `carmen:score`    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
-`carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresseses corresponding to the order of their geometries in the `GeometryCollection`
+`carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresses corresponding to the order of their geometries in the `GeometryCollection`
 
 ### TIGER address interpolation
 
@@ -486,7 +486,7 @@ for additional encoded data.
 
 ### freq
 
-Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a `murmur` hash.
+Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a [`murmur`](https://en.wikipedia.org/wiki/MurmurHash) hash.
 
     term_id => [ count ]
 
