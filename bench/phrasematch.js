@@ -29,6 +29,7 @@ function setup(cb) {
                 var lon = Math.random() * 360 - 180;
                 memo.push({
                     id: ++seq,
+                    type: 'Feature',
                     properties: {
                         'carmen:text': text,
                         'carmen:center': [lon, lat]
