@@ -19,6 +19,7 @@ tape('worker.loadDoc', function(assert) {
     zoom = 6;
     doc = {
         id: 1,
+        type: "Feature",
         properties: {
             'carmen:text': 'main st',
             'carmen:center': [0, 0],
@@ -64,35 +65,68 @@ tape('worker.verifyCenter', function(assert) {
 tape('worker.runChecks', function(assert) {
     assert.equal(worker.runChecks({
     }), 'doc has no id');
+
     assert.equal(worker.runChecks({
         id:1,
+        type: 'Feature',
         properties: {},
-        geometry: {}
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
     }), 'doc has no carmen:text on id:1');
     assert.equal(worker.runChecks({
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text':'Main Street'
         }
-    }), 'doc has no geometry on id:1');
+    }), '"geometry" property required on id:1');
     assert.equal(worker.runChecks({
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text':'Main Street',
             'carmen:center':[0,0]
         },
         geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
+    }, 12), 'a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1');
+    assert.equal(worker.runChecks({
+        id:1,
+        type: 'Feature',
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'Polygon', coordinates: [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})] }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
     assert.equal(worker.runChecks({
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text':'Main Street',
             'carmen:center':[0,0]
         },
         geometry: { type: 'MultiPolygon', coordinates: [[new Array(30e3)],[new Array(30e3)]] }
+    }, 12), 'a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1');
+    assert.equal(worker.runChecks({
+        id:1,
+        type: 'Feature',
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0]
+        },
+        geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+                [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})],
+                [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})]
+            ]
+        }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
     assert.equal(worker.runChecks({
         id:1,
+        type: 'Feature',
         properties: {
             'carmen:text':'Main Street',
             'carmen:center':[0,0]
