@@ -1,5 +1,10 @@
 # Changelog
 
+## 12.2.3
+
+- Fix context properties bug
+- Add id=> output for all features
+
 ## 12.2.2
 
 - Enforce GeoJSON compliance on indexing
