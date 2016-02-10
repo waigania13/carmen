@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.2.4
+
+- Streaming indexer should utilize geocoder_resolution in tile cover
+
 ## 12.2.3
 
 - Fix context properties bug
