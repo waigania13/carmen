@@ -1,5 +1,13 @@
 # Changelog
 
+## 12.2.6
+
+- Cleanly exit after obtaining a results with scripts/carmen.js when using --config flag
+
+## 12.2.5
+
+- Better handling of empty strings in DAWG index
+
 ## 12.2.4
 
 - Streaming indexer should utilize geocoder_resolution in tile cover
