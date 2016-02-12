@@ -16,9 +16,9 @@ function help() {
     console.log('  --help                  Prints this message');
     console.log('  --version               Print the carmen version');
     console.log('  --config="<path>"       path to JSON document with index settings');
-	console.log('  --index="<path>"        Tilelive path to output index to');
+    console.log('  --index="<path>"        Tilelive path to output index to');
     console.log('');
-	console.log('Deprecated:');
+    console.log('Deprecated:');
     console.log('carmen-copy.js [from] [to]');
     process.exit(0);
 }
@@ -32,7 +32,7 @@ if (argv.version) {
 
 //New Streaming
 if (!argv._[2]) {
-	if (!argv.config) help();
+    if (!argv.config) help();
     if (!argv.index) throw new Error('--index argument required');
 
     var outputStream = process.stdout;
@@ -40,7 +40,7 @@ if (!argv._[2]) {
     var conf;
     var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 
-	argv.index = Carmen.auto(argv.index, function() {
+    argv.index = Carmen.auto(argv.index, function() {
         conf = {
             to: argv.index
         };
@@ -72,21 +72,21 @@ if (!argv._[2]) {
         });
     }
 } else {
-	//Legacy Indexer
-	if (!argv._[2]) throw new Error('[From] argument required');
-	if (!argv._[3]) throw new Error('[To] argument required');
+    //Legacy Indexer
+    if (!argv._[2]) throw new Error('[From] argument required');
+    if (!argv._[3]) throw new Error('[To] argument required');
 
-	var from = argv._[2];
-	var to = argv._[3]
+    var from = argv._[2];
+    var to = argv._[3]
 
     var conf = {
         to: Carmen.auto(to),
         from: Carmen.auto(from)
     };
 
-	var carmen = new Carmen(conf);
+    var carmen = new Carmen(conf);
 
-	carmen.index(conf.from, conf.to, {}, complete);
+    carmen.index(conf.from, conf.to, {}, complete);
 
     var last = +new Date;
     var total = 0;
