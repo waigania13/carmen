@@ -114,7 +114,7 @@ carmen.geocode(argv.query, {
         console.log();
     }
 
-    if (!argv.stats) return;
+    if (!argv.stats) process.exit(0);
     console.log('Stats');
     console.log('-----');
     console.log('- warmup:       %sms', load);
@@ -122,6 +122,8 @@ carmen.geocode(argv.query, {
     console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
     console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
     console.log('- totaltime:    %sms', data.stats.time);
+
+    process.exit(0);
 });
 
 function rpad(str, len) {
