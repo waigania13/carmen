@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.2.7
+
+- Expose source._commit where it exists
+
 ## 12.2.6
 
 - Cleanly exit after obtaining a results with scripts/carmen.js when using --config flag
