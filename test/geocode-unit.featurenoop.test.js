@@ -9,13 +9,11 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
 
-var c = null;
-
+var conf = {
+    a: new mem(null, function() {}),
+};
+var c = new Carmen(conf);
 tape('index', function(t) {
-    var conf = {
-        a: new mem(null, function() {}),
-    };
-    c = new Carmen(conf);
     addFeature.vt(conf.a, {
         id:1,
         properties: {
@@ -25,38 +23,6 @@ tape('index', function(t) {
         }
     }, t.end);
 });
-
-tape('reverse geocode', function(t) {
-    c.geocode('0,0', { limit_verify:1 }, function(err, res) {
-        t.ifError(err);
-        t.deepEqual(res.features.length, 0);
-        t.end();
-    });
-});
-
-tape('index.teardown', function(assert) {
-    index.teardown();
-    context.getTile.cache.reset();
-    c = null;
-    assert.end();
-});
-
-tape('index - other languages', function(t) {
-    var conf = {
-        a: new mem(null, function() {}),
-    };
-    c = new Carmen(conf);
-    addFeature.vt(conf.a, {
-        id:1,
-        properties: {
-            'carmen:text':'abc',
-            'carmen:text_ru':'\n',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    }, t.end);
-});
-
 tape('reverse geocode', function(t) {
     c.geocode('0,0', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
@@ -70,5 +36,4 @@ tape('index.teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
 

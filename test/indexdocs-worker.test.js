@@ -133,6 +133,33 @@ tape('worker.runChecks', function(assert) {
         },
         geometry: { type: 'Point', coordinates: [0,0] }
     }, 12), '');
+
+    var doc = {
+        id:1,
+        type: 'Feature',
+        properties: {
+            'carmen:text':'Moscow',
+            'carmen:text_ru':'Москвá',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'Point', coordinates: [0,0] }
+    };
+    worker.runChecks(doc);
+    assert.notEqual(Object.keys(doc.properties).indexOf('carmen:text_ru'), -1, 'non-empty carmen:text_* property retained');
+
+    var doc = {
+        id:1,
+        type: 'Feature',
+        properties: {
+            'carmen:text':'Moscow',
+            'carmen:text_ru':'\n',
+            'carmen:center':[0,0]
+        },
+        geometry: { type: 'Point', coordinates: [0,0] }
+    };
+    worker.runChecks(doc);
+    assert.equal(Object.keys(doc.properties).indexOf('carmen:text_ru'), -1, 'empty carmen:text_* property removed');
+
     assert.end();
 });
 
