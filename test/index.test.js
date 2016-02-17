@@ -30,12 +30,8 @@ test('index - streaming interface', function(assert) {
 
     var carmen = new Carmen(conf);
     assert.test('index docs.json', function(q) {
-        carmen.index(null, conf.to, {
-            config: {
-                zoom: 6
-            },
-            index: conf.to,
-            input: inputStream,
+        carmen.index(inputStream, conf.to, {
+            zoom: 6,
             output: outputStream
         }, function(err) {
             q.ifError(err);
@@ -93,7 +89,6 @@ test('index.update -- error', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var conf = { to: new mem(docs, null, function() {}) };
     var carmen = new Carmen(conf);
-    var zoom = 6;
     t.test('update 1', function(q) {
         index.update(conf.to, [{
             id: 1,
@@ -107,7 +102,7 @@ test('index.update -- error', function(t) {
                 type:'Point',
                 coordinates:[0,0]
             }
-        }], zoom, function(err) {
+        }], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.deepEqual(conf.to._geocoder.get('freq', 0), [2]);
             q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
@@ -127,7 +122,7 @@ test('index.update -- error', function(t) {
                 type:'Point',
                 coordinates:[0,0]
             }
-        }], zoom, function(err) {
+        }], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.deepEqual(conf.to._geocoder.get('freq', 0), [4]);
             q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
@@ -141,33 +136,32 @@ test('index.update freq', function(t) {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var conf = { to: new mem(null, function() {}) };
     var carmen = new Carmen(conf);
-    var zoom = 6;
     t.test('error no id', function(q) {
-        index.update(conf.to, [{ properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+        index.update(conf.to, [{ properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
             q.equal('Error: doc has no id', err.toString());
             q.end();
         });
     });
     t.test('error no carmen:center', function(q) {
-        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], zoom, function(err) {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
             q.equal('Error: "geometry" property required on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes single doc', function(q) {
-        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], zoom, function(err) {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.end();
         });
     });
     t.test('indexes doc with geometry and no carmen:center', function(q) {
-        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}}], { zoom: 6 }, function(err) {
             q.equal('Error: doc has no carmen:center on id:1', err.toString());
             q.end();
         });
     });
     t.test('indexes doc with geometry and carmen:center', function(q) {
-        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], zoom, function(err) {
+        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.end();
         });
@@ -176,14 +170,23 @@ test('index.update freq', function(t) {
 });
 
 test('index', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
-    var conf = {
-        from: new mem(docs, {maxzoom:6}, function() {}),
-        to: new mem(docs, null, function() {})
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function(chunk, encoding, done) {
+        var doc = JSON.parse(chunk.toString());
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
     };
+
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var to = new mem(docs, null, function() {})
+
     var carmen = new Carmen(conf);
     t.test('indexes a document', function(q) {
-        carmen.index(conf.from, conf.to, {}, function(err) {
+        carmen.index(inputStream, conf.to, { zoom: 6 }, function(err) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             var memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';

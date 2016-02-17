@@ -30,7 +30,6 @@ if (argv.version) {
 if (!argv.config) help();
 if (!argv.index) throw new Error('--index argument required');
 
-var outputStream = process.stdout;
 
 var conf;
 var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
@@ -55,12 +54,10 @@ function stopWriting(err) {
 function index(err) {
     if (err) throw err;
     var carmen = new Carmen(conf);
+    config.output = process.stdout;
+
     carmen.on('open', function() {
-        carmen.index(null, conf.to, {
-            input: process.stdin,
-            output: outputStream,
-            config: config
-        }, function(err) {
+        carmen.index(process.stdin, conf.to, config , function(err) {
             if (err) throw err;
             process.exit(0);
         });
