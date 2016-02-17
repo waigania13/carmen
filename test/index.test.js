@@ -86,7 +86,6 @@ test('index.generateStats', function(assert) {
 });
 
 test('index.update -- error', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var conf = { to: new mem(docs, null, function() {}) };
     var carmen = new Carmen(conf);
     t.test('update 1', function(q) {
@@ -133,7 +132,6 @@ test('index.update -- error', function(t) {
 });
 
 test('index.update freq', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var conf = { to: new mem(null, function() {}) };
     var carmen = new Carmen(conf);
     t.test('error no id', function(q) {
@@ -181,22 +179,24 @@ test('index', function(t) {
         done();
     };
 
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
     var to = new mem(docs, null, function() {})
 
-    var carmen = new Carmen(conf);
+    var carmen = new Carmen({ to: to });
     t.test('indexes a document', function(q) {
-        carmen.index(inputStream, conf.to, { zoom: 6 }, function(err) {
+        carmen.index(inputStream, to, {
+            zoom: 6,
+            output: outputStream
+        }, function(err) {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            var memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
-            if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
-            q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
+            var memJson = __dirname + '/fixtures/mem-' + to._dictcache.properties.type + '.json';
+            if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(to.serialize(), null, 4));
+            q.equal(JSON.stringify(to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
         });
     });
     t.test('analyzes index', function(q) {
-        carmen.analyze(conf.to, function(err, stats) {
+        carmen.analyze(to, function(err, stats) {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
@@ -205,44 +205,44 @@ test('index', function(t) {
         });
     });
     t.test('loadall index', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 0));
-        carmen.loadall(conf.to, 'freq', 1, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 1, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 0));
+            q.ok(to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 0));
-        carmen.loadall(conf.to, 'freq', 10, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 10, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 0));
+            q.ok(to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall (concurrency 0.5)', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 0));
-        carmen.loadall(conf.to, 'freq', 0.5, function(err) {
+        to._geocoder.unloadall('freq');
+        q.ok(!to._geocoder.has('freq', 0));
+        carmen.loadall(to, 'freq', 0.5, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 0));
+            q.ok(to._geocoder.has('freq', 0));
             q.end();
         });
     });
     t.test('loadall stat ignores Dict', function(q) {
-        q.ok(!conf.to._geocoder.hasDict('stat', 0));
-        carmen.loadall(conf.to, 'stat', 1, function(err) {
+        q.ok(!to._geocoder.hasDict('stat', 0));
+        carmen.loadall(to, 'stat', 1, function(err) {
             q.ifError(err);
-            q.ok(!conf.to._geocoder.hasDict('stat', 0));
+            q.ok(!to._geocoder.hasDict('stat', 0));
             q.end();
         });
     });
     t.test('unloadall index', function(q) {
-        carmen.unloadall(conf.to, 'freq', function(err) {
+        carmen.unloadall(to, 'freq', function(err) {
             q.ifError(err);
-            q.equal(conf.to._geocoder.has('freq', 0), false);
+            q.equal(to._geocoder.has('freq', 0), false);
             q.end();
         });
     });
