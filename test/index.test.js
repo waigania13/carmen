@@ -326,7 +326,7 @@ test('error -- _geometry too high resolution', function(t) {
     });
 });
 
-test('error -- _zxy too large tile-cover', function(t) {
+test('error -- carmen:zxy too large tile-cover', function(t) {
     var tiles = [];
     for (var i = 0; i < 10002; i++) { tiles.push('6/32/32'); }
     var docs = [{
