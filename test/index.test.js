@@ -304,7 +304,7 @@ test('index phrase collection', function(assert) {
             coordinates: [0,0]
         }
     }];
-    index.update(conf.test, docs, 6, afterUpdate);
+    index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
         var id1 = termops.encodePhrase('a', true);
