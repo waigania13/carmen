@@ -253,26 +253,52 @@ test('index', function(t) {
 });
 
 test('error -- zoom too high', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.jsonl'));
-    var conf = {
-        from: new mem(docs, {maxzoom: 15}, function() {}),
-        to: new mem(docs, null, function() {})
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function(chunk, encoding, done) {
+        var doc = JSON.parse(chunk.toString());
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
     };
+
+
+    var conf = {
+        to: new mem([], null, function() {})
+    };
+
     var carmen = new Carmen(conf);
-    carmen.index(conf.from, conf.to, {}, function(err) {
+    carmen.index(inputStream, conf.to, { 
+        zoom: 15, 
+        output: outputStream
+    }, function(err) {
         t.equal('Error: zoom must be less than 15 --- zoom was 15', err.toString());
         t.end();
     });
 });
 
 test('error -- zoom too low', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.jsonl'));
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+
+    var outputStream = new Stream.Writable();
+    outputStream._write = function(chunk, encoding, done) {
+        var doc = JSON.parse(chunk.toString());
+
+        //Only print on error or else the logs are super long
+        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        done();
+    };
+
     var conf = {
-        from: new mem(docs, {maxzoom: -1}, function() {}),
-        to: new mem(docs, {maxzoom:10}, function() {})
+        to: new mem([], null, function() {})
     };
     var carmen = new Carmen(conf);
-    carmen.index(conf.from, conf.to, {}, function(err) {
+    carmen.index(inputStream, conf.to, {
+        zoom: -1,
+        output: outputStream
+    }, function(err) {
         t.equal('Error: zoom must be greater than 0 --- zoom was -1', err.toString());
         t.end();
     });
