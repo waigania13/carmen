@@ -13,7 +13,7 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 
 test('index - streaming interface', function(assert) {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.json'), { encoding: 'utf8' });
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
     outputStream._write = function(chunk, encoding, done) {
@@ -86,7 +86,8 @@ test('index.generateStats', function(assert) {
 });
 
 test('index.update -- error', function(t) {
-    var conf = { to: new mem(docs, null, function() {}) };
+    var memdocs = require('./fixtures/mem-docs.json');
+    var conf = { to: new mem(memdocs, null, function() {}) };
     var carmen = new Carmen(conf);
     t.test('update 1', function(q) {
         index.update(conf.to, [{
@@ -168,7 +169,7 @@ test('index.update freq', function(t) {
 });
 
 test('index', function(t) {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.json'), { encoding: 'utf8' });
+    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
     outputStream._write = function(chunk, encoding, done) {
@@ -179,9 +180,11 @@ test('index', function(t) {
         done();
     };
 
-    var to = new mem(docs, null, function() {})
+    var memdocs = require('./fixtures/mem-docs.json');
+    var to = new mem(memdocs, null, function() {})
 
     var carmen = new Carmen({ to: to });
+
     t.test('indexes a document', function(q) {
         carmen.index(inputStream, to, {
             zoom: 6,
@@ -250,7 +253,7 @@ test('index', function(t) {
 });
 
 test('error -- zoom too high', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.jsonl'));
     var conf = {
         from: new mem(docs, {maxzoom: 15}, function() {}),
         to: new mem(docs, null, function() {})
@@ -263,7 +266,7 @@ test('error -- zoom too high', function(t) {
 });
 
 test('error -- zoom too low', function(t) {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.json'));
+    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/docs.jsonl'));
     var conf = {
         from: new mem(docs, {maxzoom: -1}, function() {}),
         to: new mem(docs, {maxzoom:10}, function() {})
