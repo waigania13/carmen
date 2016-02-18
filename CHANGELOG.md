@@ -1,5 +1,10 @@
 # Changelog
 
+## 13.0.0
+
+- Remove deprecated tilelive from index parameter and update to only use streaming interface
+- Expand index.update to use object options instead of just zoom
+
 ## 12.2.7
 
 - Expose source._commit where it exists
