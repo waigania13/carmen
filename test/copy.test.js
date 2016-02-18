@@ -5,7 +5,7 @@ var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var docs = require('./fixtures/docs.json');
+var docs = require('./fixtures/mem-docs.json');
 var test = require('tape');
 
 test('copy', function(t) {
@@ -17,7 +17,7 @@ test('copy', function(t) {
     var zoom = 6;
 
     t.test('update', function(q) {
-        index.update(conf.from, docs, zoom, function(err) {
+        index.update(conf.from, docs, { zoom: zoom }, function(err) {
             if (err) q.fail();
             index.store(conf.from, function() {
                 q.end();
