@@ -84,10 +84,10 @@ tape('winding river rd springfield', function(t) {
     c.geocode('winding river rd  springfield', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'winding river rd, springfield');
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, ['grid,62799'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, ['grid,29750'], 'place1: loads 1 grid');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,1','feature,2','grid,52975','grid,8765'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,1', 'feature,2', 'grid,12737', 'grid,29789'], 'street1: loads 1 grid, 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
@@ -104,10 +104,10 @@ tape('springfield', function(t) {
         t.deepEqual(res.features[1].place_name, 'springfield st, springfield');
         t.deepEqual(res.features[1].id, 'street.3');
 
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,62799'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,29750'], 'place1: loads 1 grid');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3','grid,62799'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3','grid,29750'], 'street1: loads 1 grid, 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
@@ -122,7 +122,7 @@ tape('springfield, types=place', function(t) {
         t.deepEqual(res.features[0].place_name, 'springfield');
         t.deepEqual(res.features[0].id, 'place.1');
 
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,62799'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,29750'], 'place1: loads 1 grid');
         t.deepEqual(c.indexes.place1._original.logs.getTile, [], 'place1: loads 0 tiles');
 
         t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), [], 'street1: no io');
