@@ -8,6 +8,8 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
 
+(function() {
+
 var conf = {
     place_a: new mem({maxzoom:6, geocoder_name:'region'}, function() {}),
 };
@@ -57,3 +59,45 @@ tape('index.teardown', function(assert) {
     assert.end();
 });
 
+})();
+
+(function() {
+
+var conf = {
+    place_a: new mem({maxzoom:6, geocoder_name:'region'}, function() {}),
+};
+var c = new Carmen(conf);
+tape('index abc xyz', function(t) {
+    addFeature(conf.place_a, {
+        id:1,
+        properties: {
+            'carmen:text':'abc Xyz',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    }, t.end);
+});
+
+tape('check for collisions based on char prefixing', function(t) {
+    c.geocode('yz', { limit_verify:1 }, function(err, res) {
+        t.ifError(err);
+        t.equals(res.features.length, 0, 'search for yz returned no results');
+        t.end();
+    });
+});
+
+tape('check for collisions based on char prefixing', function(t) {
+    c.geocode('a yz', { limit_verify:1 }, function(err, res) {
+        t.ifError(err);
+        t.equals(res.features.length, 0, 'search for \'a yz\' returned no results');
+        t.end();
+    });
+});
+
+tape('index.teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});
+
+})();
