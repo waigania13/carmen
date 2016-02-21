@@ -32,14 +32,6 @@ tape('valid match', function(t) {
     });
 });
 
-tape('find collisions (coalesceSingle)', function(t) {
-    c.geocode('j', { limit_verify:1 }, function(err, res) {
-        t.equal(res.features.length, 0, 'not in index');
-        t.deepEqual(res.waste[0], ['place'], 'has i/o waste for place');
-        t.end();
-    });
-});
-
 tape('index.teardown', function(assert) {
     index.teardown();
     context.getTile.cache.reset();
