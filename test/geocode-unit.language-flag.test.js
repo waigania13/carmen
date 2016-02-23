@@ -92,6 +92,17 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
 
+
+    // test that guessing works right
+    tape('Rossiyskaya => Российская Федерация - {language: "ru-RU"}', function(t) {
+        c.geocode('Rossiyskaya', { limit_verify:1, language: 'ru-RU' }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'Российская Федерация');
+            t.deepEqual(res.features[0].id, 'country.1');
+            t.end();
+        });
+    });
+
     // 'fake' is not a valid language code
     tape('Rossiyskaya => Russian Federation - {language: "fake"}', function(t) {
         c.geocode('Rossiyskaya', { limit_verify:1, language: 'fake' }, function(err, res) {
@@ -170,6 +181,17 @@ var addFeature = require('../lib/util/addfeature');
     // custom response format template
     tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
         c.geocode('Northwestern', { limit_verify:1, language: 'ru' }, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].place_name, 'Российская Федерация, Северо-Западный федеральный округ');
+            t.deepEqual(res.features[0].id, 'region.1');
+            t.deepEqual(res.features[0].context[0].text, 'Российская Федерация');
+            t.end();
+        });
+    });
+
+    // custom response format template -- should guess both correct language and correct template
+    tape('Northwestern Federal Distrct => Российская Федерация, Северо-Западный федеральный округ - {language: "ru-RU"}', function(t) {
+        c.geocode('Northwestern', { limit_verify:1, language: 'ru-RU' }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Российская Федерация, Северо-Западный федеральный округ');
             t.deepEqual(res.features[0].id, 'region.1');
