@@ -46,7 +46,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('abc - no autocomplete', function(t) {
-        c.geocode('abc', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('abc', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abc', 'abc wins for abc without autocomplete');
             t.deepEqual(res.features[0].id, 'place.2');
@@ -62,7 +62,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('abcde - no autocomplete', function(t) {
-        c.geocode('abcde', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('abcde', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde without autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('ab - no autocomplete', function(t) {
-        c.geocode('ab', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('ab', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'ab matches nothing without autocomplete');
             t.end();
@@ -111,7 +111,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('place - no autocomplete', function(t) {
-        c.geocode('place', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('place', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place matches nothing without autocomplete');
             t.end();
@@ -125,7 +125,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('one - no autocomplete', function(t) {
-        c.geocode('one', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('one', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'one matches nothing without autocomplete');
             t.end();
@@ -140,7 +140,7 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('place o - no autocomplete', function(t) {
-        c.geocode('place o', { limit_verify:1, disableAutocomplete: 1 }, function(err, res) {
+        c.geocode('place o', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place o matches nothing without autocomplete');
             t.end();
