@@ -202,6 +202,8 @@ function clone(source) {
     };
     // Optional methods
     [
+        '_commit',
+        'putInfo',
         'putTile',
         'getGeocoderData',
         'putGeocoderData',

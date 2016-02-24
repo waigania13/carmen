@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "type": "Feature",
     "properties": {
         "carmen:text": "New Zealand",
         "iso2": "NZ",

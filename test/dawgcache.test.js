@@ -33,3 +33,9 @@ tape('dump/load', function(assert) {
         });
     });
 });
+
+tape('invalid data', function(assert) {
+    var dict = new DawgCache();
+    assert.throws(function() { dict.setText(""); });
+    assert.end();
+});

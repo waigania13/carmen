@@ -1,5 +1,50 @@
 # Changelog
 
+## 13.0.0
+
+- Remove deprecated tilelive from index parameter and update to only use streaming interface
+- Expand index.update to use object options instead of just zoom
+
+## 12.2.7
+
+- Expose source._commit where it exists
+
+## 12.2.6
+
+- Cleanly exit after obtaining a results with scripts/carmen.js when using --config flag
+
+## 12.2.5
+
+- Better handling of empty strings in DAWG index
+
+## 12.2.4
+
+- Streaming indexer should utilize geocoder_resolution in tile cover
+
+## 12.2.3
+
+- Fix context properties bug
+- Add id=> output for all features
+
+## 12.2.2
+
+- Enforce GeoJSON compliance on indexing
+
+## 12.2.1
+
+- Ensure addressitp parity exists
+
+## 12.2.0
+
+- Allow up to 10 forward geocodes (default 5) specified by the limit param
+- Allow up to 5 reverse geocodes (default 1) when only querying for a single type
+- Update indexer to transform ITP & Clusters for vectorization and output to stream
+- Add new limit tests
+
+## 12.1.1
+
+- Upgraded to use latest node-mapnik API for decoding and encoding Vector Tiles
+
 ## 12.1.0
 
 - Enforce max query length of 256 chars
