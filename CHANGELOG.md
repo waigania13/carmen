@@ -1,5 +1,9 @@
 # Changelog
 
+## 13.1.0
+
+- Add a flag to disable autocomplete in forward geocoding
+
 ## 13.0.0
 
 - Remove deprecated tilelive from index parameter and update to only use streaming interface
