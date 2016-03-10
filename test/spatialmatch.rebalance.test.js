@@ -3,12 +3,24 @@ var test = require('tape');
 
 test('rebalance, no garbage', function(assert) {
     var query = ['100','main','st','12345','seattle','washington'];
-    var stack = [
-        { mask: 7, text: '1## main st', weight: 0.5 },
-        { mask: 8, text: '12345', weight: 0.16666666666666666 },
-        { mask: 16, text: 'seattle', weight: 0.16666666666666666 },
-        { mask: 32, text: 'washington', weight: 0.16666666666666666 },
-    ];
+    var stack = [];
+
+    stack[0] = ['1##','main','st'];
+    stack[0].mask = 7;
+    stack[0].weight = 0.5;
+
+    stack[1] = ['12345'];
+    stack[1].mask = 8;
+    stack[1].weight = 0.16666666666666666;
+
+    stack[2] = ['seattle'];
+    stack[2].mask = 16;
+    stack[2].weight = 0.16666666666666666;
+
+    stack[3] = ['washington'];
+    stack[3].mask = 32;
+    stack[3].weight = 0.16666666666666666;
+
     stack.relev = 1;
 
     var rebalanced = rebalance(query, stack);
@@ -22,11 +34,21 @@ test('rebalance, no garbage', function(assert) {
 
 test('rebalance, with garbage', function(assert) {
     var query = ['100','main','st','12345','seattle','washington'];
-    var stack = [
-        { mask: 7, text: '1## main st', weight: 0.5 },
-        { mask: 8, text: '12345', weight: 0.16666666666666666 },
-        { mask: 32, text: 'washington', weight: 0.16666666666666666 },
-    ];
+
+    var stack = [];
+
+    stack[0] = ['1##','main','st'];
+    stack[0].mask = 7;
+    stack[0].weight = 0.5;
+
+    stack[1] = ['12345'];
+    stack[1].mask = 8;
+    stack[1].weight = 0.16666666666666666;
+
+    stack[2] = ['washington'];
+    stack[2].mask = 32;
+    stack[2].weight = 0.16666666666666666;
+
     stack.relev = 0.8333333333333333;
 
     var rebalanced = rebalance(query, stack);
