@@ -121,7 +121,6 @@ tape('index region "Washington" lines up with Seattle', function(t) {
 tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', function(t) {
     c.geocode('100 Main St, 12345 Seattle, Washington', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
-        // console.log(JSON.stringify(res));
         t.equals(res.features[0].place_name, '12345, Seattle, Washington', 'matches Seattle instead of address');
         t.equals(res.features.length, 1);
         t.equals(res.features[0].id, 'postcode.100', 'found postcode.id');
