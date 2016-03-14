@@ -56,6 +56,12 @@ function index(err) {
     var carmen = new Carmen(conf);
     config.output = process.stdout;
 
+    var last = +new Date;
+    carmen.on('index', function(num) {
+        console.error('Indexed %s docs @ %s/s', num, Math.floor(num * 1000 / (+new Date - last)));
+        last = +new Date;
+    });
+
     carmen.on('open', function() {
         carmen.index(process.stdin, conf.to, config , function(err) {
             if (err) throw err;
