@@ -208,7 +208,7 @@ function clone(source) {
         'putTile',
         'getGeocoderData',
         'putGeocoderData',
-        'geocoderDataForEach',
+        'geocoderDataIterator',
         'startWriting',
         'stopWriting',
         'getIndexableDocs',
