@@ -38,7 +38,7 @@
     "retire": "0.4.x",
     "bytes": "^1.0.0",
     "tape": "^2.13.4",
-    "mbtiles": "https://github.com/mapbox/node-mbtiles/archive/aac15a8f81742204f3bd8cd5500a9739425d0bef.tar.gz",
+    "mbtiles": "https://github.com/mapbox/node-mbtiles/archive/3967adcb4a2eb0d26f070e2574e4fb781b071399.tar.gz",
     "tilelive-s3": "~4.1.1",
     "istanbul": "^0.4.0",
     "coveralls": "^2.11.4",
