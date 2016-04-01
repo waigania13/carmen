@@ -8,6 +8,7 @@ var index = require('../lib/index');
 var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var de = require('deep-equal');
+var dawgcache = require('../lib/util/dawg');
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
@@ -48,7 +49,7 @@ test('index - streaming interface', function(assert) {
     var confA = {
         country : memObjectA
     };
-    
+
     var carmenA = new Carmen(confA);
     var indexA = getIndex(0,100);
     assert.test('index docs.json', function(q) {
@@ -74,7 +75,7 @@ test('index - streaming interface', function(assert) {
             q.end();
         });
     });
-    
+
     var memObjectB = new mem([], null, function() {});
     var confB = {
         country: memObjectB
@@ -90,7 +91,7 @@ test('index - streaming interface', function(assert) {
             q.ifError(err);
             q.end();
         });
-    }); 
+    });
     assert.test('ensure index was successful for index B', function(q) {
         carmenB.geocode("Paraguay", {}, function(err, result) {
             assert.ifError(err, "error");
@@ -130,7 +131,13 @@ test('index - streaming interface', function(assert) {
     assert.test('merged indexes', function(q) {
         carmenC.merge(memObjectA, memObjectB, memObjectC, {}, function(err) {
             if (err) throw err;
-            q.end();
+
+            // reload the dawg cache based on the results of the merge
+            memObjectC.getGeocoderData('stat', 0, function(err, data) {
+                memObjectC._dictcache = new dawgcache(data);
+                carmenC.indexes.country._dictcache = memObjectC._dictcache;
+                q.end();
+            });
         });
     });
     assert.test('ensure index was successful for index A after merging', function(q) {
