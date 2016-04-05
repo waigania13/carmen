@@ -1,6 +1,6 @@
 var path = require('path'),
     EventEmitter = require('events').EventEmitter,
-    queue = require('queue-async');
+    queue = require('d3-queue').queue;
 
 var dawgcache = require('./lib/util/dawg');
 var Cache = require('./lib/util/cxxcache'),

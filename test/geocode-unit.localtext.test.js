@@ -5,7 +5,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
