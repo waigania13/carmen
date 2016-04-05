@@ -245,17 +245,22 @@ test('index', function(t) {
     t.test('confirm that iterator works', function(q) {
         var monotonic = true;
         var output = [];
-        conf.to.geocoderDataForEach('freq', function(shard, data) {
-            output.push(shard);
-            if (output.length > 1) {
-                monotonic = monotonic && (output[output.length - 1] > output[output.length - 2])
+        var iterator = conf.to.geocoderDataIterator('freq');
+        var next = function(n) {
+            if (!n.done) {
+                output.push(n.value.shard);
+                if (output.length > 1) {
+                    monotonic = monotonic && (output[output.length - 1] > output[output.length - 2])
+                }
+                iterator.asyncNext(next);
+            } else {
+                q.ok(monotonic, 'shard iterator produces sorted output');
+                q.equal(output.length, 184, "index has 184 shards");
+                q.end();
             }
-        }, function() {
-            q.ok(monotonic, 'shard iterator produces sorted output');
-            q.equal(output.length, 184, "index has 184 shards");
-            q.end();
-        })
-    })
+        };
+        iterator.asyncNext(next);
+    });
     t.test('unloadall index', function(q) {
         carmen.unloadall(conf.to, 'freq', function(err) {
             q.ifError(err);
