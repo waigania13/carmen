@@ -10,7 +10,7 @@ var argv = require('minimist')(process.argv, {
     boolean: [ 'help' ]
 });
 var settings = require('../package.json');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 
 function help() {
     console.log('carmen-merge.js --input=<path>[,<path>,...] --output=<path> [options]');
