@@ -29,6 +29,7 @@
     "turf-distance": "1.1.x",
     "turf-extent": "^1.0.4",
     "turf-inside": "^1.1.4",
+    "turf-intersect": "^1.4.2",
     "turf-line-distance": "1.0.x",
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
