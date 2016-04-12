@@ -1,6 +1,6 @@
 # Changelog
 
-## 13.2.0
+## 14.0.2
 
 - Improve query fallback logic by scoring queries per number of matching
   indexes as well, instead of just per number of matching tokens.
