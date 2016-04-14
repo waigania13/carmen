@@ -246,7 +246,8 @@ test('index', function(t) {
         var monotonic = true;
         var output = [];
         var iterator = conf.to.geocoderDataIterator('freq');
-        var next = function(n) {
+        var next = function(err, n) {
+            q.ifError(err);
             if (!n.done) {
                 output.push(n.value.shard);
                 if (output.length > 1) {
