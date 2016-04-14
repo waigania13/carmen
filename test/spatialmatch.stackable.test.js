@@ -19,21 +19,36 @@ test('stackable simple', function(assert) {
     assert.end();
 });
 
-test('stackable nmask', function(assert) {
-    var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), nmask:parseInt('1',2), weight:0.33 };
-    var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), nmask:parseInt('10',2), weight:0.33 };
-    var c1 = { text:"c1", idx:2, zoom:1, mask:parseInt('1',2), nmask:parseInt('10',2), weight:0.33 };
+// test('stackable nmask', function(assert) {
+//     var a1 = { text:"a1", idx:0, zoom:1, mask:parseInt('100',2), nmask:parseInt('1',2), weight:0.33 };
+//     var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('10',2), nmask:parseInt('10',2), weight:0.33 };
+//     var c1 = { text:"c1", idx:2, zoom:1, mask:parseInt('1',2), nmask:parseInt('10',2), weight:0.33 };
+//     var debug = stackable([
+//         [ a1 ],
+//         [ b1 ],
+//         [ c1 ],
+//     ]).map(function(stack) {
+//         return stack.map(function(s) { return s.text });
+//     });
+//     assert.deepEqual(debug, [
+//         [ 'c1', 'a1' ],
+//         [ 'b1', 'a1' ],
+//     ], 'b1 and c1 do not stack (nmask: same geocoder_name)');
+//     assert.end();
+// });
+
+test('stackable nmask for cross streets', function(assert) {
+    var a1 = { text:'fake', idx:0, zoom:1, mask:parseInt('01',2), nmask:parseInt('1',2), weight:0.5 };
+    var b1 = { text:'main', idx:0, zoom:1, mask:parseInt('10',2), nmask:parseInt('1',2), weight:0.5 };
     var debug = stackable([
         [ a1 ],
         [ b1 ],
-        [ c1 ],
     ]).map(function(stack) {
         return stack.map(function(s) { return s.text });
     });
     assert.deepEqual(debug, [
-        [ 'c1', 'a1' ],
-        [ 'b1', 'a1' ],
-    ], 'b1 and c1 do not stack (nmask: same geocoder_name)');
+        [ 'fake', 'main' ],
+    ], 'b1 and a1 can stack');
     assert.end();
 });
 
