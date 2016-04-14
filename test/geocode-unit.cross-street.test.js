@@ -66,7 +66,7 @@ var addFeature = require('../lib/util/addfeature');
 
     tape('Search for cross street', function(t) {
         // expecting this to return two streets, as one feature
-        // 
+        // currently returns one st
         c.geocode('fake street main street', {}, function(err, res) {
             console.log(JSON.stringify(res, null, 2));
             t.ifError(err);
