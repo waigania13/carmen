@@ -9,6 +9,7 @@ var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var de = require('deep-equal');
 var dawgcache = require('../lib/util/dawg');
+var fl = require("fast-levenshtein");
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
@@ -82,7 +83,7 @@ test('index - streaming interface', function(assert) {
     };
 
     var carmenB = new Carmen(confB);
-    var indexB = getIndex(101,200);
+    var indexB = getIndex(100,200);
     assert.test('index docs.json', function(q) {
         carmenB.index(indexB, confB.country, {
             zoom: 6,
@@ -113,7 +114,7 @@ test('index - streaming interface', function(assert) {
     };
 
     var carmenD = new Carmen(confD);
-    var indexD = getIndex(1,200);
+    var indexD = getIndex(0,200);
     assert.test('index docs.json', function(q) {
         carmenD.index(indexD, confD.country, {
             zoom: 6,
@@ -156,27 +157,66 @@ test('index - streaming interface', function(assert) {
     });
 
     assert.test('ensure total indexes in C is greater than A and B', function(q) {
-     carmenA.analyze(memObjectA, function(err, stats) {
-        var a = stats.total;
-        carmenB.analyze(memObjectB, function(err, stats) {
-            var b = stats.total;
-            carmenC.analyze(memObjectC, function(err,stats) {
-                var c = stats.total;
-                assert.ok((c > a && c > b), "ok");
-                 q.end();
+        carmenA.analyze(memObjectA, function(err, stats) {
+            var a = stats.total;
+            carmenB.analyze(memObjectB, function(err, stats) {
+                var b = stats.total;
+                carmenC.analyze(memObjectC, function(err,stats) {
+                    var c = stats.total;
+                    assert.ok((c > a && c > b), "ok");
+                    q.end();
+                });
             });
         });
     });
- });
-    assert.test('ensure merged index and original are 99 percent similar', function(q) {
+
+    assert.test('ensure geocode of a term that occurs in both indexes produces the same results', function(q) {
+        carmenC.geocode('Republic', {}, function(err, resultC) {
+            assert.ifError(err, "error");
+            carmenD.geocode('Republic', {}, function(err, resultD) {
+                assert.ifError(err, "error");
+                assert.ok(de(resultC, resultD), 'geocoding "Republic" produces identical results in merged and complete index');
+                q.end();
+            });
+        });
+    });
+
+    assert.test('ensure merged index features and original features are identical', function(q) {
         var count = 0;
         for (var i = 1; i <= 200; i++) {
-            if(de(memObjectC._shards.feature[i], memObjectD._shards.feature[i], "=="))
-             count ++;
-     }
-     var percentage = (count/200)*100;
-     assert.ok(percentage >=99, "ok");
-     q.end();
- });
+            count += de(memObjectC._shards.feature[i], memObjectD._shards.feature[i], "==") ? 1 : 0;
+        }
+        var percentage = (count/200)*100;
+        assert.ok(percentage == 100, "features are identical");
+        q.end();
+    });
+
+    ["freq", "grid"].forEach(function(type) {
+        assert.test('ensure merged index ' + type + ' and original ' + type + ' are 99 percent similar', function(q) {
+            var combined = {};
+            [carmenC, carmenD].forEach(function(c) {
+                c.indexes.country._geocoder.unloadall(type);
+                Object.keys(c.indexes.country._original._shards[type]).forEach(function(s) {
+                    combined[s] = true;
+                    c.indexes.country._geocoder.loadSync(c.indexes.country._original._shards[type][s], type, +s);
+                });
+            })
+            var match = 0,
+                noMatch = 0;
+            Object.keys(combined).sort().forEach(function(s) {
+                var same = de(
+                    carmenC.indexes.country._geocoder.list(type, +s),
+                    carmenD.indexes.country._geocoder.list(type, +s)
+                );
+                if (same) match += 1;
+                else noMatch += 1;
+            });
+            var percentage = 100 * match / (match + noMatch);
+            assert.ok(percentage >= 99, type + ' matches > 99%: ' + percentage);
+
+            q.end();
+        });
+    });
+
     assert.end();
 });
