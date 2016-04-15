@@ -9,7 +9,6 @@ var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var de = require('deep-equal');
 var dawgcache = require('../lib/util/dawg');
-var fl = require("fast-levenshtein");
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
