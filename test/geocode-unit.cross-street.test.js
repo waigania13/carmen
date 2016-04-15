@@ -57,7 +57,6 @@ var addFeature = require('../lib/util/addfeature');
 
     tape.skip('Search for fake street', function(t) {
         c.geocode('fake street', {}, function(err, res) {
-            console.log(JSON.stringify(res, null, 2));
             t.ifError(err);
             t.equals(res.features[0].place_name, 'fake street');
             t.end();
@@ -68,7 +67,7 @@ var addFeature = require('../lib/util/addfeature');
         // expecting this to return two streets, as one feature
         // currently returns one st
         c.geocode('fake street main street', {}, function(err, res) {
-            console.log(JSON.stringify(res, null, 2));
+            // console.log('\nsearch result:', JSON.stringify(res, null, 2)); // just fake st
             t.ifError(err);
             t.equals(res.features[0].place_name, 'fake street and main street');
             t.end();
