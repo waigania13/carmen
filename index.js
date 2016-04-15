@@ -271,7 +271,7 @@ Geocoder.prototype.merge = function(from1, from2, to, pointer, callback) {
     });
 };
 
-// Merge arbitrarily maby indexes
+// Merge arbitrarily many indexes
 Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
     var self = this;
     this._open(function(err) {
