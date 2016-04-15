@@ -315,7 +315,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('test address index for relev', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.6566666666666666);
+            t.equals(res.features[0].relevance, 0.49);
             t.end();
         });
     });

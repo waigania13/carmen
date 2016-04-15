@@ -1,5 +1,10 @@
 # Changelog
 
+## 14.0.2
+
+- Improve query fallback logic by scoring queries per number of matching
+  indexes as well, instead of just per number of matching tokens.
+
 ## 13.1.0
 
 - Add a flag to disable autocomplete in forward geocoding
