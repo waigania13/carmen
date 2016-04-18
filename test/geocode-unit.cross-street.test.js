@@ -14,6 +14,7 @@ var addFeature = require('../lib/util/addfeature');
     var conf = {
         address: new mem({
           maxzoom: 6,
+          geocoder_address: true
         }, function() {}),
     };
     var c = new Carmen(conf);
