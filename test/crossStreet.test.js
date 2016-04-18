@@ -33,7 +33,7 @@ tape('Find intersection of two line features', function(assert) {
     var result = crossStreets(features);
     console.log(result);
 
-    assert.equals(result[0]['properties']['carmen:text'], 'fake street and main street');
+    assert.equals(result[0]['properties']['carmen:text'], 'fake street & main street');
     assert.equals(result[0]['geometry']['coordinates'], [5, 5]);
 
     assert.end();
