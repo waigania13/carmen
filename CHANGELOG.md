@@ -1,5 +1,10 @@
 # Changelog
 
+## 14.1.0
+
+ - Add infrastructure for merging multiple indexes together, to facilitate
+   parallel indexing.
+
 ## 14.0.2
 
 - Improve query fallback logic by scoring queries per number of matching
