@@ -13,7 +13,7 @@
     "eslint": "^1.5.0",
     "geojsonhint": "^1.1.0",
     "locking": "2.0.2",
-    "mapnik": "~3.4.16",
+    "mapnik": "~3.5.12",
     "minimist": "1.2.0",
     "model-un": "0.0.3",
     "murmur": "0.0.2",
