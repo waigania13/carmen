@@ -1,5 +1,9 @@
 # Changelog
 
+## 14.2.0
+
+- Upgrades mapnik to version 3.5
+
 ## 14.1.0
 
  - Add infrastructure for merging multiple indexes together, to facilitate
