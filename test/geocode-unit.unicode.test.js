@@ -6,7 +6,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
@@ -56,15 +56,15 @@ tape('京都市 => 京都市', function(t) {
         t.end();
     });
 });
-tape('jing => 京都市', function(t) {
+tape('jing !=> 京都市', function(t) {
     c.geocode('jing', { limit_verify:1 }, function(err, res) {
-        t.deepEqual(res.features[0].place_name, '京都市');
+        t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 1');
         t.end();
     });
 });
-tape('jing du shi => 京都市', function(t) {
+tape('jing du shi !=> 京都市', function(t) {
     c.geocode('jing du shi', { limit_verify:1 }, function(err, res) {
-        t.deepEqual(res.features[0].place_name, '京都市');
+        t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 2');
         t.end();
     });
 });

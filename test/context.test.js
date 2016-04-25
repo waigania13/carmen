@@ -9,7 +9,7 @@ var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
 var addFeature = require('../lib/util/addfeature');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 var mem = require('../lib/api-mem');
 var index = require('../lib/index');
 

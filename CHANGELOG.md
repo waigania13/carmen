@@ -1,5 +1,23 @@
 # Changelog
 
+## 14.2.0
+
+- Upgrades mapnik to version 3.5
+
+## 14.1.0
+
+ - Add infrastructure for merging multiple indexes together, to facilitate
+   parallel indexing.
+
+## 14.0.2
+
+- Improve query fallback logic by scoring queries per number of matching
+  indexes as well, instead of just per number of matching tokens.
+
+## 14.0.1
+
+- Segment exclusively Chinese/Japanese/Korean (CJK) terms from everthing else in the index in order to avoid collisions introduced by unidecoding (e.g. 'Aruba' / 'Arubatazhou').
+
 ## 13.1.0
 
 - Add a flag to disable autocomplete in forward geocoding

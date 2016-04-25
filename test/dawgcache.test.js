@@ -29,7 +29,7 @@ tape('dump/load', function(assert) {
 
             assert.equal(loaded.hasPhrase({text: "a", ender: false}), false, 'not a');
             assert.equal(loaded.hasPhrase({text: "a", ender: true}), true, 'has a as degen');
-            assert.deepEquals(loaded.getPhrasesFromDegen('wa'), ['washington', 'walsh'], 'found washington and walsh');
+            assert.deepEquals(loaded.getPhrasesFromDegen('a'), ['a1', 'a2', 'a3', 'a4'], 'found a1-a4');
             assert.end();
         });
     });

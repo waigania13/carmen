@@ -51,7 +51,7 @@ tape('worker.loadDoc', function(assert) {
     });
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
-    assert.deepEqual(patch.text, ['main st', 'main']);
+    assert.deepEqual(patch.text, ['xmain st', 'xmain']);
 
     assert.end();
 });

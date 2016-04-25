@@ -3,7 +3,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
 var termops = require('../lib/util/termops.js');
 
@@ -28,14 +28,6 @@ tape('valid match', function(t) {
     c.geocode('京都市', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1);
-        t.end();
-    });
-});
-
-tape('find collisions (coalesceSingle)', function(t) {
-    c.geocode('j', { limit_verify:1 }, function(err, res) {
-        t.equal(res.features.length, 0, 'not in index');
-        t.deepEqual(res.waste[0], ['place'], 'has i/o waste for place');
         t.end();
     });
 });
