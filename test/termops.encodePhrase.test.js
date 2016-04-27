@@ -10,8 +10,8 @@ test('termops.encodePhrase', function(assert) {
     assert.deepEqual(a % 2, 1, 'main = non-degen');
 
     a = termops.encodePhrase('main', true);
-    assert.deepEqual(a, 3839096397287854, 'main (degen)');
-    assert.deepEqual(a % 2, 0, 'main = degen');
+    assert.deepEqual(a, 3839096397287855, 'main (degen)');
+    assert.deepEqual(a % 2, 1, 'main = non-degen');
 
     a = termops.encodePhrase('main st');
     assert.deepEqual(a, 3316517807337717, 'main st');
@@ -27,16 +27,16 @@ test('termops.encodePhrase', function(assert) {
     assert.deepEqual(a % 2, 1, 'lazy dog = non-degen');
 
     a = termops.encodePhrase('lazy dog', 1);
-    assert.deepEqual(a, 918725323723146, 'lazy dog (degen)')
-    assert.deepEqual(a % 2, 0, 'lazy dog = degen');
+    assert.deepEqual(a, 918725323723147, 'lazy dog (degen)')
+    assert.deepEqual(a % 2, 1, 'lazy dog = non-degen');
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
     assert.deepEqual(a, 1502021879633229, 'long phrase');
     assert.deepEqual(a % 2, 1, 'long phrase = non-degen');
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 1502021879633228, 'long phrase (degen)');
-    assert.deepEqual(a % 2, 0, 'long phrase = degen');
+    assert.deepEqual(a, 1502021879633229, 'long phrase (degen)');
+    assert.deepEqual(a % 2, 1, 'long phrase = non-degen');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
