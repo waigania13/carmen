@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.0
+
+- Disables generation of autocomplete degens in the grid cache at indexing time for translated text
+
 ## 14.2.0
 
 - Upgrades mapnik to version 3.5
