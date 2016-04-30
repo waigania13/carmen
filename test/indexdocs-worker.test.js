@@ -40,7 +40,7 @@ tape('worker.loadDoc', function(assert) {
     // Indexes single doc.
     err = worker.loadDoc(patch, doc, freq, zoom, token_replacer);
     assert.ifError(err);
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
+    assert.deepEqual(Object.keys(patch.grid).length, 2);
     assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
     assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
         id: 1,

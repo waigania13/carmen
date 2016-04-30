@@ -191,7 +191,7 @@ test('index - streaming interface', function(assert) {
     });
 
     ["freq", "grid"].forEach(function(type) {
-        assert.test('ensure merged index ' + type + ' and original ' + type + ' are 99 percent similar', function(q) {
+        assert.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', function(q) {
             var combined = {};
             [carmenC, carmenD].forEach(function(c) {
                 c.indexes.country._geocoder.unloadall(type);
@@ -211,7 +211,7 @@ test('index - streaming interface', function(assert) {
                 else noMatch += 1;
             });
             var percentage = 100 * match / (match + noMatch);
-            assert.ok(percentage >= 99, type + ' matches > 99%: ' + percentage);
+            assert.ok(percentage >= 98, type + ' matches > 98%: ' + percentage);
 
             q.end();
         });
