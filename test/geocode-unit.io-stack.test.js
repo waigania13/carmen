@@ -107,7 +107,7 @@ tape('springfield', function(t) {
         t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,29750'], 'place1: loads 1 grid');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3','grid,29750'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3','grid,54023'], 'street1: loads 1 grid, 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
