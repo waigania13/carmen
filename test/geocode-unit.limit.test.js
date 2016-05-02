@@ -5,7 +5,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var queue = require('queue-async');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
 
 (function() {
@@ -42,8 +42,8 @@ var addFeature = require('../lib/util/addfeature');
                     coordinates: [0,0]
                 }
             }, done);
-            q.awaitAll(t.end);
         }, i);
+        q.awaitAll(t.end);
     });
 
     tape('default response is 5 features (forward)', function(t) {
@@ -157,8 +157,8 @@ var addFeature = require('../lib/util/addfeature');
                     coordinates: coords[i-1]
                 }
             }, done);
-            q.awaitAll(t.end);
         }, i);
+        q.awaitAll(t.end);
     });
 
     tape('index address', function(t) {
@@ -175,8 +175,8 @@ var addFeature = require('../lib/util/addfeature');
                     coordinates: coords[i-1]
                 }
             }, done);
-            q.awaitAll(t.end);
         }, i);
+        q.awaitAll(t.end);
     });
 
     tape('default response is 1 features (reverse)', function(t) {
