@@ -4,7 +4,6 @@ var index = require('../lib/index');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
-
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
@@ -14,21 +13,25 @@ var conf = {
 var c = new Carmen(conf);
 
 tape('index feature', function(t) {
-    var q = queue(1);
-    for (var i = 1; i < 100; i++) q.defer(function(i, done) {
-        addFeature(conf.street, {
-            id:i,
-            properties: {
-                'carmen:text':'Main Street',
-                'carmen:zxy':['6/14/18'],
-                'carmen:center':[-100,60],
-                'carmen:score': 2
-            }
-        }, done);
-        q.awaitAll(t.end);
-    }, i);
+    var range = [];
+    for (var i = 1; i < 100; i++) range.push(i);
+    range.forEach(function(i) {
+        t.test('addFeature', function(tt) {
+            addFeature(conf.street, {
+                id:i,
+                properties: {
+                    'carmen:text':'Main Street',
+                    'carmen:zxy':['6/14/18'],
+                    'carmen:center':[-100,60],
+                    'carmen:score': 2
+                }
+            }, function() {
+                tt.end();
+            });
+        });
+    });
+    t.end();
 });
-
 
 tape('index feature', function(t) {
     var feature = {
