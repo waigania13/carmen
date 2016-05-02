@@ -7,6 +7,7 @@ tape('Find intersection of two line features', function(assert) {
     // given the geometries of two line features, return a feature matching the intersection
     // currently returns a feature with combined name only
     var feature1 = {
+        type: 'Feature',
         id:1,
         properties: {
             'carmen:text': 'fake street',
@@ -18,6 +19,7 @@ tape('Find intersection of two line features', function(assert) {
         }
     };
     var feature2 = {
+        type: 'Feature',
         id:2,
         properties: {
             'carmen:text': 'main street',
