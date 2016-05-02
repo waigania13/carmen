@@ -64,17 +64,21 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
 
-    tape('Search for cross street', function(t) {
-        // expecting this to return two streets, as one feature
-        // currently returns one st
+    tape('Search for simple cross street', function(t) {
         c.geocode('fake street main street', {}, function(err, res) {
-            // console.log('\nsearch result:', JSON.stringify(res, null, 2)); // just fake st
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'fake street and main street');
+            t.equals(res.features[0].place_name, 'fake street & main street');
             t.end();
         });
     });
 
+    tape('Search for complex cross street', function(t) {
+        c.geocode('fake street and main street, oakland', {}, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'fake street & main street');
+            t.end();
+        });
+    });
 })();
 
 tape('index.teardown', function(assert) {
