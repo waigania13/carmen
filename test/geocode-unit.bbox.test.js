@@ -3,7 +3,6 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
 
 var conf = {
