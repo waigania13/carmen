@@ -242,7 +242,7 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.skip('confirm that iterator works', function(q) {
+    t.test('confirm that iterator works', function(q) {
         var monotonic = true;
         var output = [];
         var iterator = conf.to.geocoderDataIterator('freq');
