@@ -1,7 +1,7 @@
 var crossStreets = require('../lib/verifymatch.js').crossStreets;
 var tape = require('tape');
 
-tape('Find intersection of two crossing LineFeatures', function(assert) {
+tape('Find intersection of two crossing LineStrings', function(assert) {
     var feature1 = {
         type: 'Feature',
         id:1,
@@ -35,7 +35,7 @@ tape('Find intersection of two crossing LineFeatures', function(assert) {
     assert.end();
 });
 
-tape('Find intersection of two touching LineFeatures', function(assert) {
+tape('Find intersection of two touching LineStrings', function(assert) {
     var feature1 = {
         type: 'Feature',
         id:1,
@@ -69,7 +69,7 @@ tape('Find intersection of two touching LineFeatures', function(assert) {
     assert.end();
 });
 
-tape('No intersection for two parallel LineFeatures', function(assert) {
+tape('No intersection for two parallel LineStrings', function(assert) {
     var feature1 = {
         type: 'Feature',
         id:1,
