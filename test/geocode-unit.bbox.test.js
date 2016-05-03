@@ -45,6 +45,19 @@ tape('index feature', function(t) {
     addFeature(conf.street, feature, t.end);
 });
 
+tape('index feature', function(t) {
+    var feature = {
+        id:103,
+        properties: {
+            'carmen:text':'Date Line Street',
+            'carmen:zxy':['2/0/1'],
+            'carmen:center':[-180,40],
+            'carmen:score': 1,
+        }
+    };
+    addFeature(conf.street, feature, t.end);
+});
+
 // run query with invalid bbox, expect error
 tape('fake bbox', function(t) {
     c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, function(err, res) {
@@ -71,6 +84,14 @@ tape('no bbox', function(t) {
 // run query with bbox fitler, expect only one feature back
 tape('with bbox', function(t) {
     c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true}, function(err, res) {
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.end();
+    });
+});
+
+tape('dateline bbox', function(t) {
+    c.geocode('Date Line St', { bbox: [170.0, 30.0, -170.0, 50.0], allow_dupes: true}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();
