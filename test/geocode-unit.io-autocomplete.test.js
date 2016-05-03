@@ -1,0 +1,61 @@
+// Unit tests for IO-deduping when loading grid shards during spatialmatch.
+// Setups up multiple indexes representing logical equivalents.
+
+var tape = require('tape');
+var Carmen = require('..');
+var index = require('../lib/index');
+var context = require('../lib/context');
+var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
+var addFeature = require('../lib/util/addfeature');
+
+// Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
+var conf = {
+    place: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
+};
+var c = new Carmen(conf);
+
+tape('ready', function(assert) {
+    c._open(assert.end);
+});
+
+tape('index place', function(assert) {
+    var q = queue(1);
+    for (var i = 1; i < 100; i++) {
+        var text = Math.random().toString().split('.').pop().toString(36);
+        q.defer(addFeature, conf.place, {
+            id:i,
+            properties: {
+                'carmen:text': 'aa' + text,
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        });
+    }
+    q.awaitAll(assert.end);
+});
+
+function reset() {
+    context.getTile.cache.reset();
+    conf.place._geocoder.unloadall('grid');
+    conf.place._original.logs.getGeocoderData = [];
+    conf.place._original.logs.getTile = [];
+}
+
+tape('io', function(t) {
+    reset();
+    c.geocode('aa', {}, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 5, 'returns 5 features');
+        var loaded = c.indexes.place._original.logs.getGeocoderData.filter(function(id) { return /grid/.test(id) }).length;
+        t.deepEqual(loaded < 50, true, '> 50% shard hit rate: ' + loaded);
+        t.end();
+    });
+});
+
+tape('index.teardown', function(assert) {
+    index.teardown();
+    context.getTile.cache.reset();
+    assert.end();
+});
+
