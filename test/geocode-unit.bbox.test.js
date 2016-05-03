@@ -90,14 +90,6 @@ tape('with bbox', function(t) {
     });
 });
 
-tape('dateline bbox', function(t) {
-    c.geocode('Date Line St', { bbox: [170.0, 30.0, -170.0, 50.0], allow_dupes: true}, function(err, res) {
-        t.ifError(err);
-        t.equals(res.features.length, 1);
-        t.end();
-    });
-});
-
 tape('index.teardown', function(assert) {
     index.teardown();
     context.getTile.cache.reset();
