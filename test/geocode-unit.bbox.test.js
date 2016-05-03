@@ -48,9 +48,15 @@ tape('index feature', function(t) {
 // run query with invalid bbox, expect error
 tape('fake bbox', function(t) {
     c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, function(err, res) {
-        t.equal(err && err.code, 'EINVALID');
-        t.end();
+        t.equal(err && err.code, 'EINVALID', 'bbox array length = 3');
     });
+    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0, 'a'], allow_dupes: true}, function(err, res) {
+        t.equal(err && err.code, 'EINVALID', 'non-numeric bbox param');
+    });
+    c.geocode('Main St', {bbox: [-180, -90, 180, 91], allow_dupes: true}, function(err, res) {
+        t.equal(err && err.code, 'EINVALID', 'maxY out-of-bounds');
+    });
+    t.end();
 });
 
 // run query without bbox filter, expect both features back
