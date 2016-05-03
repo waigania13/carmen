@@ -462,8 +462,7 @@ test('index.cleanDocs', function(assert) {
     assert.end();
 });
 
-// no teardown without workers
-test.skip('index.teardown', function(assert) {
+test('index.teardown', function(assert) {
     index.teardown();
     assert.end();
 });
