@@ -48,7 +48,7 @@ tape('io', function(t) {
         t.ifError(err);
         t.deepEqual(res.features.length, 5, 'returns 5 features');
         var loaded = c.indexes.place._original.logs.getGeocoderData.filter(function(id) { return /grid/.test(id) }).length;
-        t.deepEqual(loaded < 50, true, '> 50% shard hit rate: ' + loaded);
+        t.deepEqual(loaded <= 10, true, '<= 10 shards loaded: ' + loaded);
         t.end();
     });
 });
