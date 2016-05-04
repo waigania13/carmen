@@ -227,8 +227,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
@@ -298,8 +297,7 @@ tape('index.teardown', function(assert) {
     });
 })();
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
@@ -365,8 +363,7 @@ tape('index.teardown', function(assert) {
     });
 })();
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });

@@ -298,8 +298,7 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });

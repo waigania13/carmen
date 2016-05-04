@@ -124,8 +124,7 @@ tape('new york ny', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });

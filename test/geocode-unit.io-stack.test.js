@@ -131,8 +131,7 @@ tape('springfield, types=place', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });

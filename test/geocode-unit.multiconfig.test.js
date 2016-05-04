@@ -59,8 +59,7 @@ tape('chicago (conf b)', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
