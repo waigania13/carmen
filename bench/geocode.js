@@ -55,7 +55,6 @@ function runBenchmark(cb) {
     })
     .on('complete', function(event) {
         console.log(String(event.target), '\n');
-        
         cb(null, suite);
     })
     .run({'async': true});
