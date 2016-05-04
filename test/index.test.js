@@ -462,8 +462,3 @@ test('index.cleanDocs', function(assert) {
     assert.end();
 });
 
-test('index.teardown', function(assert) {
-    
-    assert.end();
-});
-

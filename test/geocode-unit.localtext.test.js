@@ -120,8 +120,3 @@ tape('fake blah blah => [fail]', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    
-    assert.end();
-});
-

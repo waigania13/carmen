@@ -1,4 +1,3 @@
-// var worker = require('../lib/indexer/indexdocs-worker.js');
 var indexdocs = require('../lib/indexer/indexdocs.js');
 var grid = require('../lib/util/grid.js');
 var tape = require('tape');
