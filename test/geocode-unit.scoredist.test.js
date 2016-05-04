@@ -66,7 +66,7 @@ var queue = require('d3-queue').queue;
         });
     });
     tape('index.teardown', function(assert) {
-        index.teardown();
+        
         context.getTile.cache.reset();
         assert.end();
     });

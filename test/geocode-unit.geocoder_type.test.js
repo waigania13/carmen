@@ -261,7 +261,7 @@ var addFeature = require('../lib/util/addfeature');
 
 
 tape('index.teardown', function(assert) {
-    index.teardown();
+    
     context.getTile.cache.reset();
     assert.end();
 });

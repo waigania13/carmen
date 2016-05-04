@@ -61,7 +61,7 @@ tape('does index degens for non-numeric terms', function(t) {
 });
 
 tape('index.teardown', function(assert) {
-    index.teardown();
+    
     context.getTile.cache.reset();
     assert.end();
 });

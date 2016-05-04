@@ -131,7 +131,7 @@ tape('reverse: country,place', function(t) {
 });
 
 tape('index.teardown', function(assert) {
-    index.teardown();
+    
     context.getTile.cache.reset();
     assert.end();
 });

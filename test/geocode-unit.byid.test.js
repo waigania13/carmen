@@ -57,7 +57,7 @@ tape('query byid', function(t) {
 });
 
 tape('index.teardown', function(assert) {
-    index.teardown();
+    
     context.getTile.cache.reset();
     assert.end();
 });

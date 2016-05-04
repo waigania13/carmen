@@ -39,7 +39,7 @@ tape('sets cache/dictcache', function(t) {
     t.end();
 });
 tape('index.teardown', function(assert) {
-    index.teardown();
+    
     context.getTile.cache.reset();
     assert.end();
 });

@@ -463,7 +463,7 @@ test('index.cleanDocs', function(assert) {
 });
 
 test('index.teardown', function(assert) {
-    index.teardown();
+    
     assert.end();
 });
 
