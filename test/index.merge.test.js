@@ -204,8 +204,8 @@ test('index - streaming interface', function(assert) {
                 noMatch = 0;
             Object.keys(combined).sort().forEach(function(s) {
                 var same = de(
-                    carmenC.indexes.country._geocoder.list(type, +s),
-                    carmenD.indexes.country._geocoder.list(type, +s)
+                    carmenC.indexes.country._geocoder.list(type, +s).sort(),
+                    carmenD.indexes.country._geocoder.list(type, +s).sort()
                 );
                 if (same) match += 1;
                 else noMatch += 1;
