@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.0.1
+
+- Removes parallel process capability in carmen-indexer
+
 ## 15.0.0
 
 - Disables generation of autocomplete degens in the grid cache at indexing time for translated text
