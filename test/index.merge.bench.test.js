@@ -5,32 +5,32 @@ var mem = require('../lib/api-mem');
 var tape = require('tape');
 
 // Creates an index with fuzzed data
-function fuzzIndex(offset, limit, callback) {
+function fuzzIndex(limit, callback) {
     var conf = { street: new mem({ maxzoom:14 }, function() {}) };
     var c = new Carmen(conf);
     var docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
         .split('\n')
+        .filter(function(text) { return !!text; })
         .sort(function(a, b) {
             return Math.random() - Math.random();
-        })
-        .filter(function(text) { return !!text; })
-        .slice(offset,offset+limit)
-        .reduce(function(memo, text) {
-            var lat = Math.random() * 85 * (Math.random() < 0.5 ? -1 : 1);
-            var lon = Math.random() * 180 * (Math.random() < 0.5 ? -1 : 1);
-            memo.push({
-                id: Math.floor(Math.random() * Math.pow(2,25)),
-                type: 'Feature',
-                properties: {
-                    'carmen:text': text,
-                    'carmen:center': [lon, lat]
-                },
-                geometry: { type:'Point', coordinates:[lon,lat] },
-                bbox: []
-            });
-            return memo;
-        }, []);
-    index.update(conf.street, docs, { zoom:14 }, function(err) {
+        });
+    var features = [];
+    for (var i = 0; i < limit; i++) {
+        var text = docs[i % docs.length];
+        var lat = Math.random() * 85 * (Math.random() < 0.5 ? -1 : 1);
+        var lon = Math.random() * 180 * (Math.random() < 0.5 ? -1 : 1);
+        features.push({
+            id: Math.floor(Math.random() * Math.pow(2,25)),
+            type: 'Feature',
+            properties: {
+                'carmen:text': text,
+                'carmen:center': [lon, lat]
+            },
+            geometry: { type:'Point', coordinates:[lon,lat] },
+            bbox: []
+        });
+    }
+    index.update(conf.street, features, { zoom:14 }, function(err) {
         if (err) return callback(err);
         index.store(conf.street, function(err) {
             if (err) return callback(err);
@@ -43,7 +43,7 @@ var sources = {};
 
 tape('setup a', function(assert) {
     var start = +new Date;
-    fuzzIndex(0, 10000, function(err, geocoder, a) {
+    fuzzIndex(10000, function(err, geocoder, a) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing a in ' + time + 'ms');
         sources.a = a;
@@ -53,7 +53,7 @@ tape('setup a', function(assert) {
 
 tape('setup b', function(assert) {
     var start = +new Date;
-    fuzzIndex(10000, 10000, function(err, geocoder, b) {
+    fuzzIndex(10000, function(err, geocoder, b) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing b in ' + time + 'ms');
         sources.b = b;
