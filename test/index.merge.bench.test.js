@@ -43,7 +43,7 @@ var sources = {};
 
 tape('setup a', function(assert) {
     var start = +new Date;
-    fuzzIndex(10000, function(err, geocoder, a) {
+    fuzzIndex(50000, function(err, geocoder, a) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing a in ' + time + 'ms');
         sources.a = a;
@@ -53,7 +53,7 @@ tape('setup a', function(assert) {
 
 tape('setup b', function(assert) {
     var start = +new Date;
-    fuzzIndex(10000, function(err, geocoder, b) {
+    fuzzIndex(50000, function(err, geocoder, b) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing b in ' + time + 'ms');
         sources.b = b;
