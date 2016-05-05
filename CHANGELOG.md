@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased/pending
+
+- save memory in addresscluster by calculating minimum without unnecessary array
+- 30% more efficient string traversal in getPhraseDegens
+
+## 15.0.1
+
+- Removes parallel process capability in carmen-indexer
+
 ## 15.0.0
 
 - Disables generation of autocomplete degens in the grid cache at indexing time for translated text
