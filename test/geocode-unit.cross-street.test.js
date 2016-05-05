@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.address, address, t.end);
     });
 
-    tape.skip('Search for main street', function(t) {
+    tape('Search for main street', function(t) {
         c.geocode('main street', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main street');
@@ -87,10 +87,18 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
 
-    tape.skip('Search for fake street', function(t) {
+    tape('Search for fake street', function(t) {
         c.geocode('fake street', {}, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'fake street');
+            t.end();
+        });
+    });
+
+    tape('Search for intersection as address', function(t) {
+        c.geocode('main street fake street', {}, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main street fake street');
             t.end();
         });
     });
