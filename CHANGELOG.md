@@ -2,7 +2,7 @@
 
 ## Unreleased/pending
 
-- save memory by calculating minimum without unnecessary array
+- save memory in addresscluster by calculating minimum without unnecessary array
 - 30% more efficient string traversal in getPhraseDegens
 
 ## 15.0.1
