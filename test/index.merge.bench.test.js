@@ -5,7 +5,7 @@ var mem = require('../lib/api-mem');
 var tape = require('tape');
 
 // Creates an index with fuzzed data
-function fuzzIndex(limit, callback) {
+function fuzzIndex(offset, limit, callback) {
     var conf = { street: new mem({ maxzoom:14 }, function() {}) };
     var c = new Carmen(conf);
     var docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
@@ -14,10 +14,10 @@ function fuzzIndex(limit, callback) {
             return Math.random() - Math.random();
         })
         .filter(function(text) { return !!text; })
-        .slice(0,limit)
+        .slice(offset,offset+limit)
         .reduce(function(memo, text) {
-            var lat = Math.random() * 170 - 85;
-            var lon = Math.random() * 360 - 180;
+            var lat = Math.random() * 85 * (Math.random() < 0.5 ? -1 : 1);
+            var lon = Math.random() * 180 * (Math.random() < 0.5 ? -1 : 1);
             memo.push({
                 id: Math.floor(Math.random() * Math.pow(2,25)),
                 type: 'Feature',
@@ -43,7 +43,7 @@ var sources = {};
 
 tape('setup a', function(assert) {
     var start = +new Date;
-    fuzzIndex(10000, function(err, geocoder, a) {
+    fuzzIndex(0, 10000, function(err, geocoder, a) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing a in ' + time + 'ms');
         sources.a = a;
@@ -53,7 +53,7 @@ tape('setup a', function(assert) {
 
 tape('setup b', function(assert) {
     var start = +new Date;
-    fuzzIndex(10000, function(err, geocoder, b) {
+    fuzzIndex(10000, 10000, function(err, geocoder, b) {
         var time = +new Date - start;
         assert.ifError(err, 'completed indexing b in ' + time + 'ms');
         sources.b = b;
