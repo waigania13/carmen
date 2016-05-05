@@ -50,10 +50,11 @@ test('termops.getIndexableText', function(assert) {
     doc = {
         properties: {
             'carmen:text':'Main Street', 
-            'carmen:addressnumber': [1, 10, 100, 200]
+            'carmen:addressnumber': [1, 10, 100, 200, 'fake']
         }
     };
     texts = [
+        ['fake', 'main', 'street'],
         ['2##', 'main', 'street' ],
         ['1##', 'main', 'street' ],
         ['##', 'main', 'street' ],
