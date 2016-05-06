@@ -234,14 +234,6 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('loadall stat ignores Dict', function(q) {
-        q.ok(!conf.to._geocoder.hasDict('stat', 0));
-        carmen.loadall(conf.to, 'stat', 1, function(err) {
-            q.ifError(err);
-            q.ok(!conf.to._geocoder.hasDict('stat', 0));
-            q.end();
-        });
-    });
     t.test('confirm that iterator works', function(q) {
         var monotonic = true;
         var output = [];
