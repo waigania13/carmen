@@ -74,8 +74,3 @@ tape('merge a + b = c', function(assert) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    index.teardown();
-    assert.end();
-});
-
