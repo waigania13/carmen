@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.3
+
+- Fix bug where copy, merge streams would be considered done prematurely
+
 ## 15.1.2
 
 - Moved merge operations to cpp threadpool for better performance
