@@ -1,10 +1,10 @@
-var worker = require('../lib/indexer/indexdocs-worker.js');
+var indexdocs = require('../lib/indexer/indexdocs.js');
 var grid = require('../lib/util/grid.js');
 var tape = require('tape');
 var termops = require('../lib/util/termops.js');
 var token = require('../lib/util/token.js');
 
-tape('worker.loadDoc', function(assert) {
+tape('indexdocs.loadDoc', function(assert) {
     var token_replacer = token.createReplacer({});
     var patch;
     var tokens;
@@ -38,7 +38,7 @@ tape('worker.loadDoc', function(assert) {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = worker.loadDoc(patch, doc, freq, zoom, token_replacer);
+    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
     assert.ifError(err);
     assert.deepEqual(Object.keys(patch.grid).length, 2);
     assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
@@ -56,17 +56,17 @@ tape('worker.loadDoc', function(assert) {
     assert.end();
 });
 
-tape('worker.verifyCenter', function(assert) {
-    assert.equal(worker.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
-    assert.equal(worker.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
+tape('indexdocs.verifyCenter', function(assert) {
+    assert.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
+    assert.equal(indexdocs.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
     assert.end();
 });
 
-tape('worker.runChecks', function(assert) {
-    assert.equal(worker.runChecks({
+tape('indexdocs.runChecks', function(assert) {
+    assert.equal(indexdocs.runChecks({
     }), 'doc has no id');
 
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {},
@@ -75,14 +75,14 @@ tape('worker.runChecks', function(assert) {
             coordinates: [0,0]
         }
     }), 'doc has no carmen:text on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
             'carmen:text':'Main Street'
         }
     }), '"geometry" property required on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -91,7 +91,7 @@ tape('worker.runChecks', function(assert) {
         },
         geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
     }, 12), 'a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -100,7 +100,7 @@ tape('worker.runChecks', function(assert) {
         },
         geometry: { type: 'Polygon', coordinates: [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})] }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -109,7 +109,7 @@ tape('worker.runChecks', function(assert) {
         },
         geometry: { type: 'MultiPolygon', coordinates: [[new Array(30e3)],[new Array(30e3)]] }
     }, 12), 'a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -124,7 +124,7 @@ tape('worker.runChecks', function(assert) {
             ]
         }
     }, 12), 'Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1');
-    assert.equal(worker.runChecks({
+    assert.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {

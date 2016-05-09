@@ -140,8 +140,7 @@ tape('west st, tonawanda, ny', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    index.teardown();
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });

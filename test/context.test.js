@@ -504,7 +504,6 @@ test('Context eliminates correct properties', function(assert) {
 });
 
 test('teardown', function(assert) {
-    index.teardown();
     context.getTile.cache.reset();
     assert.end();
 });

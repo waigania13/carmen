@@ -234,14 +234,6 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('loadall stat ignores Dict', function(q) {
-        q.ok(!conf.to._geocoder.has('stat', 0));
-        carmen.loadall(conf.to, 'stat', 1, function(err) {
-            q.ifError(err);
-            q.ok(!conf.to._geocoder.has('stat', 0));
-            q.end();
-        });
-    });
     t.test('confirm that iterator works', function(q) {
         var monotonic = true;
         var output = [];
@@ -353,9 +345,11 @@ test('index phrase collection', function(assert) {
     index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString() ], '1 phrases');
+        var id1 = termops.encodePhrase('a', true);
+        var id2 = termops.encodePhrase('a', false);
+        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString(), id2.toString() ], '2 phrases');
         assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.get('grid',id2), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });
