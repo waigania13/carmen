@@ -1,7 +1,17 @@
 # Changelog
 
-## Unreleased/pending
+## 15.1.2
 
+- Moved merge operations to cpp threadpool for better performance
+- carmen-cache@0.13.0
+
+## 15.1.1
+
+- carmen-cache@0.12.1
+
+## 15.1.0
+
+- Add `bbox` query option
 - save memory in addresscluster by calculating minimum without unnecessary array
 - 30% more efficient string traversal in getPhraseDegens
 
