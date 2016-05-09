@@ -345,11 +345,9 @@ test('index phrase collection', function(assert) {
     index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
         assert.ifError(err);
-        var id1 = termops.encodePhrase('a', true);
-        var id2 = termops.encodePhrase('a', false);
-        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString(), id2.toString() ], '2 phrases');
+        var id1 = termops.encodePhrase('a');
+        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString() ], '1 phrase');
         assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
-        assert.deepEqual(conf.test._geocoder.get('grid',id2), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });
@@ -451,11 +449,6 @@ test('index.cleanDocs', function(assert) {
     assert.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
     assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');
     assert.equal(typeof index.cleanDocs(sourceWithAddress, [{geometry:{},properties: { 'carmen:addressnumber':{}} }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
-    assert.end();
-});
-
-test('index.teardown', function(assert) {
-    index.teardown();
     assert.end();
 });
 
