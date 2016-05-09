@@ -1,5 +1,28 @@
 # Changelog
 
+## 15.1.3
+
+- Fix bug where copy, merge streams would be considered done prematurely
+
+## 15.1.2
+
+- Moved merge operations to cpp threadpool for better performance
+- carmen-cache@0.13.0
+
+## 15.1.1
+
+- carmen-cache@0.12.1
+
+## 15.1.0
+
+- Add `bbox` query option
+- save memory in addresscluster by calculating minimum without unnecessary array
+- 30% more efficient string traversal in getPhraseDegens
+
+## 15.0.1
+
+- Removes parallel process capability in carmen-indexer
+
 ## 15.0.0
 
 - Disables generation of autocomplete degens in the grid cache at indexing time for translated text

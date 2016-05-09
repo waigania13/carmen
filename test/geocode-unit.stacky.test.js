@@ -69,8 +69,7 @@ tape('windsor ct windsor', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
-    index.teardown();
+tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
