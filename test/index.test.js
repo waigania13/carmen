@@ -6,6 +6,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
+var shard = require('../lib/util/cxxcache').shard;
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
@@ -68,19 +69,19 @@ test('index.generateStats', function(assert) {
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(index.generateFrequency(docs, {}), {
-        0: [ 4 ],           // 4 total
-        1: [ 2 ],           // 2 maxscore
-        1247264641460936: [ 1 ],  // 1 road
-        1804046053253033:  [ 1 ],  // 1 street
-        609659059851264: [ 2 ]   // 2 main
+        __COUNT__: [ 4 ],
+        __MAX__: [ 2 ],
+        main: [ 2 ],
+        road: [ 1 ],
+        street: [ 1 ]
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
-        0: [ 4 ],           // 4 total
-        1: [ 2 ],           // 2 maxscore
-        3363289958149993: [ 1 ],  // 1 road
-        441841902895320: [ 1 ],  // 1 street
-        609659059851264: [ 2 ]   // 2 main
+        __COUNT__: [ 4 ],
+        __MAX__: [ 2 ],
+        main: [ 2 ],
+        rd: [ 1 ],
+        st: [ 1 ]
     });
     assert.end();
 });
@@ -104,8 +105,8 @@ test('index.update -- error', function(t) {
             }
         }], { zoom: 6 }, function(err) {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.get('freq', 0), [2]);
-            q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
+            q.deepEqual(conf.to._geocoder.get('freq', '__COUNT__'), [2]);
+            q.deepEqual(conf.to._geocoder.get('freq', '__MAX__'), [10]);
             q.end();
         });
     });
@@ -124,8 +125,8 @@ test('index.update -- error', function(t) {
             }
         }], { zoom: 6 }, function(err) {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.get('freq', 0), [4]);
-            q.deepEqual(conf.to._geocoder.get('freq', 1), [10]);
+            q.deepEqual(conf.to._geocoder.get('freq', '__COUNT__'), [4]);
+            q.deepEqual(conf.to._geocoder.get('freq', '__MAX__'), [10]);
             q.end();
         });
     });
@@ -248,7 +249,7 @@ test('index', function(t) {
                 iterator.asyncNext(next);
             } else {
                 q.ok(monotonic, 'shard iterator produces sorted output');
-                q.equal(output.length, 184, "index has 184 shards");
+                q.equal(output.length, 254, "index has 254 shards");
                 q.end();
             }
         };
@@ -346,7 +347,7 @@ test('index phrase collection', function(assert) {
     function afterUpdate(err) {
         assert.ifError(err);
         var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.list('grid',Math.floor(id1/68719476736)), [ id1.toString() ], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.list('grid',shard(id1)), [ id1.toString() ], '1 phrase');
         assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }

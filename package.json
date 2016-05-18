@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/degenless",
+    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/strings-attached",
     "d3-queue": "2.0.x",
     "dawg-cache": "0.3.1",
     "err-code": "1.1.1",
@@ -16,7 +16,6 @@
     "mapnik": "~3.5.12",
     "minimist": "1.2.0",
     "model-un": "0.0.3",
-    "murmur": "0.0.2",
     "sphericalmercator": "~1.0.1",
     "split": "1.0.0",
     "tile-cover": "3.0.x",
