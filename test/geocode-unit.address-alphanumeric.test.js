@@ -80,6 +80,49 @@ var addFeature = require('../lib/util/addfeature');
                 'carmen:text':'fake street',
                 'carmen:center':[0,0],
                 'carmen:rangetype':'tiger',
+                'carmen:lfromhn': 0, //Input is numeric
+                'carmen:ltohn': 100,
+            },
+            geometry: {
+                type:'LineString',
+                coordinates:[[0,0],[0,100]]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('test alphanumeric address query with address range', function(t) {
+        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
+            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].address, '9b', 'address number is 9b');
+            t.end();
+        });
+    });
+
+    tape('test alphanumeric address query with invalid address number', function(t) {
+        c.geocode('9bc fake street', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
+            t.ok((res.features[0].relevance < 0.6), 'appropriate relevance (9bc token should not be matched)');
+            t.ok((res.features[0].address === undefined), 'address number is not defined');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+    };
+    var c = new Carmen(conf);
+    tape('index address', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:center':[0,0],
+                'carmen:rangetype':'tiger',
                 'carmen:lfromhn': '0',
                 'carmen:ltohn': '100',
             },
