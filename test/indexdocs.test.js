@@ -32,8 +32,8 @@ tape('indexdocs.loadDoc', function(assert) {
         }
     };
 
-    freq[0] = [101];
-    freq[1] = [200];
+    freq["__COUNT__"] = [101];
+    freq["__MAX__"] = [200];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
 

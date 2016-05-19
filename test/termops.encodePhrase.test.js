@@ -9,11 +9,10 @@ test('termops.encodePhrase clustering', function(assert) {
         ['apples', 'application', 'apply', 'appears', 'appomattox'],
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
         ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
-        ['a', 'b', 'ad', 'dr', 'tr']
     ];
     sets.forEach(function(set) {
         var encoded = set.map(function(text) { return termops.encodePhrase(text); });
-        var sharded = set.map(function(text) { return Cache.shard('grid', termops.encodePhrase(text)); });
+        var sharded = set.map(function(text) { return Cache.shard(termops.encodePhrase(text)); });
         assert.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
         assert.deepEqual(sharded.every(function(shard) { return shard === sharded[0]; }), true, 'shard ' + sharded[0] + ' for ' + set);
     });
@@ -24,41 +23,41 @@ test('termops.encodePhrase', function(assert) {
     var a;
 
     a = termops.encodePhrase('main');
-    assert.deepEqual(a, 3136371028185518, 'main');
+    assert.deepEqual(a, 'xmain', 'main');
 
     a = termops.encodePhrase('xmain', true);
-    assert.deepEqual(a, 3136371028185518, 'main (skip)');
+    assert.deepEqual(a, 'xmain', 'main (skip)');
 
     a = termops.encodePhrase('main st');
-    assert.deepEqual(a, 3136404058812660, 'main st');
+    assert.deepEqual(a, 'xmain st', 'main st');
 
     a = termops.encodePhrase('xmain st', true);
-    assert.deepEqual(a, 3136404058812660, 'main st (skip)');
+    assert.deepEqual(a, 'xmain st', 'main st (skip)');
 
     a = termops.encodePhrase(['main','st']);
-    assert.deepEqual(a, 3136404058812660, 'main st (array)');
+    assert.deepEqual(a, 'xmain st', 'main st (array)');
 
     a = termops.encodePhrase('lazy dog');
-    assert.deepEqual(a, 153877547651467, 'lazy dog')
+    assert.deepEqual(a, 'xlazy dog', 'lazy dog')
 
     a = termops.encodePhrase('xlazy dog', true);
-    assert.deepEqual(a, 153877547651467, 'lazy dog (skip)')
+    assert.deepEqual(a, 'xlazy dog', 'lazy dog (skip)')
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
-    assert.deepEqual(a, 1180964484322636, 'long phrase');
+    assert.deepEqual(a, 'xthe quick brown fox jumps over the lazy dog', 'long phrase');
 
     a = termops.encodePhrase('xthe quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 1180964484322636, 'long phrase (skip)');
+    assert.deepEqual(a, 'xthe quick brown fox jumps over the lazy dog', 'long phrase (skip)');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
-    assert.deepEqual(a, 3817200319418980, '京都市');
+    assert.deepEqual(a, 'zjing du shi', '京都市');
 
     a = termops.encodePhrase('zjing du shi', true);
-    assert.deepEqual(a, 3817200319418980, '京都市 (skip)');
+    assert.deepEqual(a, 'zjing du shi', '京都市 (skip)');
 
     a = termops.encodePhrase('jing du shi');
-    assert.deepEqual(a, 1719413640969220, 'jing du shi != 京都市');
+    assert.deepEqual(a, 'xjing du shi', 'jing du shi != 京都市');
 
     // known examples of fnv1a phrase collisions
     // these will be datapoints for decolliding strategies elsewhere...

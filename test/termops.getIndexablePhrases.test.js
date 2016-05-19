@@ -8,7 +8,7 @@ test('termops.getIndexablePhrases', function(assert) {
     tokens = ['main', 'st'];
     tokens.indexDegens = true;
     freq = {};
-    freq[0] = [101];
+    freq["__COUNT__"] = [101];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
 
@@ -38,7 +38,7 @@ test('termops.getIndexablePhrases (weight sieve)', function(assert) {
     tokens = ['jose', 'de', 'la', 'casa'];
     tokens.indexDegens = true;
     freq = {};
-    freq[0] = [202];
+    freq["__COUNT__"] = [202];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
     freq[termops.encodeTerm(tokens[2])] = [100];
@@ -63,7 +63,7 @@ test('termops.getIndexablePhrases (京都市)', function(assert) {
     tokens = ['京都市'];
     tokens.indexDegens = true;
     freq = {};
-    freq[0] = [1];
+    freq["__COUNT__"] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -80,7 +80,7 @@ test('termops.getIndexablePhrases (москва)', function(assert) {
     tokens = ['москва'];
     tokens.indexDegens = true;
     freq = {};
-    freq[0] = [1];
+    freq["__COUNT__"] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -97,7 +97,7 @@ test('termops.getIndexablePhrases (josé)', function(assert) {
     tokens = ['josé'];
     tokens.indexDegens = true;
     freq = {};
-    freq[0] = [1];
+    freq["__COUNT__"] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -114,7 +114,7 @@ test('termops.getIndexablePhrases (josé, no degens)', function(assert) {
     tokens = ['josé'];
     tokens.indexDegens = false;
     freq = {};
-    freq[0] = [1];
+    freq["__COUNT__"] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     assert.deepEqual(termops.getIndexablePhrases(tokens, freq), [

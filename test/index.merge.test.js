@@ -211,7 +211,7 @@ test('index - streaming interface', function(assert) {
                 else noMatch += 1;
             });
             var percentage = 100 * match / (match + noMatch);
-            assert.ok(percentage >= 98, type + ' matches > 98%: ' + percentage);
+            assert.ok(percentage >= 97, type + ' matches > 97%: ' + percentage);
 
             q.end();
         });
