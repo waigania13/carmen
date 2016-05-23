@@ -210,28 +210,28 @@ test('index', function(t) {
     });
     t.test('loadall index', function(q) {
         conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 55365)); // the shard with key "__COUNT__" in it
+        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
         carmen.loadall(conf.to, 'freq', 1, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 55365));
+            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
             q.end();
         });
     });
     t.test('loadall (concurrency 10)', function(q) {
         conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 55365));
+        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
         carmen.loadall(conf.to, 'freq', 10, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 55365));
+            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
             q.end();
         });
     });
     t.test('loadall (concurrency 0.5)', function(q) {
         conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', 55365));
+        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
         carmen.loadall(conf.to, 'freq', 0.5, function(err) {
             q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', 55365));
+            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
             q.end();
         });
     });
@@ -249,7 +249,7 @@ test('index', function(t) {
                 iterator.asyncNext(next);
             } else {
                 q.ok(monotonic, 'shard iterator produces sorted output');
-                q.equal(output.length, 263, "index has 263 shards");
+                q.equal(output.length, 301, "index has 301 shards");
                 q.end();
             }
         };

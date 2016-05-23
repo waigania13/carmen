@@ -6,11 +6,14 @@ test('.shard', function(s) {
     s.equal(Cache.shard('a'), '40311');
     s.equal(Cache.shard('b'), '44308');
     s.equal(Cache.shard('aa'), '22931');
-
     s.equal(Cache.shard('aaa'), '9307');
-    s.equal(Cache.shard('aaaa'), '9307');
-    s.equal(Cache.shard('aaaaa'), '9307');
-    s.equal(Cache.shard('aaaab'), '9307');
+
+    s.equal(Cache.shard('aaaa'), '17249');
+    s.equal(Cache.shard('aaab'), '29442');
+    s.equal(Cache.shard('aaaaa'), '17249');
+    s.equal(Cache.shard('aaaab'), '17249');
+    s.equal(Cache.shard('aaaaaa'), '17249');
+    s.equal(Cache.shard('aaaaab'), '17249');
 
     s.equal(Cache.shard(''), '65535');
 
