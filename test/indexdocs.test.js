@@ -58,7 +58,7 @@ tape('indexdocs.loadDoc', function(assert) {
 });
 
 tape('indexdocs.loadDoc - No Center', function(assert) {
-var token_replacer = token.createReplacer({});
+    var token_replacer = token.createReplacer({});
     var patch;
     var tokens;
     var freq;
