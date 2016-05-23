@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.4
+
+- Fix bug where non-clustered address ranges (LineString) of a numeric type would fail
+
 ## 15.1.3
 
 - Fix bug where copy, merge streams would be considered done prematurely
