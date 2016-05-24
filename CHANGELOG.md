@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.15
+
+- Remove unneccesary check for carmen:center at indexing time
+
 ## 15.1.4
 
 - Fix bug where non-clustered address ranges (LineString) of a numeric type would fail
