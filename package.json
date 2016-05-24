@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/strings-attached",
+    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/df7eabba72e8ae0f877d940bef52059806de10c2",
     "d3-queue": "2.0.x",
     "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/prefix-continuations",
     "err-code": "1.1.1",
