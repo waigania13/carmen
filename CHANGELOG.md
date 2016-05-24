@@ -1,6 +1,6 @@
 # Changelog
 
-## 15.1.15
+## 15.1.5
 
 - Remove unneccesary check for carmen:center at indexing time
 
