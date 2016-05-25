@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.6
+
+- Dedup identical addresses with different cases ie MAIN ST = Main St
+
 ## 15.1.5
 
 - Remove unneccesary check for carmen:center at indexing time
