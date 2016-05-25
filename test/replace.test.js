@@ -199,7 +199,12 @@ var tokens = token.createReplacer({
     "Vista": "Vis",
     "Walkway": "Wlky",
     "West": "W",
-    "San Francisco": "sf"
+    "San Francisco": "sf",
+    "〒\\d{3}\\-\\d{4}": "",
+    "[0-9０-９]丁目" : "",
+    "日本": "",
+    "^(.*?)([0-9０-９一二三四五六七八九十]+?[\-の])?([0-9０-９一二三四五六七八九十]+?)[\-の番]([0-9０-９一二三四五六七八九十]+)号?(.*)$": "$3 $4 $1 $5 $6",
+    "^(.*)(北海道|青森県|秋田県|岩手県|山形県|宮城県|新潟県|福島県|群馬県|栃木県|茨城県|埼玉県|東京都|千葉県|神奈川県|山梨県|長野県|静岡県|富山県|石川県|福井県|岐阜県|愛知県|滋賀県|三重県|京都府|大阪府|奈良県|和歌山県|兵庫県|鳥取県|島根県|岡山県|広島県|山口県|香川県|徳島県|愛媛県|高知県|福岡県|佐賀県|長崎県|大分県|熊本県|宮崎県|鹿児島県|沖縄県)(.*)": "$1$3 $2"
 });
 
 test('token replacement', function(q) {
@@ -248,5 +253,17 @@ test('throw on mixed name/num replacement groups', function(q) {
     q.throws(function() {
         token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
     });
+    q.end();
+});
+
+test('japan token', function(q) {
+    var city1 = "富山県富山市千石町５丁目３-５ 日本";
+    var city2 = "2-13-7 富山県田代町字四観音道西";
+    var city3 = "大字南矢幅第6地割325-1 紫波郡 矢巾町 日本";
+    var city4 = "〒100-8994東京都中央区八重洲1-5-3";
+    q.deepEqual(token.replaceToken(tokens, city1),'３ ５ 富山市千石町    富山県');
+    q.deepEqual(token.replaceToken(tokens, city2),'13 7   田代町字四観音道西  富山県');
+    q.deepEqual(token.replaceToken(tokens, city3),'325 1 大字南矢幅第6地割  紫波郡 矢巾町  ');
+    q.deepEqual(token.replaceToken(tokens, city4),'5 3 中央区八重洲   東京都');
     q.end();
 });
