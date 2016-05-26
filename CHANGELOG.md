@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.7
+
+- Ensure address clusters are all lowercase to ensure no case disparity between input query and cluster
+
 ## 15.1.6
 
 - Dedup identical addresses with different cases ie MAIN ST = Main St
