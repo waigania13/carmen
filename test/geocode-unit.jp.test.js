@@ -92,10 +92,75 @@ tape('index address 2', function(t) {
     };
     addFeature(conf.address, address, t.end);
 });
+tape('index address 3', function(t) {
+    var address = {
+        id:3,
+        properties: {
+            'carmen:text':'勝',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['3591']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0],[0,0],[0,0]]
+        }
+    };
+    addFeature(conf.address, address, t.end);
+});
+tape('index address 4', function(t) {
+    var address = {
+        id:4,
+        properties: {
+            'carmen:text':'田',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['3591']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0],[0,0],[0,0]]
+        }
+    };
+    addFeature(conf.address, address, t.end);
+});
+tape('index address 5', function(t) {
+    var address = {
+        id:5,
+        properties: {
+            'carmen:text':'度',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['3591']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0],[0,0],[0,0]]
+        }
+    };
+    addFeature(conf.address, address, t.end);
+});
+tape('index address 6', function(t) {
+    var address = {
+        id:1,
+        properties: {
+            'carmen:text':'郡',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['3591']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0],[0,0],[0,0]]
+        }
+    };
+    addFeature(conf.address, address, t.end);
+});
 tape('Check relevance score', function(t) {
-    c.geocode('3591 勝田度会郡', null, function(err, res) {
+    c.geocode('3591 勝田度会郡', { debug: true}, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].relevance, 1);
+        console.log("Res", res, res.debug);
+        t.deepEqual(res.features[0].relevance, (2/3));
         
     });
     c.geocode('4433 勝田度会郡', null, function(err, res) {
