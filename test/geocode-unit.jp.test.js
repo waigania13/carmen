@@ -60,6 +60,42 @@ tape('index city 2', function(t) {
     addFeature(conf.city, city, t.end);
 });
 
+tape('index city 3', function(t) {
+    var city = {
+        id:3,
+        properties: {
+            'carmen:text':'郡',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    addFeature(conf.city, city, t.end);
+});
+
+tape('index city 4', function(t) {
+    var city = {
+        id:4,
+        properties: {
+            'carmen:text':'度会',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    addFeature(conf.city, city, t.end);
+});
+
+tape('index city 5', function(t) {
+    var city = {
+        id:5,
+        properties: {
+            'carmen:text':'勝田',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    addFeature(conf.city, city, t.end);
+});
+
 tape('index address 1', function(t) {
     var address = {
         id:1,
@@ -142,7 +178,7 @@ tape('index address 5', function(t) {
 });
 tape('index address 6', function(t) {
     var address = {
-        id:1,
+        id:6,
         properties: {
             'carmen:text':'郡',
             'carmen:zxy':['6/32/32'],
@@ -159,8 +195,7 @@ tape('index address 6', function(t) {
 tape('Check relevance score', function(t) {
     c.geocode('3591 勝田度会郡', { debug: true}, function(err, res) {
         t.ifError(err);
-        console.log("Res", res, res.debug);
-        t.deepEqual(res.features[0].relevance, (2/3));
+        t.deepEqual(res.features[0].relevance, (1));
         
     });
     c.geocode('4433 勝田度会郡', null, function(err, res) {
