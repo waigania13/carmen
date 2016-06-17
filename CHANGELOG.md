@@ -1,5 +1,14 @@
 # Changelog
 
+## 15.1.8
+
+- Fix broken phrasematch bench
+- Use normalized ranges ITP instead of default feature - fixes bug where null lf/lt/rf/rt would hard error if null instead of empty array
+
+## 15.1.7
+
+- Ensure address clusters are all lowercase to ensure no case disparity between input query and cluster
+
 ## 15.1.6
 
 - Dedup identical addresses with different cases ie MAIN ST = Main St
