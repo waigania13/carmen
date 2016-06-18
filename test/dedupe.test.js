@@ -32,8 +32,22 @@ tape('dedup lowercase vs caps', function(assert) {
 });
 
 tape('dedup - change relev order', function(assert) {
+    var dedup = dedupe(require('./fixtures/relev.json'));
 
-    var fixture = 
+
+    assert.equals(dedup.length, 9)
+
+    assert.equals(dedup[0].relevance, 0.495);
+    assert.equals(dedup[1].relevance, 0.7969999999999999);
+    assert.equals(dedup[2].relevance, 0.574);
+    assert.equals(dedup[3].relevance, 0.43233333333333335);
+    assert.equals(dedup[4].relevance, 0.3233333333333333);
+    assert.equals(dedup[5].relevance, 0.3233333333333333);
+    assert.equals(dedup[6].relevance, 0.3233333333333333);
+    assert.equals(dedup[7].relevance, 0.25666666666666665);
+    assert.equals(dedup[8].relevance, 0.25666666666666665);
+
+    assert.end();
 
 }); 
 
