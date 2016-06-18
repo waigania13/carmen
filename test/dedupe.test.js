@@ -31,6 +31,12 @@ tape('dedup lowercase vs caps', function(assert) {
     assert.end();
 });
 
+tape('dedup - change relev order', function(assert) {
+
+    var fixture = 
+
+}); 
+
 tape('dedupe', function(assert) {
     var features;
 
