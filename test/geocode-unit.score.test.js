@@ -151,8 +151,9 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.city, city, t.end);
     });
     tape('china', function(t) {
-        c.geocode('china', { limit_verify:1 }, function(err, res) {
+        c.geocode('china', { allow_dupes: true}, function(err, res) {
             t.ifError(err);
+            console.log("res", res.features);
             t.deepEqual(res.features[0].place_name, 'china');
             t.deepEqual(res.features[0].id, 'country.1');
             t.end();

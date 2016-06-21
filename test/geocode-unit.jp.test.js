@@ -5,6 +5,8 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature');
+var unidecode = require('unidecode-cxx');
+var token = require('../lib/util/token');
 
 var conf = {
     country: new mem(null, function() {}),
@@ -204,6 +206,24 @@ tape('Check relevance score', function(t) {
         t.end();
     });
 });
+
+tape('japan token', function(t) {
+    var tokens = token.createReplacer({ 
+        "(.*?)2丁目(.*?)": "$1 二丁目 $2",
+        "3丁目": "jpchome三",
+        "4丁目": "jpchome四",
+        "5丁目": "jpchome五",
+        "6丁目": "jpchome六",
+        "7丁目": "jpchome七",
+        "8丁目": "jpchome八",
+        "9丁目": "jpchome九",
+        "10丁目": "jpchome十"
+    });
+    var city1 = "本城町2丁目26-1 下妻市 日本";
+    t.deepEqual(token.replaceToken(tokens, city1),'本城町 二丁目 26-1 下妻市 日本');
+    t.end();
+});
+
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
