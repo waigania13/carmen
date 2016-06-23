@@ -223,6 +223,10 @@ tape('japan token', function(t) {
     });
     var city1 = "本城町2丁目26-1 下妻市 日本";
     var city2 = "乙1673-13 安芸郡 奈半利町 日本"
+    var city3 = "上清戸2丁目14-2 清瀬市 日本"
+    c.geocode(city3, null, function(err, res) {
+        t.assert(res.query.indexOf('14') > -1, "numbers aren't split");
+    });
     t.deepEqual(token.replaceToken(tokens, city1),'26 本城町 二丁目  下妻市 日本');
     t.deepEqual(token.replaceToken(tokens, city2),'1673 乙 安芸郡 奈半利町 日本');
     t.end();
