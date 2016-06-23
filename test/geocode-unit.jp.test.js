@@ -209,18 +209,22 @@ tape('Check relevance score', function(t) {
 
 tape('japan token', function(t) {
     var tokens = token.createReplacer({ 
+        "(.*?)1丁目(.*?)": "$1 一丁目 $2",
         "(.*?)2丁目(.*?)": "$1 二丁目 $2",
-        "3丁目": "jpchome三",
-        "4丁目": "jpchome四",
-        "5丁目": "jpchome五",
-        "6丁目": "jpchome六",
-        "7丁目": "jpchome七",
-        "8丁目": "jpchome八",
-        "9丁目": "jpchome九",
-        "10丁目": "jpchome十"
+        "(.*?)3丁目(.*?)": "$1 三丁目 $2",
+        "(.*?)4丁目(.*?)": "$1 四丁目 $2",
+        "(.*?)5丁目(.*?)": "$1 五丁目 $2",
+        "(.*?)6丁目(.*?)": "$1 六丁目 $2",
+        "(.*?)7丁目(.*?)": "$1 七丁目 $2",
+        "(.*?)8丁目(.*?)": "$1 八丁目 $2",
+        "(.*?)9丁目(.*?)": "$1 九丁目 $2",
+        "(.*?)10丁目(.*?)": "$1 十丁目 $2",
+        "^(.*?)([0-9]+)-([0-9]+)(.*)$": "$2 $1$4$5"
     });
     var city1 = "本城町2丁目26-1 下妻市 日本";
-    t.deepEqual(token.replaceToken(tokens, city1),'本城町 二丁目 26-1 下妻市 日本');
+    var city2 = "乙1673-13 安芸郡 奈半利町 日本"
+    t.deepEqual(token.replaceToken(tokens, city1),'26 本城町 二丁目  下妻市 日本');
+    t.deepEqual(token.replaceToken(tokens, city2),'1673 乙 安芸郡 奈半利町 日本');
     t.end();
 });
 
