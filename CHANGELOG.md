@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.1.9
+
+- Fix bug where dedup could put less relevant results infront of higher ones
+
 ## 15.1.8
 
 - Fix broken phrasematch bench
