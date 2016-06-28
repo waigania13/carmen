@@ -199,7 +199,7 @@ var tokens = token.createReplacer({
     "Vista": "Vis",
     "Walkway": "Wlky",
     "West": "W",
-    "San Francisco": "sf",
+    "San Francisco": "sf"
 });
 
 test('token replacement', function(q) {
