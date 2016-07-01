@@ -245,14 +245,16 @@ tape('index address 7', function(t) {
     };
     addFeature(conf.address, address, t.end);
 });
+
 tape('Check relevance score', function(t) {
     c.geocode('3591 勝田度会郡', { debug: true}, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].relevance, (1));
+        t.deepEqual(res.features[0].relevance, 1);
         
     });
     c.geocode('4433 勝田度会郡', null, function(err, res) {
         t.ifError(err);
+        console.log("Res", res.features[0])
         t.deepEqual(res.features[0].relevance, 1);
         t.end()
     });
@@ -260,6 +262,7 @@ tape('Check relevance score', function(t) {
 tape('Check order of query', function(t) {
     c.geocode('466 瀬留龍郷町大島郡', { debug: true}, function(err, res) {
         t.ifError(err);
+        console.log("res", res.features[0]);
         t.equal(res.features.length, 2, "466 瀬留龍郷町大島郡");
     });
     c.geocode('大島郡龍郷町瀬留466', { debug: true}, function(err, res) {
@@ -268,49 +271,6 @@ tape('Check order of query', function(t) {
         t.end();
     });
 });
-
-tape('japan token', function(t) {
-    var globals = token.createReplacer({
-        "^(?=[\u1100-\u11FF\u2E80-\u2EFF\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u3100-\u312F\u3130-\u318F\u31C0-\u31EF\u31F0-\u31FF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFE30-\uFE4F]+)(.*?)([0-9]+)-([0-9]+)(.*)$": "$1$4$5 $2"
-    });
-    var tokens = token.createReplacer({ 
-        "[１1]丁目": "一丁目",
-        "[２2]丁目": "二丁目",
-        "[３3]丁目": "三丁目",
-        "[４4]丁目": "四丁目",
-        "[５5]丁目": "五丁目",
-        "[６6]丁目": "六丁目",
-        "[７7]丁目": "七丁目",
-        "[８8]丁目": "八丁目",
-        "[９9]丁目": "九丁目",
-        "(１０|10)丁目": "十丁目"
-    });
-    var cities = [
-        ["本城町2丁目26-1 下妻市", "本城町二丁目 下妻市 26"],
-        ["乙1673-13 安芸郡 奈半利町", "乙 安芸郡 奈半利町 1673"],
-        ["中津川市馬籠4571-1", "中津川市馬籠 4571"],
-        ["中津川市馬籠4571", "中津川市馬籠4571"]
-    ]
-    c.geocode(cities[3][0], null, function(err, res) {
-        t.assert(res.query.indexOf('4571') > -1, "numbers aren't split");
-    });
-    cities.forEach(function(item){
-        city = token.replaceToken(globals, item[0]);
-        t.deepEqual(token.replaceToken(tokens, city),item[1]);
-    });
-    t.end();
-});
-
-tape("termops", function(t) {
-    var query = termops.tokenize('羽村市神明台3丁目5');
-    var num = termops.numTokenize(query);
-    num.forEach(function(num) {
-        var perms = [];
-        perms.push(termops.permutations(num));
-    });
-    t.end();
-})
-
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
