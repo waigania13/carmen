@@ -262,7 +262,6 @@ tape('Check relevance score', function(t) {
 tape('Check order of query', function(t) {
     c.geocode('466 瀬留龍郷町大島郡', { debug: true}, function(err, res) {
         t.ifError(err);
-        console.log("res", res.features[0]);
         t.equal(res.features.length, 2, "466 瀬留龍郷町大島郡");
     });
     c.geocode('大島郡龍郷町瀬留466', { debug: true}, function(err, res) {
