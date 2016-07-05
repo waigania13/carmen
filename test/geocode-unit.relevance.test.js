@@ -87,7 +87,7 @@ tape('index address', function(t) {
     addFeature(conf.address, address, t.end);
 });
 
-tape('Check numeric text', function(t) {
+tape('Check relevance scoring', function(t) {
     c.geocode('11027 S. Pikes Peak Drive #201', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].relevance, .49, "Apt. number lowers relevance");
