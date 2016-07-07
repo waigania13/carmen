@@ -93,10 +93,6 @@ tape('Check relevance scoring', function(t) {
         t.ifError(err);
         t.equal(res.features[0].relevance, .49, "Apt. number lowers relevance");
     });
-    c.geocode('Colorado Parker', {limit_verify: 1}, function(err, res) {
-        t.ifError(err);
-        t.equal(res.features.length, 0, "No features when ordered from big-to-small");
-    });
     c.geocode('11027 S. Pikes Peak Drive', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].relevance, .99, "High relevance with no apartment number");
