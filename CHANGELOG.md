@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.2.0
+
+- Ensures that tokens which contain whitespaces are a part of the global tokens
+
 ## 15.1.9
 
 - Fix bug where dedup could put less relevant results infront of higher ones
