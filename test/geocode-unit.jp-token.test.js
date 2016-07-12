@@ -38,7 +38,7 @@ tape('japan token', function(t) {
     c.geocode(cities[3][0], null, function(err, res) {
         t.assert(res.query.indexOf('4571') > -1, "numbers aren't split");
     });
-    cities.forEach(function(item){
+    cities.forEach(function(item) {
         city = token.replaceToken(globals, item[0]);
         t.deepEqual(token.replaceToken(tokens, city),item[1]);
     });
