@@ -103,8 +103,7 @@ function Geocoder(indexes, options) {
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
 
             if(tokenValidator(source.token_replacer)) {
-                err = new Error('Using global tokens');
-                return;
+                throw new Error('Using global tokens');
             }
 
             source.maxzoom = info.maxzoom;
@@ -238,9 +237,8 @@ function boundsIntersect(a, b) {
 }
 
 function tokenValidator(token_replacer) {
-    for (var i = 0; i < token_replacer.length; i++) {
-        if(token_replacer[i].indexOf(' ') >= 0)
-            return true;
+    if (token_replacer[0].from.toString().indexOf(' ') >= 0 || token_replacer[0].to.toString().indexOf(' ') >= 0) {
+        return true;
     }
 }
 
