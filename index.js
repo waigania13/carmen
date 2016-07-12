@@ -237,8 +237,10 @@ function boundsIntersect(a, b) {
 }
 
 function tokenValidator(token_replacer) {
-    if (token_replacer[0].from.toString().indexOf(' ') >= 0 || token_replacer[0].to.toString().indexOf(' ') >= 0) {
-        return true;
+    for (var i = 0; i < token_replacer.length; i++) {
+        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
+            return true;
+        }
     }
 }
 
