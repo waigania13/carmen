@@ -19,7 +19,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('test fake village post office', function(t) {
         t.throws(function() {
             var c = new Carmen(conf);
-            });
+        });
         t.end();
     });
 })();
