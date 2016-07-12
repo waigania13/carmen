@@ -16,7 +16,7 @@ var addFeature = require('../lib/util/addfeature');
             }
         }, function() {})
     };
-    tape('test fake village post office', function(t) {
+    tape('test invalid tokens', function(t) {
         t.throws(function() {
             var c = new Carmen(conf);
         });
