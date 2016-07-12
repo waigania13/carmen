@@ -13,7 +13,7 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_format: '{country._name}, {region._name}{district._name}{place._name}{address._name}{address._number}'}, function() {})
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, function() {})
 };
 var c = new Carmen(conf);
 
@@ -31,7 +31,7 @@ tape('index country', function(t) {
 
 tape('index region', function(t) {
     var region = {
-        id:1,
+        id:2,
         properties: {
             'carmen:text':'和歌山県',
             'carmen:zxy':['6/32/32'],
@@ -43,7 +43,7 @@ tape('index region', function(t) {
 
 tape('index place 1', function(t) {
     var place = {
-        id:1,
+        id:3,
         properties: {
             'carmen:text':'岩出市',
             'carmen:zxy':['6/32/32'],
@@ -55,7 +55,7 @@ tape('index place 1', function(t) {
 
 tape('index address 1', function(t) {
     var address = {
-        id:1,
+        id:4,
         properties: {
             'carmen:text':'中黒',
             'carmen:zxy':['6/32/32'],
@@ -78,8 +78,8 @@ tape('Check order of query', function(t) {
     c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
-        t.end();
     });
+    t.end();
 });
 
 tape('teardown', function(assert) {
