@@ -254,6 +254,7 @@ tape('Check relevance score', function(t) {
     });
     c.geocode('4433 勝田度会郡', null, function(err, res) {
         t.ifError(err);
+        console.log("Res", res);
         t.deepEqual(res.features[0].relevance, 1);
         t.end()
     });
@@ -272,6 +273,8 @@ tape('Check order of query', function(t) {
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    assert.end();
+    setTimeout(function() {
+        assert.end();
+    }, 0);
 });
 
