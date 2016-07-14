@@ -117,5 +117,7 @@ var addFeature = require('../lib/util/addfeature');
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    assert.end();
+    setTimeout(function() {
+        assert.end();
+    }, 0);
 });
