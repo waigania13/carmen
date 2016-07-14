@@ -86,6 +86,6 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     setTimeout(function() {
         assert.end();
-    }, 0);
+    }, 5);
 });
 
