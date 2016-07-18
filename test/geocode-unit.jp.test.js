@@ -252,17 +252,26 @@ tape('Check relevance score', function(t) {
         t.deepEqual(res.features[0].relevance, 1);
         
     });
+    t.end();
+});
+
+tape('Check relevance score', function(t) {
     c.geocode('4433 勝田度会郡', null, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].relevance, 1);
-        t.end()
     });
+    t.end();
 });
+
 tape('Check order of query', function(t) {
     c.geocode('466 瀬留龍郷町大島郡', { debug: true}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 2, "466 瀬留龍郷町大島郡");
+        t.end();
     });
+});
+
+tape('Check order of query', function(t) {
     c.geocode('大島郡龍郷町瀬留466', { debug: true}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 0, "大島郡龍郷町瀬留466");
@@ -272,8 +281,6 @@ tape('Check order of query', function(t) {
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    setTimeout(function() {
-        assert.end();
-    }, 5);
+    assert.end();
 });
 

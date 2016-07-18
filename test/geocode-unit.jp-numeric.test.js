@@ -79,20 +79,29 @@ tape('Check numeric text', function(t) {
     c.geocode('神明台3丁目5', { debug: true}, function(err, res) {
         t.ifError(err);
         t.false(res.features.length > 0, "no features");
-        
+        t.end();
     });
+});
+
+tape('Check numeric text', function(t) {
     c.geocode('神明台3丁目 5', { debug: true}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
         t.equal(res.features[0].address,'3', "wrong address");
-        
+        t.end();
     });
+});
+
+tape('Check numeric text', function(t) {
     c.geocode('神明台三丁目5', { debug: true}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
         t.equal(res.features[0].address, '5', "right address");
-        
+        t.end();
     });
+});
+
+tape('Check numeric text', function(t) {
     c.geocode('神明台三丁目 5', null, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
@@ -103,7 +112,5 @@ tape('Check numeric text', function(t) {
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    setTimeout(function() {
-        assert.end();
-    }, 5);
+    assert.end();
 });

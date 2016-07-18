@@ -74,18 +74,20 @@ tape('Check order of query', function(t) {
     c.geocode('岩出市中黒632', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 0, "No features returned");
+        t.end();
     });
+});
+
+tape('Check order of query', function(t) {
     c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
+        t.end();
     });
-    t.end();
 });
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    setTimeout(function() {
-        assert.end();
-    }, 5);
+    assert.end();
 });
 

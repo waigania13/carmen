@@ -47,7 +47,5 @@ tape('japan token', function(t) {
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
-    setTimeout(function() {
-        assert.end();
-    }, 5);
+    assert.end();
 });
