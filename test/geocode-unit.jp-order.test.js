@@ -70,18 +70,28 @@ tape('index address 1', function(t) {
     addFeature(conf.address, address, t.end);
 });
 
-tape('Check order of query', function(t) {
+tape('Check order, 岩出市中黒632', function(t) {
     c.geocode('岩出市中黒632', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
-        t.equal(res.features.length, 0, "No features returned");
+        t.equal(res.features.length, 1, "Descending order doesn't lower relevance");
         t.end();
     });
 });
 
-tape('Check order of query', function(t) {
+tape('Check order, 632 中黒 岩出市', function(t) {
     c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
+        t.equal(res.features[0].relevance, 1, "Ascending order doesn't lower relevance")
+        t.end();
+    });
+});
+
+tape('Check order, 632 中黒 Japan 岩出市', function(t) {
+    c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, function(err, res) {
+        t.ifError(err);
+        t.equal(res.features[0].address, '632', "Gets correct address");
+        t.equal(res.features[0].relevance, 0.8323333333333333, "Mixed-up order lowers relevance")
         t.end();
     });
 });

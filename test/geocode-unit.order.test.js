@@ -7,7 +7,6 @@ var addFeature = require('../lib/util/addfeature');
 var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
-    district: new mem(null, function() {}),
     place: new mem(null, function() {}),
     address: new mem({
         maxzoom: 6,
@@ -32,7 +31,7 @@ tape('index region', function(t) {
     var region = {
         id:2,
         properties: {
-            'carmen:text':'North Colorado',
+            'carmen:text':'North Carolina',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -44,7 +43,7 @@ tape('index place', function(t) {
     var place = {
         id:5,
         properties: {
-            'carmen:text':'Parker Town',
+            'carmen:text':'Winston-Salem',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -56,10 +55,10 @@ tape('index address', function(t) {
     var address = {
         id:6,
         properties: {
-            'carmen:text':'S Pikes Peak Dr',
+            'carmen:text':'Log Cabin Ln',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
-            'carmen:addressnumber': ['11027']
+            'carmen:addressnumber': ['1234']
         },
         geometry: {
             type: 'MultiPoint',
@@ -69,16 +68,31 @@ tape('index address', function(t) {
     addFeature(conf.address, address, t.end);
 });
 
-tape('Check order', function(t) {
-    c.geocode('Parker Town North Colorado', {limit_verify: 1}, function(err, res) {
+tape('Winston-Salem North Carolina', function(t) {
+    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
-        t.equal(res.features[0].text, "Parker Town", "ok when query is ordered `{place} {region}`")
+        t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{place} {region}`")
+        t.equal(res.features[0].relevance, 1, "Ascending order doesn't lower relevance");
+        t.end();
     });
-    // c.geocode('North Colorado Parker Town', {limit_verify: 1}, function(err, res) {
-    //     t.ifError(err);
-    //     t.equal(res.features[0].text, "Parker Town", "ok when query is ordered `{region} {place}`")
-    // });
-    t.end();
+});
+
+tape('North Carolina Winston-Salem', function(t) {
+    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
+        t.ifError(err);
+        t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
+        t.equal(res.features[0].relevance, 1, "Descending order doesn't lower relevance");
+        t.end();
+    });
+});
+
+tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
+    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
+        t.ifError(err);
+        t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
+        t.equal(res.features[0].relevance, 0.7666666666666666, "Mixed-up order lowers relevance");
+        t.end();
+    });
 });
 
 tape('teardown', function(assert) {
