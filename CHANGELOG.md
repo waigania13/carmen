@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.2.1
+
+- Set the relevance score to 1 when a feature is queried by ID
+
 ## 15.2.0
 
 - Ensures that tokens which contain whitespaces are a part of the global tokens
