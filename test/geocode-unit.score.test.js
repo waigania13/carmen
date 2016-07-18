@@ -225,6 +225,35 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// confirm that a feature queried by id has a relevance set to 1
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+    tape('index country', function(t) {
+        var country = {
+            id:1,
+            properties: {
+                'carmen:score': 5,
+                'carmen:text':'usa',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
+        addFeature(conf.country, country, t.end);
+    });
+    
+    tape('query by id', function(t) {
+        c.geocode('country.1', null, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].relevance, 1, "relevance is 1");
+            t.deepEqual(res.features.length, 1);
+            t.end();
+        });
+    });
+})();
+
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
