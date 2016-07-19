@@ -102,9 +102,9 @@ function Geocoder(indexes, options) {
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
 
-            // if(tokenValidator(source.token_replacer)) {
-            //     throw new Error('Using global tokens');
-            // }
+            if(tokenValidator(source.token_replacer)) {
+                throw new Error('Using global tokens');
+            }
 
             source.maxzoom = info.maxzoom;
             source.stack = stack;
