@@ -16,8 +16,7 @@ var conf = {
     place: new mem(null, function() {}),
     address: new mem({
         maxzoom: 6,
-        geocoder_address: 1,
-        geocoder_tokens: {"[３3]丁目": "三丁目"}
+        geocoder_address: 1
     }, function() {})
 };
 var c = new Carmen(conf);
@@ -73,23 +72,6 @@ tape('index address 1', function(t) {
         }
     };
     addFeature(conf.address, address, t.end);
-});
-
-tape('Check numeric text', function(t) {
-    c.geocode('神明台3丁目5', { debug: true}, function(err, res) {
-        t.ifError(err);
-        t.false(res.features.length > 0, "no features");
-        t.end();
-    });
-});
-
-tape('Check numeric text', function(t) {
-    c.geocode('神明台3丁目 5', { debug: true}, function(err, res) {
-        t.ifError(err);
-        t.equal(res.features.length, 1, "1 feature");
-        t.equal(res.features[0].address,'3', "wrong address");
-        t.end();
-    });
 });
 
 tape('Check numeric text', function(t) {
