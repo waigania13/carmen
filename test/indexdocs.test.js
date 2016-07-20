@@ -40,6 +40,64 @@ tape('indexdocs.loadDoc', function(assert) {
     // Indexes single doc.
     err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
     assert.ifError(err);
+
+    assert.deepEqual(Object.keys(patch.grid).length, 2);
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
+    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
+        id: 1,
+        relev: 1,
+        score: 4, // scales score based on max score value (100)
+        x: 32,
+        y: 32
+    });
+    assert.deepEqual(patch.docs.length, 1);
+    assert.deepEqual(patch.docs[0], doc);
+    assert.deepEqual(patch.text, ['xmain st', 'xmain']);
+
+    assert.end();
+});
+
+tape('indexdocs.loadDoc - No Center', function(assert) {
+    var token_replacer = token.createReplacer({});
+    var patch;
+    var tokens;
+    var freq;
+    var zoom;
+    var doc;
+    var err;
+
+    patch = { grid:{}, docs:[], text:[] };
+    freq = {};
+    tokens = ['main', 'st'];
+    zoom = 6;
+    doc = {
+        id: 1,
+        type: "Feature",
+        properties: {
+            'carmen:text': 'main st',
+            'carmen:zxy': ['6/32/32', '14/16384/32'],
+            'carmen:score': 100
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [0,0]
+        }
+    };
+
+    freq["__COUNT__"] = [101];
+    freq["__MAX__"] = [200];
+    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[termops.encodeTerm(tokens[1])] = [100];
+
+    assert.deepEqual(doc.properties['carmen:center'], undefined);
+    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
+
+    // Load doc without center, check that center gets set
+    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
+    assert.ifError(err);
+    assert.deepEqual(doc.properties['carmen:center'],[0,0]);
+    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
+
     assert.deepEqual(Object.keys(patch.grid).length, 2);
     assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
     assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
@@ -135,4 +193,3 @@ tape('indexdocs.runChecks', function(assert) {
     }, 12), '');
     assert.end();
 });
-

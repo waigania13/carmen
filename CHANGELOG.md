@@ -1,5 +1,34 @@
 # Changelog
 
+## 15.2.1
+
+- Set the relevance score to 1 when a feature is queried by ID
+
+## 15.2.0
+
+- Ensures that tokens which contain whitespaces are a part of the global tokens
+
+## 15.1.9
+
+- Fix bug where dedup could put less relevant results infront of higher ones
+
+## 15.1.8
+
+- Fix broken phrasematch bench
+- Use normalized ranges ITP instead of default feature - fixes bug where null lf/lt/rf/rt would hard error if null instead of empty array
+
+## 15.1.7
+
+- Ensure address clusters are all lowercase to ensure no case disparity between input query and cluster
+
+## 15.1.6
+
+- Dedup identical addresses with different cases ie MAIN ST = Main St
+
+## 15.1.5
+
+- Remove unneccesary check for carmen:center at indexing time
+
 ## 15.1.4
 
 - Fix bug where non-clustered address ranges (LineString) of a numeric type would fail
