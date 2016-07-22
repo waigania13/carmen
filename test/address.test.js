@@ -3,6 +3,12 @@ var addressCluster = require('../lib/pure/addresscluster.js');
 var test = require('tape');
 
 test('address.reverse - null ITP', function(assert) {
+    assert.deepEquals(address.reverse({
+        geometry: {
+            type: 'MultiLineString'
+        }
+    }), false);
+
     assert.deepEqual(address.reverse(
         {
             id: 75018674165319,
