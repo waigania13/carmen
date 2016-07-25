@@ -68,17 +68,17 @@ test('stackable complex', function(assert) {
         return stack.relev.toFixed(2) + ' - ' + stack.map(function(s) { return s.text }).join(', ');
     });
     assert.deepEqual(debug, [
-        '0.99 - a2, c1',
         '0.99 - a2, b1',
-        // '0.99 - a1, b1, c2', => direction change
-        // '0.99 - a1, b2, c1', => direction change
+        '0.99 - a2, c1',
+        '0.99 - a1, b1, c2',
+        '0.99 - a1, b2, c1',
         '0.66 - a2',
-        '0.66 - b1, c2',
-        '0.66 - b2, c1',
-        '0.66 - a1, c1',
-        '0.66 - a1, c2',
         '0.66 - a1, b1',
-        '0.66 - a1, b2'
+        '0.66 - b2, c1',
+        '0.66 - a1, b2',
+        '0.66 - a1, c2',
+        '0.66 - a1, c1',
+        '0.66 - b1, c2'
     ]);
     assert.end();
 });
@@ -102,25 +102,25 @@ test('stackable direction change', function(assert) {
     });
     assert.deepEqual(debug, [
         [ 'a2', 'b2', 'c2', 'd2' ],
-        // [ 'a2', 'b1', 'c1', 'd2' ], => direction change
-        // [ 'a1', 'b2', 'c2', 'd1' ], => direction change
+        [ 'a2', 'b1', 'c1', 'd2' ],
+        [ 'a1', 'b2', 'c2', 'd1' ],
         [ 'a1', 'b1', 'c1', 'd1' ],
-        // [ 'a2', 'b1', 'c1' ], => direction change
-        [ 'a1', 'b1', 'c1' ],
+        [ 'a2', 'b1', 'c1' ],
         [ 'a2', 'b2', 'c2' ],
-        // [ 'a1', 'b2', 'c2' ], => direction change
+        [ 'a1', 'b2', 'c2' ],
+        [ 'a1', 'b1', 'c1' ],
+        [ 'a2', 'b1', 'd2' ],
         [ 'a1', 'b1', 'd1' ],
-        [ 'b1', 'c1', 'd1' ],
-        [ 'a1', 'c1', 'd1' ],
-        [ 'b2', 'c2', 'd2' ],
+        [ 'b1', 'c1', 'd2' ],
+        [ 'a1', 'c2', 'd1' ],
         [ 'a2', 'c1', 'd2' ],
         [ 'a2', 'c2', 'd2' ],
-        [ 'a2', 'b1', 'd2' ],
-        [ 'a2', 'b2', 'd2' ],
-        // [ 'b1', 'c1', 'd2' ], => direction change
-        [ 'a1', 'c2', 'd1' ],
         [ 'a1', 'b2', 'd1' ],
-        // [ 'b2', 'c2', 'd1' ] => direction change
+        [ 'a1', 'c1', 'd1' ],
+        [ 'b2', 'c2', 'd2' ],
+        [ 'a2', 'b2', 'd2' ],
+        [ 'b2', 'c2', 'd1' ],
+        [ 'b1', 'c1', 'd1' ]
     ]);
     assert.end();
 });
