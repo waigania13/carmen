@@ -40,8 +40,11 @@ test('termops.getHousenumRangeV3', function(assert) {
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:lfromhn': ['0','11'],
-            'carmen:ltohn': ['5','100']
+            'carmen:lfromhn': [['0','11']],
+            'carmen:ltohn': [['5','100']]
+        },
+        geometry: {
+            geometries: [1, 2]
         }
     }), ['#','##','1##'], 'carmen:rangetype + carmen:lfromhn => [0,100]');
 
