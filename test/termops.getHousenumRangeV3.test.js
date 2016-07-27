@@ -44,49 +44,64 @@ test('termops.getHousenumRangeV3', function(assert) {
             'carmen:ltohn': [['5','100']]
         },
         geometry: {
-            geometries: [1, 2]
+            geometries: [1]
         }
     }), ['#','##','1##'], 'carmen:rangetype + carmen:lfromhn => [0,100]');
 
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:lfromhn': ['100'],
-            'carmen:ltohn': ['10']
+            'carmen:lfromhn': [['100']],
+            'carmen:ltohn': [['10']]
+        },
+        geometry: {
+            geometries: [1]
         }
     }), ['##','1##'], 'carmen:rangetype + carmen:lfromhn, carmen:ltohn => [10,100]');
 
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:rfromhn': ['0','11'],
-            'carmen:rtohn': ['5','200']
+            'carmen:rfromhn': [['0','11']],
+            'carmen:rtohn': [['5','200']]
+        },
+        geometry: {
+            geometries: [1]
         }
     }), ['#','##','1##','2##'], 'carmen:rangetype + carmen:rfromhn => [0,100]');
 
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:rfromhn': ['0','11'],
-            'carmen:rtohn': ['5','200']
+            'carmen:rfromhn': [['0','11']],
+            'carmen:rtohn': [['5','200']]
+        },
+        geometry: {
+            geometries: [1]
         }
     }), ['#','##','1##','2##'], 'carmen:rangetype + carmen:rfromhn => [0,100]');
 
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:lfromhn': ['1'],
-            'carmen:ltohn': ['10'],
-            'carmen:rfromhn': ['1001'],
-            'carmen:rtohn': ['1200']
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['10']],
+            'carmen:rfromhn': [['1001']],
+            'carmen:rtohn': [['1200']]
+        },
+        geometry: {
+            geometries: [1]
         }
     }), ['#', '##','10##','11##','12##'], 'complex case A');
 
     assert.deepEqual(getHousenumRangeV3({
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:rfromhn': ['1'],
-            'carmen:rtohn': ['1000']
+            'carmen:rfromhn': [['1']],
+            'carmen:rtohn': [['1000']]
+        },
+        geometry: {
+            geometries: [1]
         }
     }), ['#', '##','1##','10##','2##', '3##', '4##', '5##', '6##', '7##', '8##', '9##'], 'complex case B');
 
