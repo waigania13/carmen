@@ -16,14 +16,15 @@ tape('indexdocs.loadDoc', function(assert) {
     patch = { grid:{}, docs:[], text:[] };
     freq = {};
     tokens = ['main', 'st'];
-    zoom = 6;
+    zoom = 12;
     doc = {
         id: 1,
         type: "Feature",
         properties: {
             'carmen:text': 'main st',
             'carmen:center': [0, 0],
-            'carmen:zxy': ['6/32/32', '14/16384/32'],
+            'carmen:zxy': ['6/32/32', '6/33/33'],
+            'carmen:hash': 1,
             'carmen:score': 100
         },
         geometry: {
@@ -38,18 +39,18 @@ tape('indexdocs.loadDoc', function(assert) {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
-    assert.ifError(err);
+    err = indexdocs.loadDoc(freq, patch, doc, null, zoom, token_replacer);
+    assert.ok(typeof err !== 'number', 'no error');
 
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
+    assert.deepEqual(Object.keys(patch.grid).length, 8, '8 patch.grid entries');
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 2, 'patch.grid[0]');
     assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
         id: 1,
         relev: 1,
         score: 4, // scales score based on max score value (100)
         x: 32,
         y: 32
-    });
+    }, 'patch.grid[0][0]');
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
     assert.deepEqual(patch.text, ['xmain st', 'xmain']);
@@ -57,62 +58,6 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.end();
 });
 
-tape('indexdocs.loadDoc - No Center', function(assert) {
-    var token_replacer = token.createReplacer({});
-    var patch;
-    var tokens;
-    var freq;
-    var zoom;
-    var doc;
-    var err;
-
-    patch = { grid:{}, docs:[], text:[] };
-    freq = {};
-    tokens = ['main', 'st'];
-    zoom = 6;
-    doc = {
-        id: 1,
-        type: "Feature",
-        properties: {
-            'carmen:text': 'main st',
-            'carmen:zxy': ['6/32/32', '14/16384/32'],
-            'carmen:score': 100
-        },
-        geometry: {
-            type: 'Point',
-            coordinates: [0,0]
-        }
-    };
-
-    freq[0] = [101];
-    freq[1] = [200];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
-
-    assert.deepEqual(doc.properties['carmen:center'], undefined);
-    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
-
-    // Load doc without center, check that center gets set
-    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
-    assert.ifError(err);
-    assert.deepEqual(doc.properties['carmen:center'],[0,0]);
-    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
-
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
-        id: 1,
-        relev: 1,
-        score: 4, // scales score based on max score value (100)
-        x: 32,
-        y: 32
-    });
-    assert.deepEqual(patch.docs.length, 1);
-    assert.deepEqual(patch.docs[0], doc);
-    assert.deepEqual(patch.text, ['xmain st', 'xmain']);
-
-    assert.end();
-});
 
 tape('indexdocs.verifyCenter', function(assert) {
     assert.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
