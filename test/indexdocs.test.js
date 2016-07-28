@@ -83,7 +83,7 @@ tape('indexdocs.standardize', function(assert) {
             properties: {
                 'carmen:text': 'main street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [[9]]
+                'carmen:addressnumber': [9]
             },
             geometry: {
                 type: 'Point',
@@ -102,7 +102,7 @@ tape('indexdocs.standardize', function(assert) {
             properties: {
                 'carmen:text': 'main street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [[9]]
+                'carmen:addressnumber': [9]
             },
             geometry: {
                 type: 'Point',
@@ -121,7 +121,7 @@ tape('indexdocs.standardize', function(assert) {
             properties: {
                 'carmen:text': 'main street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [[9]]
+                'carmen:addressnumber': [9]
             },
             geometry: {
                 type: 'MultiPoint',
@@ -140,7 +140,7 @@ tape('indexdocs.standardize', function(assert) {
             properties: {
                 'carmen:text': 'main street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [[9]]
+                'carmen:addressnumber': [9]
             },
             geometry: {
                 type: 'MultiPoint',
@@ -159,7 +159,7 @@ tape('indexdocs.standardize', function(assert) {
             properties: {
                 'carmen:text': 'main street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [['9A']]
+                'carmen:addressnumber': ['9A']
             },
             geometry: {
                 type: 'MultiPoint',
