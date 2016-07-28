@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.2.2
+
+- Moves limit constants into `lib/constants.js` for easier tracking and updates.
+
 ## 15.2.1
 
 - Set the relevance score to 1 when a feature is queried by ID
