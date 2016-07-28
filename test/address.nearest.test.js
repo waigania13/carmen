@@ -7,12 +7,15 @@ test('nearest', function(t) {
     t.deepEqual(addressItp.forward({
         properties: {
             'carmen:rangetype':'tiger',
-            'carmen:lfromhn': '1000',
-            'carmen:ltohn': '1100'
+            'carmen:lfromhn': [['1000']],
+            'carmen:ltohn': [['1100']]
         },
         geometry: {
-            type:'LineString',
-            coordinates:[[0,0],[0,100]]
+            type: 'GeometryCollection',
+            geometries: [{
+                type:'MultiLineString',
+                coordinates: [[[0,0],[0,100]]]
+            }]
         }
     }, 900), {
         coordinates: [ 0, 0 ],
@@ -24,12 +27,15 @@ test('nearest', function(t) {
     t.deepEqual(addressItp.forward({
         properties: {
             'carmen:rangetype':'tiger',
-            'carmen:lfromhn': '1000',
-            'carmen:ltohn': '1100'
+            'carmen:lfromhn': [['1000']],
+            'carmen:ltohn': [['1100']]
         },
         geometry: {
-            type:'LineString',
-            coordinates:[[0,0],[0,100]]
+            type: 'GeometryCollection',
+            geometries: [{
+                type:'MultiLineString',
+                coordinates: [[[0,0],[0,100]]]
+            }]
         }
     }, 1200), {
         coordinates: [ 0, 100 ],
@@ -41,12 +47,15 @@ test('nearest', function(t) {
     t.deepEqual(addressItp.forward({
         properties: {
             'carmen:rangetype':'tiger',
-            'carmen:lfromhn': '1000',
-            'carmen:ltohn': '1100'
+            'carmen:lfromhn': [['1000']],
+            'carmen:ltohn': [['1100']]
         },
         geometry: {
-            type:'LineString',
-            coordinates:[[0,0],[0,100]]
+            type: 'GeometryCollection',
+            geometries: [{
+                type:'MultiLineString',
+                coordinates: [[[0,0],[0,100]]]
+            }]
         }
     }, 2000),
     undefined,
