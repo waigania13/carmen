@@ -58,6 +58,190 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.end();
 });
 
+tape('indexdocs.standardize', function(assert) {
+    assert.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, { geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 1, properties: { 'carmen:center': [ 0, 0 ], 'carmen:hash': 1, 'carmen:text': 'main street', 'carmen:zxy': [ '6/32/32' ] }, type: 'Feature' });
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [[9]]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber must be MultiPoint or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [[9]]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber must be MultiPoint or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [[9]]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0], [0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber[i] array must be equal to geometry.geometries[i] array');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [[9]]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[[9]],"carmen:zxy":["6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber lowercased', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [['9A']]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[['9a']],"carmen:zxy":["6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype invalid', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger'
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'ITP results must be a LineString, MultiLineString, or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger',
+                'carmen:parityl': 'E',
+                'carmen:parityr': 'O',
+                'carmen:lfromhn': '2',
+                'carmen:ltohn': '100',
+                'carmen:rfromhn': '1',
+                'carmen:rtohn': '101'
+            },
+            geometry: {
+                type: 'LineString',
+                coordinates: [[0,0], [1,1]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger',
+                'carmen:parityl': ['E'],
+                'carmen:parityr': ['O'],
+                'carmen:lfromhn': ['2'],
+                'carmen:ltohn': ['100'],
+                'carmen:rfromhn': ['1'],
+                'carmen:rtohn': ['101']
+            },
+            geometry: {
+                type: 'MultiLineString',
+                coordinates: [[[0,0], [1,1]]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        t.end();
+    });
+
+    assert.end();
+});
 
 tape('indexdocs.verifyCenter', function(assert) {
     assert.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
