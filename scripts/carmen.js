@@ -56,7 +56,7 @@ if (argv.config) {
 
 var tokens = {};
 if (argv.tokens) {
-    tokens = require(path.resolve(argv.config));
+    tokens = require(path.resolve(argv.tokens));
 }
 
 var carmen = new Carmen(opts, {

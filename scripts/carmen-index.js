@@ -33,7 +33,7 @@ if (!argv.index) throw new Error('--index argument required');
 
 var tokens = {};
 if (argv.tokens) {
-    tokens = require(path.resolve(argv.config));
+    tokens = require(path.resolve(argv.tokens));
 }
 
 var conf;
