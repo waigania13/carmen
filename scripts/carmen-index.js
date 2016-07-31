@@ -5,7 +5,7 @@ var path = require('path');
 var argv = process.argv;
 var Carmen = require('../index.js');
 var argv = require('minimist')(process.argv, {
-    string: [ 'version', 'config', 'index' ],
+    string: [ 'version', 'config', 'index', 'tokens' ],
     boolean: [ 'help' ]
 });
 var settings = require('../package.json');
@@ -16,6 +16,7 @@ function help() {
     console.log('  --help                  Prints this message');
     console.log('  --version               Print the carmen version');
     console.log('  --config="<path>"       path to JSON document with index settings');
+    console.log('  --tokens=<tokens.json>  Load global token file');
     console.log('  --index="<path>"        Tilelive path to output index to');
     process.exit(0);
 }
@@ -30,6 +31,10 @@ if (argv.version) {
 if (!argv.config) help();
 if (!argv.index) throw new Error('--index argument required');
 
+var tokens = {};
+if (argv.tokens) {
+    tokens = require(path.resolve(argv.config));
+}
 
 var conf;
 var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
@@ -53,7 +58,9 @@ function stopWriting(err) {
 
 function index(err) {
     if (err) throw err;
-    var carmen = new Carmen(conf);
+    var carmen = new Carmen(conf, {
+        tokens: tokens
+    });
     config.output = process.stdout;
 
     var last = +new Date;

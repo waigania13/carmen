@@ -10,7 +10,7 @@ var path = require('path');
 var Carmen = require('../index');
 var settings = require('../package.json');
 var argv = require('minimist')(process.argv, {
-    string: [ 'config', 'proximity', 'query', 'debug', 'types' ],
+    string: [ 'config', 'proximity', 'query', 'debug', 'types', 'tokens'],
     boolean: [ 'geojson', 'stats', 'help', 'version' ]
 });
 
@@ -18,6 +18,7 @@ if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
     console.log('[options]:');
     console.log('  --version               Print the carmen version');
+    console.log('  --tokens=<tokens.json>  Load global token file');
     console.log('  --config=<file.js>      Load index config from js (module)');
     console.log('  --limit="{limit}"       Customize the number of results returned');
     console.log('  --proximity="lat,lng"   Favour results by proximity');
@@ -53,7 +54,14 @@ if (argv.config) {
     opts = Carmen.autodir(path.resolve(__dirname + '/../tiles'));
 }
 
-var carmen = new Carmen(opts);
+var tokens = {};
+if (argv.tokens) {
+    tokens = require(path.resolve(argv.config));
+}
+
+var carmen = new Carmen(opts, {
+    tokens: tokens
+});
 
 if (argv.proximity) {
     if (argv.proximity.indexOf(',') === -1)
