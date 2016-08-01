@@ -58,6 +58,9 @@ function stopWriting(err) {
 
 function index(err) {
     if (err) throw err;
+
+    config.tokens = tokens;
+
     var carmen = new Carmen(conf, {
         tokens: tokens
     });
@@ -70,7 +73,7 @@ function index(err) {
     });
 
     carmen.on('open', function() {
-        carmen.index(process.stdin, conf.to, config , function(err) {
+        carmen.index(process.stdin, conf.to, config, function(err) {
             if (err) throw err;
             process.exit(0);
         });
