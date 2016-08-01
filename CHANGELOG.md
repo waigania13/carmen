@@ -1,5 +1,10 @@
 # Changelog
 
+## 15.2.3
+
+- Fix global token bug that prevented global tokens being used by indexer
+- Added ability for carmen cli to specify global token file
+
 ## 15.2.2
 
 - Moves limit constants into `lib/constants.js` for easier tracking and updates.
