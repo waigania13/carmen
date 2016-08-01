@@ -1,5 +1,9 @@
 # Changelog
 
+## 15.2.4
+
+- Bump due to npm strangeness
+
 ## 15.2.3
 
 - Fix global token bug that prevented global tokens being used by indexer
