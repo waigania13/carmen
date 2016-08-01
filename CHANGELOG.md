@@ -1,5 +1,18 @@
 # Changelog
 
+## 15.2.4
+
+- Bump due to npm strangeness
+
+## 15.2.3
+
+- Fix global token bug that prevented global tokens being used by indexer
+- Added ability for carmen cli to specify global token file
+
+## 15.2.2
+
+- Moves limit constants into `lib/constants.js` for easier tracking and updates.
+
 ## 15.2.1
 
 - Set the relevance score to 1 when a feature is queried by ID
