@@ -1,5 +1,10 @@
 # Changelog
 
+## 16.0.0
+
+- All addresses are now standardized to GeometryCollections internally
+- Allows for mixed type (pt/itp) features as well as reducing complexity at runtime (at the cost of index time)
+
 ## 15.2.4
 
 - Bump due to npm strangeness
