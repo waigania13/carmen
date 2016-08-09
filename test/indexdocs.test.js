@@ -16,14 +16,15 @@ tape('indexdocs.loadDoc', function(assert) {
     patch = { grid:{}, docs:[], text:[] };
     freq = {};
     tokens = ['main', 'st'];
-    zoom = 6;
+    zoom = 12;
     doc = {
         id: 1,
         type: "Feature",
         properties: {
             'carmen:text': 'main st',
             'carmen:center': [0, 0],
-            'carmen:zxy': ['6/32/32', '14/16384/32'],
+            'carmen:zxy': ['6/32/32', '6/33/33'],
+            'carmen:hash': 1,
             'carmen:score': 100
         },
         geometry: {
@@ -38,18 +39,18 @@ tape('indexdocs.loadDoc', function(assert) {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
-    assert.ifError(err);
+    err = indexdocs.loadDoc(freq, patch, doc, null, zoom, token_replacer);
+    assert.ok(typeof err !== 'number', 'no error');
 
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
+    assert.deepEqual(Object.keys(patch.grid).length, 8, '8 patch.grid entries');
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 2, 'patch.grid[0]');
     assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
         id: 1,
         relev: 1,
         score: 4, // scales score based on max score value (100)
         x: 32,
         y: 32
-    });
+    }, 'patch.grid[0][0]');
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
     assert.deepEqual(patch.text, ['xmain st', 'xmain']);
@@ -57,59 +58,187 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.end();
 });
 
-tape('indexdocs.loadDoc - No Center', function(assert) {
-    var token_replacer = token.createReplacer({});
-    var patch;
-    var tokens;
-    var freq;
-    var zoom;
-    var doc;
-    var err;
+tape('indexdocs.standardize', function(assert) {
+    assert.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
 
-    patch = { grid:{}, docs:[], text:[] };
-    freq = {};
-    tokens = ['main', 'st'];
-    zoom = 6;
-    doc = {
-        id: 1,
-        type: "Feature",
-        properties: {
-            'carmen:text': 'main st',
-            'carmen:zxy': ['6/32/32', '14/16384/32'],
-            'carmen:score': 100
-        },
-        geometry: {
-            type: 'Point',
-            coordinates: [0,0]
-        }
-    };
-
-    freq[0] = [101];
-    freq[1] = [200];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
-
-    assert.deepEqual(doc.properties['carmen:center'], undefined);
-    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
-
-    // Load doc without center, check that center gets set
-    err = indexdocs.loadDoc(patch, doc, freq, zoom, token_replacer);
-    assert.ifError(err);
-    assert.deepEqual(doc.properties['carmen:center'],[0,0]);
-    assert.deepEqual(doc.properties['carmen:zxy'], ['6/32/32', '14/16384/32']);
-
-    assert.deepEqual(Object.keys(patch.grid).length, 8);
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1);
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
-        id: 1,
-        relev: 1,
-        score: 4, // scales score based on max score value (100)
-        x: 32,
-        y: 32
+        t.deepEquals(res, { geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 1, properties: { 'carmen:center': [ 0, 0 ], 'carmen:hash': 1, 'carmen:text': 'main street', 'carmen:zxy': [ '6/32/32' ] }, type: 'Feature' });
+        t.end();
     });
-    assert.deepEqual(patch.docs.length, 1);
-    assert.deepEqual(patch.docs[0], doc);
-    assert.deepEqual(patch.text, ['xmain st', 'xmain']);
+
+    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [9]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber must be MultiPoint or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [9]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber must be MultiPoint or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [9]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0], [0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'carmen:addressnumber[i] array must be equal to geometry.geometries[i] array');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [9]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[[9]],"carmen:zxy":["6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:addressnumber lowercased', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['9A']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[['9a']],"carmen:zxy":["6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype invalid', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger'
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, 'ITP results must be a LineString, MultiLineString, or GeometryCollection');
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger',
+                'carmen:parityl': 'E',
+                'carmen:parityr': 'O',
+                'carmen:lfromhn': '2',
+                'carmen:ltohn': '100',
+                'carmen:rfromhn': '1',
+                'carmen:rtohn': '101'
+            },
+            geometry: {
+                type: 'LineString',
+                coordinates: [[0,0], [1,1]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        t.end();
+    });
+
+    assert.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(t) {
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:rangetype': 'tiger',
+                'carmen:parityl': ['E'],
+                'carmen:parityr': ['O'],
+                'carmen:lfromhn': ['2'],
+                'carmen:ltohn': ['100'],
+                'carmen:rfromhn': ['1'],
+                'carmen:rtohn': ['101']
+            },
+            geometry: {
+                type: 'MultiLineString',
+                coordinates: [[[0,0], [1,1]]]
+            }
+        }, 6, {});
+
+        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"],"carmen:hash":1},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        t.end();
+    });
 
     assert.end();
 });
@@ -191,5 +320,40 @@ tape('indexdocs.runChecks', function(assert) {
         },
         geometry: { type: 'Point', coordinates: [0,0] }
     }, 12), '');
+    assert.end();
+});
+
+tape('indexdocs.generateFrequency', function(assert) {
+    var docs = [{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'main street',
+            "carmen:score": 2
+        },
+        geometry: {}
+    },{
+        type: "Feature",
+        properties: {
+            "carmen:text": 'Main Road',
+            "carmen:score": 1
+        },
+        geometry: {}
+    }];
+    var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
+    assert.deepEqual(indexdocs.generateFrequency(docs, {}), {
+        0: [ 4 ],           // 4 total
+        1: [ 2 ],           // 2 maxscore
+        1247264641460936: [ 1 ],  // 1 road
+        1804046053253033:  [ 1 ],  // 1 street
+        609659059851264: [ 2 ]   // 2 main
+    });
+    // @TODO should 'main' in this case collapse down to 2?
+    assert.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
+        0: [ 4 ],           // 4 total
+        1: [ 2 ],           // 2 maxscore
+        3363289958149993: [ 1 ],  // 1 road
+        441841902895320: [ 1 ],  // 1 street
+        609659059851264: [ 2 ]   // 2 main
+    });
     assert.end();
 });
