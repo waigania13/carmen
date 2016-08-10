@@ -88,7 +88,7 @@ tape('index us address', function(t) {
             'carmen:geocoder_stack': 'us',
             'carmen:geocoder_name': 'address',
             'carmen:addressnumber': ['742']
-            },
+        },
         geometry: {
             type: 'MultiPoint',
             coordinates: [[0,0]]
