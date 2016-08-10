@@ -1,5 +1,9 @@
 # Changelog
 
+## 16.1.0
+
+- Fix an issue with too-strict filtering of indexes that use a combined stack range
+
 ## 16.0.0
 
 - All addresses are now standardized to GeometryCollections internally
