@@ -33,7 +33,6 @@
     "turf-linestring": "1.0.x",
     "turf-point": "2.0.x",
     "turf-point-on-surface": "1.1.x",
-    "underscore": "^1.8.3",
     "unidecode-cxx": "0.0.2",
     "xregexp": "3.0.0"
   },
