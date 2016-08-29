@@ -36,15 +36,34 @@ var addFeature = require('../lib/util/addfeature');
         addFeature(conf.poi, {
             id:5,
             properties: {
-                'carmen:score': 1e9,
+                'carmen:score': 300,
                 'carmen:text': 'Taj Mahal',
                 'carmen:zxy': ['6/33/32'],
                 'carmen:center': [0,0]
             }
         }, t.end);
     });
-    tape('query', function(t) {
+    tape('scoreAbove = 1', function(t) {
         c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+            t.equal(res.features.length, 5);
+            t.end();
+        });
+    });
+    tape('scoreAbove = 2', function(t) {
+        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+            t.equal(res.features.length, 4);
+            t.end();
+        });
+    });
+    tape('scoreAbove = 3', function(t) {
+        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+            t.equal(res.features.length, 3);
+            t.end();
+        });
+    });
+    tape('scoreAbove = 4', function(t) {
+        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+            t.equal(res.features.length, 2);
             t.end();
         });
     });
