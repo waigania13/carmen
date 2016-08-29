@@ -39,31 +39,59 @@ var addFeature = require('../lib/util/addfeature');
                 'carmen:score': 300,
                 'carmen:text': 'Taj Mahal',
                 'carmen:zxy': ['6/33/32'],
-                'carmen:center': [0,0]
+                'carmen:center': [8.44, -2.81]
             }
         }, t.end);
     });
     tape('scoreAbove = 1', function(t) {
         c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
             t.equal(res.features.length, 5);
+            var ids = []
+            res.features.forEach(function(feature) {
+                ids.push(feature.id)
+            });
+            t.deepEqual(ids.sort(), ['poi.1', 'poi.2', 'poi.3', 'poi.4','poi.5']);
             t.end();
         });
     });
     tape('scoreAbove = 2', function(t) {
-        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+        c.geocode('Taj Mahal', { scoreAbove:2 }, function(err, res) {
             t.equal(res.features.length, 4);
+            var ids = []
+            res.features.forEach(function(feature) {
+                ids.push(feature.id)
+            });
+            t.deepEqual(ids.sort(), ['poi.2', 'poi.3', 'poi.4','poi.5']);
             t.end();
         });
     });
     tape('scoreAbove = 3', function(t) {
-        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+        c.geocode('Taj Mahal', { scoreAbove:3 }, function(err, res) {
             t.equal(res.features.length, 3);
+            var ids = []
+            res.features.forEach(function(feature) {
+                ids.push(feature.id)
+            });
+            t.deepEqual(ids.sort(), ['poi.3', 'poi.4','poi.5']);
             t.end();
         });
     });
     tape('scoreAbove = 4', function(t) {
-        c.geocode('Taj Mahal', { scoreAbove:1 }, function(err, res) {
+        c.geocode('Taj Mahal', { scoreAbove:4 }, function(err, res) {
             t.equal(res.features.length, 2);
+            var ids = []
+            res.features.forEach(function(feature) {
+                ids.push(feature.id)
+            });
+            t.deepEqual(ids.sort(), ['poi.4','poi.5']);
+            t.end();
+        });
+    });
+    tape('scoreAbove = 200', function(t) {
+        c.geocode('Taj Mahal', { scoreAbove:200 }, function(err, res) {
+            t.equal(res.features.length, 1);
+            t.equal(res.features[0].id, 'poi.5');
+            t.equal(res.features[0].text, 'Taj Mahal');
             t.end();
         });
     });
