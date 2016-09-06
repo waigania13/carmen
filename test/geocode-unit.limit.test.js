@@ -302,7 +302,7 @@ tape('teardown', function(assert) {
     assert.end();
 });
 
-//Handle ITP lines 
+//Handle ITP lines
 (function() {
     var conf = {
         place: new mem({

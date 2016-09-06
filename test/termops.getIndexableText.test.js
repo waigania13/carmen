@@ -49,8 +49,8 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({});
     doc = {
         properties: {
-            'carmen:text':'Main Street', 
-            'carmen:addressnumber': [1, 10, 100, 200]
+            'carmen:text':'Main Street',
+            'carmen:addressnumber': [[1, 10, 100, 200]]
         }
     };
     texts = [
