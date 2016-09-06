@@ -62,7 +62,7 @@ tape('index address', function(t) {
         },
         geometry: {
             type: 'MultiPoint',
-            coordinates: [[0,0],[0,0],[0,0]]
+            coordinates: [[0,0]]
         }
     };
     addFeature(conf.address, address, t.end);
