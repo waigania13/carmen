@@ -111,8 +111,8 @@ tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
 tape('No descending order POIs', function(t) {
     c.geocode('North Carolina United States', {limit_verify: 2}, function(err, res) {
         t.ifError(err);
-        t.equal(res.features.length, 1);
-        t.deepEqual(res.features[0].id, "region.1");
+        t.equal(res.features.length, 1, "only one feature in results");
+        t.deepEqual(res.features[0].id, "region.1", "First result is region, not POI");
         t.end();
     });
 });
