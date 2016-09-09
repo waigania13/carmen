@@ -11,7 +11,8 @@ var conf = {
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1
-    }, function() {})
+    }, function() {}),
+    poi: new mem(null, function() {})
 };
 var c = new Carmen(conf);
 
@@ -29,7 +30,7 @@ tape('index country', function(t) {
 
 tape('index region', function(t) {
     var region = {
-        id:2,
+        id:1,
         properties: {
             'carmen:text':'North Carolina',
             'carmen:zxy':['6/32/32'],
@@ -41,7 +42,7 @@ tape('index region', function(t) {
 
 tape('index place', function(t) {
     var place = {
-        id:5,
+        id:1,
         properties: {
             'carmen:text':'Winston-Salem',
             'carmen:zxy':['6/32/32'],
@@ -53,7 +54,7 @@ tape('index place', function(t) {
 
 tape('index address', function(t) {
     var address = {
-        id:6,
+        id:1,
         properties: {
             'carmen:text':'Log Cabin Ln',
             'carmen:zxy':['6/32/32'],
@@ -66,6 +67,18 @@ tape('index address', function(t) {
         }
     };
     addFeature(conf.address, address, t.end);
+});
+
+tape('index poi', function(t) {
+    var poi = {
+        id:1,
+        properties: {
+            'carmen:text':'United States',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    addFeature(conf.poi, poi, t.end);
 });
 
 tape('Winston-Salem North Carolina', function(t) {
@@ -91,6 +104,15 @@ tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
         t.ifError(err);
         t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
         t.equal(res.features[0].relevance, 0.7666666666666666, "Mixed-up order lowers relevance");
+        t.end();
+    });
+});
+
+tape('No descending order POIs', function(t) {
+    c.geocode('North Carolina United States', {limit_verify: 2}, function(err, res) {
+        t.ifError(err);
+        t.equal(res.features.length, 1);
+        t.deepEqual(res.features[0].id, "region.1");
         t.end();
     });
 });
