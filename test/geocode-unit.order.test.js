@@ -22,7 +22,8 @@ tape('index country', function(t) {
         properties: {
             'carmen:text':'United States',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'ascending'
         }
     };
     addFeature(conf.country, country, t.end);
@@ -34,7 +35,8 @@ tape('index region', function(t) {
         properties: {
             'carmen:text':'North Carolina',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'ascending'
         }
     };
     addFeature(conf.region, region, t.end);
@@ -46,7 +48,8 @@ tape('index place', function(t) {
         properties: {
             'carmen:text':'Winston-Salem',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'ascending'
         }
     };
     addFeature(conf.place, place, t.end);
@@ -59,7 +62,8 @@ tape('index address', function(t) {
             'carmen:text':'Log Cabin Ln',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
-            'carmen:addressnumber': ['1234']
+            'carmen:addressnumber': ['1234'],
+            'carmen:addressOrder': 'ascending'
         },
         geometry: {
             type: 'MultiPoint',
@@ -71,11 +75,12 @@ tape('index address', function(t) {
 
 tape('index poi', function(t) {
     var poi = {
-        id:1,
+        id:2,
         properties: {
             'carmen:text':'United States',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'ascending'
         }
     };
     addFeature(conf.poi, poi, t.end);
@@ -85,7 +90,7 @@ tape('Winston-Salem North Carolina', function(t) {
     c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{place} {region}`")
-        t.equal(res.features[0].relevance, 1, "Ascending order doesn't lower relevance");
+        t.equal(res.features[0].relevance, 1, "Expected ascending order doesn't lower relevance");
         t.end();
     });
 });
@@ -94,13 +99,13 @@ tape('North Carolina Winston-Salem', function(t) {
     c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
-        t.equal(res.features[0].relevance, 1, "Descending order doesn't lower relevance");
+        t.equal(res.features[0].relevance, 0.997, "Unexpected descending order lowers relevance");
         t.end();
     });
 });
 
 tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
-    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
+    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
         t.equal(res.features[0].relevance, 0.7666666666666666, "Mixed-up order lowers relevance");
@@ -111,8 +116,17 @@ tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
 tape('No descending order POIs', function(t) {
     c.geocode('North Carolina United States', {limit_verify: 2}, function(err, res) {
         t.ifError(err);
-        t.equal(res.features.length, 1, "only one feature in results");
-        t.deepEqual(res.features[0].id, "region.1", "First result is region, not POI");
+        t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
+        t.deepEqual(res.features[0].id, "region.1", "First result matches expected order");
+        t.end();
+    });
+});
+
+tape('Descending Gappy', function(t) {
+    c.geocode('United States Winston-Salem', {limit_verify: 2}, function(err, res) {
+        t.ifError(err);
+        t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
+        t.deepEqual(res.features[0].id, "poi.2", "First result matches expected order");
         t.end();
     });
 });

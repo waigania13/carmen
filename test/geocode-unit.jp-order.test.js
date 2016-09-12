@@ -23,7 +23,8 @@ tape('index country', function(t) {
         properties: {
             'carmen:text':'Japan',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'descending'
         }
     };
     addFeature(conf.country, country, t.end);
@@ -35,7 +36,8 @@ tape('index region', function(t) {
         properties: {
             'carmen:text':'和歌山県',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'descending'
         }
     };
     addFeature(conf.region, region, t.end);
@@ -47,7 +49,8 @@ tape('index place 1', function(t) {
         properties: {
             'carmen:text':'岩出市',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:addressOrder': 'descending'
         }
     };
     addFeature(conf.place, place, t.end);
@@ -60,7 +63,8 @@ tape('index address 1', function(t) {
             'carmen:text':'中黒',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
-            'carmen:addressnumber': ['632']
+            'carmen:addressnumber': ['632'],
+            'carmen:addressOrder': 'descending'
         },
         geometry: {
             type: 'MultiPoint',
@@ -82,7 +86,7 @@ tape('Check order, 632 中黒 岩出市', function(t) {
     c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
-        t.equal(res.features[0].relevance, 1, "Ascending order doesn't lower relevance")
+        t.equal(res.features[0].relevance, 0.997, "Unexpected ascending lowers relevance")
         t.end();
     });
 });
@@ -91,7 +95,7 @@ tape('Check order, 632 中黒 Japan 岩出市', function(t) {
     c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
-        t.equal(res.features[0].relevance, 0.8323333333333333, "Mixed-up order lowers relevance")
+        t.equal(res.features[0].relevance, 0.8293333333333333, "Mixed-up order lowers relevance")
         t.end();
     });
 });
