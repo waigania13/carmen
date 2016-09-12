@@ -176,6 +176,49 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6,
+        }, function() {})
+    };
+    var opts = {
+        tokens: {'(str) ': "strasse"}
+    };
+
+    var c = new Carmen(conf, opts);
+    addFeature.setOptions(opts);
+    tape('geocoder token test', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text':'Talstrasse 2 Dresden Sachsen 01156 Germany',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Talstr 2 Dresden Sachsen 01156 Germany', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.39, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Talstruck', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.features, [], 'str token is not replaced when present in between a word');
+            t.end();
+        });
+    });
+})();
+
+
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
