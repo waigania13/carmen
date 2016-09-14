@@ -183,7 +183,7 @@ var addFeature = require('../lib/util/addfeature');
         }, function() {})
     };
     var opts = {
-        tokens: {'(str) ': "strasse"}
+        tokens: {'(strasse) ': "str"}
     };
 
     var c = new Carmen(conf, opts);
@@ -210,14 +210,20 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('test token replacement', function(t) {
-        c.geocode('Talstruck', { limit_verify: 1 }, function(err, res) {
+        c.geocode('Talstrasse 2 Dresden Sachsen 01156 Germany', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            t.deepEquals(res.features, [], 'str token is not replaced when present in between a word');
+            t.equals(res.features[0].relevance, 0.39, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Talstrassesomthing', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
             t.end();
         });
     });
 })();
-
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
