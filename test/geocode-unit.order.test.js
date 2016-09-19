@@ -99,7 +99,7 @@ tape('North Carolina Winston-Salem', function(t) {
     c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
-        t.equal(res.features[0].relevance, 0.997, "Unexpected descending order lowers relevance");
+        t.equal(res.features[0].relevance, 0.995, "Unexpected descending order lowers relevance");
         t.end();
     });
 });
