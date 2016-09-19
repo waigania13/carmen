@@ -88,7 +88,7 @@ tape('verifymatch.dropFeature', function(t) {
         var res = verifymatch.dropFeature(geocoder, options, results);
         t.equals(res.length, 0);
 
-        var geocoder = {
+        geocoder = {
             byidx: [
                 { stack: ['zz'], type: 'other' },
                 { stack: ['us'], type: 'place' },
@@ -96,11 +96,11 @@ tape('verifymatch.dropFeature', function(t) {
             ]
         };
         //Filter out all but 1 using type/stack
-        var res = verifymatch.dropFeature(geocoder, options, results);
+        res = verifymatch.dropFeature(geocoder, options, results);
         t.equals(res.length, 1);
         t.equals(res[0][0].id, 2);
 
-        var geocoder = {
+        geocoder = {
             byidx: [
                 { stack: ['zz'], type: 'place' },
                 { stack: ['zz'], type: 'place' },
@@ -108,7 +108,7 @@ tape('verifymatch.dropFeature', function(t) {
             ]
         };
         //Filter out non using type/stack
-        var res = verifymatch.dropFeature(geocoder, options, results);
+        res = verifymatch.dropFeature(geocoder, options, results);
         t.equals(res.length, 3);
         t.equals(res[0][0].id, 0);
         t.equals(res[1][0].id, 1);
