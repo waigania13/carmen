@@ -210,7 +210,46 @@ var addFeature = require('../lib/util/addfeature');
         });
     });
     tape('test token replacement', function(t) {
-        c.geocode('Talstrasse 2 Dresden Sachsen 01156 Germany', { limit_verify: 1 }, function(err, res) {
+        c.geocode('Talstrassesomthing', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
+            t.end();
+        });
+    });
+})();
+
+(function() {
+    var conf = {
+        address: new mem({
+            maxzoom: 6,
+        }, function() {})
+    };
+    var opts = {
+        tokens: {
+            '(str|strasse|straße|Str) \b': 'str',
+            '\b(.*?)(str|strasse)\b': '$1straße'
+        }
+    };
+
+    var c = new Carmen(conf, opts);
+    addFeature.setOptions(opts);
+    tape('geocoder token test', function(t) {
+        var address = {
+            id:1,
+            properties: {
+                'carmen:text':'Talstrasse someplace',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        addFeature(conf.address, address, t.end);
+        //console.log(address);
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Talstr someplace', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.39, 'token replacement for str -> strasse');
             t.end();
