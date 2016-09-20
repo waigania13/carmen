@@ -22,8 +22,7 @@ tape('index country', function(t) {
         properties: {
             'carmen:text':'United States',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
-            'carmen:addressOrder': 'ascending'
+            'carmen:center':[0,0]
         }
     };
     addFeature(conf.country, country, t.end);
@@ -35,8 +34,7 @@ tape('index region', function(t) {
         properties: {
             'carmen:text':'North Carolina',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
-            'carmen:addressOrder': 'ascending'
+            'carmen:center':[0,0]
         }
     };
     addFeature(conf.region, region, t.end);
@@ -48,8 +46,7 @@ tape('index place', function(t) {
         properties: {
             'carmen:text':'Winston-Salem',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
-            'carmen:addressOrder': 'ascending'
+            'carmen:center':[0,0]
         }
     };
     addFeature(conf.place, place, t.end);
@@ -62,8 +59,7 @@ tape('index address', function(t) {
             'carmen:text':'Log Cabin Ln',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
-            'carmen:addressnumber': ['1234'],
-            'carmen:addressOrder': 'ascending'
+            'carmen:addressnumber': ['1234']
         },
         geometry: {
             type: 'MultiPoint',
@@ -79,8 +75,7 @@ tape('index poi', function(t) {
         properties: {
             'carmen:text':'United States',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
-            'carmen:addressOrder': 'ascending'
+            'carmen:center':[0,0]
         }
     };
     addFeature(conf.poi, poi, t.end);
