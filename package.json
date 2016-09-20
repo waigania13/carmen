@@ -90,7 +90,11 @@
       "no-constant-condition": 0,
       "no-native-reassign": 0,
       "no-shadow": 0,
-      "key-spacing": 0
+      "key-spacing": 0,
+      "no-unused-vars": [2, { "args": "none" }],
+      "no-redeclare": 2,
+      "no-undef": 2,
+      "block-scoped-var": 2
     },
     "env": {
       "node": true

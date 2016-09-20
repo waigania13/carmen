@@ -1,6 +1,5 @@
 var Carmen = require('..');
 var index = require('../lib/index');
-var phrasematch = require('../lib/phrasematch');
 var mem = require('../lib/api-mem');
 var tape = require('tape');
 

@@ -1,4 +1,3 @@
-var fs = require('fs');
 var addressItp = require('../lib/pure/addressitp');
 var test = require('tape');
 var feature = require('../lib/util/feature');
