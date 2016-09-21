@@ -1,4 +1,5 @@
 var getHousenumRangeV3 = require('../lib/util/termops').getHousenumRangeV3;
+var token = require('../lib/util/token');
 var test = require('tape');
 
 test('termops.getHousenumRangeV3', function(assert) {

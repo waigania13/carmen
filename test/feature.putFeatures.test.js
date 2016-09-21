@@ -8,7 +8,6 @@ var conf = { source: source };
 var carmen = new Carmen(conf);
 
 tape('putFeatures', function(assert) {
-    assert.ok(carmen);
     feature.putFeatures(conf.source, [
         {
             _id: 1,

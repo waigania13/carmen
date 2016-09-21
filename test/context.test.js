@@ -1,6 +1,9 @@
 var fs = require('fs');
+var util = require('util');
 var Carmen = require('..');
+var tilelive = require('tilelive');
 var context = require('../lib/context');
+var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
@@ -8,6 +11,7 @@ var mapnik = require('mapnik');
 var addFeature = require('../lib/util/addfeature');
 var queue = require('d3-queue').queue;
 var mem = require('../lib/api-mem');
+var index = require('../lib/index');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
