@@ -1,3 +1,4 @@
+var unidecode = require('unidecode-cxx');
 var token = require('../lib/util/token');
 var test = require('tape');
 

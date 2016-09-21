@@ -1,4 +1,5 @@
 var termops = require('../lib/util/termops');
+var token = require('../lib/util/token');
 var test = require('tape');
 
 test('tokenizes basic strings', function(assert) {

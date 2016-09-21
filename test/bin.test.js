@@ -4,9 +4,11 @@ var tape = require('tape');
 var exec = require('child_process').exec;
 var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
+var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
 var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
+var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
 var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
