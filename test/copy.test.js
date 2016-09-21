@@ -1,10 +1,6 @@
-var fs = require('fs');
-var util = require('util');
 var Carmen = require('..');
-var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var index = require('../lib/index');
-var mem = require('../lib/api-mem');
 var docs = require('./fixtures/mem-docs.json');
 var test = require('tape');
 
