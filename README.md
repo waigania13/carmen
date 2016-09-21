@@ -67,6 +67,7 @@ geocoder_name           | Optional + advanced. A string to use instead of the pr
 geocoder_type           | Optional + advanced. A string to be used instead the config index id/key. Omission of this falls back to geocoder_name and then to the id.
 geocoder_version        | Required. Should be set to **6** for carmen@v11.x. Index versions <= 1 can be used for reverse geocoding but not forward.
 geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message cache. Defaults uptream to 65536 (maximum number of possible shards).
+geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indicate the expected ordering of address components for an index. Defaults to `ascending`.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 

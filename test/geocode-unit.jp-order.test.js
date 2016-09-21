@@ -8,7 +8,7 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, addressOrder: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, function() {})
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, function() {})
 };
 var c = new Carmen(conf);
 
