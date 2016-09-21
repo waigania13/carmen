@@ -1,8 +1,6 @@
 var tape = require('tape');
 var Carmen = require('..');
-var index = require('../lib/index');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
 
 (function() {
     var conf = {
@@ -19,6 +17,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('test invalid tokens', function(t) {
         t.throws(function() {
             var c = new Carmen(conf);
+            t.assert(c);
         });
         t.end();
     });

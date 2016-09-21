@@ -3,7 +3,6 @@ var token = require('../lib/util/token');
 var test = require('tape');
 
 test('termops.getIndexableText', function(assert) {
-    var freq = { 0:[2] };
     var replacer;
     var doc;
     var texts;
