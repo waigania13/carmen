@@ -3,6 +3,7 @@ var test = require('tape');
 
 test('stackable simple', function(assert) {
     var a1 = { text:"a1", idx:0, zoom:0, mask:parseInt('10',2), weight:0.5 };
+    var a2 = { text:"a2", idx:0, zoom:0, mask:parseInt('10',2), weight:0.5 };
     var b1 = { text:"b1", idx:1, zoom:1, mask:parseInt('1',2), weight:0.5 };
     var b2 = { text:"b2", idx:1, zoom:1, mask:parseInt('1',2), weight:0.5 };
     var debug = stackable([
