@@ -1,5 +1,8 @@
 # Changelog
 
+## 16.2.1
+- Use stricter eslint rules.
+
 ## 16.2.0
 
 - Add support for addresses that are ordered from largest feature to smallest
