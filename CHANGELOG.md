@@ -1,5 +1,13 @@
 # Changelog
 
+## 16.2.1
+- Use stricter eslint rules.
+
+## 16.2.0
+
+- Add support for addresses that are ordered from largest feature to smallest
+- Fix a bug in ID queries when `geocoder_name` != `geocoder_type`.
+
 ## 16.1.0
 
 - Fix an issue with too-strict filtering of indexes that use a combined stack range

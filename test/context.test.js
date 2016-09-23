@@ -135,6 +135,32 @@ test('contextVector empty VT buffer', function(assert) {
     });
 });
 
+test('proximityVector empty VT buffer', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
+        };
+        context.proximityVector(source, 0, 0, function(err, data) {
+            assert.ifError(err);
+            assert.deepEqual(data, []);
+            assert.end();
+        });
+    });
+});
+
 test('contextVector ignores negative score', function(assert) {
     context.getTile.cache.reset();
 
