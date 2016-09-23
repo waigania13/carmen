@@ -103,7 +103,6 @@ var addFeature = require('../lib/util/addfeature');
     tape('test token replacement', function(t) {
         c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            console.log(res);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
             t.end();
         });
@@ -127,7 +126,10 @@ var addFeature = require('../lib/util/addfeature');
         }
     }
     var c = new Carmen(conf, opts);
-    addFeature.setOptions(opts);
+    tape('set opts', function(t) {
+        addFeature.setOptions(opts);
+        t.end();
+    });
     tape('geocoder token test', function(t) {
         var address = {
             id:1,
@@ -157,7 +159,10 @@ var addFeature = require('../lib/util/addfeature');
         };
         addFeature(conf.address, address, t.end);
     });
-    addFeature.setOptions({});
+    tape('unset opts', function(t) {
+        addFeature.setOptions({});
+        t.end();
+    });
     tape('test address index for relev', function(t) {
         c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
@@ -190,7 +195,10 @@ var addFeature = require('../lib/util/addfeature');
     };
 
     var c = new Carmen(conf, opts);
-    addFeature.setOptions(opts);
+    tape('set opts', function(t) {
+        addFeature.setOptions(opts);
+        t.end();
+    });
     tape('geocoder token test', function(t) {
         var address = {
             id:1,
@@ -233,7 +241,10 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    addFeature.setOptions({});
+    tape('unset opts', function(t) {
+        addFeature.setOptions({});
+        t.end();
+    });
 })();
 
 tape('teardown', function(assert) {
