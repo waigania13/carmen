@@ -157,6 +157,7 @@ var addFeature = require('../lib/util/addfeature');
         };
         addFeature(conf.address, address, t.end);
     });
+    addFeature.setOptions({});
     tape('test address index for relev', function(t) {
         c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
@@ -232,6 +233,7 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
+    addFeature.setOptions({});
 })();
 
 tape('teardown', function(assert) {
