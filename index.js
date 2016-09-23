@@ -26,7 +26,7 @@ function Geocoder(indexes, options) {
     var q = queue(10);
 
     this.indexes = indexes;
-    this.replacer = token.createReplacer(options.tokens || {});
+    this.replacer = token.createGlobalReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
     this.bystack = {};

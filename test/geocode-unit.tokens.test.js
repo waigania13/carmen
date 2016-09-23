@@ -103,6 +103,7 @@ var addFeature = require('../lib/util/addfeature');
     tape('test token replacement', function(t) {
         c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
+            console.log(res);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
             t.end();
         });
@@ -183,7 +184,7 @@ var addFeature = require('../lib/util/addfeature');
     };
     var opts = {
         tokens: {
-            '\b(.+)(strasse|str)\b': ""
+            '\\b(.+)(strasse|str)\\b': "$1 str"
         }
     };
 
@@ -203,42 +204,34 @@ var addFeature = require('../lib/util/addfeature');
         };
         addFeature(conf.address, address, t.end);
     });
-    // tape('geocoder token test', function(t) {
-    //     var address1 = {
-    //         id:2,
-    //         properties: {
-    //             'carmen:text':'Tal strasse ',
-    //             'carmen:center':[0,0],
-    //         },
-    //         geometry: {
-    //             type: "Point",
-    //             coordinates: [0,0]
-    //         }
-    //     };
-    //     addFeature(conf.address, address1, t.end);
-    // });
     tape('test token replacement', function(t) {
-        c.geocode('Talstr ', { limit_verify: 1 }, function(err, res) {
+        c.geocode('Talstrasse', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
-            console.log(res)
-            //t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
             t.end();
         });
     });
-    //tape('test token replacement', function(t) {
-    //    c.geocode('Tal str ', { limit_verify: 1 }, function(err, res) {
-    //        t.ifError(err);
-    //        t.equals(res.features[0].relevance, 0.39, 'token replacement for str -> strasse');
-    //        t.end();
-    //    });
-    //});
-    //tape('test token replacement', function(t) {
-    //    c.geocode('Talstrassesomthing', { limit_verify: 1 }, function(err, res) {
-    //        t.ifError(err);
-    //        t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
-    //        t.end();
-    //    });
-    //});
+    tape('test token replacement', function(t) {
+        c.geocode('Talstr ', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Tal str ', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', function(t) {
+        c.geocode('Talstrassesomthing', { limit_verify: 1 }, function(err, res) {
+            t.ifError(err);
+            t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
+            t.end();
+        });
+    });
 })();
 
 tape('teardown', function(assert) {
