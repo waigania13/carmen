@@ -15,67 +15,6 @@
         0
       ],
       "carmen:addressnumber": "100",
-      "carmen:lfromhn": [
-        [],
-        [
-          "1",
-          "101",
-          "201",
-          "301"
-        ]
-      ],
-      "carmen:ltohn": [
-        [],
-        [
-          "99",
-          "199",
-          "299",
-          "399"
-        ]
-      ],
-      "carmen:rfromhn": [
-        [],
-        [
-          "0",
-          "100",
-          "200",
-          "300"
-        ]
-      ],
-      "carmen:rtohn": [
-        [],
-        [
-          "98",
-          "198",
-          "298",
-          "398"
-        ]
-      ],
-      "carmen:parityl": [
-        [],
-        [
-          "O",
-          "O",
-          "O",
-          "O"
-        ]
-      ],
-      "carmen:parityr": [
-        [],
-        [
-          "E",
-          "E",
-          "E",
-          "E"
-        ]
-      ],
-      "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -96,67 +35,6 @@
         0
       ],
       "carmen:addressnumber": "200",
-      "carmen:lfromhn": [
-        [],
-        [
-          "1",
-          "101",
-          "201",
-          "301"
-        ]
-      ],
-      "carmen:ltohn": [
-        [],
-        [
-          "99",
-          "199",
-          "299",
-          "399"
-        ]
-      ],
-      "carmen:rfromhn": [
-        [],
-        [
-          "0",
-          "100",
-          "200",
-          "300"
-        ]
-      ],
-      "carmen:rtohn": [
-        [],
-        [
-          "98",
-          "198",
-          "298",
-          "398"
-        ]
-      ],
-      "carmen:parityl": [
-        [],
-        [
-          "O",
-          "O",
-          "O",
-          "O"
-        ]
-      ],
-      "carmen:parityr": [
-        [],
-        [
-          "E",
-          "E",
-          "E",
-          "E"
-        ]
-      ],
-      "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -177,67 +55,6 @@
         0
       ],
       "carmen:addressnumber": "300",
-      "carmen:lfromhn": [
-        [],
-        [
-          "1",
-          "101",
-          "201",
-          "301"
-        ]
-      ],
-      "carmen:ltohn": [
-        [],
-        [
-          "99",
-          "199",
-          "299",
-          "399"
-        ]
-      ],
-      "carmen:rfromhn": [
-        [],
-        [
-          "0",
-          "100",
-          "200",
-          "300"
-        ]
-      ],
-      "carmen:rtohn": [
-        [],
-        [
-          "98",
-          "198",
-          "298",
-          "398"
-        ]
-      ],
-      "carmen:parityl": [
-        [],
-        [
-          "O",
-          "O",
-          "O",
-          "O"
-        ]
-      ],
-      "carmen:parityr": [
-        [],
-        [
-          "E",
-          "E",
-          "E",
-          "E"
-        ]
-      ],
-      "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -258,67 +75,6 @@
         0
       ],
       "carmen:addressnumber": "400",
-      "carmen:lfromhn": [
-        [],
-        [
-          "1",
-          "101",
-          "201",
-          "301"
-        ]
-      ],
-      "carmen:ltohn": [
-        [],
-        [
-          "99",
-          "199",
-          "299",
-          "399"
-        ]
-      ],
-      "carmen:rfromhn": [
-        [],
-        [
-          "0",
-          "100",
-          "200",
-          "300"
-        ]
-      ],
-      "carmen:rtohn": [
-        [],
-        [
-          "98",
-          "198",
-          "298",
-          "398"
-        ]
-      ],
-      "carmen:parityl": [
-        [],
-        [
-          "O",
-          "O",
-          "O",
-          "O"
-        ]
-      ],
-      "carmen:parityr": [
-        [],
-        [
-          "E",
-          "E",
-          "E",
-          "E"
-        ]
-      ],
-      "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -344,15 +100,6 @@
         0.5,
         0
       ],
-      "carmen:addressnumber": [
-        [
-          "100",
-          "200",
-          "300",
-          "400"
-        ],
-        null
-      ],
       "carmen:lfromhn": [
         "1"
       ],
@@ -372,12 +119,6 @@
         "E"
       ],
       "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -403,15 +144,6 @@
         2.5,
         0
       ],
-      "carmen:addressnumber": [
-        [
-          "100",
-          "200",
-          "300",
-          "400"
-        ],
-        null
-      ],
       "carmen:lfromhn": [
         "101"
       ],
@@ -431,12 +163,6 @@
         "E"
       ],
       "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -462,15 +188,6 @@
         4.5,
         0
       ],
-      "carmen:addressnumber": [
-        [
-          "100",
-          "200",
-          "300",
-          "400"
-        ],
-        null
-      ],
       "carmen:lfromhn": [
         "201"
       ],
@@ -490,12 +207,6 @@
         "E"
       ],
       "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
@@ -521,15 +232,6 @@
         6.5,
         0
       ],
-      "carmen:addressnumber": [
-        [
-          "100",
-          "200",
-          "300",
-          "400"
-        ],
-        null
-      ],
       "carmen:lfromhn": [
         "301"
       ],
@@ -549,12 +251,6 @@
         "E"
       ],
       "carmen:rangetype": "tiger",
-      "carmen:zxy": [
-        "6/32/32",
-        "6/32/32",
-        "6/33/32"
-      ],
-      "carmen:hash": 1,
       "id": 1
     },
     "id": 1
