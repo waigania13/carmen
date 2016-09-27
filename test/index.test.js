@@ -5,6 +5,7 @@ var Carmen = require('..');
 var index = require('../lib/index');
 var mem = require('../lib/api-mem');
 var shard = require('../lib/util/cxxcache').shard;
+var token = require('../lib/util/token');
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
