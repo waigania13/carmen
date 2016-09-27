@@ -42,6 +42,7 @@ function Geocoder(indexes, options) {
         var names = [];
         var types = [];
         var stacks = [];
+        var subtypes = [];
         if (results) results.forEach(function(data, i) {
             var id = data.id;
             var info = data.info;
@@ -50,6 +51,7 @@ function Geocoder(indexes, options) {
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
             var stack = info.geocoder_stack || false;
+            var scoreRangeKeys = Object.keys(info.scoreranges);
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
@@ -58,6 +60,16 @@ function Geocoder(indexes, options) {
                 types.push(type);
                 this.bytype[type] = [];
             }
+
+            if (scoreRangeKeys) {
+                for (var st = 0; st < scoreRangeKeys.length; st++) {
+                    if (subtypes.indexOf(type + '.' + scoreRangeKeys[st]) === -1) {
+                        subtypes.push(type + '.' + scoreRangeKeys[st]);
+                        this.bysubtype[type + '.' + scoreRangeKeys[st]] = [];
+                    }
+                }
+            }
+
             if (typeof stack === 'string') stack = [stack];
             if (stack) {
                 for (var j = 0; j < stack.length; j++) {
@@ -125,6 +137,11 @@ function Geocoder(indexes, options) {
 
             // add bytype index lookup
             this.bytype[type].push(source);
+
+            // add bysubtype index lookup
+            for (var st = 0; st < scoreRangeKeys.length; st++) {
+                this.bysubtype[type + '.' + scoreRangeKeys[st]].push(source);
+            }
 
             // add bystack index lookup
             for (var j = 0; j < stack.length; j++) {
