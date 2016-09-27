@@ -1,5 +1,4 @@
 var termops = require('../lib/util/termops');
-var token = require('../lib/util/token');
 var test = require('tape');
 
 test('tokenizes basic strings', function(assert) {
@@ -43,3 +42,11 @@ test('edge cases - empty string', function(assert) {
     assert.end();
 });
 
+test('tokenize Japanese strings with numeric component', function(assert) {
+    assert.deepEqual(termops.tokenize('中津川市馬籠4571-1'), ['中','津','川','市','馬','籠','4571','-','1'], 'dashed number at end');
+    assert.deepEqual(termops.tokenize('中津川市4571-1馬籠'), ['中','津','川','市','4571','-','1','馬','籠'], 'dashed number in middle');
+    assert.deepEqual(termops.tokenize('中津川市4571馬籠'), ['中','津','川','市','4571','馬','籠'], 'number in middle');
+    assert.deepEqual(termops.tokenize('中津川市4571馬籠123'), ['中','津','川','市','4571','馬','籠','123'], 'numbers in middle and at end');
+    assert.deepEqual(termops.tokenize('123中津川市4571馬籠'), ['123中津川市4571馬籠'], 'does not split strings that begin with numbers');
+    assert.end();
+});

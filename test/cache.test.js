@@ -1,5 +1,4 @@
 var Cache = require('../lib/util/cxxcache');
-var fs = require('fs');
 var test = require('tape');
 
 test('.shard', function(s) {

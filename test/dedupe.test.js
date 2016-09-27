@@ -2,7 +2,7 @@ var dedupe = require('../lib/util/dedupe');
 var tape = require('tape');
 
 tape('dedup lowercase vs caps', function(assert) {
-    features = [
+    var features = [
         {
             place_name: '20 main st',
             text: 'main st',

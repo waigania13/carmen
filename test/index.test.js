@@ -1,17 +1,14 @@
 var fs = require('fs');
 var path = require('path');
 var Stream = require('stream');
-var util = require('util');
 var Carmen = require('..');
 var index = require('../lib/index');
-var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var shard = require('../lib/util/cxxcache').shard;
 
 var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
-var token = require('../lib/util/token');
 
 test('index - streaming interface', function(assert) {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
@@ -90,6 +87,7 @@ test('index.update -- error', function(t) {
     var memdocs = require('./fixtures/mem-docs.json');
     var conf = { to: new mem(memdocs, null, function() {}) };
     var carmen = new Carmen(conf);
+    t.ok(carmen);
     t.test('update 1', function(q) {
         index.update(conf.to, [{
             id: 1,
@@ -136,6 +134,7 @@ test('index.update -- error', function(t) {
 test('index.update freq', function(t) {
     var conf = { to: new mem(null, function() {}) };
     var carmen = new Carmen(conf);
+    t.ok(carmen);
     t.test('error no id', function(q) {
         index.update(conf.to, [{ properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
             q.equal('Error: doc has no id', err.toString());
@@ -178,7 +177,7 @@ test('index', function(t) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -274,7 +273,7 @@ test('error -- zoom too high', function(t) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -301,7 +300,7 @@ test('error -- zoom too low', function(t) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -321,6 +320,7 @@ test('error -- zoom too low', function(t) {
 test('index phrase collection', function(assert) {
     var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
+    assert.ok(c);
     var docs = [{
         id:1,
         type: 'Feature',
@@ -367,7 +367,7 @@ test('error -- _geometry too high resolution', function(t) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -426,7 +426,7 @@ test('error -- carmen:zxy too large tile-cover', function(t) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -444,7 +444,6 @@ test('error -- carmen:zxy too large tile-cover', function(t) {
 });
 
 test('index.cleanDocs', function(assert) {
-    var docs;
     var sourceWithAddress = {geocoder_address:true};
     var sourceWithoutAddress = {geocoder_address:false};
 

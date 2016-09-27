@@ -1,5 +1,35 @@
 # Changelog
 
+## 16.2.1
+- Use stricter eslint rules.
+
+## 16.2.0
+
+- Add support for addresses that are ordered from largest feature to smallest
+- Fix a bug in ID queries when `geocoder_name` != `geocoder_type`.
+
+## 16.1.0
+
+- Fix an issue with too-strict filtering of indexes that use a combined stack range
+
+## 16.0.0
+
+- All addresses are now standardized to GeometryCollections internally
+- Allows for mixed type (pt/itp) features as well as reducing complexity at runtime (at the cost of index time)
+
+## 15.2.4
+
+- Bump due to npm strangeness
+
+## 15.2.3
+
+- Fix global token bug that prevented global tokens being used by indexer
+- Added ability for carmen cli to specify global token file
+
+## 15.2.2
+
+- Moves limit constants into `lib/constants.js` for easier tracking and updates.
+
 ## 15.2.1
 
 - Set the relevance score to 1 when a feature is queried by ID

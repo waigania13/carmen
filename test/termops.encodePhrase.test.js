@@ -1,6 +1,5 @@
 var termops = require('../lib/util/termops');
 var uniq = require('../lib/util/uniq');
-var token = require('../lib/util/token');
 var test = require('tape');
 var Cache = require('../lib/util/cxxcache');
 

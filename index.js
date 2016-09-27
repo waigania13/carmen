@@ -97,6 +97,7 @@ function Geocoder(indexes, options) {
             for (var ix = 0; ix < keys.length; ix ++) {
                 if (/geocoder_format_/.test(keys[ix])) source[keys[ix]] = info[keys[ix]]||false;
             }
+            source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_format = info.geocoder_format||false;
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};

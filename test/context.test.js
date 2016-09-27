@@ -1,9 +1,6 @@
 var fs = require('fs');
-var util = require('util');
 var Carmen = require('..');
-var tilelive = require('tilelive');
 var context = require('../lib/context');
-var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
@@ -11,7 +8,6 @@ var mapnik = require('mapnik');
 var addFeature = require('../lib/util/addfeature');
 var queue = require('d3-queue').queue;
 var mem = require('../lib/api-mem');
-var index = require('../lib/index');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
@@ -134,6 +130,32 @@ test('contextVector empty VT buffer', function(assert) {
         };
         context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
             assert.ifError(err);
+            assert.end();
+        });
+    });
+});
+
+test('proximityVector empty VT buffer', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
+        };
+        context.proximityVector(source, 0, 0, function(err, data) {
+            assert.ifError(err);
+            assert.deepEqual(data, []);
             assert.end();
         });
     });

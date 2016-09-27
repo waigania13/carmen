@@ -3,7 +3,6 @@ var token = require('../lib/util/token');
 var test = require('tape');
 
 test('termops.getIndexableText', function(assert) {
-    var freq = { 0:[2] };
     var replacer;
     var doc;
     var texts;
@@ -49,8 +48,8 @@ test('termops.getIndexableText', function(assert) {
     replacer = token.createReplacer({});
     doc = {
         properties: {
-            'carmen:text':'Main Street', 
-            'carmen:addressnumber': [1, 10, 100, 200]
+            'carmen:text':'Main Street',
+            'carmen:addressnumber': [[1, 10, 100, 200]]
         }
     };
     texts = [

@@ -4,11 +4,9 @@ var tape = require('tape');
 var exec = require('child_process').exec;
 var tmpdir = require('os').tmpdir();
 var bin = path.resolve(path.join(__dirname, '..', 'scripts'));
-var fixture = path.resolve(path.join(__dirname, '..', 'tiles'));
 
 var Carmen = require('../index.js');
 var MBTiles = require('mbtiles');
-var Memsource = require('../lib/api-mem');
 var tmpindex = path.join(tmpdir, 'test-carmen-index.mbtiles');
 var tmpindex2 = path.join(tmpdir, 'test-carmen-index2.mbtiles');
 var addFeature = require('../lib/util/addfeature');
@@ -85,7 +83,7 @@ tape('bin/carmen-index', function(t) {
 });
 
 tape('bin/carmen-index', function(t) {
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.jsonl', function(err, stdout, stderr) {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --tokens="'+__dirname + '/fixtures/tokens.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.jsonl', function(err, stdout, stderr) {
         t.ifError(err);
         t.end();
     });
@@ -125,6 +123,17 @@ tape('bin/carmen query', function(t) {
         t.end();
     });
 });
+
+
+//Index was not indexed witht the brazil=canada token so this should produce Canada as a result
+tape('bin/carmen query w/ global tokens', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --tokens="'+__dirname + '/fixtures/tokens.json"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/0\.99 Canada/.test(stdout), true, 'finds canada');
+        t.end();
+    });
+});
+
 tape('bin/carmen query types', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="test-carmen-index.mbtiles"', function(err, stdout, stderr) {
         t.ifError(err);
