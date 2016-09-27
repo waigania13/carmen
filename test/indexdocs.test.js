@@ -43,7 +43,7 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.ok(typeof err !== 'number', 'no error');
 
     assert.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 1, 'patch.grid[0]');
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 2, 'patch.grid[0]');
     assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
         id: 1,
         relev: 1,
@@ -341,19 +341,19 @@ tape('indexdocs.generateFrequency', function(assert) {
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     assert.deepEqual(indexdocs.generateFrequency(docs, {}), {
-        0: [ 4 ],           // 4 total
-        1: [ 2 ],           // 2 maxscore
-        1247264641460936: [ 1 ],  // 1 road
-        1804046053253033:  [ 1 ],  // 1 street
-        609659059851264: [ 2 ]   // 2 main
+        __COUNT__: [ 4 ],
+        __MAX__: [ 2 ],
+        main: [ 2 ],
+        road: [ 1 ],
+        street: [ 1 ]
     });
     // @TODO should 'main' in this case collapse down to 2?
     assert.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
-        0: [ 4 ],           // 4 total
-        1: [ 2 ],           // 2 maxscore
-        3363289958149993: [ 1 ],  // 1 road
-        441841902895320: [ 1 ],  // 1 street
-        609659059851264: [ 2 ]   // 2 main
+        __COUNT__: [ 4 ],
+        __MAX__: [ 2 ],
+        main: [ 2 ],
+        rd: [ 1 ],
+        st: [ 1 ]
     });
     assert.end();
 });

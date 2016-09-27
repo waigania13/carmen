@@ -3,6 +3,7 @@ var path = require('path');
 var Stream = require('stream');
 var Carmen = require('..');
 var index = require('../lib/index');
+var indexdocs = require('../lib/indexer/indexdocs.js');
 var mem = require('../lib/api-mem');
 var shard = require('../lib/util/cxxcache').shard;
 var token = require('../lib/util/token');
@@ -66,7 +67,7 @@ test('index.generateStats', function(assert) {
         geometry: {}
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
-    assert.deepEqual(index.generateFrequency(docs, {}), {
+    assert.deepEqual(indexdocs.generateFrequency(docs, {}), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
@@ -74,7 +75,7 @@ test('index.generateStats', function(assert) {
         street: [ 1 ]
     });
     // @TODO should 'main' in this case collapse down to 2?
-    assert.deepEqual(index.generateFrequency(docs, geocoder_tokens), {
+    assert.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
