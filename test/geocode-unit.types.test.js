@@ -11,7 +11,7 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, maxzoom: 12, geocoder_stack: 'cn'}, function() {})
+    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, maxzoom: 6, geocoder_stack: 'cn'}, function() {})
 };
 var c = new Carmen(conf);
 tape('index country', function(t) {
@@ -56,7 +56,7 @@ tape('index poi', function(t) {
         properties: {
             'carmen:score':5,
             'carmen:text':'china',
-            'carmen:zxy':['12/32/32'],
+            'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
             'carmen:geocoder_stack':'cn'
         }
@@ -68,7 +68,7 @@ tape('index poi landmark', function(t) {
         properties: {
             'carmen:score':500,
             'carmen:text':'china landmark',
-            'carmen:zxy':['12/32/32'],
+            'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0],
             'carmen:geocoder_stack':'cn'
         }
