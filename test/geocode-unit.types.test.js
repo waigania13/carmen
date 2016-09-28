@@ -10,7 +10,8 @@ var addFeature = require('../lib/util/addfeature');
 var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
-    place: new mem(null, function() {})
+    place: new mem(null, function() {}),
+    poi: new mem(null, function() {})
 };
 var c = new Carmen(conf);
 tape('index country', function(t) {
@@ -43,6 +44,16 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
+tape('index poi', function(t) {
+    addFeature(conf.poi, {
+        id:1,
+        properties: {
+            'carmen:text':'china',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    }, t.end);
+});
 // invalid options.types type
 tape('china', function(t) {
     c.geocode('china', { types: 'asdf' }, function(err, res) {
@@ -62,16 +73,25 @@ tape('china', function(t) {
 // invalid options.types[0] value
 tape('china', function(t) {
     c.geocode('china', { types: ['asdf'] }, function(err, res) {
-        t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place');
+        t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place, poi');
         t.equal(err && err.code, 'EINVALID');
+        t.end();
+    });
+});
+// subtypes still return parent type
+tape('china', function(t) {
+    c.geocode('china', { limit_verify:3, types:['poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 result');
+        t.deepEqual(res.features[0].id, 'poi.1', 'subtypes work');
         t.end();
     });
 });
 // country wins without type filter
 tape('china', function(t) {
-    c.geocode('china', { limit_verify:3 }, function(err, res) {
+    c.geocode('china', { limit_verify:4 }, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 3, '3 results');
+        t.deepEqual(res.features.length, 4, '4 results');
         t.deepEqual(res.features[0].id, 'country.1', 'country wins');
         t.end();
     });
@@ -96,12 +116,13 @@ tape('china', function(t) {
     });
 });
 
+// poi might win now?
 // reverse without type filter
 tape('reverse', function(t) {
     c.geocode('0,0', {}, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 3, '3 results');
-        t.deepEqual(res.features[0].id, 'place.1', 'place wins');
+        t.deepEqual(res.features.length, 4, '4 results');
+        t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
         t.end();
     });
 });
