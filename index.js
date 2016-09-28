@@ -51,7 +51,7 @@ function Geocoder(indexes, options) {
             var name = info.geocoder_name || id;
             var type = info.geocoder_type||info.geocoder_name||id;
             var stack = info.geocoder_stack || false;
-            var scoreRangeKeys = Object.keys(info.scoreranges);
+            var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
             if (names.indexOf(name) === -1) {
                 names.push(name);
                 this.byname[name] = [];
