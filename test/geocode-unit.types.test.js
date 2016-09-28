@@ -50,6 +50,18 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
+tape('index poi landmark', function(t) {
+    addFeature(conf.poi, {
+        id:2,
+        properties: {
+            'carmen:score':500,
+            'carmen:text':'china lm',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
+        }
+    }, t.end);
+});
 tape('index poi', function(t) {
     addFeature(conf.poi, {
         id:1,
@@ -62,20 +74,8 @@ tape('index poi', function(t) {
         }
     }, t.end);
 });
-tape('index poi landmark', function(t) {
-    addFeature(conf.poi, {
-        id:2,
-        properties: {
-            'carmen:score':500,
-            'carmen:text':'china landmark',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
-            'carmen:geocoder_stack':'cn'
-        }
-    }, t.end);
-});
 // invalid options.types type
-tape('china asdf', function(t) {
+tape('china types: "asdf"', function(t) {
     c.geocode('china', { types: 'asdf' }, function(err, res) {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
@@ -83,7 +83,7 @@ tape('china asdf', function(t) {
     });
 });
 // invalid options.types length
-tape('china no types', function(t) {
+tape('china types: []', function(t) {
     c.geocode('china', { types: [] }, function(err, res) {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
@@ -91,19 +91,41 @@ tape('china no types', function(t) {
     });
 });
 // invalid options.types[0] value
-tape('china asdf array', function(t) {
+tape('china types: ["asdf"]', function(t) {
     c.geocode('china', { types: ['asdf'] }, function(err, res) {
         t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place, poi or poi.landmark');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
-// subtypes still return parent type
-tape('china poi.landmark', function(t) {
+
+// poi, poi.landmark returns all poi features
+tape('china types:[poi.landmark, poi]', function(t) {
     c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
         t.ifError(err);
+        console.log('res ', res);
         t.deepEqual(res.features.length, 2, '2 result');
         t.deepEqual(res.features[0].id, 'poi.2', 'subtypes work');
+        t.end();
+    });
+});
+
+//poi.landmark beats poi
+tape('china types: ["poi.landmark"]', function(t) {
+    c.geocode('china', { types:['poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 result');
+        t.deepEqual(res.features[0].id, 'poi.2', 'landmarks beat pois');
+        t.end();
+    });
+});
+
+//poi returns poi.landmark features also
+tape('china poi returns poi.landmark also', function(t) {
+    c.geocode('china', { types:['poi'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 2, '2 results');
+        t.deepEqual(res.features[0].id, 'poi.2', 'landmark ranks higher than poi.');
         t.end();
     });
 });
@@ -141,7 +163,8 @@ tape('china', function(t) {
 tape('reverse', function(t) {
     c.geocode('0,0', {}, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 4, '4 results');
+        //not sure why this is 4. Needs to be 5 :thinking_face:
+        t.deepEqual(res.features.length, 5, '5 results');
         t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
         t.end();
     });
