@@ -11,16 +11,18 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, maxzoom: 12}, function() {})
+    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, maxzoom: 12, geocoder_stack: 'cn'}, function() {})
 };
 var c = new Carmen(conf);
 tape('index country', function(t) {
     addFeature(conf.country, {
         id:1,
         properties: {
+            'carmen:score':25000,
             'carmen:text':'china',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
         }
     }, t.end);
 });
@@ -28,9 +30,11 @@ tape('index region', function(t) {
     addFeature(conf.region, {
         id:1,
         properties: {
+            'carmen:score':3500,
             'carmen:text':'china',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
         }
     }, t.end);
 });
@@ -38,9 +42,11 @@ tape('index place', function(t) {
     addFeature(conf.place, {
         id:1,
         properties: {
+            'carmen:score':2500,
             'carmen:text':'china',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
         }
     }, t.end);
 });
@@ -50,13 +56,26 @@ tape('index poi', function(t) {
         properties: {
             'carmen:score':5,
             'carmen:text':'china',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:zxy':['12/32/32'],
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
+        }
+    }, t.end);
+});
+tape('index poi landmark', function(t) {
+    addFeature(conf.poi, {
+        id:2,
+        properties: {
+            'carmen:score':500,
+            'carmen:text':'china landmark',
+            'carmen:zxy':['12/32/32'],
+            'carmen:center':[0,0],
+            'carmen:geocoder_stack':'cn'
         }
     }, t.end);
 });
 // invalid options.types type
-tape('china', function(t) {
+tape('china asdf', function(t) {
     c.geocode('china', { types: 'asdf' }, function(err, res) {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
@@ -64,7 +83,7 @@ tape('china', function(t) {
     });
 });
 // invalid options.types length
-tape('china', function(t) {
+tape('china no types', function(t) {
     c.geocode('china', { types: [] }, function(err, res) {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
@@ -72,19 +91,19 @@ tape('china', function(t) {
     });
 });
 // invalid options.types[0] value
-tape('china', function(t) {
+tape('china asdf array', function(t) {
     c.geocode('china', { types: ['asdf'] }, function(err, res) {
-        t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place, poi');
+        t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place, poi or poi.landmark');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 // subtypes still return parent type
-tape('china', function(t) {
-    c.geocode('china', { limit_verify:3, types:['poi.landmark'] }, function(err, res) {
+tape('china poi.landmark', function(t) {
+    c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 1, '1 result');
-        t.deepEqual(res.features[0].id, 'poi.1', 'subtypes work');
+        t.deepEqual(res.features.length, 2, '2 result');
+        t.deepEqual(res.features[0].id, 'poi.2', 'subtypes work');
         t.end();
     });
 });
