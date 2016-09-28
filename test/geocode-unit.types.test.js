@@ -11,7 +11,7 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}}, function() {})
+    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500}, function() {})
 };
 var c = new Carmen(conf);
 tape('index country', function(t) {
