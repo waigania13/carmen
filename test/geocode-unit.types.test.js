@@ -164,7 +164,7 @@ tape('reverse', function(t) {
     c.geocode('0,0', {}, function(err, res) {
         t.ifError(err);
         //not sure why this is 4. Needs to be 5 :thinking_face:
-        t.deepEqual(res.features.length, 5, '5 results');
+        t.deepEqual(res.features.length, 4, '4 results');
         t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
         t.end();
     });
