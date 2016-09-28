@@ -11,7 +11,7 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500}, function() {})
+    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, maxzoom: 12}, function() {})
 };
 var c = new Carmen(conf);
 tape('index country', function(t) {
@@ -48,6 +48,7 @@ tape('index poi', function(t) {
     addFeature(conf.poi, {
         id:1,
         properties: {
+            'carmen:score':5,
             'carmen:text':'china',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
