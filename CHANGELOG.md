@@ -1,5 +1,13 @@
 # Changelog
 
+## 16.2.4
+
+- types + limit reverse query mode is now only a concept handled by reverseGeocode().
+- context() always returns a single context.
+- Adds context.nearest() for playing the role that the proximity context mode played before -- returns a flat array of [ lon, lat ] points that can then be context() queried for full features.
+- Adds additional unit test to demonstrate that in types/limits mode reverse geocodes do indeed load full features/derive address points properly.
+- More verbosity in --debug output
+
 ## 16.2.3
 
 - Optimize vector geojson output at indexing time for ligther vector tiles.
