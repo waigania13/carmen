@@ -11,8 +11,10 @@ var conf = {
     country: new mem(null, function() {}),
     region: new mem(null, function() {}),
     place: new mem(null, function() {}),
-    poi: new mem({'scoreranges':{'landmark':[0.5, 1]}, maxscore: 500, minscore: 0, maxzoom: 6, geocoder_stack: 'cn'}, function() {})
+    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 6, geocoder_stack: 'cn'}, function() {}),
+    poi_au: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au'}, function() {})
 };
+
 var c = new Carmen(conf);
 tape('index country', function(t) {
     addFeature(conf.country, {
@@ -51,7 +53,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 tape('index poi landmark', function(t) {
-    addFeature(conf.poi, {
+    addFeature(conf.poi_cn, {
         id:2,
         properties: {
             'carmen:score':500,
@@ -63,7 +65,7 @@ tape('index poi landmark', function(t) {
     }, t.end);
 });
 tape('index poi', function(t) {
-    addFeature(conf.poi, {
+    addFeature(conf.poi_cn, {
         id:1,
         properties: {
             'carmen:score':5,
@@ -157,13 +159,11 @@ tape('china', function(t) {
     });
 });
 
-// poi might win now?
 // reverse without type filter
 tape('reverse', function(t) {
     c.geocode('0,0', {}, function(err, res) {
         t.ifError(err);
-        //not sure why this is 4. Needs to be 5 :thinking_face:
-        t.deepEqual(res.features.length, 4, '4 results');
+        t.deepEqual(res.features.length, 4, '4 results, 1 per layer type');
         t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
         t.end();
     });
@@ -190,6 +190,79 @@ tape('reverse: country,place', function(t) {
         t.end();
     });
 });
+tape('reverse: poi', function(t) {
+    c.geocode('0,0', { types:['poi'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 results');
+        t.deepEqual(res.features[0].context, [
+            { id: 'place.1', text: 'china' },
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including place, region, country)');
+        t.end();
+    });
+});
+
+tape('reverse: poi.landmark', function(t) {
+    c.geocode('0,0', { types:['poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 results');
+        t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result');
+        t.deepEqual(res.features[0].context, [
+            { id: 'place.1', text: 'china' },
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including place, region, country)');
+        t.end();
+    });
+});
+
+tape('index second poi (nonlandmark)', function(t) {
+    addFeature(conf.poi_au, {
+        id:3,
+        properties: {
+            'carmen:score':50,
+            'carmen:text':'australia nonlandmark',
+            'carmen:zxy':['14/15152/9491'],
+            'carmen:center':[152.94, -27.44]
+        }
+    }, t.end);
+});
+
+tape('index second poi (landmark)', function(t) {
+    addFeature(conf.poi_au, {
+        id:4,
+        properties: {
+            'carmen:score':51,
+            'carmen:text':'australia landmark',
+            'carmen:zxy':['14/15152/9491'],
+            'carmen:center':[152.94, -27.44]
+        }
+    }, t.end);
+});
+
+tape('index third poi (ambiguous landmark)', function(t) {
+    addFeature(conf.poi_au, {
+        id:5,
+        properties: {
+            'carmen:score':51,
+            'carmen:text':'china lm',
+            'carmen:zxy':['14/15152/9491'],
+            'carmen:center':[152.94, -27.44]
+        }
+    }, t.end);
+});
+
+tape('fwd: landmark filtering works w/ diff score ranges', function(t) {
+    c.geocode('china lm', { types:['poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 2, '2 results');
+        t.ok(res.features.map(function(x) { return x.id; }).indexOf('poi.2') !== -1, 'cn landmark in results');
+        t.ok(res.features.map(function(x) { return x.id; }).indexOf('poi.5') !== -1, 'au landmark in results');
+        t.end();
+    });
+});
+
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
