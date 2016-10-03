@@ -99,23 +99,22 @@ tape('china types: ["asdf"]', function(t) {
     });
 });
 
-// poi, poi.landmark returns all poi features
-tape('china types:[poi.landmark, poi]', function(t) {
-    c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
-        t.ifError(err);
-        console.log('res ', res);
-        t.deepEqual(res.features.length, 2, '2 result');
-        t.deepEqual(res.features[0].id, 'poi.2', 'subtypes work');
-        t.end();
-    });
-});
-
 //poi.landmark beats poi
 tape('china types: ["poi.landmark"]', function(t) {
     c.geocode('china', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].id, 'poi.2', 'landmarks beat pois');
+        t.end();
+    });
+});
+
+// poi, poi.landmark returns all poi features
+tape('china types:[poi.landmark, poi]', function(t) {
+    c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 2, '2 result');
+        t.deepEqual(res.features[0].id, 'poi.2', 'subtypes work');
         t.end();
     });
 });
