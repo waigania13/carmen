@@ -203,6 +203,8 @@ tape('reverse: poi', function(t) {
     });
 });
 
+/*
+// not yet implemented
 tape('reverse: poi.landmark', function(t) {
     c.geocode('0,0', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
@@ -216,6 +218,7 @@ tape('reverse: poi.landmark', function(t) {
         t.end();
     });
 });
+*/
 
 tape('index second poi (nonlandmark)', function(t) {
     addFeature(conf.poi_au, {
