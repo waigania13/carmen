@@ -121,6 +121,8 @@ function Geocoder(indexes, options) {
             }
 
             source.maxzoom = info.maxzoom;
+            source.maxscore = info.maxscore;
+            source.minscore = info.minscore;
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
 
