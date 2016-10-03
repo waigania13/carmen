@@ -124,7 +124,7 @@ function Geocoder(indexes, options) {
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
 
-            if (info.scoreranges && ((info.maxscore === undefined) || (info.minscore === undefined))) {
+            if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
                 throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
             }
 
