@@ -116,13 +116,18 @@ function Geocoder(indexes, options) {
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
 
-            if(tokenValidator(source.token_replacer)) {
+            if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');
             }
 
             source.maxzoom = info.maxzoom;
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+
+            if (info.scoreranges && !info.maxscore || !info.minscore) {
+                throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
+            }
+
             source.scoreranges = info.scoreranges ? info.scoreranges : {};
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
