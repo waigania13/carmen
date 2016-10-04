@@ -69,9 +69,9 @@ tape('index poi', function(t) {
         id:1,
         properties: {
             'carmen:score':5,
-            'carmen:text':'china',
+            'carmen:text':'china poi',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:center':[0, 0],
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
@@ -244,7 +244,7 @@ tape('reverse: poi (limit 5, expect 2)', function(t) {
 tape('reverse: poi.landmark (limit 5, expect 1)', function(t) {
     c.geocode('0,0', { types: ['poi.landmark'], limit: 5 }, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 1, '1 results'); // we get 2! ask @ingalls why the landmark is duplicated
+        t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result');
         t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
