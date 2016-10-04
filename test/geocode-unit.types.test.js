@@ -76,6 +76,7 @@ tape('index poi', function(t) {
         }
     }, t.end);
 });
+
 // invalid options.types type
 tape('china types: "asdf"', function(t) {
     c.geocode('china', { types: 'asdf' }, function(err, res) {
@@ -121,7 +122,7 @@ tape('china types:[poi.landmark, poi]', function(t) {
     });
 });
 
-//poi returns poi.landmark features also
+// poi returns poi.landmark features also
 tape('china poi returns poi.landmark also', function(t) {
     c.geocode('china', { types:['poi'] }, function(err, res) {
         t.ifError(err);
@@ -139,6 +140,7 @@ tape('china', function(t) {
         t.end();
     });
 });
+
 // types: place
 tape('china', function(t) {
     c.geocode('china', { limit_verify:3, types:['place'] }, function(err, res) {
@@ -148,6 +150,7 @@ tape('china', function(t) {
         t.end();
     });
 });
+
 // types: region, place
 tape('china', function(t) {
     c.geocode('china', { limit_verify:3, types:['region','place'] }, function(err, res) {
@@ -168,6 +171,7 @@ tape('reverse', function(t) {
         t.end();
     });
 });
+
 tape('reverse: country', function(t) {
     c.geocode('0,0', { types:['country'] }, function(err, res) {
         t.ifError(err);
@@ -176,6 +180,7 @@ tape('reverse: country', function(t) {
         t.end();
     });
 });
+
 tape('reverse: country,place', function(t) {
     c.geocode('0,0', { types:['country','place'] }, function(err, res) {
         t.ifError(err);
@@ -190,6 +195,7 @@ tape('reverse: country,place', function(t) {
         t.end();
     });
 });
+
 tape('reverse: poi', function(t) {
     c.geocode('0,0', { types:['poi'] }, function(err, res) {
         t.ifError(err);
@@ -203,12 +209,42 @@ tape('reverse: poi', function(t) {
     });
 });
 
-/*
-// not yet implemented
 tape('reverse: poi.landmark', function(t) {
     c.geocode('0,0', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
+        t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result'); // is this luck?
+        t.deepEqual(res.features[0].context, [
+            { id: 'place.1', text: 'china' },
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including place, region, country)');
+        t.end();
+    });
+});
+
+tape('reverse: poi (limit 5, expect 2)', function(t) {
+    c.geocode('0,0', { types:['poi'], limit: 5 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 2, '2 results');
+        t.deepEqual(res.features[0].context, [
+            { id: 'place.1', text: 'china' },
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including place, region, country)');
+        t.deepEqual(res.features[1].context, [
+            { id: 'place.1', text: 'china' },
+            { id:'region.1', text:'china' },
+            { id:'country.1', text:'china' },
+        ], 'preserves full context of place result (including place, region, country)');
+        t.end();
+    });
+});
+
+tape('reverse: poi.landmark (limit 5, expect 1)', function(t) {
+    c.geocode('0,0', { types: ['poi.landmark'], limit: 5 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 results'); // we get 2! ask @ingalls why the landmark is duplicated
         t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result');
         t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
@@ -218,7 +254,6 @@ tape('reverse: poi.landmark', function(t) {
         t.end();
     });
 });
-*/
 
 tape('index second poi (nonlandmark)', function(t) {
     addFeature(conf.poi_au, {
@@ -265,7 +300,6 @@ tape('fwd: landmark filtering works w/ diff score ranges', function(t) {
         t.end();
     });
 });
-
 
 tape('teardown', function(assert) {
     context.getTile.cache.reset();

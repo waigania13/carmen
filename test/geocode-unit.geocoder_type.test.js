@@ -41,6 +41,7 @@ var addFeature = require('../lib/util/addfeature');
         };
         addFeature(conf.poi, poi, t.end);
     });
+
     tape('query on address but still returns poi due to index order', function(t) {
         c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
             t.ifError(err);
@@ -49,6 +50,7 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
+
     tape('query on address with type poi', function(t) {
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
             t.ifError(err);

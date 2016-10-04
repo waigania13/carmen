@@ -30,7 +30,7 @@ test('contextVector deflate', function(t) {
         id: 'testA',
         idx: 1
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
@@ -68,7 +68,7 @@ test('contextVector gzip', function(t) {
         id: 'testA',
         idx: 1
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
@@ -103,7 +103,7 @@ test('contextVector badbuffer', function(t) {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -128,7 +128,7 @@ test('contextVector empty VT buffer', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -194,7 +194,7 @@ test('contextVector ignores negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'B');
             assert.end();
@@ -230,7 +230,7 @@ test('contextVector only negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -266,7 +266,7 @@ test('contextVector matched negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, { 1:{} }, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
@@ -309,7 +309,7 @@ test('contextVector restricts distance', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 170, 80, false, {}, null, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -365,7 +365,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -390,7 +390,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -415,7 +415,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, { 2:true }, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, { 2:true }, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'B');
                 assert.end();
@@ -455,14 +455,14 @@ test('contextVector caching', function(assert) {
         var hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:extid'], 'test.1');
             assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:extid'], 'test.1');
                 assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
