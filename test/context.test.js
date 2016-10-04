@@ -171,12 +171,12 @@ test('nearestPoints scoreFilter', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 1, "carmen:text": "A", "carmen:score": 40, "carmen:center": "0,0" }
+                "properties": { id: 2, "carmen:text": "A", "carmen:score": 40, "carmen:center": "0,0" }
             },
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 2, "carmen:text": "B", "carmen:score": 60, "carmen:center": "0,0" }
+                "properties": { id: 3, "carmen:text": "B", "carmen:score": 60, "carmen:center": "0,0" }
             }
         ]
     }), "data");
@@ -216,7 +216,7 @@ test('nearestPoints scoreFilter', function(assert) {
             context.nearestPoints(source, 0, 0, [50, 100], function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.length, 1, 'got one feature back');
-                assert.equal(data[0].tmpid, 2, 'higher-scoring feature retrieved');
+                assert.equal(data[0].tmpid, 3, 'higher-scoring feature retrieved');
                 assert.end();
             });
         });
@@ -329,6 +329,47 @@ test('contextVector matched negative score', function(assert) {
             idx: 0
         };
         context.contextVector(source, 0, 0, false, { 1:{} }, null, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data.properties['carmen:text'], 'A');
+            assert.end();
+        });
+    });
+});
+
+test('contextVector grabbed exclusive ID', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { _id: 4, "_text": "A", "_score": -1 }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { _id: 5, "_text": "B" }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
+        };
+        context.contextVector(source, 0, 0, false, {_exclusive: true, 4: true}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
