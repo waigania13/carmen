@@ -153,7 +153,7 @@ test('nearestPoints empty VT buffer', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.nearestPoints(source, 0, 0, function(err, data) {
+        context.nearestPoints(source, 0, 0, false, function(err, data) {
             assert.ifError(err);
             assert.deepEqual(data, []);
             assert.end();
