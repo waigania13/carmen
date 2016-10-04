@@ -50,7 +50,7 @@ function Geocoder(indexes, options) {
             var dictcache = data.dictcache;
             var source = indexes[id];
             var name = info.geocoder_name || id;
-            var type = info.geocoder_type||info.geocoder_name||id;
+            var type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
             var stack = info.geocoder_stack || false;
             var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
             if (names.indexOf(name) === -1) {
