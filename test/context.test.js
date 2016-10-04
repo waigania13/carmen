@@ -161,6 +161,68 @@ test('nearestPoints empty VT buffer', function(assert) {
     });
 });
 
+test('nearestPoints scoreFilter', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { id: 1, "carmen:text": "A", "carmen:score": 40, "carmen:center": "0,0" }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { id: 2, "carmen:text": "B", "carmen:score": 60, "carmen:center": "0,0" }
+            }
+        ]
+    }), "data");
+
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            maxscore: 100,
+            minscore: 0,
+            scoreranges: {
+                landmark: [ 0.5, 1]
+            },
+            name: 'poi',
+            type: 'poi',
+            id: 'testA',
+            idx: 0
+        };
+        assert.pass('* now testing context.nearestPoints() without scoreFilter');
+        context.nearestPoints(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data.length, 2, 'got two features back');
+            for (var i = 0; i < 2; i++)
+                for (var j = 0; j < 2; j++)
+                    assert.equal(data[i][j], 0, 'coordinate ' + i + ',' + j + ' is zero');
+            assert.ok(data[0].hasOwnProperty('tmpid'), 'feature 0 has tmpid');
+            assert.ok(data[1].hasOwnProperty('tmpid'), 'feature 1 has tmpid');
+            assert.ok(data[1].hasOwnProperty('distance'), 'feature 0 has distance');
+            assert.ok(data[1].hasOwnProperty('distance'), 'feature 1 has distance');
+
+            assert.pass('* now testing context.nearestPoints() with scoreFilter');
+            context.nearestPoints(source, 0, 0, [50, 100], function(err, data) {
+                assert.ifError(err);
+                assert.equal(data.length, 1, 'got one feature back');
+                assert.equal(data[0].tmpid, 2, 'higher-scoring feature retrieved');
+                assert.end();
+            });
+        });
+    });
+});
+
 test('contextVector ignores negative score', function(assert) {
     context.getTile.cache.reset();
 
