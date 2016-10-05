@@ -6,6 +6,10 @@ var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
+var zlib = require('zlib');
+var path = require('path');
+var mapnik = require('mapnik');
+mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 
 var conf = {
     country: new mem(null, function() {}),
@@ -59,7 +63,7 @@ tape('index poi landmark', function(t) {
             'carmen:score':500,
             'carmen:text':'china lm',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:center':[0,0.01],
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
@@ -75,6 +79,46 @@ tape('index poi', function(t) {
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
+});
+
+tape('add vector tile to cn source', function(t) {
+    var vtile = new mapnik.VectorTile(0, 0, 0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [ 0,0 ]
+                },
+                "properties": {
+                    id: 1,
+                    "carmen:text": "china poi",
+                    "carmen:score": 5,
+                    "carmen:center": [ 0, 0 ]
+                }
+            },
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [ 0,0 ]
+                },
+                "properties": {
+                    id: 2,
+                    "carmen:text": "china lm",
+                    "carmen:score": 500,
+                    "carmen:center": [ 0, 0 ]
+                }
+            }
+        ]
+    }), "data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        t.ifError(err);
+        conf.poi_cn.putTile(0, 0, 0, buffer);
+        t.end();
+    });
 });
 
 // invalid options.types type
@@ -237,6 +281,7 @@ tape('reverse: poi (limit 5, expect 2)', function(t) {
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
         ], 'preserves full context of place result (including place, region, country)');
+        t.notEqual(res.features[0].id, res.features[1].id, 'returned different features');
         t.end();
     });
 });
@@ -305,4 +350,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
