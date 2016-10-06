@@ -9,13 +9,12 @@ var addFeature = require('../lib/util/addfeature');
 var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
-mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins, 'geojson.input'));
 
 var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    place: new mem(null, function() {}),
-    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 6, geocoder_stack: 'cn'}, function() {}),
+    country: new mem({ maxzoom: 6 }, function() {}),
+    region: new mem({ maxzoom: 6 }, function() {}),
+    place: new mem({ maxzoom: 6 }, function() {}),
+    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: 'cn'}, function() {}),
     poi_au: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au'}, function() {})
 };
 
@@ -26,8 +25,8 @@ tape('index country', function(t) {
         properties: {
             'carmen:score':25000,
             'carmen:text':'china',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:zxy':['6/52/25'],
+            'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
@@ -38,8 +37,8 @@ tape('index region', function(t) {
         properties: {
             'carmen:score':3500,
             'carmen:text':'china',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:zxy':['6/52/25'],
+            'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
@@ -50,75 +49,57 @@ tape('index place', function(t) {
         properties: {
             'carmen:score':2500,
             'carmen:text':'china',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:zxy':['6/52/25'],
+            'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
         }
     }, t.end);
 });
 tape('index poi landmark', function(t) {
     addFeature(conf.poi_cn, {
-        id:2,
+        id:1,
         properties: {
             'carmen:score':500,
             'carmen:text':'china lm',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0.01],
+            'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
+        },
+        geometry: {
+            type: "Point",
+            coordinates: [113.65, 34.75]
         }
     }, t.end);
 });
 tape('index poi', function(t) {
     addFeature(conf.poi_cn, {
-        id:1,
+        id:2,
         properties: {
             'carmen:score':5,
             'carmen:text':'china poi',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0, 0],
+            'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
+        }
+        ,
+        geometry: {
+            type: "Point",
+            coordinates: [113.65, 34.75]
         }
     }, t.end);
 });
-
-tape('add vector tile to cn source', function(t) {
-    var vtile = new mapnik.VectorTile(0, 0, 0);
-    vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [ 0,0 ]
-                },
-                "properties": {
-                    id: 1,
-                    "carmen:text": "china poi",
-                    "carmen:score": 5,
-                    "carmen:center": [ 0, 0 ]
-                }
-            },
-            {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [ 0,0 ]
-                },
-                "properties": {
-                    id: 2,
-                    "carmen:text": "china lm",
-                    "carmen:score": 500,
-                    "carmen:center": [ 0, 0 ]
-                }
-            }
-        ]
-    }), "data");
-    zlib.gzip(vtile.getData(), function(err, buffer) {
-        t.ifError(err);
-        conf.poi_cn.putTile(0, 0, 0, buffer);
-        t.end();
-    });
+tape('index offset poi', function(t) {
+    addFeature(conf.poi_cn, {
+        id:3,
+        properties: {
+            'carmen:score':5,
+            'carmen:text':'china poi (offset)',
+            'carmen:center': [113.651, 34.75],
+            'carmen:geocoder_stack':'cn'
+        },
+        geometry: {
+            type: "Point",
+            coordinates: [113.651, 34.75]
+        }
+    }, t.end);
 });
 
 // invalid options.types type
@@ -151,7 +132,7 @@ tape('china types: ["poi.landmark"]', function(t) {
     c.geocode('china', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
-        t.deepEqual(res.features[0].id, 'poi.2', 'landmarks beat pois');
+        t.deepEqual(res.features[0].text, 'china lm', 'landmarks beat pois');
         t.end();
     });
 });
@@ -160,8 +141,8 @@ tape('china types: ["poi.landmark"]', function(t) {
 tape('china types:[poi.landmark, poi]', function(t) {
     c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 2, '2 result');
-        t.deepEqual(res.features[0].id, 'poi.2', 'subtypes work');
+        t.deepEqual(res.features.length, 3, '3 results');
+        t.deepEqual(res.features[0].text, 'china lm', 'subtypes work');
         t.end();
     });
 });
@@ -170,11 +151,12 @@ tape('china types:[poi.landmark, poi]', function(t) {
 tape('china poi returns poi.landmark also', function(t) {
     c.geocode('china', { types:['poi'] }, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 2, '2 results');
-        t.deepEqual(res.features[0].id, 'poi.2', 'landmark ranks higher than poi.');
+        t.deepEqual(res.features.length, 3, '2 results');
+        t.deepEqual(res.features[0].text, 'china lm', 'landmark ranks higher than poi.');
         t.end();
     });
 });
+
 // country wins without type filter
 tape('china', function(t) {
     c.geocode('china', { limit_verify:4 }, function(err, res) {
@@ -208,7 +190,7 @@ tape('china', function(t) {
 
 // reverse without type filter
 tape('reverse', function(t) {
-    c.geocode('0,0', {}, function(err, res) {
+    c.geocode('113.65,34.75', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results, 1 per layer type');
         t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
@@ -217,7 +199,7 @@ tape('reverse', function(t) {
 });
 
 tape('reverse: country', function(t) {
-    c.geocode('0,0', { types:['country'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['country'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].id, 'country.1', 'country wins');
@@ -226,7 +208,7 @@ tape('reverse: country', function(t) {
 });
 
 tape('reverse: country,place', function(t) {
-    c.geocode('0,0', { types:['country','place'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['country','place'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].id, 'place.1', '1: place');
@@ -241,7 +223,7 @@ tape('reverse: country,place', function(t) {
 });
 
 tape('reverse: poi', function(t) {
-    c.geocode('0,0', { types:['poi'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['poi'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].context, [
@@ -254,10 +236,10 @@ tape('reverse: poi', function(t) {
 });
 
 tape('reverse: poi.landmark', function(t) {
-    c.geocode('0,0', { types:['poi.landmark'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
-        t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result'); // is this luck?
+        t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
         t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
@@ -267,10 +249,45 @@ tape('reverse: poi.landmark', function(t) {
     });
 });
 
-tape('reverse: poi (limit 5, expect 2)', function(t) {
-    c.geocode('0,0', { types:['poi'], limit: 5 }, function(err, res) {
+tape('reverse returns offset point when its location is specified', function(t) {
+    c.geocode('113.651,34.75', {}, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features.length, 2, '2 results');
+        t.deepEqual(res.features.length, 4, '4 results (limit=1 reverse query splits context into features)');
+        t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
+        t.end();
+    });
+});
+
+
+tape('reverse returns landmark point when offset queried w/ filter=poi.landmark', function(t) {
+    c.geocode('113.651,34.75', { types: ['poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 results (types filter suppresses split context features)');
+        t.deepEqual(res.features[0].text, 'china lm', 'found landmark');
+        t.end();
+    });
+});
+
+tape('reverse returns offset point when offset location is specified, queried w/ filter=poi,poi.landmark', function(t) {
+    c.geocode('113.651, 34.75', { types: ['poi', 'poi.landmark'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
+        t.end();
+    });
+});
+
+tape('reverse returns offset point when offset queried location is specified, w/ filter=poi.landmark,poi', function(t) {
+    c.geocode('113.651, 34.75', { types: ['poi.landmark', 'poi'] }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
+        t.end();
+    });
+});
+
+tape('reverse: poi (limit 5, expect 3)', function(t) {
+    c.geocode('113.65,34.75', { types:['poi'], limit: 5 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 3, '3 results');
         t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
@@ -287,10 +304,10 @@ tape('reverse: poi (limit 5, expect 2)', function(t) {
 });
 
 tape('reverse: poi.landmark (limit 5, expect 1)', function(t) {
-    c.geocode('0,0', { types: ['poi.landmark'], limit: 5 }, function(err, res) {
+    c.geocode('113.65,34.75', { types: ['poi.landmark'], limit: 5 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
-        t.deepEqual(res.features[0].id, 'poi.2', 'landmark is top result');
+        t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
         t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
@@ -340,7 +357,7 @@ tape('fwd: landmark filtering works w/ diff score ranges', function(t) {
     c.geocode('china lm', { types:['poi.landmark'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
-        t.ok(res.features.map(function(x) { return x.id; }).indexOf('poi.2') !== -1, 'cn landmark in results');
+        t.ok(res.features.map(function(x) { return x.text; }).indexOf('china lm') !== -1, 'cn landmark in results');
         t.ok(res.features.map(function(x) { return x.id; }).indexOf('poi.5') !== -1, 'au landmark in results');
         t.end();
     });
