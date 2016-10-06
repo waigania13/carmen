@@ -534,3 +534,31 @@ However, transliteration increases the potential for collisions between queries.
 For this reason, termops examines whether a given piece of text contains characters from the CJK (Chinese/Japanese/Korean) unicode blocks. If the text consists exclusively of such characters, a `z` is prepended to it. If there are any non-CJK characters, an `x` is prepended. This effectively isolates all-CJK tokens from everything else (including tokens that contain CJK characters alongside non-CJK characters).
 
 For clarity and simplicity, the above examples do not include these prepended chars. But in practice a query for `seattle washington` will be tokenized to `xseattle`, `xwashington` and `xseattle washington`.
+
+### geocoder_name, geocoder_type and combining indexes
+
+It is often useful to use multiple indexes to represent a single class of feature. For instance, you might have indexes named `usa-address` and `canada-address`. Such indexes can be grouped together into a combined class of indexes (e.g. `address`) by setting those indexes' `geocoder_name` value to `address`.
+
+It can be desirable to combine indexes using `geocoder_name` but still make them distinguishable by type filtering. For instance, the above `address` grouped index might be accompanied by a point of interest (POI) index, in which case it would be desirable to avoid returning both a POI (e.g. "White House") and a duplicative address feature (e.g. "1600 Pennsylvania Avenue"). This can be achieved by grouping the indexes together using `geocode_name`, as already described.
+
+However, it might _also_ be desirable to distinguish results from these indexes for purposes of filtering and identifying the class of feature in results' `id` field. This distinction can be accomplished by setting `geocoder_type` value of individual indexes that have been grouped with `geocoder_name`. In the above example, the POI and address indexes might share a `geocoder_name` of `address`, but the POI index could have a `geocoder_type` of `poi`.
+
+### type and subtype filtering
+
+The `types` parameter allows query results to be limited to specific classes of features as defined with `geocoder_name`. Using the above example, `address` and `poi` would be valid type filter values.
+
+Subtype filtering allows results from an index to be limited to its highest-scoring members. This can be a useful way of ensuring that queries highlight features of highest importance. For instance, a carsharing company might assign `city` features scores that are assigned in two numeric ranges: cities where the company operates (`current`), and where it has no presence (in descending order). Within each range, features could then be scored by city population, car ownership rates or some other metric. Given a situation like this, and assuming the numeric score ranges are of equal size, a `scoreranges` value on the index tileJSON's `metadata` object could be specified like:
+
+```js
+"geocoder_name": "city",
+"scoreranges": {
+  "operational": [
+    0.5,
+    1.0
+  ]
+}
+```
+
+With a configuration like this, valid type filters will include `city` and `city.operational`. Specifying both will return the union of features (i.e. it will operate the same way as simply specifying `city`).
+
+The ability to specify more than one score range per index has not yet been implemented.

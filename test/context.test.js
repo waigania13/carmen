@@ -30,7 +30,7 @@ test('contextVector deflate', function(t) {
         id: 'testA',
         idx: 1
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
@@ -68,7 +68,7 @@ test('contextVector gzip', function(t) {
         id: 'testA',
         idx: 1
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
@@ -103,7 +103,7 @@ test('contextVector badbuffer', function(t) {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -128,7 +128,7 @@ test('contextVector empty VT buffer', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -153,10 +153,72 @@ test('nearestPoints empty VT buffer', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.nearestPoints(source, 0, 0, function(err, data) {
+        context.nearestPoints(source, 0, 0, false, function(err, data) {
             assert.ifError(err);
             assert.deepEqual(data, []);
             assert.end();
+        });
+    });
+});
+
+test('nearestPoints scoreFilter', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { id: 2, "carmen:text": "A", "carmen:score": 40, "carmen:center": "0,0" }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { id: 3, "carmen:text": "B", "carmen:score": 60, "carmen:center": "0,0" }
+            }
+        ]
+    }), "data");
+
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            maxscore: 100,
+            minscore: 0,
+            scoreranges: {
+                landmark: [ 0.5, 1]
+            },
+            name: 'poi',
+            type: 'poi',
+            id: 'testA',
+            idx: 0
+        };
+        assert.pass('* now testing context.nearestPoints() without scoreFilter');
+        context.nearestPoints(source, 0, 0, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data.length, 2, 'got two features back');
+            for (var i = 0; i < 2; i++)
+                for (var j = 0; j < 2; j++)
+                    assert.equal(data[i][j], 0, 'coordinate ' + i + ',' + j + ' is zero');
+            assert.ok(data[0].hasOwnProperty('tmpid'), 'feature 0 has tmpid');
+            assert.ok(data[1].hasOwnProperty('tmpid'), 'feature 1 has tmpid');
+            assert.ok(data[1].hasOwnProperty('distance'), 'feature 0 has distance');
+            assert.ok(data[1].hasOwnProperty('distance'), 'feature 1 has distance');
+
+            assert.pass('* now testing context.nearestPoints() with scoreFilter');
+            context.nearestPoints(source, 0, 0, [50, 100], function(err, data) {
+                assert.ifError(err);
+                assert.equal(data.length, 1, 'got one feature back');
+                assert.equal(data[0].tmpid, 3, 'higher-scoring feature retrieved');
+                assert.end();
+            });
         });
     });
 });
@@ -194,7 +256,7 @@ test('contextVector ignores negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'B');
             assert.end();
@@ -230,7 +292,7 @@ test('contextVector only negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -266,7 +328,48 @@ test('contextVector matched negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, { 1:{} }, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, function(err, data) {
+            assert.ifError(err);
+            assert.equal(data.properties['carmen:text'], 'A');
+            assert.end();
+        });
+    });
+});
+
+test('contextVector grabbed exclusive ID', function(assert) {
+    context.getTile.cache.reset();
+
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { _id: 4, "_text": "A", "_score": -1 }
+            },
+            {
+                "type": "Feature",
+                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
+                "properties": { _id: 5, "_text": "B" }
+            }
+        ]
+    }),"data");
+    zlib.gzip(vtile.getData(), function(err, buffer) {
+        assert.ifError(err);
+        var source = {
+            getTile: function(z,x,y,callback) {
+                return callback(null, buffer);
+            },
+            geocoder_layer: 'data',
+            maxzoom: 0,
+            minzoom: 0,
+            name: 'test',
+            type: 'test',
+            id: 'testA',
+            idx: 0
+        };
+        context.contextVector(source, 0, 0, false, {_exclusive: true, 4: true}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
@@ -309,7 +412,7 @@ test('contextVector restricts distance', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 170, 80, false, {}, null, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -365,7 +468,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -390,7 +493,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -415,7 +518,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, { 2:true }, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, { 2:true }, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'B');
                 assert.end();
@@ -455,14 +558,14 @@ test('contextVector caching', function(assert) {
         var hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
-        context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:extid'], 'test.1');
             assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
-            context.contextVector(source, 0, 0, false, {}, null, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:extid'], 'test.1');
                 assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
