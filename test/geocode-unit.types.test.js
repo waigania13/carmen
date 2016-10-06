@@ -6,9 +6,6 @@ var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
-var zlib = require('zlib');
-var path = require('path');
-var mapnik = require('mapnik');
 
 var conf = {
     country: new mem({ maxzoom: 6 }, function() {}),
@@ -78,8 +75,7 @@ tape('index poi', function(t) {
             'carmen:text':'china poi',
             'carmen:center': [113.65, 34.75],
             'carmen:geocoder_stack':'cn'
-        }
-        ,
+        },
         geometry: {
             type: "Point",
             coordinates: [113.65, 34.75]
