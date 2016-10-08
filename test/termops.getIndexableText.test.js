@@ -13,7 +13,7 @@ test('termops.getIndexableText', function(assert) {
         [ 'main', 'street' ]
     ];
     texts[0].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'creates indexableText');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
 
     replacer = token.createReplacer({'Street':'St'});
     doc = { properties: { 'carmen:text': 'Main Street' } };
@@ -21,7 +21,7 @@ test('termops.getIndexableText', function(assert) {
         [ 'main', 'st' ]
     ];
     texts[0].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'creates contracted phrases using geocoder_tokens');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates contracted phrases using geocoder_tokens');
 
     replacer = token.createReplacer({'Street':'St'});
     doc = { properties: { 'carmen:text': 'Main Street, main st' } };
@@ -29,7 +29,7 @@ test('termops.getIndexableText', function(assert) {
         [ 'main', 'st' ]
     ];
     texts[0].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'dedupes phrases');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'dedupes phrases');
 
     replacer = token.createReplacer({'Street':'St', 'Lane':'Ln'});
     doc = { properties: { 'carmen:text': 'Main Street Lane' } };
@@ -37,13 +37,13 @@ test('termops.getIndexableText', function(assert) {
         [ 'main', 'st', 'ln' ]
     ];
     texts[0].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'dedupes phrases');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'dedupes phrases');
 
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = { properties: { 'carmen:text': 'Avenue du dix-huitième régiment' } };
     texts = [[ 'avenue', 'du', '18e', 'régiment' ]];
     texts[0].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'hypenated replacement');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'hypenated replacement');
 
     replacer = token.createReplacer({});
     doc = {
@@ -62,7 +62,7 @@ test('termops.getIndexableText', function(assert) {
     texts[1].indexDegens = true;
     texts[2].indexDegens = true;
     texts[3].indexDegens = true;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'with range');
+    assert.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
     // sets indexDegens to false for translated text
     replacer = token.createReplacer({});
@@ -73,7 +73,7 @@ test('termops.getIndexableText', function(assert) {
     ];
     texts[0].indexDegens = true;
     texts[1].indexDegens = false;
-    assert.deepEqual(termops.getIndexableText(replacer, doc), texts, 'creates indexableText, sets indexDegens to false for translations');
+    assert.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText, sets indexDegens to false for translations');
 
     assert.end();
 });
