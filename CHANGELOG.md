@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.0.0
+
+- Allow more flexible regexes in global tokens and refactor how they are applied.
+
 ## 16.2.4
 
 - types + limit reverse query mode is now only a concept handled by reverseGeocode().
