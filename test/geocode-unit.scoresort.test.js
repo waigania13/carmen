@@ -57,14 +57,11 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
 
-    // place is excluded from results, even though it has the highest score
-    tape('geocode little', function(t) {
+    // High-scored feature wins over low-scored features in index with high max score
+    tape('high score beats low score + high scorefactor', function(t) {
         c.geocode('smallville', null, function(err, res) {
             t.ifError(err);
-            res.features.forEach(function(feat) {
-                t.equal(feat.id.startsWith('region'), true, "feature type is region");
-                t.equal(feat.text.startsWith('smallville'), true, "no high-scored feature is included");
-            });
+            t.equal(res.features[0].id, "place.1", "Place (high score) is first result")
             t.end();
         });
     });
