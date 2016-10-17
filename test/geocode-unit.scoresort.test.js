@@ -6,7 +6,6 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
 var queue = require('d3-queue').queue;
-var termops = require('../lib/util/termops');
 
 (function() {
 
