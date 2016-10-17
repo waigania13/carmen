@@ -55,7 +55,7 @@ var queue = require('d3-queue').queue;
                 properties: {
                     'carmen:text':'smallville' + i,
                     'carmen:zxy':['6/32/32'],
-                    'carmen:score':1,
+                    'carmen:score':6000,
                     'carmen:center':[0,0]
                 }
             }, done);
@@ -77,7 +77,7 @@ var queue = require('d3-queue').queue;
     });
 
     tape('index lamplace (high score)', function(t) {
-        addFeature(conf.namplace, {
+        addFeature(conf.lamplace, {
             id:1,
             properties: {
                 'carmen:text':'smallville1',
@@ -92,7 +92,7 @@ var queue = require('d3-queue').queue;
     tape('index lamplace (medium score)', function(t) {
         var q = queue(1);
         for (var i =2; i < 25; i++) q.defer(function(i, done) {
-            addFeature(conf.region, {
+            addFeature(conf.lamplace, {
                 id:i,
                 properties: {
                     'carmen:text':'smallville' + i,
@@ -121,7 +121,9 @@ var queue = require('d3-queue').queue;
     tape('high score beats low score + high scorefactor', function(t) {
         c.geocode('smallville', null, function(err, res) {
             t.ifError(err);
-            t.equal(res.features[0].id, "namplace.1", "Place (high score) is first result")
+            console.log("res", res);
+            t.equal(res.features[0].id, "lamplace.1", "Place (high score) is first result")
+            t.equal(res.features[1].id, "namplace.1", "Place (high score) is second result")
             t.end();
         });
     });
