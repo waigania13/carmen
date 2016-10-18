@@ -99,7 +99,8 @@
       ],
       "no-redeclare": 2,
       "no-undef": 2,
-      "block-scoped-var": 2
+      "block-scoped-var": 2,
+      "valid-jsdoc": 1
     },
     "env": {
       "node": true
