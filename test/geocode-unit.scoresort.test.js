@@ -13,7 +13,8 @@ var queue = require('d3-queue').queue;
         region: new mem(null, function() {}),
         place: new mem(null, function() {}),
         lamplace: new mem(null, function() {}),
-        namplace: new mem(null, function() {})
+        namplace: new mem(null, function() {}),
+        locality: new mem(null, function() {})
     };
     var c = new Carmen(conf);
     // very high max score in region index
@@ -55,7 +56,7 @@ var queue = require('d3-queue').queue;
                 properties: {
                     'carmen:text':'smallville' + i,
                     'carmen:zxy':['6/32/32'],
-                    'carmen:score':6000,
+                    'carmen:score':3000,
                     'carmen:center':[0,0]
                 }
             }, done);
@@ -112,6 +113,18 @@ var queue = require('d3-queue').queue;
                 'carmen:text':'smallville1',
                 'carmen:zxy':['6/32/32'],
                 'carmen:score':16000,
+                'carmen:center':[0,0]
+            }
+        }, t.end);
+    });
+
+    tape('index locality (low score)', function(t) {
+        addFeature(conf.locality, {
+            id:1,
+            properties: {
+                'carmen:text':'smallville1',
+                'carmen:zxy':['6/32/32'],
+                'carmen:score':1000,
                 'carmen:center':[0,0]
             }
         }, t.end);
