@@ -77,14 +77,14 @@ test('add locality', function(t) {
 
 test('allowed max score is 7x the max of the median index', function(t) {
     var max = score.setMax(c);
-    t.equal(max, 700, '[10, 50, 100, 800, 1000] => 100*7');
+    t.equal(max.allowedMax, 700, '[10, 50, 100, 800, 1000] => 100*7');
     t.end();
 });
 
 test('make sure max is set', function(t) {
     t.notOk(c.maxScore, "maxScore not yet set")
     c.geocode("USA", null, function(err, res) {
-        t.equal(c.maxScore, 700, "max score set to 7x median");
+        t.equal(c.maxScore.allowedMax, 700, "max score set to 7x median");
         t.end();
     });
 });

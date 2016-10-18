@@ -121,7 +121,6 @@ var queue = require('d3-queue').queue;
     tape('high score beats low score + high scorefactor', function(t) {
         c.geocode('smallville', null, function(err, res) {
             t.ifError(err);
-            console.log("res", res);
             t.equal(res.features[0].id, "lamplace.1", "Place (high score) is first result")
             t.equal(res.features[1].id, "namplace.1", "Place (high score) is second result")
             t.end();
