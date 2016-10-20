@@ -53,12 +53,12 @@ test('#get', function(s) {
 test('#pack', function(s) {
     var cache = new Cache('a');
     cache.set('grid', '5', [0,1,2]);
-    s.deepEqual(10, cache.pack('grid', 34566).length);
+    s.deepEqual(2065, cache.pack('grid', 34566).length);
     // set should replace data
     cache.set('grid', '5', [0,1,2,4]);
-    s.deepEqual(11, cache.pack('grid', 34566).length);
+    s.deepEqual(2066, cache.pack('grid', 34566).length);
     cache.set('grid', '5', []);
-    s.deepEqual(5, cache.pack('grid', 34566).length);
+    s.deepEqual(2060, cache.pack('grid', 34566).length);
     // now test packing data created via load
     var packer = new Cache('a');
     var array = [];
@@ -69,7 +69,7 @@ test('#pack', function(s) {
     var loader = new Cache('a');
     loader.loadSync(packer.pack('grid',34566), 'grid', 34566);
     // grab data right back out
-    s.deepEqual(10009, loader.pack('grid', 34566).length);
+    s.deepEqual(12063, loader.pack('grid', 34566).length);
     // try to grab data that does not exist
     s.throws(function() { loader.pack('grid', 99999999999999) });
     s.end();
