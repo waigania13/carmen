@@ -116,7 +116,7 @@ carmen.geocode(argv.query, {
         console.log(JSON.stringify(data, null, 2));
     }
 
-    if (argv.debug) {
+    if (argv.debug && data.debug) {
         console.log('Debug');
         console.log('=====');
         console.log('id:', data.debug.id);
@@ -142,6 +142,8 @@ carmen.geocode(argv.query, {
         console.log(JSON.stringify(data.debug.verifymatch, null, 2));
         console.log();
     }
+    else if (!data.debug)
+        console.log('No debug information collected (is this a reverse query?)');
 
     if (!argv.stats) process.exit(0);
     console.log('Stats');
