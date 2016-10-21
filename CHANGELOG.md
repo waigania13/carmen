@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.1.1
+
+- Fixes formatting of error message when an invalid `types` value is specified.
+
 ## 17.1.0
 
 - Allows for filtering by subtypes (e.g. `poi.landmark`) which are defined by score range.
