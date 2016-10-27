@@ -116,11 +116,34 @@ carmen.geocode(argv.query, {
         console.log(JSON.stringify(data, null, 2));
     }
 
-    if (argv.debug) {
-        console.log('Debug\n-----');
-        console.log(data.debug);
+    if (argv.debug && data.debug) {
+        console.log('Debug');
+        console.log('=====');
+        console.log('id:', data.debug.id);
+        console.log('extid:', data.debug.extid);
+        console.log();
+
+        console.log('PhraseMatch');
+        console.log('-----------');
+        Object.keys(data.debug.phrasematch).forEach(function(idx) {
+            console.log('  ', idx, JSON.stringify(data.debug.phrasematch[idx]));
+        });
+        console.log()
+
+        console.log('SpatialMatch');
+        console.log('------------');
+        console.log('spatialmatch position:', data.debug.spatialmatch_position);
+        console.log(JSON.stringify(data.debug.spatialmatch, null, 2));
+        console.log();
+
+        console.log('VerifyMatch');
+        console.log('-----------');
+        console.log('verifymatch position:', data.debug.verifymatch_position);
+        console.log(JSON.stringify(data.debug.verifymatch, null, 2));
         console.log();
     }
+    else if (!data.debug)
+        console.log('No debug information collected (is this a reverse query?)');
 
     if (!argv.stats) process.exit(0);
     console.log('Stats');
