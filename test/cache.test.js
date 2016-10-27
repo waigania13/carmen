@@ -55,10 +55,10 @@ test('#pack', function(s) {
     cache.set('grid', '5', [0,1,2]);
     s.deepEqual(2065, cache.pack('grid', 34566).length);
     // set should replace data
-    cache.set('grid', 5, [0,1,2,4]);
+    cache.set('grid', '5', [0,1,2,4]);
     s.deepEqual(2066, cache.pack('grid', 34566).length);
     // throw on invalid grid
-    s.throws(cache.set.bind(null, 'grid', 5, []), 'cache.set throws on empty grid value');
+    s.throws(cache.set.bind(null, 'grid', '5', []), 'cache.set throws on empty grid value');
     // now test packing data created via load
     var packer = new Cache('a');
     var array = [];
