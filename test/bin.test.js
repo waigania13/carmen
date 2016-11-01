@@ -135,7 +135,7 @@ tape('bin/carmen query w/ global tokens', function(t) {
 });
 
 tape('bin/carmen query types', function(t) {
-    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="test-carmen-index.mbtiles"', function(err, stdout, stderr) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="test-carmen-index"', function(err, stdout, stderr) {
         t.ifError(err);
         t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
         t.end();
