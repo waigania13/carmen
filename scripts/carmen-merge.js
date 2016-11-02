@@ -15,8 +15,9 @@ var queue = require('d3-queue').queue;
 function help() {
     console.log('carmen-merge.js --input=<path>[,<path>,...] --output=<path> [options]');
     console.log('[options]:');
-    console.log('  --help                  Prints this message');
+    console.log('  --help                  Print this message');
     console.log('  --version               Print the carmen version');
+    console.log('  --cleanup               Delete already merged mbtiles to save disk space');
     console.log('  --config="<path>"       path to JSON document with index settings');
     console.log('  --input="<path>"        Tilelive path(s) to pull index from, separated by commas');
     console.log('                          (any directories will have all of their .mbtiles files merged)');
@@ -36,6 +37,7 @@ if (!argv.config) help();
 if (!argv.input) throw new Error('--input argument required');
 if (!argv.output) throw new Error('--output argument required');
 
+var cleanup = (argv.cleanup) ? true : false;
 var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 
 var inputs = [];
@@ -53,7 +55,7 @@ argv.input.split(",").forEach(function(_input) {
 });
 
 var outputOptions = JSON.parse(JSON.stringify(config));
-merge.multimerge(inputs, argv.output, outputOptions, function(err) {
+merge.multimerge(inputs, argv.output, outputOptions, argv.cleanup, function(err) {
     if (err) throw err;
     process.exit(0);
 });

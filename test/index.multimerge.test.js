@@ -101,7 +101,8 @@ test('index - streaming interface', function(assert) {
 
     assert.test('multi-way merged indexes', function(q) {
         files.C = randomMBtiles();
-        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, function(err) {
+        var cleanup = true;
+        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, cleanup, function(err) {
             if (err) throw err;
 
             var auto = Carmen.auto(files.C, function() {
@@ -120,6 +121,10 @@ test('index - streaming interface', function(assert) {
             assert.equal(result.features[0].text, "India", "found India");
             q.end();
         });
+    });
+    assert.test('ensure that index A was deleted after merging', function(q) {
+        // check to see if file still exists?
+        q.end();
     });
     assert.test('ensure index was successful for index B1 after merging', function(q) {
         carmens.C.geocode("Paraguay", {}, function(err, result) {

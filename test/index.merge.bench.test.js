@@ -71,5 +71,6 @@ tape('merge a + b = c', function(assert) {
         assert.ok(stats.stat, 'merged stat in ' + stats.stat + 'ms');
         assert.end();
     });
+
 });
 
