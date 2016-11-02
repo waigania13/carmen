@@ -101,7 +101,7 @@ test('index - streaming interface', function(assert) {
 
     assert.test('multi-way merged indexes', function(q) {
         files.C = randomMBtiles();
-        var cleanup = true;
+        var cleanup = false;
         merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, cleanup, function(err) {
             if (err) throw err;
 
@@ -122,10 +122,6 @@ test('index - streaming interface', function(assert) {
             q.end();
         });
     });
-    assert.test('ensure that index A was deleted after merging', function(q) {
-        // check to see if file still exists?
-        q.end();
-    });
     assert.test('ensure index was successful for index B1 after merging', function(q) {
         carmens.C.geocode("Paraguay", {}, function(err, result) {
             assert.ifError(err, "error");
@@ -140,7 +136,6 @@ test('index - streaming interface', function(assert) {
             q.end();
         });
     });
-
     assert.test('ensure geocode of a term that occurs in both indexes produces the same results', function(q) {
         carmens.C.geocode('Republic', {}, function(err, resultC) {
             assert.ifError(err, "error");

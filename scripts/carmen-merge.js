@@ -55,7 +55,7 @@ argv.input.split(",").forEach(function(_input) {
 });
 
 var outputOptions = JSON.parse(JSON.stringify(config));
-merge.multimerge(inputs, argv.output, outputOptions, argv.cleanup, function(err) {
+merge.multimerge(inputs, argv.output, outputOptions, cleanup, function(err) {
     if (err) throw err;
     process.exit(0);
 });
