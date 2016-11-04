@@ -176,7 +176,9 @@ test('index - streaming interface', function(assert) {
 
     assert.test('clean up', function(t) {
         Object.keys(files).forEach(function(key) {
-            fs.unlinkSync(files[key]);
+            if (fs.existsSync(files[key])) {
+                fs.unlinkSync(files[key]);
+            }
         });
         t.end();
     })
