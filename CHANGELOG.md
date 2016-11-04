@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.1.2
+
+- During indexing, ensure all work in `process.stdout` finishes before exiting the process
+
 ## 17.1.1
 
 - Fixes formatting of error message when an invalid `types` value is specified.
