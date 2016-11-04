@@ -99,7 +99,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    assert.test('multi-way merged indexes', function(q) {
+    assert.test('multi-way merged indexes without cleanup', function(q) {
         files.C = randomMBtiles();
         var cleanup = false;
         merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, cleanup, function(err) {
@@ -145,6 +145,33 @@ test('index - streaming interface', function(assert) {
                 q.end();
             });
         });
+    });
+    assert.test('ensure intermediate files still exist', function(q) {
+        var fileExists = fs.existsSync(files.A);
+        assert.equal(true, fileExists);
+        q.end();
+    });
+
+    assert.test('multi-way merged indexes with cleanup', function(q) {
+        files.C = randomMBtiles();
+        var cleanup = true;
+        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, cleanup, function(err) {
+            if (err) throw err;
+
+            var auto = Carmen.auto(files.C, function() {
+                var conf = {
+                    country: auto
+                };
+                confs.C = conf;
+                carmens.C = new Carmen(conf);
+                q.end();
+            });
+        });
+    });
+    assert.test('ensure intermediate files are deleted', function(q) {
+        var fileExists = fs.existsSync(files.A);
+        assert.equal(false, fileExists);
+        q.end();
     });
 
     assert.test('clean up', function(t) {
