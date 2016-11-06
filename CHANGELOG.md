@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.1.3
+
+- Fix for several calls that could lead to max call stack exceeded errors.
+
 ## 17.1.2
 
 - During indexing, ensure all work in `process.stdout` finishes before exiting the process
