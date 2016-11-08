@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.1.4
+
+- Performance optimizations for `spatialmatch.stackable()`.
+
 ## 17.1.3
 
 - Fix for several calls that could lead to max call stack exceeded errors.
