@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.1.5
+
+- Fix typo in `lib/verifymatch.js`
+
 ## 17.1.4
 
 - Performance optimizations for `spatialmatch.stackable()`.
