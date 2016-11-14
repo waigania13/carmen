@@ -170,7 +170,7 @@ tape('multitype forward, q=libertador', function(assert) {
         assert.deepEqual(res.features[0].place_name, 'libertador, caracas');
         assert.deepEqual(res.features[0].id, 'place.1');
         assert.deepEqual(res.features[0].context, [{
-            id: 'place.1',
+            id: 'region.1',
             text: 'caracas'
         }]);
         assert.end();
