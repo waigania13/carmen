@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.2.0
+
+- Adds support for individual multitype features in indexes determined by the `carmen:types` attribute.
+
 ## 17.1.5
 
 - Fix typo in `lib/verifymatch.js`
