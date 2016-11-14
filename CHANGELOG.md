@@ -1,8 +1,12 @@
 # Changelog
 
+## 17.2.1
+
+- Fix bug around feature loading in verifymatch.
+
 ## 17.2.0
 
-- Adds support for individual multitype features in indexes determined by the `carmen:types` attribute.
+- Adds support for individual multitype features in indexes determined by the `carmen:types` attribute. See README for more details.
 
 ## 17.1.5
 
