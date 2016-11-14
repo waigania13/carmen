@@ -34,6 +34,9 @@ test('contextVector deflate', function(t) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:types': ['test'],
+                'carmen:stack': undefined,
+                'carmen:conflict': undefined,
                 'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:extid': 'test.5',
                 'carmen:dbidx': 1,
@@ -72,6 +75,9 @@ test('contextVector gzip', function(t) {
         t.ifError(err);
         t.deepEqual(data, {
             properties: {
+                'carmen:types': ['test'],
+                'carmen:stack': undefined,
+                'carmen:conflict': undefined,
                 'carmen:center': [ -99.693234, 37.245325 ],
                 'carmen:dbidx': 1,
                 'carmen:extid': 'test.5',
