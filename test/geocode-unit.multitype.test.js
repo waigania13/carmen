@@ -189,6 +189,18 @@ tape('multitype forward, q=caracas', function(assert) {
     });
 });
 
+tape('multitype forward, q=caracas, types=place', function(assert) {
+    assert.comment('query:  caracas');
+    assert.comment('result: caracas');
+    assert.comment('note:   returns caracas with shift');
+    c.geocode('caracas', { types: ['place'] }, function(err, res) {
+        assert.ifError(err);
+        assert.deepEqual(res.features[0].place_name, 'caracas');
+        assert.deepEqual(res.features[0].id, 'place.1');
+        assert.end();
+    });
+});
+
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
