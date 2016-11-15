@@ -22,24 +22,24 @@ tape('filter.sourceMatchesStacks', function(assert) {
 
 tape('filter.sourceMatchesTypes', function(assert) {
     assert.ok(filter.sourceMatchesTypes({
-        type: 'region'
+        types: ['region']
     }, {
         types: ['region','place']
     }), 'allowed: source with matching type');
     assert.ok(filter.sourceMatchesTypes({
-        type: 'region',
+        types: ['region'],
         scoreranges: {a:[],b:[]}
     }, {
         types: ['region.a','region.d']
     }), 'allowed: source with matching subtype');
     assert.ok(filter.sourceMatchesTypes({
-        type: 'region',
+        types: ['region'],
         scoreranges: {a:[],b:[]}
     }, {
         types:['region.b','region.d']
     }), 'allowed: source with matching subtype');
     assert.notOk(filter.sourceMatchesTypes({
-        type: 'region',
+        types: ['region'],
         scoreranges: {a:[],b:[]}
     }, {
         types: ['region.c','region.d']
