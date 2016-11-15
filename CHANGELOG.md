@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.2.2
+
+- Fix bug where type filters would not always work correctly with forward geocodes and multitype indexes.
+
 ## 17.2.1
 
 - Fix bug around feature loading in verifymatch.
