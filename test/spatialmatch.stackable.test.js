@@ -122,3 +122,47 @@ test('stackable direction change', function(assert) {
     assert.end();
 });
 
+test('stackable bench', function(assert) {
+    runBench(5, 10);
+    runBench(6, 10);
+    runBench(7, 10);
+    runBench(8, 10);
+    runBench(9, 10);
+    runBench(10, 10);
+
+    function runBench(indexCount, termCount) {
+        var time = 0;
+        var runs = 5;
+        for (var i = 0; i < runs; i++) time += bench(indexCount, termCount);
+        assert.comment('bench x' + runs + ' (indexCount=' + indexCount + ', termCount=' + termCount + ')');
+        assert.ok(true, 'avg time ' + Math.round(time/runs) + 'ms');
+    }
+
+    // Suppose each index matches each term
+    function bench(indexCount, termCount) {
+        var phraseMatches = [];
+        for (var i = 0; i < indexCount; i++) {
+            for (var t = 0; t < termCount; t++) {
+                var matchingTerms = Math.round(Math.random() * termCount * 0.5);
+                var offset = Math.floor(Math.random() * (termCount - matchingTerms));
+                var mask = 0;
+                for (var o = 0; o < matchingTerms; o++) {
+                    mask = mask | (1 << (offset + o));
+                }
+                phraseMatches[i] = phraseMatches[i] || [];
+                phraseMatches[i].push({
+                    text: t + '-' + i,
+                    idx: i,
+                    zoom: 0,
+                    mask: mask,
+                    weight: matchingTerms/termCount
+                });
+            }
+        }
+        var start = +new Date;
+        var stacked = stackable([], phraseMatches);
+        return (+new Date) - start;
+    }
+    assert.end();
+});
+
