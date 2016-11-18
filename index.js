@@ -26,9 +26,10 @@ function Geocoder(indexes, options) {
     var q = queue(10);
 
     this.indexes = indexes;
-    this.replacer = token.createReplacer(options.tokens || {});
+    this.replacer = token.createGlobalReplacer(options.tokens || {});
     this.byname = {};
     this.bytype = {};
+    this.bysubtype = {};
     this.bystack = {};
     this.byidx = [];
     this.names = [];
@@ -40,33 +41,21 @@ function Geocoder(indexes, options) {
 
     q.awaitAll(function(err, results) {
         var names = [];
-        var types = [];
         var stacks = [];
+        var subtypes = [];
         if (results) results.forEach(function(data, i) {
             var id = data.id;
             var info = data.info;
             var dictcache = data.dictcache;
             var source = indexes[id];
             var name = info.geocoder_name || id;
-            var type = info.geocoder_type||info.geocoder_name||id;
+            var type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
+            var types = info.geocoder_types || [type];
             var stack = info.geocoder_stack || false;
-            if (names.indexOf(name) === -1) {
-                names.push(name);
-                this.byname[name] = [];
-            }
-            if (types.indexOf(type) === -1) {
-                types.push(type);
-                this.bytype[type] = [];
-            }
             if (typeof stack === 'string') stack = [stack];
-            if (stack) {
-                for (var j = 0; j < stack.length; j++) {
-                    if (stacks.indexOf(stack[j]) === -1) {
-                        stacks.push(stack[j]);
-                        this.bystack[stack[j]] = [];
-                    }
-                }
-            }
+            var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
+
+            if (names.indexOf(name) === -1) names.push(name);
 
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
             source._dictcache = source._original._dictcache || dictcache;
@@ -77,9 +66,9 @@ function Geocoder(indexes, options) {
             source._original._dictcache = source._dictcache;
 
             if (info.geocoder_address) {
-              source.geocoder_address = info.geocoder_address;
+                source.geocoder_address = info.geocoder_address;
             } else {
-              source.geocoder_address = false;
+                source.geocoder_address = false;
             }
 
             if (info.geocoder_version) {
@@ -97,13 +86,30 @@ function Geocoder(indexes, options) {
             for (var ix = 0; ix < keys.length; ix ++) {
                 if (/geocoder_format_/.test(keys[ix])) source[keys[ix]] = info[keys[ix]]||false;
             }
+            source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_format = info.geocoder_format||false;
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
+
+            if (tokenValidator(source.token_replacer)) {
+                throw new Error('Using global tokens');
+            }
+
             source.maxzoom = info.maxzoom;
+            source.maxscore = info.maxscore;
+            source.minscore = info.minscore;
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+
+            if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
+                throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
+            }
+
+            source.scoreranges = info.scoreranges ? info.scoreranges : {};
+            source.maxscore = info.maxscore;
+            source.minscore = info.minscore;
+            source.types = types;
             source.type = type;
             source.name = name;
             source.id = id;
@@ -115,13 +121,24 @@ function Geocoder(indexes, options) {
             this.names[i] = names.indexOf(name);
 
             // add byname index lookup
+            this.byname[name] = this.byname[name] || [];
             this.byname[name].push(source);
 
             // add bytype index lookup
-            this.bytype[type].push(source);
+            for (var t = 0; t < types.length; t++) {
+                this.bytype[types[t]] = this.bytype[types[t]] || [];
+                this.bytype[types[t]].push(source);
+            }
+
+            // add bysubtype index lookup
+            for (var st = 0; st < scoreRangeKeys.length; st++) {
+                this.bysubtype[type + '.' + scoreRangeKeys[st]] = this.bysubtype[type + '.' + scoreRangeKeys[st]] || [];
+                this.bysubtype[type + '.' + scoreRangeKeys[st]].push(source);
+            }
 
             // add bystack index lookup
             for (var j = 0; j < stack.length; j++) {
+                this.bystack[stack[j]] = this.bystack[stack[j]] || [];
                 this.bystack[stack[j]].push(source);
             }
 
@@ -229,6 +246,14 @@ function boundsIntersect(a, b) {
     if (a[3] < b[1]) return false; // a is below b
     if (a[1] > b[3]) return false; // a is above b
     return true;
+}
+
+function tokenValidator(token_replacer) {
+    for (var i = 0; i < token_replacer.length; i++) {
+        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
+            return true;
+        }
+    }
 }
 
 // Ensure that all carmen sources are opened.
