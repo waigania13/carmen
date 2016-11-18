@@ -160,7 +160,7 @@ test('stackable bench', function(assert) {
             }
         }
         var start = +new Date;
-        var stacked = stackable([], phraseMatches);
+        stackable([], phraseMatches);
         return (+new Date) - start;
     }
     assert.end();
