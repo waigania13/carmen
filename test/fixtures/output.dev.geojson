@@ -334,5 +334,18 @@
                 }
             ]
         }
-    ]
+    ],
+    "debug": {
+        "id": null,
+        "extid": true,
+        "phrasematch": {
+            "country": {},
+            "region": {},
+            "place": {
+                "toronto": 1
+            }
+        },
+        "spatialmatch": null,
+        "verifymatch": null
+    }
 }

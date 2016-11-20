@@ -95,7 +95,7 @@ tape('Toronto', function(assert) {
 });
 
 tape('Toronto (dev mode)', function(assert) {
-    c.geocode('Toronto', { dev: true }, function(err, res) {
+    c.geocode('Toronto', { debug: true }, function(err, res) {
         assert.ifError(err);
         var filepath = __dirname + '/fixtures/output.dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));

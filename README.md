@@ -93,7 +93,8 @@ as part of the `options` object:
 - `allow_dupes` - boolean. If true, carmen will allow features with identical
   place names to be returned. Defaults to false.
 - `debug` - boolean. If true, the carmen debug object will be returned as part
-  of the results.
+  of the results and internal carmen properties will be preserved on feature
+  output. Defaults to false.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
 - `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
