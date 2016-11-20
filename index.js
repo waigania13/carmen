@@ -32,7 +32,6 @@ function Geocoder(indexes, options) {
     this.bysubtype = {};
     this.bystack = {};
     this.byidx = [];
-    this.names = [];
 
     for (var k in indexes) {
         indexes[k] = clone(indexes[k]);
@@ -116,9 +115,6 @@ function Geocoder(indexes, options) {
             source.idx = i;
             source.ndx = names.indexOf(name);
             source.bounds = info.bounds || [ -180, -85, 180, 85 ];
-
-            // add index idx => name idx lookup
-            this.names[i] = names.indexOf(name);
 
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];
