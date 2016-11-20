@@ -281,7 +281,7 @@
                 "carmen:types": [
                     "place"
                 ],
-                "carmen:dbidx": 2,
+                "carmen:index": "place",
                 "carmen:extid": "place.1",
                 "carmen:tmpid": 67108865,
                 "carmen:relev": 1,
