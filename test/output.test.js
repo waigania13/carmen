@@ -104,6 +104,16 @@ tape('Toronto (dev mode)', function(assert) {
     });
 });
 
+tape('0,0 (dev mode)', function(assert) {
+    c.geocode('0,0', { debug: true }, function(err, res) {
+        assert.ifError(err);
+        var filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
+        if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
+        assert.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
+        assert.end();
+    });
+});
+
 tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
