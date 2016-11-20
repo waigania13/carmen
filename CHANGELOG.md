@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.3.0
+
+- Include private `carmen:` properties in feature output when in debug mode.
+- Switch `carmen:dbidx` to `carmen:index` to track feature to index relationship more easily.
+
 ## 17.2.3
 
 - Performance improvements to `spatialmatch.stackable()`
