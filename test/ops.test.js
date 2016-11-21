@@ -165,5 +165,68 @@ test('ops#toFeature', function(t) {
     t.deepEqual(ops.toFeature(fullStack, "{address._number} {address._name}, {place.name}, {region._name} {postcode._name}").place_name, 'Fake Street, Andor 1234', 'Full stack');
     t.equals(ops.toFeature(fullStack).context.pop().short_code, 'ca', 'short_code property made it into context array');
 
+    // Test language option
+    t.deepEqual(ops.toFeature([{
+        properties: {
+            // Public properties
+            'wikidata': 'Q172',
+            // Internal text properties
+            'carmen:text':'Toronto',
+            'carmen:text_ru':'Торонто',
+            'carmen:text_zh':'多伦多',
+            // Internal score property
+            'carmen:score': 1,
+            // Public carmen properties
+            "carmen:center": [0, 0],
+            "carmen:extid": "place.1",
+            "carmen:relevance": 1
+        }
+    }], {}, 'ru'), {
+        id: 'place.1',
+        type: 'Feature',
+        text: 'Торонто',
+        place_name: 'Торонто',
+        relevance: undefined,
+        center: [ 0, 0 ],
+        properties: {
+            wikidata: 'Q172'
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [ 0, 0 ]
+        },
+    });
+
+    // Test dev option
+    var input = {
+        properties: {
+            // Public properties
+            wikidata: 'Q172',
+            // Internal text properties
+            'carmen:text':'Toronto',
+            'carmen:text_ru':'Торонто',
+            'carmen:text_zh':'多伦多',
+            // Internal score property
+            'carmen:score': 1,
+            // Public carmen properties
+            "carmen:center": [0, 0],
+            "carmen:extid": "place.1",
+            "carmen:relevance": 1
+        }
+    };
+    t.deepEqual(ops.toFeature([input], {}, 'ru', true), {
+        id: 'place.1',
+        type: 'Feature',
+        text: 'Торонто',
+        place_name: 'Торонто',
+        relevance: undefined,
+        center: [ 0, 0 ],
+        properties: input.properties,
+        geometry: {
+            type: 'Point',
+            coordinates: [ 0, 0 ]
+        },
+    });
+
     t.end();
 });

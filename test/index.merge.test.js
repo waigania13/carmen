@@ -1,20 +1,13 @@
 var fs = require('fs');
 var path = require('path');
 var Stream = require('stream');
-var util = require('util');
 var split = require('split');
 var Carmen = require('..');
-var index = require('../lib/index');
-var MBTiles = require('mbtiles');
 var mem = require('../lib/api-mem');
 var de = require('deep-equal');
 var dawgcache = require('../lib/util/dawg');
 
-var UPDATE = process.env.UPDATE;
 var test = require('tape');
-var termops = require('../lib/util/termops');
-var token = require('../lib/util/token');
-var merge = require('../lib/merge');
 
 test('index - streaming interface', function(assert) {
 
@@ -204,8 +197,8 @@ test('index - streaming interface', function(assert) {
                 noMatch = 0;
             Object.keys(combined).sort().forEach(function(s) {
                 var same = de(
-                    carmenC.indexes.country._geocoder.list(type, +s),
-                    carmenD.indexes.country._geocoder.list(type, +s)
+                    carmenC.indexes.country._geocoder.list(type, +s).sort(),
+                    carmenD.indexes.country._geocoder.list(type, +s).sort()
                 );
                 if (same) match += 1;
                 else noMatch += 1;
