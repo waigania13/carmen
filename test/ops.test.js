@@ -186,6 +186,7 @@ test('ops#toFeature', function(t) {
         type: 'Feature',
         text: 'Торонто',
         place_name: 'Торонто',
+        language: 'ru',
         relevance: undefined,
         center: [ 0, 0 ],
         properties: {
@@ -219,6 +220,7 @@ test('ops#toFeature', function(t) {
         type: 'Feature',
         text: 'Торонто',
         place_name: 'Торонто',
+        language: 'ru',
         relevance: undefined,
         center: [ 0, 0 ],
         properties: input.properties,
