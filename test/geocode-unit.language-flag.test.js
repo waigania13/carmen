@@ -190,6 +190,7 @@ var addFeature = require('../lib/util/addfeature');
                 'carmen:center': [0,0],
                 'carmen:zxy': ['6/32/32'],
                 'carmen:text_zh': '西北部联邦管区',
+                'carmen:text_zh_Hant': '西北部聯邦管區',
                 'carmen:text_ru': 'Северо-Западный федеральный округ',
                 'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug',
                 'carmen:text_eo': '!!!!'
@@ -335,6 +336,30 @@ var addFeature = require('../lib/util/addfeature');
             t.deepEqual(res.features[0].id, 'place.1');
             t.deepEqual(res.features[0].context[0].text, '西北部联邦管区');
             t.end();
+        });
+    });
+
+    // test robustness against case and punctuation in the exact-match and fallback subtag case
+    tape('Saint Petersburg => Saint Petersburg, 西北部聯邦管區, Russian Federation - {language: "(zh[-_][Hh]ant|zh[-_][Tt][Ww])"}', function(t) {
+        var done = 0;
+        [
+            'zh_Hant',
+            'zh-Hant',
+            'zh_hant',
+            'zh-hant',
+            'zh_TW',
+            'zh-TW',
+            'zh_tw',
+            'zh-tw'
+        ].forEach(function(language) {
+            c.geocode('Saint Petersburg', { limit_verify:1, language: language }, function(err, res) {
+                t.ifError(err);
+                t.deepEqual(res.features[0].context[0].text, '西北部聯邦管區');
+                t.deepEqual(res.features[0].context[0].language, 'zh-Hant');
+
+                done += 1;
+                if (done == 8) t.end();
+            });
         });
     });
 
