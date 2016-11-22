@@ -289,15 +289,15 @@
                 "carmen:position": 0,
                 "carmen:spatialmatch": [
                     {
-                        "x": 33,
-                        "y": 37,
+                        "x": 25,
+                        "y": 25,
                         "relev": 1,
-                        "score": 7,
+                        "score": 1,
                         "id": 1,
                         "idx": 2,
                         "tmpid": 67108865,
                         "distance": 0,
-                        "scoredist": 7,
+                        "scoredist": 1,
                         "mask": 1,
                         "text": "toronto",
                         "scorefactor": 1
