@@ -1,5 +1,30 @@
 # Changelog
 
+## 17.3.0
+
+- Include private `carmen:` properties in feature output when in debug mode.
+- Switch `carmen:dbidx` to `carmen:index` to track feature to index relationship more easily.
+
+## 17.2.3
+
+- Performance improvements to `spatialmatch.stackable()`
+
+## 17.2.2
+
+- Fix bug where type filters would not always work correctly with forward geocodes and multitype indexes.
+
+## 17.2.1
+
+- Fix bug around feature loading in verifymatch.
+
+## 17.2.0
+
+- Adds support for individual multitype features in indexes determined by the `carmen:types` attribute. See README for more details.
+
+## 17.1.5
+
+- Fix typo in `lib/verifymatch.js`
+
 ## 17.1.4
 
 - Performance optimizations for `spatialmatch.stackable()`.

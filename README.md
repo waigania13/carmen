@@ -65,6 +65,7 @@ geocoder_group          | Optional + advanced. For indexes that share the exact 
 geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
 geocoder_type           | Optional + advanced. A string to be used instead the config index id/key. Omission of this falls back to geocoder_name and then to the id.
+geocoder_types          | Optional + advanced. An array of type strings. Only necessary for indexes that include multitype features.
 geocoder_version        | Required. Should be set to **6** for carmen@v11.x. Index versions <= 1 can be used for reverse geocoding but not forward.
 geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message cache. Defaults uptream to 65536 (maximum number of possible shards).
 geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indicate the expected ordering of address components for an index. Defaults to `ascending`.
@@ -92,7 +93,8 @@ as part of the `options` object:
 - `allow_dupes` - boolean. If true, carmen will allow features with identical
   place names to be returned. Defaults to false.
 - `debug` - boolean. If true, the carmen debug object will be returned as part
-  of the results.
+  of the results and internal carmen properties will be preserved on feature
+  output. Defaults to false.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
 - `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
@@ -168,6 +170,7 @@ attribute         | description
 `carmen:center`   | Optional. An array in the form [lon,lat]. center must be on the geometry surface, or the center will be recalculated.
 `carmen:score`    | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.
 `carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresses corresponding to the order of their geometries in the `GeometryCollection`
+`carmen:types`    | Optional. An array of types associating this feature with one or more feature classes defined by the source-level `geocoder_type` key. By setting multiple types a feature can move between various feature levels depending on the query and results. If omitted, defaults to the `geocoder_type` set by the feature's index.
 
 ### TIGER address interpolation
 
@@ -562,3 +565,22 @@ Subtype filtering allows results from an index to be limited to its highest-scor
 With a configuration like this, valid type filters will include `city` and `city.operational`. Specifying both will return the union of features (i.e. it will operate the same way as simply specifying `city`).
 
 The ability to specify more than one score range per index has not yet been implemented.
+
+### multitype features
+
+The `carmen:types` property of a feature allows it to shift between different types while being stored in one source.
+
+```js
+{
+  "type": "Feature",
+  "properties": {
+    "carmen:text": "Sparta",
+    "carmen:types": [ "country", "city" ]
+  }
+}
+```
+
+In this example the feature Sparta can be returned as either a `country` feature or a `city` feature. Types should be listed in order of ascending preference (last is most preferred).
+
+To use multitype features properly, make sure to set the `geocoder_types` key of the source so that the source is not prematurely excluded from queries when the `types` filter is used.
+
