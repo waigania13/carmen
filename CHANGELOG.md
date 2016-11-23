@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.5.0
+
+- Modifies verifyContext to better handle identically-named nested features e.g. "New York, New York". Preferentially returns the smaller feature in such cases.
+
 ## 17.4.0
 
 - Introduce mechanisms for approximate guessing of requested language, both using heuristics and hard-coded fallbacks.
