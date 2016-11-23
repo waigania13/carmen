@@ -10,7 +10,7 @@ test('ops#toFeature', function(t) {
             "short_code": "ca"
         }
     }];
-    feat._relevance = 1.1;
+    feat._relevance = 1;
     t.deepEqual(ops.toFeature(feat), {
         id: 'country.1833980151',
         type: 'Feature',
