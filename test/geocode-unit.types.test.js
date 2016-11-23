@@ -153,12 +153,12 @@ tape('china poi returns poi.landmark also', function(t) {
     });
 });
 
-// country wins without type filter
+// place wins without type filter
 tape('china', function(t) {
     c.geocode('china', { limit_verify:4 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results');
-        t.deepEqual(res.features[0].id, 'country.1', 'country wins');
+        t.deepEqual(res.features[0].id, 'place.1', 'place wins');
         t.end();
     });
 });
@@ -178,8 +178,8 @@ tape('china', function(t) {
     c.geocode('china', { limit_verify:3, types:['region','place'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
-        t.deepEqual(res.features[0].id, 'region.1', 'region #1');
-        t.deepEqual(res.features[1].id, 'place.1', 'place #2');
+        t.deepEqual(res.features[0].id, 'place.1', 'place #1');
+        t.deepEqual(res.features[1].id, 'region.1', 'region #2');
         t.end();
     });
 });
