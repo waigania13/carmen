@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.5.1
+
+- More consistent behavior for nested feature promotion when used with the `language` option.
+- Code and style improvements.
+
 ## 17.5.0
 
 - Modifies verifyContext to better handle identically-named nested features e.g. "New York, New York". Preferentially returns the smaller feature in such cases.
