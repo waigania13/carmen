@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.5.2
+
+- Add stopgap measure to indexer to partially handle features with > 10k zxy covers. (https://github.com/mapbox/carmen/pull/545)
+
 ## 17.5.1
 
 - More consistent behavior for nested feature promotion when used with the `language` option.
