@@ -243,6 +243,37 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
+    assert.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(t) {
+        // Build a zxy list with covers of varying distance from center.
+        var central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
+        var covers = [];
+        var i;
+        for (i = 0; i < 10000; i++) { covers.push('6/40/40'); }
+        for (i = 0; i < 100; i++) central.forEach(function(central) {
+            covers.push(central);
+        });
+
+        var res = indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:zxy': covers
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+
+        assert.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
+        central.forEach(function(cover) {
+            assert.deepEqual(res.properties['carmen:zxy'].filter(function(zxy) { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
+        });
+        t.end();
+    });
+
     assert.end();
 });
 
