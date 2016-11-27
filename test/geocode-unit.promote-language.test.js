@@ -44,8 +44,8 @@ tape('index region', function(t) {
         properties: {
             'carmen:center': [0,0],
             'carmen:score': 1,
-            'carmen:text':'new york',
-            'carmen:text_en':'state of new york'
+            'carmen:text':'state of new york, new york',
+            'carmen:text_es':'nueva york'
         },
         geometry: {
             type: 'Polygon',
@@ -67,7 +67,7 @@ tape('index place', function(t) {
             'carmen:center': [0,0],
             'carmen:score': 1,
             'carmen:text':'new york',
-            'carmen:text_en':'state of new york'
+            'carmen:text_es':'nueva york'
         },
         geometry: {
             type: 'Polygon',
@@ -90,8 +90,8 @@ tape('find new york', function(t) {
     });
 });
 
-tape('find new york, language=en', function(t) {
-    c.geocode('new york usa', { language: 'en' }, function(err, res) {
+tape('find nueva york, language=es', function(t) {
+    c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1);
         t.end();
