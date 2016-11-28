@@ -85,6 +85,7 @@ function Geocoder(indexes, options) {
             source.geocoder_format = info.geocoder_format||false;
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};
+            source.geocoder_inherit_score = info.geocoder_inherit_score || false;
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
 
             if (tokenValidator(source.token_replacer)) {
@@ -111,7 +112,6 @@ function Geocoder(indexes, options) {
             source.idx = i;
             source.ndx = names.indexOf(name);
             source.bounds = info.bounds || [ -180, -85, 180, 85 ];
-            source.prevent_promotion = info.prevent_promotion || false;
 
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];

@@ -12,8 +12,8 @@ var conf = {
     country: new mem({ maxzoom: 6 }, function() {}),
     region: new mem({ maxzoom: 6 }, function() {}),
     district: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6 }, function() {}),
-    poi: new mem({ maxzoom: 14, prevent_promotion: true }, function() {})
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
+    poi: new mem({ maxzoom: 14 }, function() {})
 };
 
 var c = new Carmen(conf);
@@ -174,9 +174,9 @@ tape('teardown', function(assert) {
 
 var conf2 = {
     country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    district: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6 }, function() {})
+    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
+    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
 };
 var c2 = new Carmen(conf2);
 
