@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.6.0
+
+- Adds index-level option `geocoder_inherit_score` for promoting features that nest within other similar named parent features (e.g. promote New York (city) promoted above New York (state)).
+
 ## 17.5.2
 
 - Add stopgap measure to indexer to partially handle features with > 10k zxy covers. (https://github.com/mapbox/carmen/pull/545)
