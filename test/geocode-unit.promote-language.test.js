@@ -7,8 +7,6 @@ var addFeature = require('../lib/util/addfeature');
 // Tests New York (place), New York (region), USA (country)
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
-(function() {
-
 var conf = {
     country: new mem({ maxzoom: 6 }, function() {}),
     region: new mem({ maxzoom: 6 }, function() {}),
@@ -104,22 +102,18 @@ tape('teardown', function(assert) {
     assert.end();
 });
 
-})();
-
 // Simulate a case where carmen:text has a discrepancy but carmen:text_en
 // allows a text match to occur.
-(function() {
-
-var conf = {
+var conf2 = {
     country: new mem({ maxzoom: 6 }, function() {}),
     region: new mem({ maxzoom: 6 }, function() {}),
     place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
 };
 
-var c = new Carmen(conf);
+var c2 = new Carmen(conf2);
 
 tape('index country', function(t) {
-    addFeature(conf.country, {
+    addFeature(conf2.country, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -140,7 +134,7 @@ tape('index country', function(t) {
 });
 
 tape('index region', function(t) {
-    addFeature(conf.region, {
+    addFeature(conf2.region, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -162,7 +156,7 @@ tape('index region', function(t) {
 });
 
 tape('index place', function(t) {
-    addFeature(conf.place, {
+    addFeature(conf2.place, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -184,7 +178,7 @@ tape('index place', function(t) {
 });
 
 tape('find makkah', function(t) {
-    c.geocode('makkah', {}, function(err, res) {
+    c2.geocode('makkah', {}, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 0.99);
         t.end();
@@ -195,7 +189,4 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
-})();
-
 
