@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.6.1
+
+- Fixes bug where unencodable text like emojis wasn't being ignored.
+
 ## 17.6.0
 
 - Adds index-level option `geocoder_inherit_score` for promoting features that nest within other similar named parent features (e.g. promote New York (city) promoted above New York (state)).
