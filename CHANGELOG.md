@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.6.2
+
+- Update several dependencies to `@mapbox` namespaced versions.
+- Performance optimizations for `phrasematch()` when dealing with tokens that resolve to empty strings/whitespace when unidecoded.
+
 ## 17.6.1
 
 - Fixes bug where unencodable text like emojis wasn't being ignored.
