@@ -2,7 +2,6 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
 
 var conf = {};
 for (var i = 0; i < 100; i++) {
