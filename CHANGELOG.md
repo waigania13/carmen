@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.6.3
+
+- Fix multitype corner case where a feature promoted across levels would not always be properly promoted.
+
 ## 17.6.2
 
 - Update several dependencies to `@mapbox` namespaced versions.
