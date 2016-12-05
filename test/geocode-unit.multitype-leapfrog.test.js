@@ -48,7 +48,47 @@ tape('index district', function(t) {
             ]]
         },
         properties: {
-            'carmen:text': 'district',
+            'carmen:text': 'district 1',
+            'carmen:center': [0,0]
+        }
+    }, t.end);
+});
+
+tape('index district', function(t) {
+    addFeature(conf.district, {
+        id:2,
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [-40,-40],
+                [-40,40],
+                [40,40],
+                [40,-40],
+                [-40,-40]
+            ]]
+        },
+        properties: {
+            'carmen:text': 'district 2',
+            'carmen:center': [0,0]
+        }
+    }, t.end);
+});
+
+tape('index place', function(t) {
+    addFeature(conf.place, {
+        id:2,
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [-40,-40],
+                [-40,40],
+                [40,40],
+                [40,-40],
+                [-40,-40]
+            ]]
+        },
+        properties: {
+            'carmen:text': 'smallplace',
             'carmen:center': [0,0]
         }
     }, t.end);
