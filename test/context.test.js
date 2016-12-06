@@ -622,7 +622,7 @@ test('Context eliminates correct properties', function(assert) {
     q.defer(function(cb) { addFeature(conf.region, region, cb); });
     q.awaitAll(function() {
         c._open(function() {
-            context(c, 0, 0, { full: false }, function(err, contexts) {
+            context(c, [0, 0], { full: false }, function(err, contexts) {
                 assert.ifError(err);
                 var contextObj = contexts.pop();
                 assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'], 'found expected keys on country object');

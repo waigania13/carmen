@@ -1,5 +1,39 @@
 # Changelog
 
+## 17.6.3
+
+- Fix multitype corner case where a feature promoted across levels would not always be properly promoted.
+
+## 17.6.2
+
+- Update several dependencies to `@mapbox` namespaced versions.
+- Performance optimizations for `phrasematch()` when dealing with tokens that resolve to empty strings/whitespace when unidecoded.
+
+## 17.6.1
+
+- Fixes bug where unencodable text like emojis wasn't being ignored.
+
+## 17.6.0
+
+- Adds index-level option `geocoder_inherit_score` for promoting features that nest within other similar named parent features (e.g. promote New York (city) promoted above New York (state)).
+
+## 17.5.2
+
+- Add stopgap measure to indexer to partially handle features with > 10k zxy covers. (https://github.com/mapbox/carmen/pull/545)
+
+## 17.5.1
+
+- More consistent behavior for nested feature promotion when used with the `language` option.
+- Code and style improvements.
+
+## 17.5.0
+
+- Modifies verifyContext to better handle identically-named nested features e.g. "New York, New York". Preferentially returns the smaller feature in such cases.
+
+## 17.4.0
+
+- Introduce mechanisms for approximate guessing of requested language, both using heuristics and hard-coded fallbacks.
+
 ## 17.3.0
 
 - Include private `carmen:` properties in feature output when in debug mode.
