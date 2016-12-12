@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.6.4
+
+- Modified language fallback behavior to reflect feedback collected from human translators.
+
 ## 17.6.3
 
 - Fix multitype corner case where a feature promoted across levels would not always be properly promoted.
