@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.6.5
+
+- Robustify language fallback behavior for unmatched language suffixes.
+
 ## 17.6.4
 
 - Modified language fallback behavior to reflect feedback collected from human translators.
