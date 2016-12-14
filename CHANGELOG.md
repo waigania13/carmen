@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.7.0
+
+- Update to `carmen-cache@0.14.0`.
+
 ## 17.6.5
 
 - Robustify language fallback behavior for unmatched language suffixes.
