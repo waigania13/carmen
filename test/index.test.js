@@ -251,7 +251,7 @@ test('index', function(t) {
                 iterator.asyncNext(next);
             } else {
                 q.ok(monotonic, 'shard iterator produces sorted output');
-                q.equal(output.length, 301, "index has 301 shards");
+                q.equal(output.length, 299, "index has 301 shards");
                 q.end();
             }
         };
@@ -383,64 +383,6 @@ test('error -- _geometry too high resolution', function(t) {
         output: outputStream
     }, function(err) {
         t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1', err.toString());
-        t.end();
-    });
-});
-
-test('error -- carmen:zxy too large tile-cover', function(t) {
-    var tiles = [];
-    for (var i = 0; i < 10002; i++) { tiles.push('6/32/32'); }
-
-    var docs = [{
-        id: 1,
-        type: 'Feature',
-        properties: {
-            'carmen:text': 'fake street',
-            'carmen:center': [0,0],
-            'carmen:zxy': ['6/32/32']
-        },
-        geometry: {
-            type: 'Point',
-            coordinates: [0,0]
-        }
-    }, {
-        id:1,
-        type: 'Feature',
-        properties: {
-            'carmen:text': 'fake street',
-            'carmen:center': [0,0],
-            'carmen:zxy': tiles
-        },
-        geometry: {
-            type: 'Point',
-            coordinates: [0,0]
-        }
-    }];
-
-    var s = new Stream.Readable();
-    s._read = function noop() {}; // redundant? see update below
-    s.push(JSON.stringify(docs[0]) + '\n');
-    s.push(JSON.stringify(docs[1]) + '\n');
-    s.push(null);
-
-    var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
-        var doc = JSON.parse(chunk.toString());
-
-        //Only print on error or else the logs are super long
-        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
-        done();
-    };
-
-    var conf = {
-        to: new mem(docs, null, function() {})
-    };
-    var carmen = new Carmen(conf);
-    carmen.index(s, conf.to, {
-        zoom: 6,
-        output: outputStream
-    }, function(err) {
-        t.equal('Error: zxy exceeded 10000, doc id:1', err.toString());
         t.end();
     });
 });

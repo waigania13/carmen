@@ -1,5 +1,88 @@
 # Changelog
 
+## 17.7.0
+
+- Update to `carmen-cache@0.14.0`.
+
+## 17.6.5
+
+- Robustify language fallback behavior for unmatched language suffixes.
+
+## 17.6.4
+
+- Modified language fallback behavior to reflect feedback collected from human translators.
+
+## 17.6.3
+
+- Fix multitype corner case where a feature promoted across levels would not always be properly promoted.
+
+## 17.6.2
+
+- Update several dependencies to `@mapbox` namespaced versions.
+- Performance optimizations for `phrasematch()` when dealing with tokens that resolve to empty strings/whitespace when unidecoded.
+
+## 17.6.1
+
+- Fixes bug where unencodable text like emojis wasn't being ignored.
+
+## 17.6.0
+
+- Adds index-level option `geocoder_inherit_score` for promoting features that nest within other similar named parent features (e.g. promote New York (city) promoted above New York (state)).
+
+## 17.5.2
+
+- Add stopgap measure to indexer to partially handle features with > 10k zxy covers. (https://github.com/mapbox/carmen/pull/545)
+
+## 17.5.1
+
+- More consistent behavior for nested feature promotion when used with the `language` option.
+- Code and style improvements.
+
+## 17.5.0
+
+- Modifies verifyContext to better handle identically-named nested features e.g. "New York, New York". Preferentially returns the smaller feature in such cases.
+
+## 17.4.0
+
+- Introduce mechanisms for approximate guessing of requested language, both using heuristics and hard-coded fallbacks.
+
+## 17.3.0
+
+- Include private `carmen:` properties in feature output when in debug mode.
+- Switch `carmen:dbidx` to `carmen:index` to track feature to index relationship more easily.
+
+## 17.2.3
+
+- Performance improvements to `spatialmatch.stackable()`
+
+## 17.2.2
+
+- Fix bug where type filters would not always work correctly with forward geocodes and multitype indexes.
+
+## 17.2.1
+
+- Fix bug around feature loading in verifymatch.
+
+## 17.2.0
+
+- Adds support for individual multitype features in indexes determined by the `carmen:types` attribute. See README for more details.
+
+## 17.1.5
+
+- Fix typo in `lib/verifymatch.js`
+
+## 17.1.4
+
+- Performance optimizations for `spatialmatch.stackable()`.
+
+## 17.1.3
+
+- Fix for several calls that could lead to max call stack exceeded errors.
+
+## 17.1.2
+
+- During indexing, ensure all work in `process.stdout` finishes before exiting the process
+
 ## 17.1.1
 
 - Fixes formatting of error message when an invalid `types` value is specified.
