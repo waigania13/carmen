@@ -6,6 +6,33 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
 
+// Confirms that final features have a score property
+(function() {
+    var conf = {
+        country: new mem(null, function() {}),
+    };
+    var c = new Carmen(conf);
+    tape('index country', function(t) {
+        var country = {
+            id:1,
+            properties: {
+                'carmen:score': 3,
+                'carmen:text':'exarchia',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0]
+            }
+        };
+        addFeature(conf.country, country, t.end);
+    });
+    tape('check score', function(t) {
+        c.geocode('country.1', null, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features[0].score, 3, 'result has correct score property');
+            t.end();
+        });
+    });
+})();
+
 // Confirms that you can forward search a ghost feature and that a scored featre will always win
 (function() {
     var conf = { place: new mem(null, function() {}) };
