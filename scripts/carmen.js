@@ -102,7 +102,7 @@ carmen.geocode(argv.query, {
         console.log('Features');
         console.log('--------');
         data.features.forEach(function(f) {
-            console.log('- %s %s (%s)', f.relevance.toFixed(2), f.place_name, f.id);
+            console.log('- %s %s (%s) score: %s', f.relevance.toFixed(2), f.place_name, f.id, f.score);
         });
         console.log('');
         console.log('Indexes');
