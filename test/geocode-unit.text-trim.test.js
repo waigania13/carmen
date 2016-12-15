@@ -16,6 +16,7 @@ var addFeature = require('../lib/util/addfeature');
             properties: {
                 'carmen:text': '  Colombia\n',
                 'carmen:text_en': ' Colombia\n',
+                'carmen:text_zh': ' 哥伦比亚\n',
                 'carmen:center': [0,0]
             },
             geometry: {
@@ -30,6 +31,7 @@ var addFeature = require('../lib/util/addfeature');
             properties: {
                 'carmen:text': ' Bogotá ',
                 'carmen:text_en': ' Bogota ',
+                'carmen:text_zh': ' 波哥大 ',
                 'carmen:center': [0,0]
             },
             geometry: {
@@ -71,6 +73,24 @@ var addFeature = require('../lib/util/addfeature');
             t.equals(res.features[0].place_name, 'Bogota, Colombia');
             t.equals(res.features[0].text, 'Bogota');
             t.equals(res.features[0].context[0].text, 'Colombia');
+            t.end();
+        });
+    });
+    tape('trims text (forward, ?language=zh)', function(t) {
+        c.geocode('Bogota', { limit_verify: 1, language: 'zh' }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '波哥大, 哥伦比亚');
+            t.equals(res.features[0].text, '波哥大');
+            t.equals(res.features[0].context[0].text, '哥伦比亚');
+            t.end();
+        });
+    });
+    tape('trims text (reverse, ?language=en)', function(t) {
+        c.geocode('0,0', { limit_verify: 1, language: 'zh' }, function(err, res) {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '波哥大, 哥伦比亚');
+            t.equals(res.features[0].text, '波哥大');
+            t.equals(res.features[0].context[0].text, '哥伦比亚');
             t.end();
         });
     });
