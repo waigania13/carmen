@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.7.1
+
+- Trim whitespace from text values when outputting feature values.
+
 ## 17.7.0
 
 - Update to `carmen-cache@0.14.0`.
