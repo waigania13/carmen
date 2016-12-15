@@ -7,7 +7,6 @@ var Cache = require('./lib/util/cxxcache'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
     analyze = require('./lib/analyze'),
-    loadall = require('./lib/loadall'),
     token = require('./lib/util/token'),
     copy = require('./lib/copy'),
     index = require('./lib/index'),
@@ -295,21 +294,6 @@ Geocoder.prototype.analyze = function(source, callback) {
     this._open(function(err) {
         if (err) return callback(err);
         analyze(source, callback);
-    });
-};
-
-// Load all shards for a source.
-Geocoder.prototype.loadall = function(source, type, concurrency, callback) {
-    this._open(function(err) {
-        if (err) return callback(err);
-        loadall.loadall(source, type, concurrency, callback);
-    });
-};
-
-Geocoder.prototype.unloadall = function(source, type, callback) {
-    this._open(function(err) {
-        if (err) return callback(err);
-        loadall.unloadall(source, type, callback);
     });
 };
 
