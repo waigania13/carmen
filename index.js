@@ -10,7 +10,10 @@ var Cache = require('./lib/util/cxxcache'),
     token = require('./lib/util/token'),
     copy = require('./lib/copy'),
     index = require('./lib/index'),
-    merge = require('./lib/merge');
+    merge = require('./lib/merge'),
+    stream = require('stream'),
+    tar = require('tar-fs'),
+    tmp = require('tmp');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -53,6 +56,9 @@ function Geocoder(indexes, options) {
 
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
             source._dictcache = source._original._dictcache || dictcache;
+
+            if (info.freq) source._geocoder.loadSync(info.freq, 'freq');
+            if (info.grid) source._geocoder.loadSync(info.grid, 'grid');
 
             // Set references to _geocoder, _dictcache on original source to
             // avoid duplication if it's loaded again.
@@ -179,23 +185,54 @@ function Geocoder(indexes, options) {
                     source.getGeocoderData('stat', 0, done);
                 }
             });
+            ['freq','grid'].forEach(function(type) {
+                q.defer(function(done) {
+                    // AGH HOLY SHIT FIXME THIS IS HORRIBLE
+                    if (!source.getGeocoderData) {
+                        done();
+                    } else {
+                        source.getGeocoderData(type, 0, done);
+                    }
+                });
+            });
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);
 
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
-                    callback(null, {
+                    var props = {
                         id: id,
                         info: loaded[0]
-                    });
+                    };
                 // create dictcache at load time to allow incremental gc
                 } else {
-                    callback(null, {
+                    var props = {
                         id: id,
                         info: loaded[0],
                         dictcache: new dawgcache(loaded[1])
-                    });
+                    };
                 }
+                // GROSS FIXME
+                var untarQ = queue();
+                [[2, 'freq'], [3, 'grid']].forEach(function(idx) {
+                    if (loaded[idx[0]]) {
+                        untarQ.defer(function(cb) {
+                            var data = loaded[idx[0]];
+                            var type = idx[1];
+
+                            var rocksdb = tmp.tmpNameSync();
+                            props[type] = rocksdb;
+                            var bufferStream = new stream.PassThrough();
+                            bufferStream.end(data);
+                            bufferStream
+                                .pipe(tar.extract(rocksdb))
+                                .on('finish', cb);
+                        });
+                    }
+                });
+                untarQ.awaitAll(function() {
+                    callback(null, props);
+                })
             });
         });
     }
