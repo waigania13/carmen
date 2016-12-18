@@ -1,5 +1,10 @@
 # Changelog
 
+## 17.7.2
+
+- Move eslint to dev dependencies.
+- Update to `carmen-cache@0.14.1`.
+
 ## 17.7.1
 
 - Trim whitespace from text values when outputting feature values.
