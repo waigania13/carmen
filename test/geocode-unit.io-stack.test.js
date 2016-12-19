@@ -68,10 +68,8 @@ tape('ready', function(assert) {
 function reset() {
     context.getTile.cache.reset();
     [1,2,3].forEach(function(i) {
-        conf['place'+i]._geocoder.unloadall('grid');
         conf['place'+i]._original.logs.getGeocoderData = [];
         conf['place'+i]._original.logs.getTile = [];
-        conf['street'+i]._geocoder.unloadall('grid');
         conf['street'+i]._original.logs.getGeocoderData = [];
         conf['street'+i]._original.logs.getTile = [];
     });
@@ -82,10 +80,10 @@ tape('winding river rd springfield', function(t) {
     c.geocode('winding river rd  springfield', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'winding river rd, springfield');
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, ['grid,38050'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, [], 'place1: loads nothing');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,1', 'feature,2', 'grid,23293', 'grid,8756'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,1', 'feature,2'], 'street1: loads 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
@@ -102,10 +100,10 @@ tape('springfield', function(t) {
         t.deepEqual(res.features[1].place_name, 'springfield st, springfield');
         t.deepEqual(res.features[1].id, 'street.3');
 
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,38050'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1'], 'place1: loads 1 feature');
         t.deepEqual(c.indexes.place1._original.logs.getTile, ['6,32,32'], 'place1: loads 1 tile');
 
-        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3','grid,38050'], 'street1: loads 1 grid, 1 feature per result');
+        t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), ['feature,3'], 'street1: loads 1 feature per result');
         t.deepEqual(c.indexes.street1._original.logs.getTile, [], 'street1: loads no tiles (most specific index)');
         t.end();
     });
@@ -120,7 +118,7 @@ tape('springfield, types=place', function(t) {
         t.deepEqual(res.features[0].place_name, 'springfield');
         t.deepEqual(res.features[0].id, 'place.1');
 
-        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1','grid,38050'], 'place1: loads 1 grid');
+        t.deepEqual(c.indexes.place1._original.logs.getGeocoderData.sort(), ['feature,1'], 'place1: loads 1 feature');
         t.deepEqual(c.indexes.place1._original.logs.getTile, [], 'place1: loads 0 tiles');
 
         t.deepEqual(c.indexes.street1._original.logs.getGeocoderData.sort(), [], 'street1: no io');

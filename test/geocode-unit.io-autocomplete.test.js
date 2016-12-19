@@ -36,7 +36,6 @@ tape('index place', function(assert) {
 
 function reset() {
     context.getTile.cache.reset();
-    conf.place._geocoder.unloadall('grid');
     conf.place._original.logs.getGeocoderData = [];
     conf.place._original.logs.getTile = [];
 }

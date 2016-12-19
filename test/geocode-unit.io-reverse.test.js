@@ -63,16 +63,12 @@ tape('index street', function(t) {
 
 function resetLogs() {
     context.getTile.cache.reset();
-    conf.country._geocoder.unloadall('grid');
     conf.country._original.logs.getGeocoderData = [];
     conf.country._original.logs.getTile = [];
-    conf.region._geocoder.unloadall('grid');
     conf.region._original.logs.getGeocoderData = [];
     conf.region._original.logs.getTile = [];
-    conf.place._geocoder.unloadall('grid');
     conf.place._original.logs.getGeocoderData = [];
     conf.place._original.logs.getTile = [];
-    conf.street._geocoder.unloadall('grid');
     conf.street._original.logs.getGeocoderData = [];
     conf.street._original.logs.getTile = [];
 }
