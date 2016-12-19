@@ -188,7 +188,7 @@ function Geocoder(indexes, options) {
             ['freq','grid'].forEach(function(type) {
                 q.defer(function(done) {
                     // AGH HOLY SHIT FIXME THIS IS HORRIBLE
-                    if (!source.getGeocoderData) {
+                    if (!source.getGeocoderData || (source._original._geocoder && source._original._geocoder.has(type))) {
                         done();
                     } else {
                         source.getGeocoderData(type, 0, done);
