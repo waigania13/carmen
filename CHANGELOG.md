@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.2.3
+
+- Automatically lowercase all `stacks` values for a given query
+
 ## 17.7.2
 
 - Move eslint to dev dependencies.
