@@ -223,7 +223,7 @@ test('index', function(t) {
                 iterator.asyncNext(next);
             } else {
                 q.ok(monotonic, 'shard iterator produces sorted output');
-                q.equal(output.length, 1, "index has 1 shard");
+                q.equal(output.length, 0, "index has 0 shards");
                 q.end();
             }
         };

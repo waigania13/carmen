@@ -91,8 +91,8 @@ test('#load', function(s) {
 
 test('#unload on empty data', function(s) {
     var cache = new Cache('a');
-    s.equal(false,cache.unload('grid', 34566));
-    s.deepEqual(false, cache.has('grid', 34566));
+    s.equal(false,cache.unload('grid'));
+    s.deepEqual(false, cache.has('grid'));
     s.end();
 });
 

@@ -41,7 +41,7 @@ var runTests = function(mode) {
 
             ['freq', 'grid'].forEach(function(type) {
                 var filename = c.byidx[0]._original.cacheSource ? c.byidx[0]._original.cacheSource.filename : c.byidx[0]._original.filename;
-                var rocksdb = filename.replace('.mbtiles', '.' + type + '.rocksdb');
+                var rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
                 oldCache.pack(rocksdb, type);
                 newCache.loadSync(rocksdb, type);

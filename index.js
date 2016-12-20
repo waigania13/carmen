@@ -1,5 +1,6 @@
 var EventEmitter = require('events').EventEmitter,
-    queue = require('d3-queue').queue;
+    queue = require('d3-queue').queue,
+    fs = require('fs');
 
 var dawgcache = require('./lib/util/dawg');
 var Cache = require('./lib/util/cxxcache'),
@@ -54,8 +55,8 @@ function Geocoder(indexes, options) {
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
             source._dictcache = source._original._dictcache || dictcache;
 
-            if (data.freq) source._geocoder.loadSync(data.freq, 'freq');
-            if (data.grid) source._geocoder.loadSync(data.grid, 'grid');
+            if (data.freq && fs.existsSync(data.freq)) source._geocoder.loadSync(data.freq, 'freq');
+            if (data.grid && fs.existsSync(data.grid)) source._geocoder.loadSync(data.grid, 'grid');
 
             // Set references to _geocoder, _dictcache on original source to
             // avoid duplication if it's loaded again.
@@ -173,6 +174,16 @@ function Geocoder(indexes, options) {
     function loadIndex(id, source, callback) {
         source.open(function opened(err) {
             if (err) return callback(err);
+
+            source.getBaseFilename = function() {
+                var filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
+                if (filename) {
+                    return filename.replace('.mbtiles', '');
+                } else {
+                    return require('os').tmpdir() + "/temp." + Math.random().toString(36).substr(2, 5);
+                }
+            }
+
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
@@ -211,10 +222,9 @@ function Geocoder(indexes, options) {
                     };
                 }
 
-                // TODO get from external api
-                var filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
-                props.freq = filename.replace('.mbtiles', '.freq.rocksdb');
-                props.grid = filename.replace('.mbtiles', '.grid.rocksdb');
+                var filename = source.getBaseFilename();
+                props.freq = filename + '.freq.rocksdb';
+                props.grid = filename + '.grid.rocksdb';
                 callback(null, props);
             });
         });
