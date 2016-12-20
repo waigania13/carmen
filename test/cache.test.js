@@ -2,7 +2,7 @@ var Cache = require('../lib/util/cxxcache');
 var test = require('tape');
 var fs = require('fs');
 
-var tmpdir = "/tmp/temp." + Math.random().toString(36).substr(2, 5);
+var tmpdir = require('os').tmpdir() + "/temp." + Math.random().toString(36).substr(2, 5);
 fs.mkdirSync(tmpdir);
 var tmpidx = 0;
 var tmpfile = function() { return tmpdir + "/" + (tmpidx++) + ".dat"; };
