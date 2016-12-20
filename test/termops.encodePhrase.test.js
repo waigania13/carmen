@@ -1,7 +1,6 @@
 var termops = require('../lib/util/termops');
 var uniq = require('../lib/util/uniq');
 var test = require('tape');
-var Cache = require('../lib/util/cxxcache');
 
 test('termops.encodePhrase clustering', function(assert) {
     var sets = [
