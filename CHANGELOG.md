@@ -1,6 +1,10 @@
 # Changelog
 
-## 17.2.3
+## 17.8.0
+
+- Update to `carmen-cache@0.15.0`.
+
+## 17.7.3
 
 - Automatically lowercase all `stacks` values for a given query
 
