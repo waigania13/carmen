@@ -40,7 +40,6 @@ var runTests = function(mode) {
             var newCache = new Cache(oldCache.id);
 
             ['freq', 'grid'].forEach(function(type) {
-                var filename = c.byidx[0]._original.cacheSource ? c.byidx[0]._original.cacheSource.filename : c.byidx[0]._original.filename;
                 var rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
                 oldCache.pack(rocksdb, type);

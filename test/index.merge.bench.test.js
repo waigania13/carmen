@@ -61,7 +61,6 @@ tape('setup b', function(assert) {
 });
 
 tape('merge a + b = c', function(assert) {
-    return assert.end();
     var conf = { street: new mem({ maxzoom:14 }, function() {}) };
     var c = new Carmen(conf);
     c.merge(sources.a, sources.b, conf.street, {}, function(err, stats) {

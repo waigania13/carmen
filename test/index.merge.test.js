@@ -10,7 +10,6 @@ var dawgcache = require('../lib/util/dawg');
 var test = require('tape');
 
 test('index - streaming interface', function(assert) {
-    return assert.end();
     function getIndex(start, end) {
 
         var count = 0;
@@ -185,25 +184,11 @@ test('index - streaming interface', function(assert) {
 
     ["freq", "grid"].forEach(function(type) {
         assert.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', function(q) {
-            var combined = {};
-            [carmenC, carmenD].forEach(function(c) {
-                c.indexes.country._geocoder.unloadall(type);
-                Object.keys(c.indexes.country._original._shards[type]).forEach(function(s) {
-                    combined[s] = true;
-                    c.indexes.country._geocoder.loadSync(c.indexes.country._original._shards[type][s], type, +s);
-                });
-            })
-            var match = 0,
-                noMatch = 0;
-            Object.keys(combined).sort().forEach(function(s) {
-                var same = de(
-                    carmenC.indexes.country._geocoder.list(type, +s).sort(),
-                    carmenD.indexes.country._geocoder.list(type, +s).sort()
-                );
-                if (same) match += 1;
-                else noMatch += 1;
-            });
-            var percentage = 100 * match / (match + noMatch);
+            var cSet = new Set(carmenC.indexes.country._geocoder.list(type));
+            var dSet = new Set(carmenD.indexes.country._geocoder.list(type));
+            var intersection = new Set(Array.from(cSet).filter(function(x) { return dSet.has(x) }));
+            var union = new Set(Array.from(cSet).concat(Array.from(dSet)));
+            var percentage = 100 * intersection.size / (union.size);
             assert.ok(percentage >= 97, type + ' matches > 97%: ' + percentage);
 
             q.end();

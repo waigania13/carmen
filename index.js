@@ -247,6 +247,7 @@ function clone(source) {
         'putTile',
         'getGeocoderData',
         'putGeocoderData',
+        'getBaseFilename',
         'geocoderDataIterator',
         'startWriting',
         'stopWriting',
