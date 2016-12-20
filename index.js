@@ -10,10 +10,7 @@ var Cache = require('./lib/util/cxxcache'),
     token = require('./lib/util/token'),
     copy = require('./lib/copy'),
     index = require('./lib/index'),
-    merge = require('./lib/merge'),
-    stream = require('stream'),
-    tar = require('tar-fs'),
-    tmp = require('tmp');
+    merge = require('./lib/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -198,41 +195,27 @@ function Geocoder(indexes, options) {
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);
 
+                var props;
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
-                    var props = {
+                    props = {
                         id: id,
                         info: loaded[0]
                     };
                 // create dictcache at load time to allow incremental gc
                 } else {
-                    var props = {
+                    props = {
                         id: id,
                         info: loaded[0],
                         dictcache: new dawgcache(loaded[1])
                     };
                 }
-                // GROSS FIXME
-                var untarQ = queue();
-                [[2, 'freq'], [3, 'grid']].forEach(function(idx) {
-                    if (loaded[idx[0]]) {
-                        untarQ.defer(function(cb) {
-                            var data = loaded[idx[0]];
-                            var type = idx[1];
 
-                            var rocksdb = tmp.tmpNameSync();
-                            props[type] = rocksdb;
-                            var bufferStream = new stream.PassThrough();
-                            bufferStream.end(data);
-                            bufferStream
-                                .pipe(tar.extract(rocksdb))
-                                .on('finish', cb);
-                        });
-                    }
-                });
-                untarQ.awaitAll(function() {
-                    callback(null, props);
-                })
+                // TODO get from external api
+                var filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
+                props.freq = filename.replace('.mbtiles', '.freq.rocksdb');
+                props.grid = filename.replace('.mbtiles', '.grid.rocksdb');
+                callback(null, props);
             });
         });
     }
