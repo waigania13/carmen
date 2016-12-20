@@ -210,33 +210,6 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('loadall index', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
-        carmen.loadall(conf.to, 'freq', 1, function(err) {
-            q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
-            q.end();
-        });
-    });
-    t.test('loadall (concurrency 10)', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
-        carmen.loadall(conf.to, 'freq', 10, function(err) {
-            q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
-            q.end();
-        });
-    });
-    t.test('loadall (concurrency 0.5)', function(q) {
-        conf.to._geocoder.unloadall('freq');
-        q.ok(!conf.to._geocoder.has('freq', +shard("__COUNT__")));
-        carmen.loadall(conf.to, 'freq', 0.5, function(err) {
-            q.ifError(err);
-            q.ok(conf.to._geocoder.has('freq', +shard("__COUNT__")));
-            q.end();
-        });
-    });
     t.test('confirm that iterator works', function(q) {
         var monotonic = true;
         var output = [];
@@ -251,18 +224,11 @@ test('index', function(t) {
                 iterator.asyncNext(next);
             } else {
                 q.ok(monotonic, 'shard iterator produces sorted output');
-                q.equal(output.length, 299, "index has 301 shards");
+                q.equal(output.length, 1, "index has 1 shard");
                 q.end();
             }
         };
         iterator.asyncNext(next);
-    });
-    t.test('unloadall index', function(q) {
-        carmen.unloadall(conf.to, 'freq', function(err) {
-            q.ifError(err);
-            q.equal(conf.to._geocoder.has('freq', 0), false);
-            q.end();
-        });
     });
     t.end();
 });
@@ -350,7 +316,7 @@ test('index phrase collection', function(assert) {
     function afterUpdate(err) {
         assert.ifError(err);
         var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.list('grid',shard(id1)), [ id1.toString() ], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.list('grid'), [ id1.toString() ], '1 phrase');
         assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }

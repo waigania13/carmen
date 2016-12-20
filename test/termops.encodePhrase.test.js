@@ -11,9 +11,7 @@ test('termops.encodePhrase clustering', function(assert) {
     ];
     sets.forEach(function(set) {
         var encoded = set.map(function(text) { return termops.encodePhrase(text); });
-        var sharded = set.map(function(text) { return Cache.shard(termops.encodePhrase(text)); });
         assert.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
-        assert.deepEqual(sharded.every(function(shard) { return shard === sharded[0]; }), true, 'shard ' + sharded[0] + ' for ' + set);
     });
     assert.end();
 });

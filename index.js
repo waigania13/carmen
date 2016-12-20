@@ -57,8 +57,8 @@ function Geocoder(indexes, options) {
             source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
             source._dictcache = source._original._dictcache || dictcache;
 
-            if (info.freq) source._geocoder.loadSync(info.freq, 'freq');
-            if (info.grid) source._geocoder.loadSync(info.grid, 'grid');
+            if (data.freq) source._geocoder.loadSync(data.freq, 'freq');
+            if (data.grid) source._geocoder.loadSync(data.grid, 'grid');
 
             // Set references to _geocoder, _dictcache on original source to
             // avoid duplication if it's loaded again.

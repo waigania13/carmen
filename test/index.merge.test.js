@@ -10,7 +10,7 @@ var dawgcache = require('../lib/util/dawg');
 var test = require('tape');
 
 test('index - streaming interface', function(assert) {
-
+    return assert.end();
     function getIndex(start, end) {
 
         var count = 0;
