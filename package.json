@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/5f4e9f424e27d0e80462b50fb45931b2a2c69639",
+    "carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/e028b22f5e32c2dc3a3f86fa0218d49e2f591b5d",
     "d3-queue": "2.0.x",
     "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/c1bf2a5d3a9a580e99aa1c604ee6f21dadf1b999",
     "err-code": "1.1.1",
