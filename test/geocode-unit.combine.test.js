@@ -5,6 +5,7 @@ var queue = require('d3-queue').queue;
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
+var combineResults = require('../lib/combineShardResults');
 var addFeature = require('../lib/util/addfeature');
 
 
@@ -59,17 +60,17 @@ tape('index Atuan Temple - poi', function(t) {
     };
     addFeature(confA.poi, poiAtuanTempleA, t.end);
 });
-tape('index Tombs of Atuan - poi', function(t) {
-    var poiTombsOfAtuanA = {
+tape('index Atuan Tombs - poi', function(t) {
+    var poiAtuanTombsA = {
         id:4,
         properties: {
             'carmen:score': 100,
-            'carmen:text':'Tombs of Atuan',
+            'carmen:text':'Atuan Tombs',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[160,-10]
         }
     };
-    addFeature(confA.poi, poiTombsOfAtuanA, t.end);
+    addFeature(confA.poi, poiAtuanTombsA, t.end);
 });
 
 // features for carmen B
@@ -111,44 +112,43 @@ tape('index Atuan Ring - poi', function(t) {
 });
 
 tape('check for Atuan', function(t) {
-    carmenA.geocode('country.1', null, function(err, res) {
+    carmenA.geocode('poi.4', null, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'Atuan', 'Finds Atuan - Country');
+        t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - POI');
         t.end();
     });
 });
 
 
 tape('sort shards', function(t) {
-
-    // // [ resultsA, resultsB ]
-    // function combineResults(resultSet) {
-    // // - combines results
-    // // - dedupes
-    // // - sorts
-
-    // }
-
     // geocode for atuan
     var q = queue(2);
     var results = [];
 
     // binds `this` context to carmenA so it survives deferring
-    q.defer(carmenA.geocode.bind(carmenA), 'Atuan', null);
+    // q.defer(carmenA.geocode.bind(carmenA), 'Atuan', null);
 
     // also works
     q.defer(function(cb) {
         carmenA.geocode('Atuan', null, function(err, res) {
             if (err) throw err;
-            results.push(res);
-            return cb(null);
+            cb(null, res);
+        });
+    });
+
+    q.defer(function(cb) {
+        carmenB.geocode('Atuan', null, function(err, res) {
+            if (err) throw err;
+            cb(null, res);
         });
     });
 
     q.awaitAll(function(err, items) {
         if (err) throw err;
-        console.log(results);
-        console.log('items:', items);
+        // pass results to combineResults
+        var combinedResults = combineResults(items);
+        // get back new, tidy featureCollection
+        console.log('combined results:', JSON.stringify(combinedResults, null, 2));
         t.end();
     });
 
