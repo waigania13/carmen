@@ -124,7 +124,7 @@ tape('sort shards', function(t) {
     // geocode for atuan
     var q = queue(2);
     var results = [];
-    var defaultOptions = { 
+    var options = {
         stats: false,
         debug: false,
         allow_dupes: false,
@@ -132,7 +132,8 @@ tape('sort shards', function(t) {
         autocomplete: true,
         bbox: false,
         limit: 5,
-        allowed_idx: { '0': true, '1': true } 
+        allowed_idx: { '0': true, '1': true },
+        shard: true
     }
 
     // binds `this` context to carmenA so it survives deferring
@@ -140,14 +141,14 @@ tape('sort shards', function(t) {
 
     // also works
     q.defer(function(cb) {
-        carmenA.geocode('Atuan', null, function(err, res) {
+        carmenA.geocode('Atuan', options, function(err, res) {
             if (err) throw err;
             cb(null, res);
         });
     });
 
     q.defer(function(cb) {
-        carmenB.geocode('Atuan', null, function(err, res) {
+        carmenB.geocode('Atuan', options, function(err, res) {
             if (err) throw err;
             cb(null, res);
         });
@@ -156,13 +157,13 @@ tape('sort shards', function(t) {
     q.awaitAll(function(err, items) {
         if (err) throw err;
         // pass results to combineResults
-        var combinedResults = combineResults(items, defaultOptions);
+        var combinedResults = combineResults(items, options);
         // get back new, tidy featureCollection
-        var places = [];
-        for (var i = 0; i < combinedResults.length; i++) {
-            places.push(combinedResults[i].place_name + ' r:' + combinedResults[i].relevance + ' s:' + combinedResults[i].score);
-        }
-        console.log('places:', places);
+        // var places = [];
+        // for (var i = 0; i < combinedResults.length; i++) {
+        //     places.push(combinedResults[i].place_name + ' r:' + combinedResults[i].relevance + ' s:' + combinedResults[i].score);
+        // }
+        // console.log('places:', places);
         t.end();
     });
 
