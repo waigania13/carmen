@@ -139,7 +139,7 @@ tape('sort shards', function(t) {
     }
 
     // binds `this` context to carmenA so it survives deferring
-    // q.defer(carmenA.geocode.bind(carmenA), 'Atuan', null);
+    // q.defer(carmenA.geocode.bind(carmenA), 'Atuan', options, null);
 
     // also works
     q.defer(function(cb) {
@@ -191,6 +191,49 @@ tape('sort shards', function(t) {
     // - features sorted correctly (score check)
 
 })
+
+tape('options.limit still limits number of total results', function(t) {
+    // geocode for atuan
+    var q = queue(2);
+    var results = [];
+    var options = {
+        stats: false,
+        debug: false,
+        allow_dupes: false,
+        indexes: false,
+        autocomplete: true,
+        bbox: false,
+        limit: 2,
+        allowed_idx: { '0': true, '1': true },
+        shard: true,
+        attribution: 'NOTICE: © 2017 Kaibot3000 ⚑'
+    };
+
+    // q.defer(carmenA.geocode.bind(carmenA), 'Atuan', options, null);
+    // q.defer(carmenA.geocode.bind(carmenA), 'Atuan', options, null);
+
+    // also works
+    q.defer(function(cb) {
+        carmenA.geocode('Atuan', options, function(err, res) {
+            if (err) throw err;
+            cb(null, res);
+        });
+    });
+
+    q.defer(function(cb) {
+        carmenB.geocode('Atuan', options, function(err, res) {
+            if (err) throw err;
+            cb(null, res);
+        });
+    });
+
+    q.awaitAll(function(err, items) {
+        if (err) throw err;
+        var combinedResults = combineResults(items, options);
+        t.deepEqual(combinedResults.features.length, 2, 'respects result limit');
+        t.end();
+    });
+});
 
 tape('teardown', function(t) {
     context.getTile.cache.reset();
