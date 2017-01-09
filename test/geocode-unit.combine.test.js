@@ -131,9 +131,11 @@ tape('sort shards', function(t) {
         indexes: false,
         autocomplete: true,
         bbox: false,
-        limit: 5,
+        // falsely high limit to test deduping
+        limit: 10,
         allowed_idx: { '0': true, '1': true },
-        shard: true
+        shard: true,
+        attribution: 'NOTICE: © 2017 Kaibot3000 ⚑'
     }
 
     // binds `this` context to carmenA so it survives deferring
@@ -157,13 +159,30 @@ tape('sort shards', function(t) {
     q.awaitAll(function(err, items) {
         if (err) throw err;
         // pass results to combineResults
-        var combinedResults = combineResults(items, options);
         // get back new, tidy featureCollection
-        // var places = [];
-        // for (var i = 0; i < combinedResults.length; i++) {
-        //     places.push(combinedResults[i].place_name + ' r:' + combinedResults[i].relevance + ' s:' + combinedResults[i].score);
-        // }
-        // console.log('places:', places);
+        var combinedResults = combineResults(items, options);
+
+        // debugging
+        var places = [];
+        for (var i = 0; i < combinedResults.features.length; i++) {
+            places.push(combinedResults.features[i].place_name + ' r:' + combinedResults.features[i].relevance + ' s:' + combinedResults.features[i].score);
+        }
+        console.log('places:', places);
+
+        var inScoreOrder = true;
+        for (var j = 1; j < combinedResults.features.length; j++) {
+            var current = combinedResults.features[j].score;
+            var last = combinedResults.features[j-1].score;
+            if (current > last) {
+                // check if relevancy is the same, too?
+                inScoreOrder = false;
+                break;
+            }
+        }
+
+        // testing
+        t.deepEqual(combinedResults.features.length, 6, 'Dedupes features');
+        t.deepEqual(inScoreOrder, true, 'Features sorted by score');
         t.end();
     });
 
