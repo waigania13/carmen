@@ -123,7 +123,6 @@ tape('check for Atuan', function(t) {
 tape('sort shards', function(t) {
     // geocode for atuan
     var q = queue(2);
-    var results = [];
     var options = {
         stats: false,
         debug: false,
@@ -162,13 +161,6 @@ tape('sort shards', function(t) {
         // get back new, tidy featureCollection
         var combinedResults = combineResults(items, options);
 
-        // debugging
-        var places = [];
-        for (var i = 0; i < combinedResults.features.length; i++) {
-            places.push(combinedResults.features[i].place_name + ' r:' + combinedResults.features[i].relevance + ' s:' + combinedResults.features[i].score);
-        }
-        console.log('places:', places);
-
         var inScoreOrder = true;
         for (var j = 1; j < combinedResults.features.length; j++) {
             var current = combinedResults.features[j].score;
@@ -195,7 +187,6 @@ tape('sort shards', function(t) {
 tape('options.limit still limits number of total results', function(t) {
     // geocode for atuan
     var q = queue(2);
-    var results = [];
     var options = {
         stats: false,
         debug: false,
