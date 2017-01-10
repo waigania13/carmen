@@ -157,16 +157,15 @@ tape('sort shards', function(t) {
 
     q.awaitAll(function(err, items) {
         if (err) throw err;
-        // pass results to combineResults
-        // get back new, tidy featureCollection
+
         var combinedResults = combineResults(items, options);
 
         var inScoreOrder = true;
         for (var j = 1; j < combinedResults.features.length; j++) {
-            var current = combinedResults.features[j].score;
-            var last = combinedResults.features[j-1].score;
-            if (current > last) {
-                // check if relevancy is the same, too?
+            var current = combinedResults.features[j];
+            var last = combinedResults.features[j-1];
+            if ((current.score > last.score) && (current.relevance === last.relevance)) {
+                console.log('score: %d > %d, r = %d', current.score, last.score, last.relevance);
                 inScoreOrder = false;
                 break;
             }
@@ -177,10 +176,6 @@ tape('sort shards', function(t) {
         t.deepEqual(inScoreOrder, true, 'Features sorted by score');
         t.end();
     });
-
-    // things to test: 
-    // - correct number of features (deduped, but already over limit 5?)
-    // - features sorted correctly (score check)
 
 })
 
