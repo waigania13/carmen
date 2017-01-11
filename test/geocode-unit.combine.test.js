@@ -7,6 +7,7 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var combineResults = require('../lib/combineShardResults');
 var addFeature = require('../lib/util/addfeature');
+var queryFixture = require('./fixtures/combineShards.json');
 
 
 // initialize two carmen shards
@@ -216,10 +217,33 @@ tape('options.limit still limits number of total results', function(t) {
     q.awaitAll(function(err, items) {
         if (err) throw err;
         var combinedResults = combineResults(items, options);
+
         t.deepEqual(combinedResults.features.length, 2, 'respects result limit');
         t.end();
     });
 });
+
+tape('Shard combination works on real-world queries', function(t) {
+    var options = {
+        stats: false,
+        debug: false,
+        allow_dupes: false,
+        indexes: false,
+        autocomplete: true,
+        bbox: false,
+        limit: 1,
+        allowed_idx: { '0': true, '1': true },
+        shard: true,
+        attribution: 'NOTICE: © 2017 Kaibot3000 ⚑'
+    };
+    // pass test fixture to combine shards
+    var combinedResults = combineResults(queryFixture, options);
+    // compare to other fixture, or just check results?
+    t.deepEqual(combinedResults.features[0].id, 'country.1', 'most relevant feature first');
+    t.end();
+    // limit, sort order
+});
+
 
 tape('teardown', function(t) {
     context.getTile.cache.reset();

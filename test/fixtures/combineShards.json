@@ -1,0 +1,396 @@
+[
+  {
+    "type": "FeatureCollection",
+    "query": [
+      "atuan"
+    ],
+    "features": [
+      [
+        {
+          "id": 1,
+          "properties": {
+            "carmen:score": 60000,
+            "carmen:text": "Atuan",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              157,
+              -7
+            ],
+            "id": 1,
+            "carmen:types": [
+              "country"
+            ],
+            "carmen:index": "country",
+            "carmen:extid": "country.1",
+            "carmen:tmpid": 1,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 0,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 1,
+                  "idx": 0,
+                  "tmpid": 1,
+                  "distance": 0,
+                  "score": 420000,
+                  "scoredist": 420000,
+                  "scorefactor": 60000,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 60000
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ],
+      [
+        {
+          "id": 3,
+          "properties": {
+            "carmen:score": 230,
+            "carmen:text": "Atuan Temple",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              159,
+              -9
+            ],
+            "id": 3,
+            "carmen:types": [
+              "poi"
+            ],
+            "carmen:index": "poi",
+            "carmen:extid": "poi.3",
+            "carmen:tmpid": 67108867,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 1,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 3,
+                  "idx": 2,
+                  "tmpid": 67108867,
+                  "distance": 0,
+                  "score": 1610,
+                  "scoredist": 1610,
+                  "scorefactor": 230,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 230
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ],
+      [
+        {
+          "id": 2,
+          "properties": {
+            "carmen:score": 200,
+            "carmen:text": "Atuan Ring Road",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              158,
+              -8
+            ],
+            "id": 2,
+            "carmen:types": [
+              "address"
+            ],
+            "carmen:index": "address",
+            "carmen:extid": "address.2",
+            "carmen:tmpid": 33554434,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 2,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 2,
+                  "idx": 1,
+                  "tmpid": 33554434,
+                  "distance": 0,
+                  "score": 1400,
+                  "scoredist": 1400,
+                  "scorefactor": 200,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 200
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ],
+      [
+        {
+          "id": 4,
+          "properties": {
+            "carmen:score": 100,
+            "carmen:text": "Atuan Tombs",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              160,
+              -10
+            ],
+            "id": 4,
+            "carmen:types": [
+              "poi"
+            ],
+            "carmen:index": "poi",
+            "carmen:extid": "poi.4",
+            "carmen:tmpid": 67108868,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 3,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 4,
+                  "idx": 2,
+                  "tmpid": 67108868,
+                  "distance": 0,
+                  "score": 920,
+                  "scoredist": 920,
+                  "scorefactor": 230,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 100
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "type": "FeatureCollection",
+    "query": [
+      "atuan"
+    ],
+    "features": [
+      [
+        {
+          "id": 3,
+          "properties": {
+            "carmen:score": 1000,
+            "carmen:text": "Atuan Labyrinth",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              152,
+              -12
+            ],
+            "id": 3,
+            "carmen:types": [
+              "poi"
+            ],
+            "carmen:index": "poi",
+            "carmen:extid": "poi.3",
+            "carmen:tmpid": 33554435,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 0,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 3,
+                  "idx": 1,
+                  "tmpid": 33554435,
+                  "distance": 0,
+                  "score": 7000,
+                  "scoredist": 7000,
+                  "scorefactor": 1000,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 1000
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ],
+      [
+        {
+          "id": 2,
+          "properties": {
+            "carmen:score": 200,
+            "carmen:text": "Atuan Ring Road",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              158,
+              -8
+            ],
+            "id": 2,
+            "carmen:types": [
+              "address"
+            ],
+            "carmen:index": "address",
+            "carmen:extid": "address.2",
+            "carmen:tmpid": 2,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 1,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 2,
+                  "idx": 0,
+                  "tmpid": 2,
+                  "distance": 0,
+                  "score": 1400,
+                  "scoredist": 1400,
+                  "scorefactor": 200,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 200
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ],
+      [
+        {
+          "id": 4,
+          "properties": {
+            "carmen:score": 10,
+            "carmen:text": "Atuan Ring",
+            "carmen:zxy": [
+              "6/32/32"
+            ],
+            "carmen:center": [
+              153,
+              -13
+            ],
+            "id": 4,
+            "carmen:types": [
+              "poi"
+            ],
+            "carmen:index": "poi",
+            "carmen:extid": "poi.4",
+            "carmen:tmpid": 33554436,
+            "carmen:relev": 1,
+            "carmen:distance": 0,
+            "carmen:position": 2,
+            "carmen:spatialmatch": {
+              "relev": 1,
+              "covers": [
+                {
+                  "x": 32,
+                  "y": 32,
+                  "relev": 1,
+                  "id": 4,
+                  "idx": 1,
+                  "tmpid": 33554436,
+                  "distance": 0,
+                  "score": 1000,
+                  "scoredist": 1000,
+                  "scorefactor": 1000,
+                  "mask": 1,
+                  "text": "atuan"
+                }
+              ]
+            },
+            "carmen:geocoder_address_order": "ascending",
+            "carmen:scoredist": 10
+          },
+          "type": "Feature",
+          "bbox": [
+            0,
+            -5.615985819155337,
+            5.625,
+            0
+          ]
+        }
+      ]
+    ]
+  }
+]
