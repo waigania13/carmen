@@ -112,7 +112,7 @@ tape('index Atuan Ring - poi', function(t) {
     addFeature(confB.poi, poiAtuanRingB, t.end);
 });
 
-tape('check for Atuan', function(t) {
+tape.skip('check for Atuan', function(t) {
     carmenA.geocode('poi.4', null, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - POI');
@@ -223,7 +223,7 @@ tape('options.limit still limits number of total results', function(t) {
     });
 });
 
-tape('Shard combination works on real-world queries', function(t) {
+tape.skip('Shard combination works on real-world queries', function(t) {
     var options = {
         stats: false,
         debug: false,
