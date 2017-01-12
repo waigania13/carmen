@@ -112,7 +112,7 @@ tape('index Atuan Ring - poi', function(t) {
     addFeature(confB.poi, poiAtuanRingB, t.end);
 });
 
-tape.skip('check for Atuan', function(t) {
+tape('check for Atuan', function(t) {
     carmenA.geocode('poi.4', null, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - POI');
