@@ -112,10 +112,18 @@ tape('index Atuan Ring - poi', function(t) {
     addFeature(confB.poi, poiAtuanRingB, t.end);
 });
 
+tape('check for Atuan - Forward', function(t) {
+    carmenA.geocode('Atuan', null, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Atuan', 'Finds Atuan - forward');
+        t.end();
+    });
+});
+
 tape('check for Atuan - ID', function(t) {
     carmenA.geocode('poi.4', null, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - idGeocode');
+        t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - id');
         t.end();
     });
 });
@@ -123,7 +131,7 @@ tape('check for Atuan - ID', function(t) {
 tape('check for Atuan - Reverse', function(t) {
     carmenB.geocode('0,0', null, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'Atuan Labyrinth, Atuan Ring Road', 'Finds Atuan - reverseGeocode');
+        t.deepEqual(res.features[0].place_name, 'Atuan Labyrinth, Atuan Ring Road', 'Finds Atuan - reverse');
         t.end();
     });
 });
@@ -238,7 +246,7 @@ tape.skip('Shard combination works on real-world queries', function(t) {
         indexes: false,
         autocomplete: true,
         bbox: false,
-        limit: 1,
+        limit: 5,
         allowed_idx: { '0': true, '1': true },
         shard: true,
         attribution: 'NOTICE: © 2017 Kaibot3000 ⚑'
