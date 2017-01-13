@@ -106,20 +106,27 @@ tape('index Atuan Ring - poi', function(t) {
             'carmen:score': 10,
             'carmen:text':'Atuan Ring',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[153,-13]
+            'carmen:center':[159,-10]
         }
     };
     addFeature(confB.poi, poiAtuanRingB, t.end);
 });
 
-tape('check for Atuan', function(t) {
+tape('check for Atuan - ID', function(t) {
     carmenA.geocode('poi.4', null, function(err, res) {
         t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - POI');
+        t.deepEqual(res.features[0].place_name, 'Atuan Tombs', 'Finds Atuan - idGeocode');
         t.end();
     });
 });
 
+tape('check for Atuan - Reverse', function(t) {
+    carmenB.geocode('0,0', null, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Atuan Labyrinth, Atuan Ring Road', 'Finds Atuan - reverseGeocode');
+        t.end();
+    });
+});
 
 tape('sort shards', function(t) {
     // geocode for atuan
