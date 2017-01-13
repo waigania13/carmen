@@ -28,6 +28,7 @@ if (argv.help) {
     console.log('  --language={ISO code}   Return responses in specified language (if available in index)');
     console.log('  --stats                 Generate Stats on the query');
     console.log('  --debug="feat id"       Follows a feature through geocode"');
+    console.log('  --shard                 Return shard-style responses"');
     console.log('  --help                  Print this report');
     process.exit(0);
 }
@@ -91,7 +92,8 @@ carmen.geocode(argv.query, {
     'debug': argv.debug,
     'stats': true,
     'language': argv.language,
-    'indexes': true
+    'indexes': true,
+    'shard': argv.shard
 }, function(err, data) {
     if (err) throw err;
     if (data.features.length && !argv.geojson) {
