@@ -238,7 +238,7 @@ tape('options.limit still limits number of total results', function(t) {
     });
 });
 
-tape.skip('Shard combination works on real-world queries', function(t) {
+tape('Shard combination works on real-world queries', function(t) {
     var options = {
         stats: false,
         debug: false,
@@ -251,12 +251,10 @@ tape.skip('Shard combination works on real-world queries', function(t) {
         shard: true,
         attribution: 'NOTICE: © 2017 Kaibot3000 ⚑'
     };
-    // pass test fixture to combine shards
     var combinedResults = combineResults(queryFixture, options);
-    // compare to other fixture, or just check results?
-    t.deepEqual(combinedResults.features[0].id, 'country.1', 'most relevant feature first');
+    t.deepEqual(combinedResults.features[0].place_name, 'California, United States', 'state of california first result');
+    t.deepEqual(combinedResults.features.length, 5, 'limit works');
     t.end();
-    // limit, sort order
 });
 
 
