@@ -37,7 +37,7 @@ var addFeature = require('../lib/util/addfeature');
                     'carmen:center': [0,0],
                 },
                 geometry: {
-                    type: "Point",
+                    type: 'Point',
                     coordinates: [0,0]
                 }
             }, done);
@@ -153,7 +153,7 @@ var addFeature = require('../lib/util/addfeature');
                     'carmen:center': coords[i-1],
                 },
                 geometry: {
-                    type: "Point",
+                    type: 'Point',
                     coordinates: coords[i-1]
                 }
             }, done);

@@ -146,7 +146,7 @@ tape('context.stackFeatures multitype, gap', function(assert) {
         }
     };
     var loaded = { features: [
-            {
+        {
             type: 'Feature',
             properties: {
                 'carmen:types': ['region','place'],
