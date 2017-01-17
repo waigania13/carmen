@@ -1,5 +1,9 @@
 # Changelog
 
+## 17.9.0
+
+- Refine multitype behavior and add `place_type` key to explicitly enumerate the types a feature can be.
+
 ## 17.8.5
 
 - Fix indexer behavior for indexes where the max score is specified as 0
