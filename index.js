@@ -11,7 +11,8 @@ var Cache = require('./lib/util/cxxcache'),
     token = require('./lib/util/token'),
     copy = require('./lib/copy'),
     index = require('./lib/index'),
-    merge = require('./lib/merge');
+    merge = require('./lib/merge'),
+    getQueryType = require('./lib/queryType');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -324,3 +325,4 @@ Geocoder.prototype.copy = function(from, to, callback) {
 Geocoder.auto = loader.auto;
 Geocoder.autodir = loader.autodir;
 Geocoder.setVtCacheSize = getContext.getTile.setVtCacheSize;
+Geocoder.getQueryType = getQueryType;
