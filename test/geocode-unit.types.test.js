@@ -206,7 +206,6 @@ tape('reverse: country', function(t) {
 tape('reverse: country,place', function(t) {
     c.geocode('113.65,34.75', { types:['country','place'] }, function(err, res) {
         t.ifError(err);
-        console.log('contextfeatures:', res.features[0]);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].id, 'place.1', '1: place');
         t.deepEqual(res.features[0].context, [

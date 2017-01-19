@@ -97,7 +97,6 @@ var addFeature = require('../lib/util/addfeature');
     tape('Search for an address & check indexes', function(t) {
         c.geocode('9 fake street', { limit_verify: 1, indexes: true }, function(err, res) {
             t.ifError(err);
-            console.log('res:', res);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();
         });
