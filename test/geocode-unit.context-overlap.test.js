@@ -58,8 +58,8 @@ tape('geocoder_name dedupe', function(t) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'main street, funtown');
         t.deepEqual(res.features[0].id, 'street.1');
-        t.deepEqual(res.features[0].context.features.length, 1);
-        t.deepEqual(res.features[0].context.features.map(function(c) { return c.text }), ['funtown']);
+        t.deepEqual(res.features[0].context.length, 1);
+        t.deepEqual(res.features[0].context.map(function(c) { return c.text }), ['funtown']);
         t.end();
     });
 });

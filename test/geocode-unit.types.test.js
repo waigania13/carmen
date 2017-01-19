@@ -209,7 +209,7 @@ tape('reverse: country,place', function(t) {
         console.log('contextfeatures:', res.features[0]);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].id, 'place.1', '1: place');
-        t.deepEqual(res.features[0].context.features, [
+        t.deepEqual(res.features[0].context, [
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
         ], 'preserves full context of place result (including region)');
@@ -223,7 +223,7 @@ tape('reverse: poi', function(t) {
     c.geocode('113.65,34.75', { types:['poi'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
-        t.deepEqual(res.features[0].context.features, [
+        t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
@@ -237,7 +237,7 @@ tape('reverse: poi.landmark', function(t) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
-        t.deepEqual(res.features[0].context.features, [
+        t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
@@ -285,12 +285,12 @@ tape('reverse: poi (limit 5, expect 3)', function(t) {
     c.geocode('113.65,34.75', { types:['poi'], limit: 5 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 3, '3 results');
-        t.deepEqual(res.features[0].context.features, [
+        t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
         ], 'preserves full context of place result (including place, region, country)');
-        t.deepEqual(res.features[1].context.features, [
+        t.deepEqual(res.features[1].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },
@@ -305,7 +305,7 @@ tape('reverse: poi.landmark (limit 5, expect 1)', function(t) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
-        t.deepEqual(res.features[0].context.features, [
+        t.deepEqual(res.features[0].context, [
             { id: 'place.1', text: 'china' },
             { id:'region.1', text:'china' },
             { id:'country.1', text:'china' },

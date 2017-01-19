@@ -76,7 +76,7 @@ tape('multitype reverse', function(assert) {
         assert.ifError(err);
         assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
         assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context.features, [{
+        assert.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
@@ -95,7 +95,7 @@ tape('multitype reverse, types=poi', function(assert) {
         assert.ifError(err);
         assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
         assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context.features, [{
+        assert.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
@@ -150,7 +150,7 @@ tape('multitype forward, q=cafe', function(assert) {
         assert.ifError(err);
         assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
         assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context.features, [{
+        assert.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
@@ -169,7 +169,7 @@ tape('multitype forward, q=libertador', function(assert) {
         assert.ifError(err);
         assert.deepEqual(res.features[0].place_name, 'libertador, caracas');
         assert.deepEqual(res.features[0].id, 'place.1');
-        assert.deepEqual(res.features[0].context.features, [{
+        assert.deepEqual(res.features[0].context, [{
             id: 'region.1',
             text: 'caracas'
         }]);

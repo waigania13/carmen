@@ -114,6 +114,7 @@ tape('index Atuan Ring - poi', function(t) {
 
 tape('check for Atuan - Forward', function(t) {
     carmenA.geocode('Atuan', null, function(err, res) {
+        console.log(res);
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Atuan', 'Finds Atuan - forward');
         t.end();
