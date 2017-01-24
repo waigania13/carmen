@@ -1,5 +1,12 @@
 # Changelog
 
+## 18.0.0
+
+- Breaking change: a log scale distribution is now used for the 3-bit grid cache simplified score
+- Move project to `@mapbox` namespace on npm
+- Fix the timing calculation reported with the `--stats` flag
+- Update outdated dependencies. In particular, use namesapced `@turf` modules
+
 ## 17.10.1
 
 - Use `Number` instead of `parseFloat` to detect reverse queries as `parseFloat` will silently drop non-numeric parts of a string leading to `9a,10b` being interpreted as a reverse query.
