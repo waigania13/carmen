@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.1.0
+
+- Adds new querytime option languageMode which can be set to `strict` to limit returned features to only those that fully match the language specified in the language option
+
 ## 18.0.0
 
 - Breaking change: a log scale distribution is now used for the 3-bit grid cache simplified score
