@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.1.1
+
+- Optimizations to runtime query and indexing operations
+
 ## 18.1.0
 
 - Adds new querytime option languageMode which can be set to `strict` to limit returned features to only those that fully match the language specified in the language option
