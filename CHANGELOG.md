@@ -1,5 +1,71 @@
 # Changelog
 
+## 18.1.0
+
+- Adds new querytime option languageMode which can be set to `strict` to limit returned features to only those that fully match the language specified in the language option
+
+## 18.0.0
+
+- Breaking change: a log scale distribution is now used for the 3-bit grid cache simplified score
+- Move project to `@mapbox` namespace on npm
+- Fix the timing calculation reported with the `--stats` flag
+- Update outdated dependencies. In particular, use namesapced `@turf` modules
+
+## 17.10.1
+
+- Use `Number` instead of `parseFloat` to detect reverse queries as `parseFloat` will silently drop non-numeric parts of a string leading to `9a,10b` being interpreted as a reverse query.
+
+## 17.10.0
+
+- Update to `@mapbox/carmen-cache` package namespace and use latest release (`0.16.2`) that addresses several performance and stability issues.
+
+## 17.9.1
+
+- Fix a spatialmatch bug where low relevance partial text matches would displace higher-relevance full text matches
+
+## 17.9.0
+
+- Refine multitype behavior and add `place_type` key to explicitly enumerate the types a feature can be.
+
+## 17.8.5
+
+- Fix indexer behavior for indexes where the max score is specified as 0
+
+## 17.8.4
+
+- Change penalty from 0.006 => 0.01 to put it on the same %10 scale as other penalties
+
+## 17.8.3
+
+- Change indexing behavior: don't generate degens (for autocomplete) for feature synonyms
+
+## 17.8.2
+
+- Filter results disallowed by the `types` filter before sorting and limiting potential matches
+- In spatialmatch, sort stacks by index from lowest to highest when zoom level is the same
+- Add alternate unicode apostrophes for punctuation normalization
+
+## 17.8.1
+
+- Use fallback language when the specified language key exists, but has a null value.
+
+## 17.8.0
+
+- Update to `carmen-cache@0.15.0`.
+
+## 17.7.3
+
+- Automatically lowercase all `stacks` values for a given query
+
+## 17.7.2
+
+- Move eslint to dev dependencies.
+- Update to `carmen-cache@0.14.1`.
+
+## 17.7.1
+
+- Trim whitespace from text values when outputting feature values.
+
 ## 17.7.0
 
 - Update to `carmen-cache@0.14.0`.

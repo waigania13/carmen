@@ -56,6 +56,7 @@ tape('index street_b', function(t) {
 tape('geocoder_name dedupe', function(t) {
     c.geocode('main street', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
+        console.log('context:', res.features[0].context);
         t.deepEqual(res.features[0].place_name, 'main street, funtown');
         t.deepEqual(res.features[0].id, 'street.1');
         t.deepEqual(res.features[0].context.length, 1);

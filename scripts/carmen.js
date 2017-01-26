@@ -96,6 +96,7 @@ carmen.geocode(argv.query, {
     'shard': argv.shard
 }, function(err, data) {
     if (err) throw err;
+    load = +new Date() - load;
     if (data.features.length && !argv.geojson) {
         console.log('Tokens');
         console.log('------');

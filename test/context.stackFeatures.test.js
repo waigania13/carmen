@@ -179,13 +179,15 @@ tape('context.stackFeatures multitype, nogap', function(assert) {
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
-            'carmen:extid': 'region.1'
+            'carmen:extid': 'region.1',
+            'carmen:geomtype': 3
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
-            'carmen:extid': 'place.1'
+            'carmen:extid': 'place.1',
+            'carmen:geomtype': 3
         }
     }, {
         type: 'Feature',
@@ -196,9 +198,10 @@ tape('context.stackFeatures multitype, nogap', function(assert) {
     }
     ]};
     var stacked = context.stackFeatures(geocoderStub, loaded.features.slice(0), {});
-    assert.deepEqual(stacked, { features: [loaded.features[2],loaded.features[0]]}, '2 features stacked, 1 promoted');
+    assert.deepEqual(stacked, { features: [loaded.features[2],loaded.features[1],loaded.features[0]]}, '3 features stacked');
     assert.deepEqual(stacked.features[0].properties['carmen:extid'], 'poi.1');
     assert.deepEqual(stacked.features[1].properties['carmen:extid'], 'place.1');
+    assert.deepEqual(stacked.features[2].properties['carmen:extid'], 'region.1');
     assert.end();
 });
 
