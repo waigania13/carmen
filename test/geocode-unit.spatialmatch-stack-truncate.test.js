@@ -7,6 +7,8 @@ var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
+var Cache = require('@mapbox/carmen-cache').Cache;
+var origCoalesce = Cache.coalesce;
 
 var conf = {
     a: new mem({maxzoom: 6}, function() {}),
@@ -17,6 +19,14 @@ var conf = {
     f: new mem({maxzoom: 6}, function() {}),
 };
 var c = new Carmen(conf);
+
+tape('mock/spy', function(assert) {
+    Cache.coalesce = function(stack, options, callback) {
+        assert.deepEqual(stack.length, 4, 'stack length == 4');
+        origCoalesce.call(Cache, stack, options, callback);
+    };
+    assert.end();
+});
 
 tape('index a', function(t) {
     addFeature(conf.a, {
@@ -97,6 +107,11 @@ tape('test spatialmatch stack truncate (desc)', function(t) {
         t.equals(res.features[0].id, 'f.1');
         t.end();
     });
+});
+
+tape('unmock/spy', function(assert) {
+    Cache.coalesce = origCoalesce;
+    assert.end();
 });
 
 tape('teardown', function(assert) {
