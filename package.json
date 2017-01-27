@@ -56,7 +56,7 @@
     "lint": "eslint index.js lib test",
     "test": "npm run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && npm run bench",
     "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
-    "bench": "for file in bench/*.js; do node $file; done"
+    "bench": "./test/run_all_benchmarks.sh"
   },
   "eslintConfig": {
     "rules": {
