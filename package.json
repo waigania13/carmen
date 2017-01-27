@@ -54,8 +54,8 @@
   "main": "./index.js",
   "scripts": {
     "lint": "eslint index.js lib test",
-    "test": "npm run lint && (retire -n || echo 'WARNING: retire found insecure packages') && tape ./test/*.js && npm run bench",
-    "coverage": "istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
+    "test": "npm run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && npm run bench",
+    "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "for file in bench/*.js; do node $file; done"
   },
   "eslintConfig": {
