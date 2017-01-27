@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.1.2
+
+- Spatialmatch the top 4 most specific features of each subquery stack as a performance optimization/safeguard against massive `coalesce()` jobs
+
 ## 18.1.1
 
 - Optimizations to runtime query and indexing operations
