@@ -63,8 +63,8 @@ function runphrasematch(cb) {
         'defer': true,
         'fn': function(deferred) {
                 phrasematch(conf.street, 'Westside Lake Rd', {}, function(err, result) {
-                if (!result.length) {
-                    throw new Error();
+                if (!result) {
+                    throw new Error("Did not get result");
                 } else {
                     deferred.resolve();
                 }
