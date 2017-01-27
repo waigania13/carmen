@@ -232,7 +232,6 @@ tape('options.limit still limits number of total results', function(t) {
     q.awaitAll(function(err, items) {
         if (err) throw err;
         var combinedResults = combineResults(items, options);
-
         t.deepEqual(combinedResults.features.length, 2, 'respects result limit');
         t.end();
     });
