@@ -4,7 +4,7 @@ set -euo pipefail
 
 failures=0
 
-for file in bench/ph*.js; do
+for file in bench/*.js; do
     echo "Running $file"
     node $file || echo "$file failed" && failures=$((failures+1));
 done
