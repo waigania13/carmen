@@ -242,38 +242,6 @@ test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
     context = [{
         properties: {
             'carmen:text': 'Chicago',
-            'carmen:types': ['place'],
-            'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
-        }
-    }];
-    context._relevance = -1;
-
-    feature = ops.toFeature(context, {}, 'en', null, true);
-    assert.deepEqual(feature.place_name, 'Chicago');
-    assert.deepEqual(feature.relevance, 0);
-
-    context._relevance = 1.5;
-
-    feature = ops.toFeature(context, {}, 'en', null, true);
-    assert.deepEqual(feature.place_name, 'Chicago');
-    assert.deepEqual(feature.relevance, 1);
-
-    context._relevance = 0.5;
-
-    feature = ops.toFeature(context, {}, 'en', null, true);
-    assert.deepEqual(feature.place_name, 'Chicago');
-    assert.deepEqual(feature.relevance, 0.5);
-
-    assert.end()
-});
-
-test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
-    var context, feature;
-
-    context = [{
-        properties: {
-            'carmen:text': 'Chicago',
             'carmen:text_en': 'Chicago',
             'carmen:text_zh': '芝加哥',
             'carmen:types': ['place'],
