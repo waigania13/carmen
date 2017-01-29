@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.1.3
+
+- Add support for IL style addresses: `43N134 Woodward Ave.`
+
 ## 18.1.2
 
 - Spatialmatch the top 4 most specific features of each subquery stack as a performance optimization/safeguard against massive `coalesce()` jobs
