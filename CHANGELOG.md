@@ -3,6 +3,8 @@
 ## 18.1.3
 
 - Add support for IL style addresses: `43N134 Woodward Ave.`
+- Revert spatialmatch stack truncation from 18.1.2
+- Update to carmen-cache@0.16.3 with additional `coalesce()` performance optimizations
 
 ## 18.1.2
 
