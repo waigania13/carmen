@@ -1,5 +1,9 @@
 # Changelog
 
+## 18.1.4
+
+- Update to carmen-cache@0.16.4.
+
 ## 18.1.3
 
 - Add support for IL style addresses: `43N134 Woodward Ave.`
