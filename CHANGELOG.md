@@ -1,5 +1,10 @@
 # Changelog
 
+## 18.2.0
+
+- Improve proximity distance calculation for polygon features.
+- Update to carmen-cache@0.16.5.
+
 ## 18.1.4
 
 - Update to carmen-cache@0.16.4.
