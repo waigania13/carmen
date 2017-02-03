@@ -305,11 +305,13 @@
                             "scoredist": 1,
                             "scorefactor": 1,
                             "mask": 1,
-                            "text": "toronto"
+                            "text": "toronto",
+                            "zoom": 6
                         }
                     ]
                 },
                 "carmen:geocoder_address_order": "ascending",
+                "carmen:zoom": 6,
                 "carmen:scoredist": 1
             },
             "bbox": [
