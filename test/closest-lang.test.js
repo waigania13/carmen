@@ -48,3 +48,33 @@ tape('handle nulls w/ prefix', function(assert) {
 
     assert.end();
 });
+
+tape('universal', function(assert) {
+    assert.equal(closestLangLabel('en', {
+        'universal': '10000'
+    }), '10000');
+    assert.equal(closestLangLabel('zh', {
+        'universal': '10000'
+    }), '10000');
+    assert.end();
+});
+
+tape('getText', function(assert) {
+    assert.deepEqual(closestLangLabel.getText(null, {
+        'carmen:text': 'Default',
+        'carmen:text_en': 'English',
+        'carmen:text_universal': 'Universal'
+    }), { text: 'Default' });
+    assert.deepEqual(closestLangLabel.getText('en', {
+        'carmen:text': 'Default',
+        'carmen:text_en': 'English',
+        'carmen:text_universal': 'Universal'
+    }), { text: 'English', language: 'en' });
+    assert.deepEqual(closestLangLabel.getText('zh', {
+        'carmen:text': 'Default',
+        'carmen:text_en': 'English',
+        'carmen:text_universal': 'Universal'
+    }), { text: 'Universal' });
+    assert.end();
+});
+
