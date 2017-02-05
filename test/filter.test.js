@@ -168,6 +168,16 @@ tape('filter.featureMatchesLanguage', function(assert) {
         languageMode: 'strict'
     }), 'disallowed: no matching text');
 
+    assert.ok(filter.featureMatchesLanguage({
+        properties: {
+            'carmen:text': 'New York',
+            'carmen:text_universal': 'New York'
+        }
+    }, {
+        language: 'en',
+        languageMode: 'strict'
+    }), 'allowed: text_universal');
+
     assert.end();
 });
 
