@@ -1,5 +1,10 @@
 # Changelog
 
+## 19.0.0
+
+- Remove code/support for version 0 legacy features
+- Adds index-level option `geocoder_universal_text` for allowing features in an index to be considered language-agnostic/compatible with any requested language when using `languageMode=strict`
+
 ## 18.2.0
 
 - Improve proximity distance calculation for polygon features.
