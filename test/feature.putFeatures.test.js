@@ -11,33 +11,48 @@ tape('putFeatures', function(assert) {
     assert.ok(carmen);
     feature.putFeatures(conf.source, [
         {
-            _id: 1,
-            _text: 'a',
-            _center: [ 0, 0 ],
-            _geometry: {
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'a',
+                'carmen:center': [ 0, 0 ],
+                'carmen:zxy': ['6/32/32']
+            },
+            geometry: {
                 type: 'Point',
                 coordinates: [ 0, 0 ]
             }
         },
         {
-            _id: 2,
-            _text: 'b',
-            _center: [ 0, 0 ],
-            _geometry: {
+            id: 2,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'b',
+                'carmen:center': [ 0, 0 ],
+                'carmen:zxy': ['6/32/32']
+            },
+            geometry: {
                 type: 'Point',
                 coordinates: [ 0, 0 ]
             }
         },
         {
-            _id: Math.pow(2,20) + 1,
-            _text: 'c',
-            _center: [360/64+0.001,0],
-            _zxy: ['6/33/32']
+            id: Math.pow(2,20) + 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'c',
+                'carmen:center': [360/64+0.001,0],
+                'carmen:zxy': ['6/33/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [360/64+0.001,0]
+            }
         },
     ], function(err) {
         assert.ifError(err);
-        assert.equal(source._shards.feature[1], '{"1":{"type":"Feature","properties":{"carmen:center":[0,0],"carmen:text":"a","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":1},"1048577":{"type":"Feature","properties":{"carmen:zxy":["6/33/32"],"carmen:center":[5.626,0],"carmen:text":"c"},"id":1048577,"geometry":{"type":"MultiPolygon","coordinates":[[[[5.625,-5.615985819155337],[5.625,0],[11.25,0],[11.25,-5.615985819155337],[5.625,-5.615985819155337]]]]},"bbox":[5.625,-5.615985819155337,11.25,0]}}', 'has feature shard 1');
-        assert.equal(source._shards.feature[2], '{"2":{"type":"Feature","properties":{"carmen:center":[0,0],"carmen:text":"b","carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]},"id":2}}', 'has feature shard 2');
+        assert.equal(source._shards.feature[1], '{"1":{"id":1,"type":"Feature","properties":{"carmen:text":"a","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}},"1048577":{"id":1048577,"type":"Feature","properties":{"carmen:text":"c","carmen:center":[5.626,0],"carmen:zxy":["6/33/32"]},"geometry":{"type":"Point","coordinates":[5.626,0]}}}', 'has feature shard 1');
+        assert.equal(source._shards.feature[2], '{"2":{"id":2,"type":"Feature","properties":{"carmen:text":"b","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}}}', 'has feature shard 2');
         assert.end();
     });
 });
