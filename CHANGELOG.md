@@ -1,5 +1,8 @@
 # Changelog
 
+## 19.0.1
+- Add `sr_Latn` fallback for `sr_BA`, `sr_CS`, `sr_ME`, and `sr_RS` language codes
+
 ## 19.0.0
 
 - Remove code/support for version 0 legacy features
