@@ -1,5 +1,10 @@
 # Changelog
 
+## 19.0.2
+- Add additional Serbian fallabcks
+- Add an `equivalent.json` mapping of allowed equivalent languages
+- Allow equivalent languages to pass the `languageMode: strict` filter
+
 ## 19.0.1
 - Add `sr_Latn` fallback for `sr_BA`, `sr_CS`, `sr_ME`, and `sr_RS` language codes
 
