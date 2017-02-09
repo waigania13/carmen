@@ -1,5 +1,75 @@
 # Changelog
 
+## 19.0.1
+- Add `sr_Latn` fallback for `sr_BA`, `sr_CS`, `sr_ME`, and `sr_RS` language codes
+
+## 19.0.0
+
+- Remove code/support for version 0 legacy features
+- Adds index-level option `geocoder_universal_text` for allowing features in an index to be considered language-agnostic/compatible with any requested language when using `languageMode=strict`
+
+## 18.2.0
+
+- Improve proximity distance calculation for polygon features.
+- Update to carmen-cache@0.16.5.
+
+## 18.1.4
+
+- Update to carmen-cache@0.16.4.
+
+## 18.1.3
+
+- Add support for IL style addresses: `43N134 Woodward Ave.`
+- Revert spatialmatch stack truncation from 18.1.2
+- Update to carmen-cache@0.16.3 with additional `coalesce()` performance optimizations
+
+## 18.1.2
+
+- Spatialmatch the top 4 most specific features of each subquery stack as a performance optimization/safeguard against massive `coalesce()` jobs
+
+## 18.1.1
+
+- Optimizations to runtime query and indexing operations
+
+## 18.1.0
+
+- Adds new querytime option languageMode which can be set to `strict` to limit returned features to only those that fully match the language specified in the language option
+
+## 18.0.0
+
+- Breaking change: a log scale distribution is now used for the 3-bit grid cache simplified score
+- Move project to `@mapbox` namespace on npm
+- Fix the timing calculation reported with the `--stats` flag
+- Update outdated dependencies. In particular, use namesapced `@turf` modules
+
+## 17.10.1
+
+- Use `Number` instead of `parseFloat` to detect reverse queries as `parseFloat` will silently drop non-numeric parts of a string leading to `9a,10b` being interpreted as a reverse query.
+
+## 17.10.0
+
+- Update to `@mapbox/carmen-cache` package namespace and use latest release (`0.16.2`) that addresses several performance and stability issues.
+
+## 17.9.1
+
+- Fix a spatialmatch bug where low relevance partial text matches would displace higher-relevance full text matches
+
+## 17.9.0
+
+- Refine multitype behavior and add `place_type` key to explicitly enumerate the types a feature can be.
+
+## 17.8.5
+
+- Fix indexer behavior for indexes where the max score is specified as 0
+
+## 17.8.4
+
+- Change penalty from 0.006 => 0.01 to put it on the same %10 scale as other penalties
+
+## 17.8.3
+
+- Change indexing behavior: don't generate degens (for autocomplete) for feature synonyms
+
 ## 17.8.2
 
 - Filter results disallowed by the `types` filter before sorting and limiting potential matches

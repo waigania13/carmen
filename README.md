@@ -70,6 +70,7 @@ geocoder_version        | Required. Should be set to **7** for carmen@rocksdb. I
 geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message cache. Defaults uptream to 65536 (maximum number of possible shards).
 geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indicate the expected ordering of address components for an index. Defaults to `ascending`.
 geocoder_inherit_score  | Optional + advanced. Set to `true` if features from this index should appear above other identically (ish) named parent features that are part of its context (e.g. promote New York (city) promoted above New York (state)). Defaults to `false`.
+geocoder_universal_text | Optional + advanced. Set to `true` if features from this index should be considered language agnostic (e.g. postcodes). They will bypass the `languageMode=strict` flag and the `carmen:text` field will be treated as compatible with any language. Defaults to `false`.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 
@@ -101,6 +102,9 @@ as part of the `options` object:
 - `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
   are available on a features, response will be returned in that language and
   appropriately formatted.
+- `languageMode` - string. If set to `"strict"` the returned features will be
+  filtered to only those with text matching the language specified by the
+  `language` option. Has no effect if `language` is not set.
 - `bbox` - a `[ w, s, e, n ]` bbox array to use for limiting search results.
   Only features inside the provided bbox will be included.
 
