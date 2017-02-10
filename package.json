@@ -1,12 +1,12 @@
 {
   "name": "@mapbox/carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "19.0.1-rocksdb",
+  "version": "19.0.1-rocksdb-1",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD",
   "dependencies": {
-    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/45ee93ac3117b1be605daba7b6821f41d84d0a08",
+    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/7383dd0f14f68f8190cbd750f6482eb03ea75cbd",
     "@mapbox/geojsonhint": "^1.2.0",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/sphericalmercator": "~1.0.1",
@@ -99,7 +99,8 @@
       "block-scoped-var": 2
     },
     "env": {
-      "node": true
+      "node": true,
+      "es6": true
     },
     "globals": {}
   },
