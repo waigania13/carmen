@@ -253,3 +253,114 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
+// digraphic exclusion test
+(function() {
+    var conf = {
+        country: new mem({ maxzoom:6, geocoder_name: 'country' }, function() {}),
+        region: new mem({ maxzoom:6, geocoder_name: 'region' }, function() {}),
+        place: new mem({ maxzoom:6, geocoder_name: 'place' }, function() {})
+    };
+    var c = new Carmen(conf);
+
+    tape('index country', function(assert) {
+        addFeature(conf.country, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text': 'United States',
+                'carmen:text_en': 'United States',
+                'carmen:text_sr': 'Сједињене Америчке Државе',
+                'carmen:text_sr_Latn': 'Sjedinjene Američke Države'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, assert.end);
+    });
+
+    tape('index region', function(assert) {
+        addFeature(conf.region, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_hr': 'Teksas',
+                'carmen:text': 'Texas'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, assert.end);
+    });
+
+    tape('index place', function(assert) {
+        addFeature(conf.place, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_sr': 'Парис',
+                'carmen:text': 'Paris'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, assert.end);
+    });
+
+    tape('index place', function(assert) {
+        addFeature(conf.place, {
+            type: 'Feature',
+            id: 2,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_sr': 'Београд',
+                'carmen:text_hr': 'Beograd',
+                'carmen:text': 'Belgrade'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, assert.end);
+    });
+
+
+    tape('query: paris, language: sr-Latn, languageMode: strict', function(assert) {
+        c.geocode('paris', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
+            assert.ifError(err);
+            assert.equal(res.features.length, 0, 'filters out mixed-script results');
+            assert.end();
+        });
+    });
+
+    tape('query: belgrade, language: sr-Latn, languageMode: strict', function(assert) {
+        c.geocode('belgrade', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
+            assert.ifError(err);
+            console.log("Res", res)
+            assert.equal(res.features.length, 1, 'allows hr result');
+            assert.equal(res.features[0].language, 'hr', 'language code is hr');
+            assert.end();
+        });
+    });
+
+    tape('query: belgrade, language: hr, languageMode: strict', function(assert) {
+        c.geocode('belgrade', { language: 'hr', languageMode: 'strict' }, function(err, res) {
+            assert.ifError(err);
+            console.log("res", res)
+            assert.equal(res.features.length, 1, 'allows hr result');
+            assert.equal(res.features[0].language, 'hr', 'language code is hr');
+            assert.equal(res.features[0].place_name, 'Beograd, Teksas', 'language=hr excludes sr results');
+            assert.end();
+        });
+    });
+
+    tape('teardown', function(assert) {
+        context.getTile.cache.reset();
+        assert.end();
+    });
+})();
