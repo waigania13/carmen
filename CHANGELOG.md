@@ -1,5 +1,8 @@
 # Changelog
 
+## 19.0.3
+- Add a `digraphic` array of languages known to use multiple scripts, for more rigorous filtering in `languageMode: strict`
+
 ## 19.0.2
 - Add additional Serbian fallabcks
 - Add an `equivalent.json` mapping of allowed equivalent languages
