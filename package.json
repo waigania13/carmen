@@ -4,7 +4,7 @@
   "version": "19.0.3",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "dependencies": {
     "@mapbox/carmen-cache": "0.16.5",
     "@mapbox/geojsonhint": "^1.2.0",
