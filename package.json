@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/7383dd0f14f68f8190cbd750f6482eb03ea75cbd",
+    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/523ec85709eaf6fb698e38075a5d05c99c07e470",
     "@mapbox/geojsonhint": "^1.2.0",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/sphericalmercator": "~1.0.1",
