@@ -1,5 +1,5 @@
 //var tape = require('tape');
-var tape = function(){};
+var tape = function() {};
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');

@@ -172,7 +172,15 @@ function Geocoder(indexes, options) {
 
         this._error = err;
         this._opened = true;
-        this.emit('open', err);
+
+        // emit the open event in a setImmediate -- circumstances exist
+        // where no async ops may be necessary to construct a carmen,
+        // in which case callers may not have a chance to register a callback handler
+        // before open is emitted if we don't protect it this way
+        var _this = this;
+        setImmediate(function() {
+            _this.emit('open', err);
+        });
     }.bind(this));
 
     function loadIndex(id, source, callback) {
@@ -191,21 +199,12 @@ function Geocoder(indexes, options) {
             var q = queue();
             q.defer(function(done) { source.getInfo(done); });
             q.defer(function(done) {
-                if (source._original._dictcache || !source.getGeocoderData) {
+                var dawgFile = source.getBaseFilename() + '.dawg';
+                if (source._original._dictcache || !fs.existsSync(dawgFile)) {
                     done();
                 } else {
-                    source.getGeocoderData('stat', 0, done);
+                    fs.readFile(dawgFile, done);
                 }
-            });
-            ['freq','grid'].forEach(function(type) {
-                q.defer(function(done) {
-                    // AGH HOLY SHIT FIXME THIS IS HORRIBLE
-                    if (!source.getGeocoderData || (source._original._geocoder && source._original._geocoder.has(type))) {
-                        done();
-                    } else {
-                        source.getGeocoderData(type, 0, done);
-                    }
-                });
             });
             q.awaitAll(function(err, loaded) {
                 if (err) return callback(err);

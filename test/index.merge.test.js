@@ -5,7 +5,6 @@ var split = require('split');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
 var de = require('deep-equal');
-var dawgcache = require('../lib/util/dawg');
 
 var test = require('tape');
 
@@ -123,13 +122,9 @@ test('index - streaming interface', function(assert) {
     assert.test('merged indexes', function(q) {
         carmenC.merge(memObjectA, memObjectB, memObjectC, {}, function(err) {
             if (err) throw err;
-
-            // reload the dawg cache based on the results of the merge
-            memObjectC.getGeocoderData('stat', 0, function(err, data) {
-                memObjectC._dictcache = new dawgcache(data);
-                carmenC.indexes.country._dictcache = memObjectC._dictcache;
-                q.end();
-            });
+            // the dictcache has been reloaded, so copy it over to the carmen object
+            carmenC.indexes.country._dictcache = memObjectC._dictcache;
+            q.end();
         });
     });
     assert.test('ensure index was successful for index A after merging', function(q) {
