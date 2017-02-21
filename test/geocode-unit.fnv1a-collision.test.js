@@ -2,14 +2,16 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     test: new mem({ maxzoom:6, geocoder_address: 1 }, function() {})
 };
 var c = new Carmen(conf);
 tape('index "av francisco de aguirre #"', function(t) {
-    addFeature(conf.test, {
+    queueFeature(conf.test, {
         id:1,
         properties: {
             'carmen:text':'av francisco de aguirre',
@@ -23,7 +25,7 @@ tape('index "av francisco de aguirre #"', function(t) {
     }, t.end);
 });
 tape('index "# r ademar da silva neiva"', function(t) {
-    addFeature(conf.test, {
+    queueFeature(conf.test, {
         id:2,
         properties: {
             'carmen:text':'r ademar da silva neiva',

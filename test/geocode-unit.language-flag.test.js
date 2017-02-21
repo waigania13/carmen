@@ -5,7 +5,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
 var context = require('../lib/context');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 (function() {
     var conf = {
@@ -39,7 +41,7 @@ var addFeature = require('../lib/util/addfeature');
             },
             bbox: [0,-5.615985819155337,5.625,0]
         };
-        addFeature(conf.country, country, t.end);
+        queueFeature(conf.country, country, t.end);
     });
 
     tape('index city', function(t) {
@@ -60,7 +62,7 @@ var addFeature = require('../lib/util/addfeature');
             },
             bbox: [0,-5.615985819155337,5.625,0]
         };
-        addFeature(conf.place, place, t.end);
+        queueFeature(conf.place, place, t.end);
     });
 
     tape('russia => Russian Federation', function(t) {
@@ -211,7 +213,7 @@ var addFeature = require('../lib/util/addfeature');
             },
             bbox: [0,-5.615985819155337,5.625,0]
         };
-        addFeature(conf.region, region, t.end);
+        queueFeature(conf.region, region, t.end);
     });
 
     // custom response format template
@@ -279,7 +281,7 @@ var addFeature = require('../lib/util/addfeature');
             },
             bbox: [-5.625,0,0,5.615985819155337]
         };
-        addFeature(conf.place2, place, t.end);
+        queueFeature(conf.place2, place, t.end);
     });
 
     tape('西北部联邦管区 => Russian Federation西北部联邦管区', function(t) {

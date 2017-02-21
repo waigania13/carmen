@@ -2,7 +2,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     place: new mem(null, function() {}),
@@ -18,7 +20,7 @@ tape('index unicode place', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.place, place, t.end);
+    queueFeature(conf.place, place, t.end);
 });
 
 tape('valid match', function(t) {

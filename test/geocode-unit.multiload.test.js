@@ -2,14 +2,16 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var country = new mem(null, function() {});
 var conf = { country: country };
 var a = new Carmen(conf);
 
 tape('index country', function(t) {
-    addFeature(conf.country, {
+    queueFeature(conf.country, {
         id:1,
         properties: {
             'carmen:text':'america',

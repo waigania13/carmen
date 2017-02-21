@@ -2,7 +2,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     country: new mem({ maxzoom: 6 }, function() {})
@@ -10,7 +12,7 @@ var conf = {
 
 var c = new Carmen(conf);
 tape('index emoji country', function(assert) {
-    addFeature(conf.country, {
+    queueFeature(conf.country, {
         id: 1,
         geometry: {
             type: 'Point',
@@ -25,7 +27,7 @@ tape('index emoji country', function(assert) {
 });
 
 tape('index non-emoji country', function(assert) {
-    addFeature(conf.country, {
+    queueFeature(conf.country, {
         id: 2,
         geometry: {
             type: 'Point',

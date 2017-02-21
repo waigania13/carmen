@@ -63,7 +63,6 @@ function Geocoder(indexes, options) {
                         new cxxcache.RocksDBCache(name + ".grid", data.grid) :
                         new cxxcache.MemoryCache(name + ".grid")
                 }
-                if (data.freq && fs.existsSync(data.freq))
             } else {
                 source._geocoder = source._original._geocoder;
             }

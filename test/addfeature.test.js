@@ -3,7 +3,9 @@ var tape = function() {};
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     country: new mem({maxzoom: 6}, function() {}),
@@ -82,7 +84,7 @@ tape('index country (batch)', function(t) {
     };
     docs.push(country);
 
-    addFeature(conf.country, docs, t.end);
+    queueFeature(conf.country, docs, t.end);
 });
 
 tape('index region', function(t) {
@@ -118,7 +120,7 @@ tape('index region', function(t) {
         }
     };
     docs.push(usvi)
-    addFeature(conf.region, docs, t.end);
+    queueFeature(conf.region, docs, t.end);
 });
 
 tape('index place', function(t) {
@@ -158,7 +160,7 @@ tape('index place', function(t) {
         }
         docs.push(place);
     }
-    addFeature(conf.place, docs, t.end);
+    queueFeature(conf.place, docs, t.end);
     
 });
 

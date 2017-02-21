@@ -4,7 +4,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     region: new mem({maxzoom:6, geocoder_types:['region','place']}, function() {}),
@@ -14,7 +16,7 @@ var conf = {
 var c = new Carmen(conf);
 
 tape('index region', function(t) {
-    addFeature(conf.region, {
+    queueFeature(conf.region, {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -35,7 +37,7 @@ tape('index region', function(t) {
 });
 
 tape('index district', function(t) {
-    addFeature(conf.district, {
+    queueFeature(conf.district, {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -55,7 +57,7 @@ tape('index district', function(t) {
 });
 
 tape('index district', function(t) {
-    addFeature(conf.district, {
+    queueFeature(conf.district, {
         id:2,
         geometry: {
             type: 'Polygon',
@@ -75,7 +77,7 @@ tape('index district', function(t) {
 });
 
 tape('index place', function(t) {
-    addFeature(conf.place, {
+    queueFeature(conf.place, {
         id:2,
         geometry: {
             type: 'Polygon',

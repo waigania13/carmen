@@ -2,7 +2,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     street: new mem(null, function() {})
@@ -15,7 +17,7 @@ tape('index feature', function(t) {
     for (var i = 1; i < 100; i++) range.push(i);
     range.forEach(function(i) {
         t.test('addFeature', function(tt) {
-            addFeature(conf.street, {
+            queueFeature(conf.street, {
                 id:i,
                 properties: {
                     'carmen:text':'Main Street',
@@ -41,7 +43,7 @@ tape('index feature', function(t) {
             'carmen:score': 1,
         }
     };
-    addFeature(conf.street, feature, t.end);
+    queueFeature(conf.street, feature, t.end);
 });
 
 tape('index feature', function(t) {
@@ -54,7 +56,7 @@ tape('index feature', function(t) {
             'carmen:score': 1,
         }
     };
-    addFeature(conf.street, feature, t.end);
+    queueFeature(conf.street, feature, t.end);
 });
 
 // run query with invalid bbox, expect error

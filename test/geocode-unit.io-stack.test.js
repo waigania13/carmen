@@ -5,7 +5,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
 var conf = {
@@ -24,7 +26,7 @@ tape('ready', function(assert) {
 
 [1,2,3].forEach(function(i) {
     tape('index place ' + i, function(t) {
-        addFeature(conf['place'+i], {
+        queueFeature(conf['place'+i], {
             id:1,
             properties: {
                 'carmen:text':'springfield',
@@ -34,7 +36,7 @@ tape('ready', function(assert) {
         }, t.end);
     });
     tape('index street ' + i, function(t) {
-        addFeature(conf['street'+i], {
+        queueFeature(conf['street'+i], {
             id:1,
             properties: {
                 'carmen:text':'winding river rd',
@@ -44,7 +46,7 @@ tape('ready', function(assert) {
         }, t.end);
     });
     tape('index street ' + i, function(t) {
-        addFeature(conf['street'+i], {
+        queueFeature(conf['street'+i], {
             id:2,
             properties: {
                 'carmen:text':'river rd',
@@ -54,7 +56,7 @@ tape('ready', function(assert) {
         }, t.end);
     });
     tape('index street ' + i, function(t) {
-        addFeature(conf['street'+i], {
+        queueFeature(conf['street'+i], {
             id:3,
             properties: {
                 'carmen:text':'springfield st',

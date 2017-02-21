@@ -4,7 +4,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     postcode: new mem(null, function() {}),
@@ -21,7 +23,7 @@ tape('index postcode', function(t) {
             'carmen:center': [0,0]
         }
     };
-    addFeature(conf.postcode, doc, t.end);
+    queueFeature(conf.postcode, doc, t.end);
 });
 tape('index city', function(t) {
     var city = {
@@ -32,7 +34,7 @@ tape('index city', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
 tape('index street 1', function(t) {
     var street = {
@@ -43,7 +45,7 @@ tape('index street 1', function(t) {
             'carmen:center': [0,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
 tape('index street 2', function(t) {
     var street = {
@@ -54,7 +56,7 @@ tape('index street 2', function(t) {
             'carmen:center': [360/64+0.001,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
 tape('lessingstrasse koln 50825', function(t) {
     c.geocode('lessingstrasse koln 50825', { limit_verify:1 }, function(err, res) {

@@ -4,7 +4,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 //Make sure that capital letters are lowercased on indexing to match input token
 (function() {
@@ -25,7 +27,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test address index for alphanumerics', function(t) {
         c.geocode('9B FAKE STREET', { limit_verify: 1 }, function(err, res) {
@@ -55,7 +57,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test address index for alphanumerics', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
@@ -85,7 +87,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test address query with alphanumeric', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
@@ -117,7 +119,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates:[[0,0],[0,100]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test alphanumeric address query with address range', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
@@ -160,7 +162,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates:[[0,0],[0,100]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test alphanumeric address query with address range', function(t) {
         c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
@@ -204,7 +206,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates:[[0,0],[0,100]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('index fake UK postcode', function(t) {
         var postcode = {
@@ -215,7 +217,7 @@ var addFeature = require('../lib/util/addfeature');
                 'carmen:center': [0,0]
             }
         };
-        addFeature(conf.postcode, postcode, t.end);
+        queueFeature(conf.postcode, postcode, t.end);
     });
     tape('test UK postcode not getting confused w/ address range', function(t) {
         c.geocode('B77 1AB', { limit_verify: 10 }, function(err, res) {
@@ -249,7 +251,7 @@ var addFeature = require('../lib/util/addfeature');
                 coordinates:[[0,0],[0,100]]
             }
         };
-        addFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, t.end);
     });
     tape('test hyphenated address query with address range', function(t) {
         c.geocode('23-414 beach street', { limit_verify: 1 }, function(err, res) {

@@ -2,7 +2,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 var fs = require('fs');
 
 var conf = {
@@ -31,7 +33,7 @@ tape('index country', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.country, country, assert.end);
+    queueFeature(conf.country, country, assert.end);
 });
 
 tape('index region', function(assert) {
@@ -53,7 +55,7 @@ tape('index region', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.region, region, assert.end);
+    queueFeature(conf.region, region, assert.end);
 });
 
 tape('index place', function(assert) {
@@ -81,7 +83,7 @@ tape('index place', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.place, place, assert.end);
+    queueFeature(conf.place, place, assert.end);
 });
 
 tape('Toronto', function(assert) {

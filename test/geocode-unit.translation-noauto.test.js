@@ -5,13 +5,16 @@ var Carmen = require('..');
 var cxxcache = require('../lib/util/cxxcache');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var queue = require('d3-queue').queue;
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var runTests = function(mode) {
     var conf = { region: new mem(null, function() {}) };
     var c = new Carmen(conf);
     tape('index first region', function(t) {
-        addFeature(conf.region, {
+        queueFeature(conf.region, {
             id:1,
             properties: {
                 'carmen:text':'South Carolina',
@@ -22,7 +25,7 @@ var runTests = function(mode) {
         }, t.end);
     });
     tape('index second region', function(t) {
-        addFeature(conf.region, {
+        queueFeature(conf.region, {
             id:2,
             properties: {
                 'carmen:text':'Delaware',
@@ -31,6 +34,15 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
+	tape('build queued features', function(t) {
+	    var q = queue();
+	    Object.keys(conf).forEach(function(c) {
+	        q.defer(function(cb) {
+	            buildQueued(conf[c], cb);
+	        });
+	    });
+	    q.awaitAll(t.end);
+	});
 
     if (mode == "lazy") {
         // on the second run through the tests, force carmen-cache to use lazy

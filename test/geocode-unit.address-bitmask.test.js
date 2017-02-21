@@ -4,7 +4,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
@@ -23,7 +25,7 @@ tape('index address', function(t) {
             coordinates: [[0,0]]
         }
     };
-    addFeature(conf.address, address, t.end);
+    queueFeature(conf.address, address, t.end);
 });
 tape('index address', function(t) {
     var address = {
@@ -38,7 +40,7 @@ tape('index address', function(t) {
             coordinates: [[0,0], [0,0]]
         }
     };
-    addFeature(conf.address, address, t.end);
+    queueFeature(conf.address, address, t.end);
 });
 tape('index address', function(t) {
     var address = {
@@ -53,7 +55,7 @@ tape('index address', function(t) {
             coordinates: [[0,0],[0,0]]
         }
     };
-    addFeature(conf.address, address, t.end);
+    queueFeature(conf.address, address, t.end);
 });
 
 tape('full address', function(t) {

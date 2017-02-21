@@ -4,7 +4,9 @@
 var tape = require('tape');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     country: new mem({ maxzoom:6 }, function() {}),
@@ -27,7 +29,7 @@ tape('index country', function(t) {
         geometry: { type: 'MultiPolygon', coordinates: [] },
         bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
 
 tape('index region with bad language code', function(t) {
@@ -43,7 +45,7 @@ tape('index region with bad language code', function(t) {
         geometry: { type: 'MultiPolygon', coordinates: [] },
         bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
-    addFeature(conf.region, region, function(err) {
+    queueFeature(conf.region, region, function(err) {
         t.equal(err.message, 'fake is an invalid language code');
         t.end();
     });

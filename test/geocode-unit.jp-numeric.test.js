@@ -2,7 +2,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 var conf = {
     country: new mem(null, function() {}),
@@ -25,7 +27,7 @@ tape('index country', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
 
 tape('index region', function(t) {
@@ -37,7 +39,7 @@ tape('index region', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.region, region, t.end);
+    queueFeature(conf.region, region, t.end);
 });
 
 tape('index place 1', function(t) {
@@ -49,7 +51,7 @@ tape('index place 1', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.place, place, t.end);
+    queueFeature(conf.place, place, t.end);
 });
 
 tape('index address 1', function(t) {
@@ -66,7 +68,7 @@ tape('index address 1', function(t) {
             coordinates: [[0,0],[0,0]]
         }
     };
-    addFeature(conf.address, address, t.end);
+    queueFeature(conf.address, address, t.end);
 });
 
 tape('Check numeric text', function(t) {

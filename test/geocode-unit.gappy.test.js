@@ -4,7 +4,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+	queueFeature = addFeature.queueFeature,
+	buildQueued = addFeature.buildQueued;
 
 // limit_verify 1 implies that the correct result must be the very top
 // result prior to context verification. It means even with a long list
@@ -29,7 +31,7 @@ tape('index province', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.province, province, t.end);
+    queueFeature(conf.province, province, t.end);
 });
 tape('index city 1', function(t) {
     var city = {
@@ -40,7 +42,7 @@ tape('index city 1', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
 tape('index city 2', function(t) {
     var city = {
@@ -51,7 +53,7 @@ tape('index city 2', function(t) {
             'carmen:center':[14.0625, -2.8079929095776683]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
 tape('index street 1', function(t) {
     var street = {
@@ -62,7 +64,7 @@ tape('index street 1', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
 tape('index street 2', function(t) {
     var street = {
@@ -73,7 +75,7 @@ tape('index street 2', function(t) {
             'carmen:center':[14.0625, -2.8079929095776683]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
 tape('west st, tonawanda, ny', function(t) {
     c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
