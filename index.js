@@ -3,7 +3,7 @@ var EventEmitter = require('events').EventEmitter,
     fs = require('fs');
 
 var dawgcache = require('./lib/util/dawg');
-var Cache = require('./lib/util/cxxcache'),
+var cxxcache = require('./lib/util/cxxcache'),
     getContext = require('./lib/context'),
     loader = require('./lib/loader'),
     geocode = require('./lib/geocode'),
@@ -52,11 +52,21 @@ function Geocoder(indexes, options) {
 
             if (names.indexOf(name) === -1) names.push(name);
 
-            source._geocoder = source._original._geocoder || new Cache(name, info.geocoder_cachesize);
             source._dictcache = source._original._dictcache || dictcache;
 
-            if (data.freq && fs.existsSync(data.freq)) source._geocoder.loadSync(data.freq, 'freq');
-            if (data.grid && fs.existsSync(data.grid)) source._geocoder.loadSync(data.grid, 'grid');
+            if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
+                source._geocoder = {
+                    freq: (data.freq && fs.existsSync(data.freq)) ?
+                        new cxxcache.RocksDBCache(name + ".freq", data.freq) :
+                        new cxxcache.MemoryCache(name + ".freq"),
+                    grid: (data.grid && fs.existsSync(data.grid)) ?
+                        new cxxcache.RocksDBCache(name + ".grid", data.grid) :
+                        new cxxcache.MemoryCache(name + ".grid")
+                }
+                if (data.freq && fs.existsSync(data.freq))
+            } else {
+                source._geocoder = source._original._geocoder;
+            }
 
             // Set references to _geocoder, _dictcache on original source to
             // avoid duplication if it's loaded again.

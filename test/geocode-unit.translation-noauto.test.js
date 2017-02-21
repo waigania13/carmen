@@ -2,7 +2,7 @@
 
 var tape = require('tape');
 var Carmen = require('..');
-var Cache = require('../lib/util/cxxcache');
+var cxxcache = require('../lib/util/cxxcache');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature');
@@ -36,17 +36,15 @@ var runTests = function(mode) {
         // on the second run through the tests, force carmen-cache to use lazy
         // instead of in-memory caching
         tape('reload cache', function(t) {
-            var oldCache = c.byidx[0]._geocoder;
-            var newCache = new Cache(oldCache.id);
+            var cache = c.byidx[0]._geocoder;
 
             ['freq', 'grid'].forEach(function(type) {
                 var rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
-                oldCache.pack(rocksdb, type);
-                newCache.loadSync(rocksdb, type);
+                cache[type].pack(rocksdb);
+                cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb)
             });
 
-            c.byidx[0]._geocoder = newCache;
             t.end();
         });
     }

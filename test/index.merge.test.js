@@ -179,8 +179,8 @@ test('index - streaming interface', function(assert) {
 
     ["freq", "grid"].forEach(function(type) {
         assert.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', function(q) {
-            var cSet = new Set(carmenC.indexes.country._geocoder.list(type));
-            var dSet = new Set(carmenD.indexes.country._geocoder.list(type));
+            var cSet = new Set(carmenC.indexes.country._geocoder[type].list());
+            var dSet = new Set(carmenD.indexes.country._geocoder[type].list());
             var intersection = new Set(Array.from(cSet).filter(function(x) { return dSet.has(x) }));
             var union = new Set(Array.from(cSet).concat(Array.from(dSet)));
             var percentage = 100 * intersection.size / (union.size);
