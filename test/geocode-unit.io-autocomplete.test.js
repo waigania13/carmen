@@ -5,10 +5,9 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
 var conf = {
@@ -33,7 +32,7 @@ tape('index place', function(assert) {
             }
         });
     }
-	queueFeature(conf.place, docs, function() { buildQueued(conf.place, assert.end) })
+    queueFeature(conf.place, docs, function() { buildQueued(conf.place, assert.end) })
 });
 
 function reset() {

@@ -7,8 +7,8 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 var runTests = function(mode) {
     var conf = { region: new mem(null, function() {}) };
@@ -34,15 +34,15 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
 
     if (mode == "lazy") {
         // on the second run through the tests, force carmen-cache to use lazy

@@ -6,8 +6,8 @@ var Carmen = require('..');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 var conf = {
     country: new mem({ maxzoom:6 }, function() {}),
@@ -21,6 +21,7 @@ tape('index region with bad language code', function(t) {
         region: new mem({ maxzoom:6 }, function() {})
     };
     var c2 = new Carmen(conf2);
+    t.ok(c2);
     var region = {
         type: 'Feature',
         properties: {
@@ -34,9 +35,9 @@ tape('index region with bad language code', function(t) {
         bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
     queueFeature(conf2.region, region, function() { buildQueued(conf2.region, function(err) {
-		t.equal(err.message, 'fake is an invalid language code');
-		t.end();
-	})});
+        t.equal(err.message, 'fake is an invalid language code');
+        t.end();
+    })});
 });
 
 tape('index country', function(t) {

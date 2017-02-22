@@ -6,8 +6,8 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 //Make sure that capital letters are lowercased on indexing to match input token
 (function() {
@@ -220,15 +220,15 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.postcode, postcode, t.end);
     });
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
     tape('test UK postcode not getting confused w/ address range', function(t) {
         c.geocode('B77 1AB', { limit_verify: 10 }, function(err, res) {
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');

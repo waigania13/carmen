@@ -7,8 +7,8 @@ var mem = require('../lib/api-mem');
 var context = require('../lib/context');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 (function() {
     var conf = {

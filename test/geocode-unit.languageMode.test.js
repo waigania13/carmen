@@ -4,8 +4,8 @@ var mem = require('../lib/api-mem');
 var context = require('../lib/context');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 (function() {
     var conf = {
@@ -61,15 +61,15 @@ var addFeature = require('../lib/util/addfeature'),
         }, assert.end);
     });
 
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
 
     tape('query: c, language: zh, languageMode: strict', function(assert) {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
@@ -210,15 +210,15 @@ var addFeature = require('../lib/util/addfeature'),
         }, assert.end);
     });
 
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
 
 
     tape('query: c, language: zh, languageMode: strict', function(assert) {
@@ -352,15 +352,15 @@ var addFeature = require('../lib/util/addfeature'),
         }, assert.end);
     });
 
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
 
 
     tape('query: paris, language: sr-Latn, languageMode: strict', function(assert) {

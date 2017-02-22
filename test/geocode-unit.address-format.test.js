@@ -7,8 +7,8 @@ var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 // Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (function() {

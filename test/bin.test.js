@@ -11,8 +11,8 @@ var rand = Math.random().toString(36).substr(2, 5);
 var tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 var tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 tape('clean tmp index', function(assert) {
     try {

@@ -49,7 +49,7 @@ test('#pack', function(s) {
     packer.set('5', array);
     var packed = tmpfile();
     packer.pack(packed);
-    var loader = new RocksDBCache('a', packed);
+    s.ok(new RocksDBCache('a', packed));
     s.end();
 });
 

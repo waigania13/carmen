@@ -5,8 +5,8 @@ var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
 var addFeature = require('../lib/util/addfeature'),
-	queueFeature = addFeature.queueFeature,
-	buildQueued = addFeature.buildQueued;
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 var queue = require('d3-queue').queue;
 
 (function() {
@@ -132,15 +132,15 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
 
-	tape('build queued features', function(t) {
-	    var q = queue();
-	    Object.keys(conf).forEach(function(c) {
-	        q.defer(function(cb) {
-	            buildQueued(conf[c], cb);
-	        });
-	    });
-	    q.awaitAll(t.end);
-	});
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
 
     // High-scored feature wins over low-scored features in index with high max score
     tape('high score beats low score + high scorefactor', function(t) {
