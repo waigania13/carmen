@@ -101,6 +101,15 @@ tape('index poi', function(t) {
     }, i);
     q.awaitAll(t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
 tape('Descending Gappy', function(t) {
     c.geocode('Waterford Valley Canada', {}, function(err, res) {

@@ -258,6 +258,11 @@
         }
     },
     "geocoder": {
-        "id": "to"
+        "freq": {
+            "id": "to.freq"
+        },
+        "grid": {
+            "id": "to.grid"
+        }
     }
 }

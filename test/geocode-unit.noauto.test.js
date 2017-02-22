@@ -35,7 +35,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, t.end);
+        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
     });
     tape('abc - with autocomplete', function(t) {
         c.geocode('abc', { limit_verify:1 }, function(err, res) {
@@ -100,7 +100,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, t.end);
+        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
     });
     tape('place - with autocomplete', function(t) {
         c.geocode('place', { limit_verify:1 }, function(err, res) {

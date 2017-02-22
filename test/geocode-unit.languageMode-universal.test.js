@@ -2,6 +2,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
 var context = require('../lib/context');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -42,6 +43,15 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [1,1]
             }
         }, assert.end);
+    });
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
     });
 
     tape('query: 10000', function(assert) {
@@ -97,4 +107,3 @@ var addFeature = require('../lib/util/addfeature'),
         assert.end();
     });
 })();
-

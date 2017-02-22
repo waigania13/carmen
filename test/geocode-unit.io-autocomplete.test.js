@@ -21,10 +21,10 @@ tape('ready', function(assert) {
 });
 
 tape('index place', function(assert) {
-    var q = queue(1);
+    var docs = [];
     for (var i = 1; i < 100; i++) {
         var text = Math.random().toString().split('.').pop().toString(36);
-        q.defer(addFeature, conf.place, {
+        docs.push({
             id:i,
             properties: {
                 'carmen:text': 'aa' + text,
@@ -33,7 +33,7 @@ tape('index place', function(assert) {
             }
         });
     }
-    q.awaitAll(assert.end);
+	queueFeature(conf.place, docs, function() { buildQueued(conf.place, assert.end) })
 });
 
 function reset() {

@@ -2,6 +2,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -38,6 +39,15 @@ tape('index "# r ademar da silva neiva"', function(t) {
         }
     }, t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 // partial unidecoded terms do not match
 tape('search: "av francisco de aguirre 2 la serena"', function(t) {
     c.geocode('av francisco de aguirre 2 la serena', { limit_verify:2 }, function(err, res) {
@@ -51,4 +61,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

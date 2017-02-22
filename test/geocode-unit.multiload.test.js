@@ -2,6 +2,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -19,6 +20,15 @@ tape('index country', function(t) {
             'carmen:center':[0,0]
         }
     }, t.end);
+});
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
 });
 tape('geocodes', function(t) {
     a.geocode('america', {}, function(err, res) {
@@ -42,4 +52,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

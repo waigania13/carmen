@@ -2,6 +2,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
 var context = require('../lib/context');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -59,6 +60,16 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, assert.end);
     });
+
+	tape('build queued features', function(t) {
+	    var q = queue();
+	    Object.keys(conf).forEach(function(c) {
+	        q.defer(function(cb) {
+	            buildQueued(conf[c], cb);
+	        });
+	    });
+	    q.awaitAll(t.end);
+	});
 
     tape('query: c, language: zh, languageMode: strict', function(assert) {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
@@ -199,6 +210,16 @@ var addFeature = require('../lib/util/addfeature'),
         }, assert.end);
     });
 
+	tape('build queued features', function(t) {
+	    var q = queue();
+	    Object.keys(conf).forEach(function(c) {
+	        q.defer(function(cb) {
+	            buildQueued(conf[c], cb);
+	        });
+	    });
+	    q.awaitAll(t.end);
+	});
+
 
     tape('query: c, language: zh, languageMode: strict', function(assert) {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
@@ -331,6 +352,16 @@ var addFeature = require('../lib/util/addfeature'),
         }, assert.end);
     });
 
+	tape('build queued features', function(t) {
+	    var q = queue();
+	    Object.keys(conf).forEach(function(c) {
+	        q.defer(function(cb) {
+	            buildQueued(conf[c], cb);
+	        });
+	    });
+	    q.awaitAll(t.end);
+	});
+
 
     tape('query: paris, language: sr-Latn, languageMode: strict', function(assert) {
         c.geocode('paris', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
@@ -343,7 +374,6 @@ var addFeature = require('../lib/util/addfeature'),
     tape('query: belgrade, language: sr-Latn, languageMode: strict', function(assert) {
         c.geocode('belgrade', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
             assert.ifError(err);
-            console.log("Res", res)
             assert.equal(res.features.length, 1, 'allows hr result');
             assert.equal(res.features[0].language, 'hr', 'language code is hr');
             assert.end();
@@ -353,7 +383,6 @@ var addFeature = require('../lib/util/addfeature'),
     tape('query: belgrade, language: hr, languageMode: strict', function(assert) {
         c.geocode('belgrade', { language: 'hr', languageMode: 'strict' }, function(err, res) {
             assert.ifError(err);
-            console.log("res", res)
             assert.equal(res.features.length, 1, 'allows hr result');
             assert.equal(res.features[0].language, 'hr', 'language code is hr');
             assert.equal(res.features[0].place_name, 'Beograd, Teksas', 'language=hr excludes sr results');

@@ -663,6 +663,8 @@ test('Context eliminates correct properties', function(assert) {
     var q = queue(1);
     q.defer(function(cb) { queueFeature(conf.country, country, cb); });
     q.defer(function(cb) { queueFeature(conf.region, region, cb); });
+    q.defer(function(cb) { buildQueued(conf.country, cb); });
+	q.defer(function(cb) { buildQueued(conf.region, cb); });
     q.awaitAll(function() {
         c._open(function() {
             context(c, [0, 0], { full: false }, function(err, contexts) {

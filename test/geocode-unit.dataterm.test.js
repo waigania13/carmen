@@ -47,6 +47,15 @@ tape('index address (signal)', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
 tape('test address', function(t) {
     c.geocode('1500 fake street', { limit_verify: 1 }, function(err, res) {
@@ -61,4 +70,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

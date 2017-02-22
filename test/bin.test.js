@@ -69,7 +69,7 @@ tape('index', function(assert) {
     }
     function store(err) {
         assert.ifError(err);
-        require('../lib/index.js').store(conf.index, stop);
+        buildQueued(conf.index, stop);
     }
     function stop(err) {
         assert.ifError(err);

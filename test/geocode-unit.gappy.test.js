@@ -4,6 +4,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -77,6 +78,15 @@ tape('index street 2', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 tape('west st, tonawanda, ny', function(t) {
     c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
@@ -128,4 +138,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

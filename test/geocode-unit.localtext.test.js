@@ -4,6 +4,7 @@
 var tape = require('tape');
 var Carmen = require('..');
 var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -13,6 +14,30 @@ var conf = {
     region: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
+
+tape('index region with bad language code', function(t) {
+    var conf2 = {
+        country: new mem({ maxzoom:6 }, function() {}),
+        region: new mem({ maxzoom:6 }, function() {})
+    };
+    var c2 = new Carmen(conf2);
+    var region = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [ 0, 0 ],
+            'carmen:zxy': [ '6/30/30' ],
+            'carmen:text_fake': 'beetlejuice',
+            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
+        },
+        id: 2,
+        geometry: { type: 'MultiPolygon', coordinates: [] },
+        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
+    };
+    queueFeature(conf2.region, region, function() { buildQueued(conf2.region, function(err) {
+		t.equal(err.message, 'fake is an invalid language code');
+		t.end();
+	})});
+});
 
 tape('index country', function(t) {
     var country = {
@@ -32,23 +57,14 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region with bad language code', function(t) {
-    var region = {
-        type: 'Feature',
-        properties: {
-            'carmen:center': [ 0, 0 ],
-            'carmen:zxy': [ '6/30/30' ],
-            'carmen:text_fake': 'beetlejuice',
-            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
-        },
-        id: 2,
-        geometry: { type: 'MultiPolygon', coordinates: [] },
-        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
-    };
-    queueFeature(conf.region, region, function(err) {
-        t.equal(err.message, 'fake is an invalid language code');
-        t.end();
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
     });
+    q.awaitAll(t.end);
 });
 
 tape('russia => Russian Federation', function(t) {
@@ -117,4 +133,3 @@ tape('fake blah blah => [fail]', function(t) {
         t.end();
     });
 });
-

@@ -57,6 +57,15 @@ tape('index postcode', function(t) {
         }
     }, t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(conf).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
 tape('test address', function(t) {
     c.geocode('2000 Austria', { limit_verify: 5 }, function(err, res) {
@@ -70,4 +79,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-

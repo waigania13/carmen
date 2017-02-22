@@ -47,6 +47,16 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
+	tape('build queued features', function(t) {
+	    var q = queue();
+	    Object.keys(conf).forEach(function(c) {
+	        q.defer(function(cb) {
+	            buildQueued(conf[c], cb);
+	        });
+	    });
+	    q.awaitAll(t.end);
+	});
+
     tape('default response is 5 features (forward)', function(t) {
         c.geocode('place', {  }, function(err, res) {
             t.ifError(err);
@@ -178,6 +188,16 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
     tape('default response is 1 features (reverse)', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { }, function(err, res) {
             t.ifError(err);
@@ -295,6 +315,16 @@ tape('teardown', function(assert) {
         }, t.end);
     });
 
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
     tape('Reverse Cluster', function(t) {
         c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
             t.equal(res.features[0].place_name, '5 main street, west virginia');
@@ -361,6 +391,16 @@ tape('teardown', function(assert) {
                 ]
             }
         }, t.end);
+    });
+
+    tape('build queued features', function(t) {
+        var q = queue();
+        Object.keys(conf).forEach(function(c) {
+            q.defer(function(cb) {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
     });
 
     tape('Reverse ITP', function(t) {

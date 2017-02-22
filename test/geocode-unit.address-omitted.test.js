@@ -28,7 +28,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
     tape('test address query with address range', function(t) {
         c.geocode('9 fake street', { limit_verify: 1 }, function(err, res) {
@@ -63,7 +63,7 @@ var addFeature = require('../lib/util/addfeature'),
                 ]
             }
         };
-        queueFeature(conf.address, address, t.end);
+        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
 
     tape('test tiger interpolation house number', function(t) {

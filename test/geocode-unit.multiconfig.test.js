@@ -2,6 +2,7 @@ var tape = require('tape');
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
+var queue = require('d3-queue').queue;
 var addFeature = require('../lib/util/addfeature'),
 	queueFeature = addFeature.queueFeature,
 	buildQueued = addFeature.buildQueued;
@@ -41,6 +42,20 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
+tape('build queued features', function(t) {
+    var q = queue();
+    Object.keys(confA).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(confA[c], cb);
+        });
+    });
+	Object.keys(confB).forEach(function(c) {
+        q.defer(function(cb) {
+            buildQueued(confB[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 tape('chicago (conf a)', function(t) {
     var a = new Carmen(confA);
     a.geocode('chicago', {}, function(err, res) {
@@ -64,4 +79,3 @@ tape('teardown', function(assert) {
     context.getTile.cache.reset();
     assert.end();
 });
-
