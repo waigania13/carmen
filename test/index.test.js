@@ -104,8 +104,8 @@ test('index.update -- error', function(t) {
             }
         }], { zoom: 6 }, function(err) {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.get('freq', '__COUNT__'), [2]);
-            q.deepEqual(conf.to._geocoder.get('freq', '__MAX__'), [10]);
+            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [2]);
+            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
             q.end();
         });
     });
@@ -124,8 +124,8 @@ test('index.update -- error', function(t) {
             }
         }], { zoom: 6 }, function(err) {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.get('freq', '__COUNT__'), [4]);
-            q.deepEqual(conf.to._geocoder.get('freq', '__MAX__'), [10]);
+            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [4]);
+            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
             q.end();
         });
     });
@@ -315,8 +315,8 @@ test('index phrase collection', function(assert) {
     function afterUpdate(err) {
         assert.ifError(err);
         var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.list('grid'), [ id1.toString() ], '1 phrase');
-        assert.deepEqual(conf.test._geocoder.get('grid',id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.grid.list(), [ id1.toString() ], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });

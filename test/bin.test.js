@@ -10,7 +10,9 @@ var MBTiles = require('mbtiles');
 var rand = Math.random().toString(36).substr(2, 5);
 var tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 var tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 tape('clean tmp index', function(assert) {
     try {
@@ -45,7 +47,7 @@ tape('index', function(assert) {
     }
     function write1(err) {
         assert.ifError(err);
-        addFeature(conf.index, {
+        queueFeature(conf.index, {
             id:38,
             properties: {
                 'carmen:text':'Canada',
@@ -56,7 +58,7 @@ tape('index', function(assert) {
     }
     function write2(err) {
         assert.ifError(err);
-        addFeature(conf.index, {
+        queueFeature(conf.index, {
             id:39,
             properties: {
                 'carmen:text':'Brazil',
@@ -67,7 +69,7 @@ tape('index', function(assert) {
     }
     function store(err) {
         assert.ifError(err);
-        require('../lib/index.js').store(conf.index, stop);
+        buildQueued(conf.index, stop);
     }
     function stop(err) {
         assert.ifError(err);
