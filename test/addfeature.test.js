@@ -176,7 +176,6 @@ tape('build queued features', function(t) {
 
 tape('query batched features', function(t) {
     c.geocode('united', {allow_dupes: true}, function(err, res) {
-            console.log('res', res);
         t.equals(res.features.length, 5, "finds batched features")
         t.end();
     });
