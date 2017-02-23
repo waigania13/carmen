@@ -28,7 +28,6 @@ tape('dump/load', function(assert) {
 
             assert.equal(loaded.hasPhrase("a", false), false, 'not a');
             assert.equal(loaded.hasPhrase("a", true), true, 'has a as degen');
-            assert.deepEquals(loaded.getPhrasesFromDegen('a'), ['a1', 'a2', 'a3', 'a4'], 'found a1-a4');
 
             assert.end();
         });
