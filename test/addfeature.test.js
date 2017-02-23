@@ -1,5 +1,5 @@
-//var tape = require('tape');
-var tape = function() {};
+var tape = require('tape');
+//var tape = function() {};
 var Carmen = require('..');
 var context = require('../lib/context');
 var mem = require('../lib/api-mem');
@@ -176,6 +176,7 @@ tape('build queued features', function(t) {
 
 tape('query batched features', function(t) {
     c.geocode('united', {allow_dupes: true}, function(err, res) {
+            console.log('res', res);
         t.equals(res.features.length, 5, "finds batched features")
         t.end();
     });
