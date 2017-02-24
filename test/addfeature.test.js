@@ -33,6 +33,22 @@ tape('index address', function(t) {
         };
         docs.push(address);
     }
+    for (var j=101; j<=102; j++) {
+        address = {
+            id:2,
+            type: 'Feature',
+            properties: {
+                'carmen:text':'lake view lane',
+                'carmen:score':'101',
+                'carmen:center':[0,10]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,10]
+            }
+        };
+        docs.push(address);
+    }
     queueFeature(conf.address, docs, t.end);
 });
 
@@ -40,9 +56,9 @@ tape('index pois', function(t) {
     var docs = [];
     var poi;
     
-    for (var j=101; j<=102; j++) {
+    for (var k=103; k<=104; k++) {
         poi = {
-            id:2,
+            id:3,
             type: 'Feature',
             properties: {
                 'carmen:text':'Starbucks',
@@ -69,10 +85,11 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('which gets returned first', function(t) {
-    c.geocode('starbucks lake view', {autocomplete: 1}, function(err, res) {
+tape('Search for Starbucks', function(t) {
+    c.geocode('starbucks lake view', {autocomplete: 1, limit_verify: 2}, function(err, res) {
         t.equal(res.features[0].relevance, 0.49, 'stacked relevance');
         t.equal(res.features.length, 2, 'two features returned');
+        t.equal(res.features[1].text, 'lake view road', 'higher score wins')
         t.end();
     });
 });
