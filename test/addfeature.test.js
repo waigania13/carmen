@@ -17,29 +17,27 @@ tape('index address', function(t) {
     var docs = [];
     var address;
     
-    for (var i=0; i<=100; i++) {
+    for (var i=0; i<1; i++) {
         address = {
             id:1,
             type: 'Feature',
             properties: {
-                'carmen:text':'lake view road',
-                'carmen:score':'100',
-                'carmen:center':[-10,10]
+                'carmen:text':'lake view road,lake view',
+                'carmen:center':[0,10]
             },
             geometry: {
                 type: 'Point',
-                coordinates: [-10,10]
+                coordinates: [0,10]
             }
         };
         docs.push(address);
     }
-    for (var j=101; j<=102; j++) {
+    for (var j=2; j<=103; j++) {
         address = {
             id:2,
             type: 'Feature',
             properties: {
-                'carmen:text':'lake view lane',
-                'carmen:score':'101',
+                'carmen:text':'main road',
                 'carmen:center':[0,10]
             },
             geometry: {
@@ -63,11 +61,11 @@ tape('index pois', function(t) {
             properties: {
                 'carmen:text':'Starbucks',
                 'carmen:score':'150',
-                'carmen:center':[-70,50]
+                'carmen:center':[0,10]
             },
             geometry: {
                 type: 'Point',
-                coordinates: [-70,50]
+                coordinates: [0,10]
             }
         };
         docs.push(poi);
@@ -86,10 +84,9 @@ tape('build queued features', function(t) {
 });
 
 tape('Search for Starbucks', function(t) {
-    c.geocode('starbucks lake view', {autocomplete: 1, limit_verify: 2}, function(err, res) {
-        t.equal(res.features[0].relevance, 0.49, 'stacked relevance');
+    c.geocode('starbucks lake view', {autocomplete: false, limit_verify: 2}, function(err, res) {
+        t.equal(res.features[0].relevance, 1, 'stacked relevance');
         t.equal(res.features.length, 2, 'two features returned');
-        t.equal(res.features[1].text, 'lake view road', 'higher score wins')
         t.end();
     });
 });
