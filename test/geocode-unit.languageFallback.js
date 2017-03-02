@@ -58,6 +58,7 @@ var addFeature = require('../lib/util/addfeature'),
     tape('query: United States', function(assert) {
         c.geocode('United States', { language: 'ar'}, function(err, res) {
             assert.equal('United States', res.features[0].text, 'Fallback to English');
+            assert.equal('en', res.features[0].language, 'Language returned is English');
             assert.ifError(err);
             assert.end();
         });
@@ -66,6 +67,7 @@ var addFeature = require('../lib/util/addfeature'),
     tape('query: India', function(assert) {
         c.geocode('India', { language: 'ar'}, function(err, res) {
             assert.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
+            assert.equal('ur', res.features[0].language, 'Language returned is Urdu');
             assert.ifError(err);
             assert.end();
         });
