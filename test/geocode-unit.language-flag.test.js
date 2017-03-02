@@ -12,14 +12,15 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country' }, function() {}),
+        country: new mem({ maxzoom:6, geocoder_name: 'country', languages: ['es', 'ru'] }, function() {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region',
             geocoder_format_ru: '{country._name}, {region._name}',
             geocoder_format_zh: '{country._name}{region._name}',
-            geocoder_format_es: '{region._name} {region._name} {country._name}'
+            geocoder_format_es: '{region._name} {region._name} {country._name}',
+            languages: ['zh', 'zh_Hant', 'eo', 'ru']
         }, function() {}),
-        place: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}' }, function() {}),
-        place2: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}' }, function() {})
+        place: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', languages: ['ru'] }, function() {}),
+        place2: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', languages: ['zh'] }, function() {})
     };
     var c = new Carmen(conf);
 

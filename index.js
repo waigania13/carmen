@@ -1,6 +1,7 @@
 var EventEmitter = require('events').EventEmitter,
     queue = require('d3-queue').queue,
-    fs = require('fs');
+    fs = require('fs'),
+    crypto = require('crypto');
 
 var dawgcache = require('./lib/util/dawg');
 var cxxcache = require('./lib/util/cxxcache'),
@@ -47,6 +48,7 @@ function Geocoder(indexes, options) {
             var type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
             var types = info.geocoder_types || [type];
             var stack = info.geocoder_stack || false;
+            var languages = info.languages || [];
             if (typeof stack === 'string') stack = [stack];
             var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
@@ -128,6 +130,15 @@ function Geocoder(indexes, options) {
             source.idx = i;
             source.ndx = names.indexOf(name);
             source.bounds = info.bounds || [ -180, -85, 180, 85 ];
+
+            // arrange languages into something presentable
+            var lang = {};
+            lang.has_languages = languages.length > 0;
+            lang.languages = languages.map(function(l) { return l.replace('-', '_'); }).sort().concat(['default']);
+            lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
+            lang.lang_map = {};
+            lang.languages.forEach(function(l, idx) { lang.lang_map[l] = idx; });
+            source.lang = lang;
 
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];
