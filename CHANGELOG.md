@@ -1,5 +1,10 @@
 # Changelog
 
+## 20.1.0
+
+- add `reverseMode` parameter. When set to `score`, a feature's score will be considered when sorting
+the results of a reverse query. Defaults to `distance`.
+
 ## 20.0.0
 - Update to carmen-cache@0.17.0, a major revision which eliminates cache sharding and moves the underlying storage mechanism to one backed by [RocksDB](http://rocksdb.org/)
 - Adapt carmen to this new cache layer by eliminating logic around on-the-fly loading and storing of grid and frequency data, which is now delegated to RocksDB
