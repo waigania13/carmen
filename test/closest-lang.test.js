@@ -29,6 +29,14 @@ tape('closestLangLabel', function(assert) {
     assert.end();
 });
 
+tape('Arabic fallback', function(assert) {
+    //Arabic fallback behaviour
+    assert.equal(closestLangLabel('ar', {
+        'en': 'English',
+    }), 'English');
+    assert.end();
+});
+
 tape('handle nulls', function(assert) {
 
     var zh = '帝力縣';
