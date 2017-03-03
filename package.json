@@ -48,8 +48,7 @@
     "carmen": "./scripts/carmen.js",
     "carmen-analyze": "./scripts/carmen-analyze.js",
     "carmen-copy": "./scripts/carmen-copy.js",
-    "carmen-index": "./scripts/carmen-index.js",
-    "carmen-degenize": "./scripts/carmen-degenize.js"
+    "carmen-index": "./scripts/carmen-index.js"
   },
   "main": "./index.js",
   "scripts": {
