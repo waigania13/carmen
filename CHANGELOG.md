@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.1.2
+- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes) 
+
 ## 20.1.1
 - add English as a fallback language for Arabic and tests to confirm this behaviour.
 
