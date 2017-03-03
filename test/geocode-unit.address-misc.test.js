@@ -35,12 +35,12 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:zxy': ['6/15/26'],
                 'carmen:addressnumber': [['100'], null],
                 "carmen:rangetype": "tiger",
-                "carmen:parityl": [ null, [ 'E', 'E' ]],
-                "carmen:parityr": [ null, [ 'O', 'O' ]],
-                "carmen:rfromhn": [ null, [ 2, 10 ]],
-                "carmen:lfromhn": [ null, [ 1, 11 ]],
-                "carmen:ltohn": [ null, [ 8, 18 ]],
-                "carmen:rtohn": [ null, [ 9, 19 ]]
+                "carmen:parityl": [ null, [ 'O', 'O' ]],
+                "carmen:lfromhn": [ null, [  1,  11 ]],
+                "carmen:ltohn": [ null,   [  9,  19 ]],
+                "carmen:parityr": [ null, [ 'E', 'E' ]],
+                "carmen:rfromhn": [ null, [  2,  10 ]],
+                "carmen:rtohn": [ null,   [  8,  18 ]]
             },
             geometry: {
                 type: 'GeometryCollection',
@@ -66,7 +66,7 @@ var addFeature = require('../lib/util/addfeature'),
     tape('test address index for alphanumerics', function(t) {
         c.geocode('-95.42578,29.810561', null, function(err, res) {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '100 Vandwellers Paradise', 'Matched ITP');
+            t.equals(res.features[0].place_name, '10 Vandwellers Paradise', 'Matched ITP');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
