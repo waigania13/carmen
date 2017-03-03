@@ -1,5 +1,8 @@
 # Changelog
 
+## 20.1.1
+- add English as a fallback language for Arabic and tests to confirm this behaviour.
+
 ## 20.1.0
 
 - add `reverseMode` parameter. When set to `score`, a feature's score will be considered when sorting
