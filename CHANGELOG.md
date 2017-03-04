@@ -1,5 +1,63 @@
 # Changelog
 
+## 20.1.3
+- Fix a bug in package.json
+
+## 20.1.2
+- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes) 
+
+## 20.1.1
+- add English as a fallback language for Arabic and tests to confirm this behaviour.
+
+## 20.1.0
+
+- add `reverseMode` parameter. When set to `score`, a feature's score will be considered when sorting
+the results of a reverse query. Defaults to `distance`.
+
+## 20.0.0
+- Update to carmen-cache@0.17.0, a major revision which eliminates cache sharding and moves the underlying storage mechanism to one backed by [RocksDB](http://rocksdb.org/)
+- Adapt carmen to this new cache layer by eliminating logic around on-the-fly loading and storing of grid and frequency data, which is now delegated to RocksDB
+- Change phrase IDs to strings, allowing elimination of degen indexing in favor of ID prefix scans in carmen-cache
+
+## 19.0.3
+- Add a `digraphic` array of languages known to use multiple scripts, for more rigorous filtering in `languageMode: strict`
+
+## 19.0.2
+- Add additional Serbian fallabcks
+- Add an `equivalent.json` mapping of allowed equivalent languages
+- Allow equivalent languages to pass the `languageMode: strict` filter
+
+## 19.0.1
+- Add `sr_Latn` fallback for `sr_BA`, `sr_CS`, `sr_ME`, and `sr_RS` language codes
+
+## 19.0.0
+
+- Remove code/support for version 0 legacy features
+- Adds index-level option `geocoder_universal_text` for allowing features in an index to be considered language-agnostic/compatible with any requested language when using `languageMode=strict`
+
+## 18.2.0
+
+- Improve proximity distance calculation for polygon features.
+- Update to carmen-cache@0.16.5.
+
+## 18.1.4
+
+- Update to carmen-cache@0.16.4.
+
+## 18.1.3
+
+- Add support for IL style addresses: `43N134 Woodward Ave.`
+- Revert spatialmatch stack truncation from 18.1.2
+- Update to carmen-cache@0.16.3 with additional `coalesce()` performance optimizations
+
+## 18.1.2
+
+- Spatialmatch the top 4 most specific features of each subquery stack as a performance optimization/safeguard against massive `coalesce()` jobs
+
+## 18.1.1
+
+- Optimizations to runtime query and indexing operations
+
 ## 18.1.0
 
 - Adds new querytime option languageMode which can be set to `strict` to limit returned features to only those that fully match the language specified in the language option

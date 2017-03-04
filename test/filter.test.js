@@ -168,6 +168,32 @@ tape('filter.featureMatchesLanguage', function(assert) {
         languageMode: 'strict'
     }), 'disallowed: no matching text');
 
+    assert.ok(filter.featureMatchesLanguage({
+        properties: {
+            'carmen:text': 'New York',
+            'carmen:text_universal': 'New York'
+        }
+    }, {
+        language: 'en',
+        languageMode: 'strict'
+    }), 'allowed: text_universal');
+
+    assert.ok(filter.featureMatchesLanguage({
+        properties: {
+            'carmen:text': 'Zagreb',
+            'carmen:text_hr': 'Zagrebačka'
+        }
+    }, {
+        language: 'sr',
+        languageMode: 'strict'
+    }), 'allowed: sr/hr equivalency');
+
+    assert.end();
+});
+
+tape('filter.equivalentLanguages', function(assert) {
+    assert.ok(filter.equivalentLanguages("sr_Latn", "hr"));
+
     assert.end();
 });
 

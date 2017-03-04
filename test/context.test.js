@@ -1,26 +1,45 @@
-var fs = require('fs');
 var Carmen = require('..');
 var context = require('../lib/context');
 var test = require('tape');
 var zlib = require('zlib');
 var path = require('path');
 var mapnik = require('mapnik');
-var addFeature = require('../lib/util/addfeature');
+var addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 var queue = require('d3-queue').queue;
 var mem = require('../lib/api-mem');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));
 
-test('contextVector deflate', function(t) {
+test('contextVector deflate', function(assert) {
     context.getTile.cache.reset();
 
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [ 0,0 ]
+                },
+                "properties": {
+                    'carmen:center': [ -99.693234, 37.245325 ],
+                    'carmen:text': 'United States of America, United States, America, USA, US',
+                    'iso2': 'US',
+                    'population': 307212123,
+                    'title': 'United States of America'
+                }
+            }
+        ]
+    }), "data");
+    var buffer = zlib.deflateSync(vtile.getData());
     var source = {
-        getTile: function(z,x,y,callback) {
-            return callback(null, fs.readFileSync(__dirname + '/fixtures/0.0.0.vector.pbf'), {
-                'content-type': 'application/x-protobuf',
-                'content-encoding': 'deflate'
-            });
+        getTile: function(z, x, y, callback) {
+            return callback(null, buffer);
         },
         geocoder_layer: 'data',
         maxzoom: 0,
@@ -28,40 +47,61 @@ test('contextVector deflate', function(t) {
         name: 'test',
         type: 'test',
         id: 'testA',
-        idx: 1
+        idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
-        t.ifError(err);
-        t.deepEqual(data, {
+    context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
+        assert.ifError(err);
+
+        assert.deepEqual(data.properties['carmen:vtquerydist'] < 0.0001, true);
+        delete data.properties['carmen:vtquerydist'];
+
+        assert.deepEqual(data, {
             properties: {
                 'carmen:types': ['test'],
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
-                'carmen:center': [ -99.693234, 37.245325 ],
-                'carmen:extid': 'test.5',
+                'carmen:center': [ -99.6932, 37.2453 ],
+                'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
-                'carmen:vtquerydist': 0,
-                'carmen:geomtype': 3,
-                'carmen:tmpid': Math.pow(2,25) + 5,
+                'carmen:geomtype': 1,
+                'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
                 'iso2': 'US',
                 'population': 307212123,
                 'title': 'United States of America'
             }
         });
-        t.end();
+        assert.end();
     });
 });
 
-test('contextVector gzip', function(t) {
+test('contextVector gzip', function(assert) {
     context.getTile.cache.reset();
 
+    var vtile = new mapnik.VectorTile(0,0,0);
+    vtile.addGeoJSON(JSON.stringify({
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [ 0,0 ]
+                },
+                "properties": {
+                    'carmen:center': [ -99.693234, 37.245325 ],
+                    'carmen:text': 'United States of America, United States, America, USA, US',
+                    'iso2': 'US',
+                    'population': 307212123,
+                    'title': 'United States of America'
+                }
+            }
+        ]
+    }), "data");
+    var buffer = zlib.gzipSync(vtile.getData());
     var source = {
-        getTile: function(z,x,y,callback) {
-            return callback(null, fs.readFileSync(__dirname + '/fixtures/0.0.0.vector.pbfz'), {
-                'content-type': 'application/x-protobuf',
-                'content-encoding': 'gzip'
-            });
+        getTile: function(z, x, y, callback) {
+            return callback(null, buffer);
         },
         geocoder_layer: 'data',
         maxzoom: 0,
@@ -69,28 +109,31 @@ test('contextVector gzip', function(t) {
         name: 'test',
         type: 'test',
         id: 'testA',
-        idx: 1
+        idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
-        t.ifError(err);
-        t.deepEqual(data, {
+    context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
+        assert.ifError(err);
+
+        assert.deepEqual(data.properties['carmen:vtquerydist'] < 0.0001, true);
+        delete data.properties['carmen:vtquerydist'];
+
+        assert.deepEqual(data, {
             properties: {
                 'carmen:types': ['test'],
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
-                'carmen:center': [ -99.693234, 37.245325 ],
+                'carmen:center': [ -99.6932, 37.2453 ],
+                'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
-                'carmen:extid': 'test.5',
-                'carmen:tmpid': Math.pow(2,25) + 5,
-                'carmen:vtquerydist': 0,
-                'carmen:geomtype': 3,
+                'carmen:geomtype': 1,
+                'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
                 'iso2': 'US',
                 'population': 307212123,
                 'title': 'United States of America'
             }
         });
-        t.end();
+        assert.end();
     });
 });
 
@@ -109,7 +152,7 @@ test('contextVector badbuffer', function(t) {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, function(err, data) {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, false, function(err, data) {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -134,7 +177,7 @@ test('contextVector empty VT buffer', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.end();
         });
@@ -239,12 +282,12 @@ test('contextVector ignores negative score', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "A", "_score": -1 }
+                "properties": { "carmen:text": "A", "carmen:score": -1 }
             },
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "B" }
+                "properties": { "carmen:text": "B" }
             }
         ]
     }),"data");
@@ -262,7 +305,7 @@ test('contextVector ignores negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'B');
             assert.end();
@@ -280,7 +323,7 @@ test('contextVector only negative score', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_text": "A", "_score": -1 }
+                "properties": { "carmen:text": "A", "carmen:score": -1 }
             }
         ]
     }),"data");
@@ -298,7 +341,7 @@ test('contextVector only negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -316,7 +359,7 @@ test('contextVector matched negative score', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "_id": 1, "_text": "A", "_score": -1 }
+                "properties": { "id": 1, "carmen:text": "A", "carmen:score": -1 }
             }
         ]
     }),"data");
@@ -334,7 +377,7 @@ test('contextVector matched negative score', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
@@ -352,12 +395,12 @@ test('contextVector grabbed exclusive ID', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { _id: 4, "_text": "A", "_score": -1 }
+                "properties": { id: 4, "carmen:text": "A", "carmen:score": -1 }
             },
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { _id: 5, "_text": "B" }
+                "properties": { id: 5, "carmen:text": "B" }
             }
         ]
     }),"data");
@@ -375,7 +418,7 @@ test('contextVector grabbed exclusive ID', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {_exclusive: true, 4: true}, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {_exclusive: true, 4: true}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:text'], 'A');
             assert.end();
@@ -400,7 +443,7 @@ test('contextVector restricts distance', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "LineString", "coordinates": [ [-180,85],[180,-85] ] },
-                "properties": { "_text": "A" }
+                "properties": { "carmen:text": "A" }
             }
         ]
     }),"data");
@@ -418,7 +461,7 @@ test('contextVector restricts distance', function(assert) {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 170, 80, false, {}, null, false, function(err, data) {
+        context.contextVector(source, 170, 80, false, {}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data, false);
             assert.end();
@@ -441,12 +484,12 @@ test('contextVector restricts distance', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [-0.001,0.001] },
-                "properties": { "_id":1, "_text": "A" }
+                "properties": { "id":1, "carmen:text": "A" }
             },
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [0.001,0.001] },
-                "properties": { "_id":2, "_text": "B" }
+                "properties": { "id":2, "carmen:text": "B" }
             }
         ]
     };
@@ -474,7 +517,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -499,7 +542,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'A');
                 assert.end();
@@ -524,7 +567,7 @@ test('contextVector restricts distance', function(assert) {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, { 2:true }, null, false, function(err, data) {
+            context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:text'], 'B');
                 assert.end();
@@ -543,7 +586,7 @@ test('contextVector caching', function(assert) {
             {
                 "type": "Feature",
                 "geometry": { "type": "Point", "coordinates": [0,0] },
-                "properties": { "_text": "A" }
+                "properties": { "carmen:text": "A" }
             }
         ]
     }),"data");
@@ -564,14 +607,14 @@ test('contextVector caching', function(assert) {
         var hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
-        context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
             assert.ifError(err);
             assert.equal(data.properties['carmen:extid'], 'test.1');
             assert.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             assert.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
-            context.contextVector(source, 0, 0, false, {}, null, false, function(err, data) {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, function(err, data) {
                 assert.ifError(err);
                 assert.equal(data.properties['carmen:extid'], 'test.1');
                 assert.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
@@ -618,16 +661,18 @@ test('Context eliminates correct properties', function(assert) {
     };
 
     var q = queue(1);
-    q.defer(function(cb) { addFeature(conf.country, country, cb); });
-    q.defer(function(cb) { addFeature(conf.region, region, cb); });
+    q.defer(function(cb) { queueFeature(conf.country, country, cb); });
+    q.defer(function(cb) { queueFeature(conf.region, region, cb); });
+    q.defer(function(cb) { buildQueued(conf.country, cb); });
+    q.defer(function(cb) { buildQueued(conf.region, cb); });
     q.awaitAll(function() {
         c._open(function() {
             context(c, [0, 0], { full: false }, function(err, contexts) {
                 assert.ifError(err);
                 var contextObj = contexts.features.pop();
-                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'], 'found expected keys on country object');
+                assert.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
                 contextObj = contexts.features.pop();
-                assert.deepEqual(Object.keys(contextObj.properties), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'], 'found expected keys on region object');
+                assert.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
                 assert.end();
             });
         });
