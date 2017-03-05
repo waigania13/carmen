@@ -1,5 +1,9 @@
 # Changelog
 
+## 20.2.0
+
+- PT addresses are now returned over ITP addresses only if they fall within a set distance
+
 ## 20.1.3
 - Fix a bug in package.json
 
