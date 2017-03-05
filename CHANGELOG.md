@@ -1,5 +1,23 @@
 # Changelog
 
+## 20.2.0
+
+- PT addresses are now returned over ITP addresses only if they fall within a set distance
+
+## 20.1.3
+- Fix a bug in package.json
+
+## 20.1.2
+- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes) 
+
+## 20.1.1
+- add English as a fallback language for Arabic and tests to confirm this behaviour.
+
+## 20.1.0
+
+- add `reverseMode` parameter. When set to `score`, a feature's score will be considered when sorting
+the results of a reverse query. Defaults to `distance`.
+
 ## 20.0.0
 - Update to carmen-cache@0.17.0, a major revision which eliminates cache sharding and moves the underlying storage mechanism to one backed by [RocksDB](http://rocksdb.org/)
 - Adapt carmen to this new cache layer by eliminating logic around on-the-fly loading and storing of grid and frequency data, which is now delegated to RocksDB
