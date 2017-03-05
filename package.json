@@ -98,6 +98,9 @@
       "no-undef": 2,
       "block-scoped-var": 2
     },
+    "ecmaFeatures": {
+      "forOf": true
+    },
     "env": {
       "node": true,
       "es6": true
