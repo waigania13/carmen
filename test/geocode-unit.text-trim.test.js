@@ -9,8 +9,8 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom: 6 }, function() {}),
-        region: new mem({ maxzoom: 6, geocoder_format: '{region._name}, {country._name}'}, function() {}),
+        country: new mem({ maxzoom: 6, languages: ['en', 'zh'] }, function() {}),
+        region: new mem({ maxzoom: 6, geocoder_format: '{region._name}, {country._name}', languages: ['en', 'zh']}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index country', function(t) {

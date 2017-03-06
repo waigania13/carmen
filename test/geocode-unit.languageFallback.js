@@ -10,7 +10,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
+        country: new mem({ maxzoom:6, languages: ['ur', 'en', 'fa'] }, function() {}),
     };
     var c = new Carmen(conf);
 

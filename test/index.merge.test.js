@@ -36,7 +36,7 @@ test('index - streaming interface', function(assert) {
         done();
     };
 
-    var memObjectA = new mem([], null, function() {});
+    var memObjectA = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
     var confA = {
         country : memObjectA
     };
@@ -67,7 +67,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectB = new mem([], null, function() {});
+    var memObjectB = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
     var confB = {
         country: memObjectB
     };
@@ -98,7 +98,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectD = new mem([], null, function() {});
+    var memObjectD = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
     var confD = {
         country: memObjectD
     };
@@ -115,7 +115,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectC = new mem([], null, function() {});
+    var memObjectC = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
     var confC = { country: memObjectC };
     var carmenC = new Carmen(confC);
 
@@ -179,8 +179,11 @@ test('index - streaming interface', function(assert) {
 
     ["freq", "grid"].forEach(function(type) {
         assert.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', function(q) {
-            var cSet = new Set(carmenC.indexes.country._geocoder[type].list());
-            var dSet = new Set(carmenD.indexes.country._geocoder[type].list());
+            var stringify = function(key) {
+                return key[0] + "-" + (key[1] ? key[1].map(function(k) { return "" + k; }).sort().join("-") : "null");
+            }
+            var cSet = new Set(carmenC.indexes.country._geocoder[type].list().map(stringify));
+            var dSet = new Set(carmenD.indexes.country._geocoder[type].list().map(stringify));
             var intersection = new Set(Array.from(cSet).filter(function(x) { return dSet.has(x) }));
             var union = new Set(Array.from(cSet).concat(Array.from(dSet)));
             var percentage = 100 * intersection.size / (union.size);

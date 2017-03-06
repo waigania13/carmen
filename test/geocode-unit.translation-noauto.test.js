@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var runTests = function(mode) {
-    var conf = { region: new mem(null, function() {}) };
+    var conf = { region: new mem({ maxzoom: 6, languages: ['en', 'hu']}, function() {}) };
     var c = new Carmen(conf);
     tape('index first region', function(t) {
         queueFeature(conf.region, {
@@ -29,6 +29,7 @@ var runTests = function(mode) {
             id:2,
             properties: {
                 'carmen:text':'Delaware',
+                'carmen:text_en':'Delaware',
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
@@ -64,9 +65,29 @@ var runTests = function(mode) {
     tape('de', function(t) {
         c.geocode('de', {}, function(err, res) {
             t.ifError(err);
-            t.deepEqual(res.features.length, 1, '1 result');
+            t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
             t.deepEqual(res.features[0].id, 'region.2');
+
+            t.deepEqual(res.features[1].place_name, 'South Carolina', 'found: South Carolina (in second place)');
+            t.deepEqual(res.features[1].id, 'region.1');
+            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'South Carolina has a relevance penalty vs. Delaware');
+
+            t.end();
+        });
+    });
+    tape('de (language: hu)', function(t) {
+        c.geocode('de', {language: 'hu'}, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features.length, 2, '2 results');
+            t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
+            t.deepEqual(res.features[0].id, 'region.1');
+
+            t.deepEqual(res.features[1].place_name, 'Delaware', 'found: Delaware (in second place)');
+            t.deepEqual(res.features[1].id, 'region.2');
+
+            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'Delaware has a relevance penalty vs. South Carolina/Dél-Karolina');
+
             t.end();
         });
     });

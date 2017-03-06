@@ -11,9 +11,9 @@ var addFeature = require('../lib/util/addfeature'),
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
 var conf = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6, languages: ['en', 'es'] }, function() {}),
+    region: new mem({ maxzoom: 6, languages: ['en', 'es'] }, function() {}),
+    place: new mem({ maxzoom: 6, languages: ['en', 'es'], geocoder_inherit_score: true }, function() {})
 };
 
 var c = new Carmen(conf);
@@ -105,7 +105,7 @@ tape('find new york', function(t) {
 tape('find nueva york, language=es', function(t) {
     c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 1);
+        t.equal(res.features[0].relevance, 0.9, "query has partial relevance penalty applied because 'usa' has no es translation");
         t.end();
     });
 });
@@ -118,9 +118,9 @@ tape('teardown', function(assert) {
 // Simulate a case where carmen:text has a discrepancy but carmen:text_en
 // allows a text match to occur.
 var conf2 = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6, languages: ['en', 'es'] }, function() {}),
+    region: new mem({ maxzoom: 6, languages: ['en', 'es'] }, function() {}),
+    place: new mem({ maxzoom: 6, languages: ['en', 'es'], geocoder_inherit_score: true }, function() {})
 };
 
 var c2 = new Carmen(conf2);

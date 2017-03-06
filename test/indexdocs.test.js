@@ -42,8 +42,9 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.ok(typeof err !== 'number', 'no error');
 
     assert.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 2, 'patch.grid[0]');
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
+    assert.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'all' ], '1 language in patch.grid[0]');
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('all').length, 2, '2 grids for language "all" in patch.grid[0]');
+    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('all')[0]), {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200

@@ -9,7 +9,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
+        country: new mem({ maxzoom:6, languages: ['es'] }, function() {}),
         postcode: new mem({ maxzoom:6, geocoder_universal_text: true }, function() {})
     };
     var c = new Carmen(conf);
