@@ -48,7 +48,7 @@ function Geocoder(indexes, options) {
             var type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
             var types = info.geocoder_types || [type];
             var stack = info.geocoder_stack || false;
-            var languages = info.languages || [];
+            var languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
             var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 

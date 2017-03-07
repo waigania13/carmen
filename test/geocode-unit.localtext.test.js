@@ -10,15 +10,15 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem({ maxzoom:6, languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
-    region: new mem({ maxzoom:6, languages: ['es', 'ru', 'zh_Latn'] }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {})
 };
 var c = new Carmen(conf);
 
 tape('index region with bad language code', function(t) {
     var conf2 = {
-        country: new mem({ maxzoom:6, languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
-        region: new mem({ maxzoom:6, languages: ['es', 'ru', 'zh_Latn'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
+        region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {})
     };
     var c2 = new Carmen(conf2);
     t.ok(c2);

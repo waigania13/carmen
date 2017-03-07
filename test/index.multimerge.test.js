@@ -52,7 +52,7 @@ test('index - streaming interface', function(assert) {
         var q = queue();
         Object.keys(files).forEach(function(key) {
             q.defer(function(key, callback) {
-                merge.getOutputConf(files[key], { maxzoom:6 }, function(_oc) {
+                merge.getOutputConf(files[key], { maxzoom: 6, geocoder_languages: ['zh'] }, function(_oc) {
                     confs[key] = {country: _oc.to};
                     carmens[key] = new Carmen(confs[key]);
                     callback();
@@ -82,7 +82,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectD = new mem([], null, function() {});
+    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['zh'] }, function() {});
     confs.D = {
         country: memObjectD
     };
@@ -100,7 +100,7 @@ test('index - streaming interface', function(assert) {
 
     assert.test('multi-way merged indexes', function(q) {
         files.C = randomMBtiles();
-        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom:6 }, function(err) {
+        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, function(err) {
             if (err) throw err;
 
             var auto = Carmen.auto(files.C, function() {

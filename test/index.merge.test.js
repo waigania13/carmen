@@ -36,7 +36,7 @@ test('index - streaming interface', function(assert) {
         done();
     };
 
-    var memObjectA = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
+    var memObjectA = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, function() {});
     var confA = {
         country : memObjectA
     };
@@ -67,7 +67,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectB = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
+    var memObjectB = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, function() {});
     var confB = {
         country: memObjectB
     };
@@ -98,7 +98,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectD = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
+    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, function() {});
     var confD = {
         country: memObjectD
     };
@@ -115,7 +115,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    var memObjectC = new mem([], { maxzoom: 6, languages: ['fa', 'zh'] }, function() {});
+    var memObjectC = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, function() {});
     var confC = { country: memObjectC };
     var carmenC = new Carmen(confC);
 

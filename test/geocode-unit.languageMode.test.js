@@ -9,7 +9,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
     };
     var c = new Carmen(conf);
 
@@ -154,9 +154,9 @@ var addFeature = require('../lib/util/addfeature'),
 // Separate context (non-limit) test
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
-        region: new mem({ maxzoom:6, geocoder_name: 'region', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
-        place: new mem({ maxzoom:6, geocoder_name: 'place', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
     };
     var c = new Carmen(conf);
 
@@ -279,9 +279,9 @@ var addFeature = require('../lib/util/addfeature'),
 // digraphic exclusion test
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
-        region: new mem({ maxzoom:6, geocoder_name: 'region', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
-        place: new mem({ maxzoom:6, geocoder_name: 'place', languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, function() {})
     };
     var c = new Carmen(conf);
 

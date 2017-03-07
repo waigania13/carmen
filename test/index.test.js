@@ -183,7 +183,7 @@ test('index', function(t) {
     };
 
     var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, { maxzoom: 6, languages: ['zh', 'fa'] }, function() {}) }
+    var conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, function() {}) }
 
     var carmen = new Carmen(conf);
 

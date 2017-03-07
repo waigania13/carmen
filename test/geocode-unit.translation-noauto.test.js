@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var runTests = function(mode) {
-    var conf = { region: new mem({ maxzoom: 6, languages: ['en', 'hu']}, function() {}) };
+    var conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, function() {}) };
     var c = new Carmen(conf);
     tape('index first region', function(t) {
         queueFeature(conf.region, {

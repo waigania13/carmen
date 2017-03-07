@@ -12,7 +12,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country', languages: ['en', 'es'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'es'] }, function() {})
     };
     var c = new Carmen(conf);
 
