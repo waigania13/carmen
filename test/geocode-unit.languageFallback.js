@@ -55,6 +55,24 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
+    tape('make sure indexes contain pre-computed fallbacks', function(assert) {
+        assert.deepEquals(
+            conf.country._geocoder.grid.list(),
+            [
+                // these ones are from country2 -- we've fallen language 1 (English)
+                // to default and left others as they are
+                [ 'xbhrt', [ 3 ] ],
+                [ 'xhndwstn', [ 2 ] ],
+                [ 'xindia', [ 0, 1 ] ],
+
+                // this is from country -- we've fallen everything back to the same phrase
+                [ 'xunited states', [ 0, 1, 2, 3 ] ]
+            ],
+            "fallbacks have been properly computed"
+        );
+        assert.end();
+    })
+
     tape('query: United States', function(assert) {
         c.geocode('United States', { language: 'ar'}, function(err, res) {
             assert.equal('United States', res.features[0].text, 'Fallback to English');

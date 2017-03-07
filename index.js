@@ -135,7 +135,7 @@ function Geocoder(indexes, options) {
             // arrange languages into something presentable
             var lang = {};
             lang.has_languages = languages.length > 0;
-            lang.languages = languages.map(function(l) { return l.replace('-', '_'); }).sort().concat(['default']);
+            lang.languages = ['default'].concat(languages.map(function(l) { return l.replace('-', '_'); }).sort());
             lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
             lang.lang_map = {};
             lang.languages.forEach(function(l, idx) { lang.lang_map[l] = idx; });

@@ -18,6 +18,7 @@ var runTests = function(mode) {
             id:1,
             properties: {
                 'carmen:text':'South Carolina',
+                'carmen:text_en': 'South Carolina',
                 'carmen:text_hu':'Dél-Karolina',
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
@@ -30,6 +31,7 @@ var runTests = function(mode) {
             properties: {
                 'carmen:text':'Delaware',
                 'carmen:text_en':'Delaware',
+                'carmen:text_hu':'Delaware',
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
@@ -76,6 +78,20 @@ var runTests = function(mode) {
             t.end();
         });
     });
+    tape('de (language: en)', function(t) {
+        c.geocode('de', {language: 'en'}, function(err, res) {
+            t.ifError(err);
+            t.deepEqual(res.features.length, 2, '2 results');
+            t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
+            t.deepEqual(res.features[0].id, 'region.2');
+
+            t.deepEqual(res.features[1].place_name, 'South Carolina', 'found: South Carolina (in second place)');
+            t.deepEqual(res.features[1].id, 'region.1');
+            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'South Carolina has a relevance penalty vs. Delaware');
+
+            t.end();
+        });
+    });
     tape('de (language: hu)', function(t) {
         c.geocode('de', {language: 'hu'}, function(err, res) {
             t.ifError(err);
@@ -86,7 +102,7 @@ var runTests = function(mode) {
             t.deepEqual(res.features[1].place_name, 'Delaware', 'found: Delaware (in second place)');
             t.deepEqual(res.features[1].id, 'region.2');
 
-            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'Delaware has a relevance penalty vs. South Carolina/Dél-Karolina');
+            t.ok(res.features[0].relevance - res.features[1].relevance < .1, 'Delaware has no relevance penalty vs. South Carolina/Dél-Karolina because Delaware is also called "Delaware" in Hungarian');
 
             t.end();
         });

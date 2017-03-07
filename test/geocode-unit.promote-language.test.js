@@ -105,7 +105,7 @@ tape('find new york', function(t) {
 tape('find nueva york, language=es', function(t) {
     c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 0.9, "query has partial relevance penalty applied because 'usa' has no es translation");
+        t.equal(res.features[0].relevance, 1, "query has full relevance penalty applied because 'usa' has no es translation but es falls back");
         t.end();
     });
 });
