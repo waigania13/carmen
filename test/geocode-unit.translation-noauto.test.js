@@ -81,6 +81,7 @@ var runTests = function(mode) {
     tape('de (language: en)', function(t) {
         c.geocode('de', {language: 'en'}, function(err, res) {
             t.ifError(err);
+            console.log(JSON.stringify(res, null, 4));
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
             t.deepEqual(res.features[0].id, 'region.2');
