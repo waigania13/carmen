@@ -1,5 +1,9 @@
 # Changelog
 
+## 20.2.1
+
+- Fix a bug that in certain situations allows features with a null value in their `carmen:center` property to pass validation
+
 ## 20.2.0
 
 - PT addresses are now returned over ITP addresses only if they fall within a set distance
