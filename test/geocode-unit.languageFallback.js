@@ -59,14 +59,10 @@ var addFeature = require('../lib/util/addfeature'),
         assert.deepEquals(
             conf.country._geocoder.grid.list(),
             [
-                // these ones are from country2 -- we've fallen language 1 (English)
-                // to default and left others as they are
-                [ 'xbhrt', [ 3 ] ],
-                [ 'xhndwstn', [ 2 ] ],
-                [ 'xindia', [ 0, 1 ] ],
-
-                // this is from country -- we've fallen everything back to the same phrase
-                [ 'xunited states', [ 0, 1, 2, 3 ] ]
+                [ 'india', [ 0, 1 ] ],
+                [ 'united states', [ 0, 1, 2, 3 ] ],
+                [ 'بھارت', [ 3 ] ],
+                [ 'هندوستان', [ 2 ] ]
             ],
             "fallbacks have been properly computed"
         );

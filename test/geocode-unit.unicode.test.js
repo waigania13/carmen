@@ -101,13 +101,13 @@ tape('москва => москва', function(t) {
 });
 tape('m => москва', function(t) {
     c.geocode('m', { limit_verify:1 }, function(err, res) {
-        t.deepEqual(res.features[0].place_name, 'москва');
+        t.equal(res.features.length, 0, 'm (no results)');
         t.end();
     });
 });
 tape('moskva => москва', function(t) {
     c.geocode('moskva', { limit_verify:1 }, function(err, res) {
-        t.deepEqual(res.features[0].place_name, 'москва');
+        t.deepEqual(res.features.length, 0, 'moskva (no results)');
         t.end();
     });
 });
