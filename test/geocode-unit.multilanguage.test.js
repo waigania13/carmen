@@ -80,7 +80,7 @@ var addFeature = require('../lib/util/addfeature'),
 
     tape('paris ?language=en,es,bogus', function(assert) {
         c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: Invalid language code(s) \'bogus\'');
+            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
             assert.equal(err && err.code, 'EINVALID');
             assert.end();
         });
