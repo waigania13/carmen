@@ -6,8 +6,8 @@ var test = require('tape');
 
 test('copy', function(t) {
     var conf = {
-        from: new mem(null, function() {}),
-        to: new mem(null, function() {})
+        from: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, function() {}),
+        to: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, function() {})
     };
     var carmen = new Carmen(conf);
     var zoom = 6;

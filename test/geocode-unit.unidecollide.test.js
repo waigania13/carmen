@@ -12,7 +12,7 @@ var addFeature = require('../lib/util/addfeature'),
 (function() {
 
     var conf = {
-        place_a: new mem({maxzoom:6, geocoder_name:'region'}, function() {}),
+        place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, function() {}),
     };
     var c = new Carmen(conf);
     tape('index Alberta', function(t) {
