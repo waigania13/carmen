@@ -132,16 +132,18 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    // FIXME: temporarily suppressing this test until proper synonym handling is present
-    // tape('Rossiyskaya =/=> Russian Federation (no degens for synonyms)', function(t) {
-    //     c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
-    //         t.ifError(err);
-    //         t.equal(res.features.length, 0, 'no match')
-    //         t.end();
-    //     });
-    // });
+    tape('Rossiyskaya ==> Russian Federation', function(t) {
+        c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Russian Federation');
+            t.equal(res.features[0].id, 'country.1');
+            t.equal(res.features[0].language, undefined, 'language not set on default text');
+            t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'synonym is included in matching_place_name')
+            t.end();
+        });
+    });
 
-    tape('Rossiyskaya Federatsiya => Russian Federation (no degens for synonyms)', function(t) {
+    tape('Rossiyskaya Federatsiya => Russian Federation', function(t) {
         c.geocode('Rossiyskaya Federatsiya', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');

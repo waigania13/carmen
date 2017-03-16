@@ -78,14 +78,16 @@ tape('russia => Russian Federation', function(t) {
     });
 });
 
-// FIXME: temporarily suppressing this test until proper synonym handling is present
-// tape('Rossiyskaya =/=> Russian Federation (synonyms are not available in autoc)', function(t) {
-//     c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
-//         t.ifError(err);
-//         t.deepEqual(res.features.length, 0, 'No results');
-//         t.end();
-//     });
-// });
+tape('Rossiyskaya ==> Russian Federation (synonyms are not available in autoc)', function(t) {
+    c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'Russian Federation');
+        t.deepEqual(res.features[0].id, 'country.2');
+        t.deepEqual(res.features[0].id, 'country.2');
+        t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'matching_place_name contains synonym text')
+        t.end();
+    });
+});
 
 tape('Российская => Russian Federation (autocomplete without language flag)', function(t) {
     c.geocode('Российская', { limit_verify:1 }, function(err, res) {
