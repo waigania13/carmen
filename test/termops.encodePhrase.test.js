@@ -19,41 +19,41 @@ test('termops.encodePhrase', function(assert) {
     var a;
 
     a = termops.encodePhrase('main');
-    assert.deepEqual(a, 'xmain', 'main');
+    assert.deepEqual(a, 'main', 'main');
 
-    a = termops.encodePhrase('xmain', true);
-    assert.deepEqual(a, 'xmain', 'main (skip)');
+    a = termops.encodePhrase('main', true);
+    assert.deepEqual(a, 'main', 'main (skip)');
 
     a = termops.encodePhrase('main st');
-    assert.deepEqual(a, 'xmain st', 'main st');
+    assert.deepEqual(a, 'main st', 'main st');
 
-    a = termops.encodePhrase('xmain st', true);
-    assert.deepEqual(a, 'xmain st', 'main st (skip)');
+    a = termops.encodePhrase('main st', true);
+    assert.deepEqual(a, 'main st', 'main st (skip)');
 
     a = termops.encodePhrase(['main','st']);
-    assert.deepEqual(a, 'xmain st', 'main st (array)');
+    assert.deepEqual(a, 'main st', 'main st (array)');
 
     a = termops.encodePhrase('lazy dog');
-    assert.deepEqual(a, 'xlazy dog', 'lazy dog')
+    assert.deepEqual(a, 'lazy dog', 'lazy dog')
 
-    a = termops.encodePhrase('xlazy dog', true);
-    assert.deepEqual(a, 'xlazy dog', 'lazy dog (skip)')
+    a = termops.encodePhrase('lazy dog', true);
+    assert.deepEqual(a, 'lazy dog', 'lazy dog (skip)')
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
-    assert.deepEqual(a, 'xthe quick brown fox jumps over the lazy dog', 'long phrase');
+    assert.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase');
 
-    a = termops.encodePhrase('xthe quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 'xthe quick brown fox jumps over the lazy dog', 'long phrase (skip)');
+    a = termops.encodePhrase('the quick brown fox jumps over the lazy dog', true);
+    assert.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase (skip)');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
-    assert.deepEqual(a, 'zjing du shi', '京都市');
+    assert.deepEqual(a, '京都市', '京都市');
 
     a = termops.encodePhrase('zjing du shi', true);
     assert.deepEqual(a, 'zjing du shi', '京都市 (skip)');
 
     a = termops.encodePhrase('jing du shi');
-    assert.deepEqual(a, 'xjing du shi', 'jing du shi != 京都市');
+    assert.deepEqual(a, 'jing du shi', 'jing du shi != 京都市');
 
     // known examples of fnv1a phrase collisions
     // these will be datapoints for decolliding strategies elsewhere...

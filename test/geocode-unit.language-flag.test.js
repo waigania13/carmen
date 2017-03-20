@@ -12,14 +12,15 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6, geocoder_name: 'country' }, function() {}),
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, function() {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region',
             geocoder_format_ru: '{country._name}, {region._name}',
             geocoder_format_zh: '{country._name}{region._name}',
-            geocoder_format_es: '{region._name} {region._name} {country._name}'
+            geocoder_format_es: '{region._name} {region._name} {country._name}',
+            geocoder_languages: ['zh', 'zh_Hant', 'eo', 'ru']
         }, function() {}),
-        place: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}' }, function() {}),
-        place2: new mem({ maxzoom:6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}' }, function() {})
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, function() {}),
+        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, function() {})
     };
     var c = new Carmen(conf);
 
@@ -131,15 +132,18 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Rossiyskaya =/=> Russian Federation (no degens for synonyms)', function(t) {
+    tape('Rossiyskaya ==> Russian Federation', function(t) {
         c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
-            t.equal(res.features.length, 0, 'no match')
+            t.equal(res.features[0].place_name, 'Russian Federation');
+            t.equal(res.features[0].id, 'country.1');
+            t.equal(res.features[0].language, undefined, 'language not set on default text');
+            t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'synonym is included in matching_place_name')
             t.end();
         });
     });
 
-    tape('Rossiyskaya Federatsiya => Russian Federation (no degens for synonyms)', function(t) {
+    tape('Rossiyskaya Federatsiya => Russian Federation', function(t) {
         c.geocode('Rossiyskaya Federatsiya', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
@@ -227,6 +231,20 @@ var addFeature = require('../lib/util/addfeature'),
     // also 'translate' the context when available
     tape('St Petersburg => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', function(t) {
         c.geocode('St Petersburg', { language: 'ru'}, function(err, res) {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
+            t.equal(res.features[0].id, 'place.1');
+            t.equal(res.features[0].context[0].text, 'Северо-Западный федеральный округ');
+            t.equal(res.features[0].context[1].text, 'Российская Федерация');
+            t.equal(res.features[0].context[0].language, 'ru');
+            t.equal(res.features[0].context[1].language, 'ru');
+            t.end();
+        });
+    });
+
+    // test when hitting multiple indexes
+    tape('St Petersburg, Russia => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', function(t) {
+        c.geocode('St Petersburg, Russia', { language: 'ru'}, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
             t.equal(res.features[0].id, 'place.1');
