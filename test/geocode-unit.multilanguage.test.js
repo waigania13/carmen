@@ -122,6 +122,23 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('error handling ?language=20+', function(t) {
+        c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, function(err, res) {
+            t.equal(err && err.toString(), 'Error: options.language should be a list of no more than 20 languages');
+            t.equal(err && err.code, 'EINVALID');
+            t.end();
+        });
+    });
+
+    tape('error handling ?language=en,en', function(t) {
+        c.geocode('paris', { limit_verify:1, language: 'en,en' }, function(err, res) {
+            t.equal(err && err.toString(), 'Error: options.language should be a list of unique language codes');
+            t.equal(err && err.code, 'EINVALID');
+            t.end();
+        });
+    });
+
 })();
 
 tape('teardown', function(assert) {
