@@ -99,8 +99,10 @@ as part of the `options` object:
   output. Defaults to false.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
-- `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
-  are available on a features, response will be returned in that language and
+- `language` - One or more ISO 639-1 codes, separated by commasto be displayed.
+  Only the first language code is used when prioritizing forward geocode results
+  to be matched. If `carmen:text_{lc}` and/or `geocoder_format_{lc}` are
+  available on a features, response will be returned in that language and
   appropriately formatted.
 - `languageMode` - string. If set to `"strict"` the returned features will be
   filtered to only those with text matching the language specified by the
