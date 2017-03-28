@@ -114,6 +114,18 @@ tape('Российская => Российская Федерация (autocompl
     });
 });
 
+tape('Российская => Российская Федерация (autocomplete with multilanguage flag uses first)', function(t) {
+    c.geocode('Российская', { limit_verify:1, language: 'en,ru' }, function(err, res) {
+        t.ifError(err);
+        t.deepEqual(res.features.length, 1, '1 result');
+        t.deepEqual(res.features[0].place_name, 'Russian Federation');
+        t.ok(res.features[0].relevance < .8, 'Relevance penalty was applied for out-of-language match');
+        t.deepEqual(res.features[0].place_name_ru, 'Российская Федерация');
+        t.deepEqual(res.features[0].id, 'country.2');
+        t.end();
+    });
+});
+
 tape('Российская Федерация => Russian Federation', function(t) {
     c.geocode('Российская Федерация', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
