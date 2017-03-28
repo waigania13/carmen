@@ -51,6 +51,8 @@ tape('index', function(assert) {
             id:38,
             properties: {
                 'carmen:text':'Canada',
+                'carmen:text_en':'Canada',
+                'carmen:text_es':'Canadá',
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
@@ -62,6 +64,8 @@ tape('index', function(assert) {
             id:39,
             properties: {
                 'carmen:text':'Brazil',
+                'carmen:text_en':'Brazil',
+                'carmen:text_es':'Brasil',
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
@@ -184,6 +188,20 @@ tape('bin/carmen query wrong types', function(t) {
 tape('bin/carmen query wrong stacks', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --stacks="not a stack"', function(err, stdout, stderr) {
         t.ok(err, 'not a stack');
+        t.end();
+    });
+});
+tape('bin/carmen query language=es', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
+        t.end();
+    });
+});
+tape('bin/carmen query language=en,es', function(t) {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es,en"', function(err, stdout, stderr) {
+        t.ifError(err);
+        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
         t.end();
     });
 });
