@@ -1,5 +1,9 @@
 # Changelog
 
+## 21.0.2
+
+- Fix a bug where `indexes` weren't returned for an idGeocode
+
 ## 21.0.1
 
 - Fix a bug in string sorting affecting some strings with mixed complex scripts after the unidecode removal.
