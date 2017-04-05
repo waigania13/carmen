@@ -105,7 +105,7 @@
     "globals": {}
   },
   "engines": {
-    "node": "4.x.x"
+    "node": "6.x.x"
   },
   "repository": {
     "type": "git",
