@@ -198,7 +198,7 @@ tape('bin/carmen query language=es', function(t) {
         t.end();
     });
 });
-tape('bin/carmen query language=en,es', function(t) {
+tape('bin/carmen query language=es,en', function(t) {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es,en"', function(err, stdout, stderr) {
         t.ifError(err);
         t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
