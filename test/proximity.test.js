@@ -13,9 +13,9 @@ test('proximity.distance', function(assert) {
     // uses distance to center when closer than furthest corner of cover
     assert.equal(proximity.distance([0, 0], [0, 0], { x: 0, y: 0, zoom: 2 }), 0);
     // uses distance to furthest corner of cover when closer than center
-    assert.equal(proximity.distance([-170, 0], [0, 0], { x: 0, y: 1, zoom: 2 }), 5946.081666100757);
+    assert.equal(proximity.distance([-170, 0], [0, 0], { x: 0, y: 1, zoom: 2 }), 5950.87245412985);
     // changing center does not change distance when it is further than the furthest corner of the cover
-    assert.equal(proximity.distance([-170, 0], [10, 0], { x: 0, y: 1, zoom: 2 }), 5946.081666100757);
+    assert.equal(proximity.distance([-170, 0], [10, 0], { x: 0, y: 1, zoom: 2 }), 5950.87245412985);
     assert.end();
 });
 
