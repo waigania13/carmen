@@ -1,5 +1,11 @@
 # Changelog
 
+## 22.0.0
+
+- Drop support for node `4.x.x`
+- Support centered around `6.10.2`
+- Update dependancies to support 6.x.
+
 ## 21.0.2
 
 - Fix a bug where `indexes` weren't returned for an idGeocode

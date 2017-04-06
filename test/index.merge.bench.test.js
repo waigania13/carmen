@@ -25,8 +25,7 @@ function fuzzIndex(limit, callback) {
                 'carmen:text': text,
                 'carmen:center': [lon, lat]
             },
-            geometry: { type:'Point', coordinates:[lon,lat] },
-            bbox: []
+            geometry: { type:'Point', coordinates:[lon,lat] }
         });
     }
     index.update(conf.street, features, { zoom:14 }, function(err) {
