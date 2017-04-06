@@ -159,7 +159,8 @@ var addFeature = require('../lib/util/addfeature'),
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
-            t.equal(res.features[0].language, undefined, 'language not set');            t.end();
+            t.equal(res.features[0].language, undefined, 'language not set');
+            t.end();
         });
     });
 
