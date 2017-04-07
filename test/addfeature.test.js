@@ -16,7 +16,7 @@ var c = new Carmen(conf);
 tape('index address', function(t) {
     var docs = [];
     var address;
-    
+
     for (var i=0; i<1; i++) {
         address = {
             id:1,
@@ -53,7 +53,7 @@ tape('index address', function(t) {
 tape('index pois', function(t) {
     var docs = [];
     var poi;
-    
+
     for (var k=103; k<=104; k++) {
         poi = {
             id:3,

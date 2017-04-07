@@ -137,14 +137,14 @@ test('index.update freq', function(t) {
     var carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('error no id', function(q) {
-        index.update(conf.to, [{ properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
-            q.equal('Error: doc has no id', err.toString());
+        index.update(conf.to, [{ type: 'Point', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
+            q.equal(err.toString(), 'Error: doc has no id');
             q.end();
         });
     });
     t.test('error no carmen:center', function(q) {
         index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
-            q.equal('Error: "geometry" property required on id:1', err.toString());
+            q.equal(err.toString(), 'Error: "geometry" member required on id:1');
             q.end();
         });
     });
@@ -183,7 +183,7 @@ test('index', function(t) {
     };
 
     var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, null, function() {}) }
+    var conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, function() {}) }
 
     var carmen = new Carmen(conf);
 
@@ -315,8 +315,8 @@ test('index phrase collection', function(assert) {
     function afterUpdate(err) {
         assert.ifError(err);
         var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.grid.list(), [ id1.toString() ], '1 phrase');
-        assert.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424065, 6755949230424066 ], 'grid has 2 zxy+feature ids');
+        assert.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), null] ], '1 phrase');
+        assert.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
         assert.end();
     }
 });

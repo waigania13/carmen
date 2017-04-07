@@ -10,7 +10,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 (function() {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
+        country: new mem({ maxzoom: 6, geocoder_languages: ['ur', 'en', 'fa'] }, function() {}),
     };
     var c = new Carmen(conf);
 
@@ -54,6 +54,20 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
+
+    tape('make sure indexes contain pre-computed fallbacks', function(assert) {
+        assert.deepEquals(
+            conf.country._geocoder.grid.list(),
+            [
+                [ 'india', [ 0, 1 ] ],
+                [ 'united states', [ 0, 1, 2, 3 ] ],
+                [ 'بھارت', [ 3 ] ],
+                [ 'هندوستان', [ 2 ] ]
+            ],
+            "fallbacks have been properly computed"
+        );
+        assert.end();
+    })
 
     tape('query: United States', function(assert) {
         c.geocode('United States', { language: 'ar'}, function(err, res) {

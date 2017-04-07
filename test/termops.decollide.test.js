@@ -34,7 +34,7 @@ test('termops.decollide', function(assert) {
 
     assert.deepEqual(termops.decollide([], {
         properties: { 'carmen:text': '京都市' }
-    }, 'jing'), true, 'decollides - unidecodes');
+    }, 'jing'), false, 'decollides - unidecodes');
 
     assert.deepEqual(termops.decollide([], {
         properties: { 'carmen:text': 'main street' }

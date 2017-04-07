@@ -3,6 +3,7 @@ var grid = require('../lib/util/grid.js');
 var tape = require('tape');
 var termops = require('../lib/util/termops.js');
 var token = require('../lib/util/token.js');
+var rewind = require('geojson-rewind');
 
 tape('indexdocs.loadDoc', function(assert) {
     var token_replacer = token.createReplacer({});
@@ -42,8 +43,9 @@ tape('indexdocs.loadDoc', function(assert) {
     assert.ok(typeof err !== 'number', 'no error');
 
     assert.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].length, 2, 'patch.grid[0]');
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]][0]), {
+    assert.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'all' ], '1 language in patch.grid[0]');
+    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('all').length, 2, '2 grids for language "all" in patch.grid[0]');
+    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('all')[0]), {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
@@ -52,7 +54,7 @@ tape('indexdocs.loadDoc', function(assert) {
     }, 'patch.grid[0][0]');
     assert.deepEqual(patch.docs.length, 1);
     assert.deepEqual(patch.docs[0], doc);
-    assert.deepEqual(patch.text, ['xmain st', 'xmain']);
+    assert.deepEqual(patch.text, ['main st', 'main']);
 
     assert.end();
 });
@@ -280,6 +282,9 @@ tape('indexdocs.standardize', function(assert) {
 tape('indexdocs.verifyCenter', function(assert) {
     assert.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
     assert.equal(indexdocs.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
+    assert.equal(indexdocs.verifyCenter([0,null], [[32,32,6]]), false, 'handle null lon');
+    assert.equal(indexdocs.verifyCenter([null,0], [[32,32,6]]), false, 'handle null lat');
+    assert.equal(indexdocs.verifyCenter([null,null], [[32,32,6]]), false, 'handle null lon,lat');
     assert.end();
 });
 
@@ -308,7 +313,7 @@ tape('indexdocs.runChecks', function(assert) {
                 'carmen:text':'Main Street'
             }
         }));
-    }, /"geometry" property required on id:1/);
+    }, /"geometry" member required on id:1/);
 
     assert.throws(function(t) {
         assert.equal(indexdocs.runChecks({
@@ -322,16 +327,19 @@ tape('indexdocs.runChecks', function(assert) {
         }, 12));
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
+    var coords = [Array.apply(null, Array(50001)).map(function(ele, i) {return [1.1 + 0.001 * i,1.1]})]
+    coords[0].push([1.1,1.1]);
+
     assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+        assert.equal(indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
                 'carmen:text':'Main Street',
                 'carmen:center':[0,0]
             },
-            geometry: { type: 'Polygon', coordinates: [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})] }
-        }, 12));
+            geometry: { type: 'Polygon', coordinates: coords }
+        }), 12));
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
     assert.throws(function(t) {
@@ -347,7 +355,7 @@ tape('indexdocs.runChecks', function(assert) {
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
     assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+        assert.equal(indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
@@ -357,11 +365,11 @@ tape('indexdocs.runChecks', function(assert) {
             geometry: {
                 type: 'MultiPolygon',
                 coordinates: [
-                    [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})],
-                    [Array.apply(null, Array(50001)).map(function() {return [1.1,1.1]})]
+                    coords,
+                    coords
                 ]
             }
-        }, 12));
+        }), 12));
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
     assert.equal(indexdocs.runChecks({

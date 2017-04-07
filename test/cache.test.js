@@ -8,10 +8,12 @@ fs.mkdirSync(tmpdir);
 var tmpidx = 0;
 var tmpfile = function() { return tmpdir + "/" + (tmpidx++) + ".dat"; };
 
+var sortedInverse = function(arr) { return [].concat(arr).sort(function(a, b) { return b - a; })};
+
 test('#get', function(r) {
     var cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    r.deepEqual([0, 1, 2], cache.get('5'));
+    r.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
     r.throws(function() { cache.get(); }, Error, 'throws on misuse');
     r.end();
 });
@@ -19,14 +21,14 @@ test('#get', function(r) {
 test('#list', function(s) {
     var cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    s.deepEqual(['5'], cache.list());
+    s.deepEqual([ [ '5', null ] ], cache.list());
     s.end();
 });
 
 test('#get', function(s) {
     var cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    s.deepEqual([0, 1, 2], cache.get('5'));
+    s.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
     s.equal(undefined, cache._get('9'));
     s.end();
 });
@@ -61,19 +63,19 @@ test('#load', function(s) {
     s.deepEqual([], cache.list());
 
     cache.set('5', [0,1,2]);
-    s.deepEqual([0,1,2], cache.get('5'));
-    s.deepEqual([ '5' ], cache.list());
+    s.deepEqual(sortedInverse([0,1,2]), cache.get('5'));
+    s.deepEqual([ [ '5', null ] ], cache.list());
 
     cache.set('21', [5,6]);
-    s.deepEqual([5,6], cache.get('21'));
-    s.deepEqual([ '21', '5' ], cache.list(), 'keys in cache');
+    s.deepEqual(sortedInverse([5,6]), cache.get('21'));
+    s.deepEqual([ [ '21', null ], [ '5', null ] ], cache.list(), 'keys in cache');
 
     // cache A serializes data, cache B loads serialized data.
     var pack = tmpfile();
     cache.pack(pack);
     var loader = new RocksDBCache('b', pack);
-    s.deepEqual([6,5], loader.get('21'));
-    s.deepEqual([ '21', '5'], loader.list(), 'keys in cache');
+    s.deepEqual(sortedInverse([6,5]), loader.get('21'));
+    s.deepEqual([ [ '21', null ], [ '5', null ] ], loader.list(), 'keys in cache');
     s.end();
 });
 

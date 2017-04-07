@@ -304,6 +304,8 @@
                             "score": 1,
                             "scoredist": 1,
                             "scorefactor": 1,
+                            "matches_language": true,
+                            "prefix": true,
                             "mask": 1,
                             "text": "toronto",
                             "zoom": 6
@@ -312,7 +314,11 @@
                 },
                 "carmen:geocoder_address_order": "ascending",
                 "carmen:zoom": 6,
-                "carmen:scoredist": 1
+                "carmen:scoredist": 1,
+                "carmen:matches_language": true,
+                "carmen:prefix": true,
+                "carmen:query_text": "toronto",
+                "carmen:idx": 2
             },
             "bbox": [
                 -40,

@@ -1,10 +1,37 @@
 # Changelog
 
+## 22.0.0
+
+- Drop support for node `4.x.x`
+- Support centered around `6.10.2`
+- Update dependancies to support 6.x.
+
+## 21.0.2
+
+- Fix a bug where `indexes` weren't returned for an idGeocode
+
+## 21.0.1
+
+- Fix a bug in string sorting affecting some strings with mixed complex scripts after the unidecode removal.
+
+## 21.0.0
+
+- Update carmen-cache to v0.18.0, which stores per-language metadata in the grid cache, and adapt carmen accordingly, to allow proper supported of multilingual autocomplete, and language-weighted results.
+- Drop unidecode altogether, and replace it with a much slimmer diacritical mark folder, such that most non-ASCII text is now indexed as-is, improving multilingual accuracy.
+
+## 20.2.1
+
+- Fix a bug that in certain situations allows features with a null value in their `carmen:center` property to pass validation
+
+## 20.2.0
+
+- PT addresses are now returned over ITP addresses only if they fall within a set distance
+
 ## 20.1.3
 - Fix a bug in package.json
 
 ## 20.1.2
-- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes) 
+- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes)
 
 ## 20.1.1
 - add English as a fallback language for Arabic and tests to confirm this behaviour.
