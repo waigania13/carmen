@@ -263,7 +263,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, function() { buildQueued(conf.country, t.end) });
     });
 
-    tape('query by id', function(t) {
+    tape.skip('query by id', function(t) {
         c.geocode('country.1', null, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].relevance, 1, "relevance is 1");

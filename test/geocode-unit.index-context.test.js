@@ -113,7 +113,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('Search for an id & check indexes', function(t) {
+    tape.skip('Search for an id & check indexes', function(t) {
         c.geocode('address.1', { indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address' ]);
