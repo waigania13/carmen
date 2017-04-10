@@ -121,7 +121,7 @@ tape('filter.featureMatchesLanguage', function(assert) {
     assert.ok(filter.featureMatchesLanguage({
         properties: { 'carmen:text': 'New York' }
     }, {
-        language: 'en'
+        language: ['en']
     }), 'allowed: languageMode !== strict');
 
     assert.ok(filter.featureMatchesLanguage({
@@ -133,14 +133,14 @@ tape('filter.featureMatchesLanguage', function(assert) {
     assert.ok(filter.featureMatchesLanguage({
         properties: { 'carmen:text_en': 'New York' }
     }, {
-        language: 'en',
+        language: ['en'],
         languageMode: 'strict'
     }), 'allowed: matching language text');
 
     assert.ok(filter.featureMatchesLanguage({
         properties: { 'carmen:text_zh': '纽约州' }
     }, {
-        language: 'zh_TW',
+        language: ['zh_TW'],
         languageMode: 'strict'
     }), 'allowed: matching language text');
 
@@ -150,21 +150,21 @@ tape('filter.featureMatchesLanguage', function(assert) {
             'carmen:text_es': 'Nueva York'
         }
     }, {
-        language: 'es',
+        language: ['es'],
         languageMode: 'strict'
     }), 'allowed: matching fallback language text');
 
     assert.notOk(filter.featureMatchesLanguage({
         properties: { 'carmen:text_en': 'New York' }
     }, {
-        language: 'es',
+        language: ['es'],
         languageMode: 'strict'
     }), 'disallowed: matching fallback language text');
 
     assert.notOk(filter.featureMatchesLanguage({
         properties: { 'carmen:text': 'New York' }
     }, {
-        language: 'en',
+        language: ['en'],
         languageMode: 'strict'
     }), 'disallowed: no matching text');
 
@@ -174,7 +174,7 @@ tape('filter.featureMatchesLanguage', function(assert) {
             'carmen:text_universal': 'New York'
         }
     }, {
-        language: 'en',
+        language: ['en'],
         languageMode: 'strict'
     }), 'allowed: text_universal');
 
@@ -184,7 +184,7 @@ tape('filter.featureMatchesLanguage', function(assert) {
             'carmen:text_hr': 'Zagrebačka'
         }
     }, {
-        language: 'sr',
+        language: ['sr'],
         languageMode: 'strict'
     }), 'allowed: sr/hr equivalency');
 

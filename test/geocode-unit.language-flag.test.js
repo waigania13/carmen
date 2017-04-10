@@ -132,6 +132,17 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
+    tape('Severo-Za ==> Northwestern Federal District', function(t) {
+        c.geocode('Severo-Za', { limit_verify:1 }, function(err, res) {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
+            t.equal(res.features[0].id, 'region.1');
+            t.equal(res.features[0].language, undefined, 'language not set on default text');
+            t.equal(res.features[0].matching_place_name, 'Severo-Zapadny federalny okrug, Russian Federation', 'synonym is included in matching_place_name')
+            t.end();
+        });
+    });
+
     tape('Rossiyskaya ==> Russian Federation', function(t) {
         c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
@@ -148,7 +159,8 @@ var addFeature = require('../lib/util/addfeature'),
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
-            t.equal(res.features[0].language, undefined, 'language not set');            t.end();
+            t.equal(res.features[0].language, undefined, 'language not set');
+            t.end();
         });
     });
 
