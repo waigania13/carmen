@@ -315,6 +315,24 @@ tape('indexdocs.runChecks', function(assert) {
         }));
     }, /"geometry" member required on id:1/);
 
+    //GeometryCollection with a single geometry is caught and not thrown from GeoJSONHint
+    assert.equal(indexdocs.runChecks({
+        id:1,
+        type: 'Feature',
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:center':[0,0],
+            'carmen:addressnumber': [9,10,7],
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiPoint',
+                coordinates: [ [1,1], [2,2], [0,0] ]
+            }]
+        }
+    }), undefined);
+
     assert.throws(function(t) {
         assert.equal(indexdocs.runChecks({
             id:1,
