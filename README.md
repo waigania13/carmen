@@ -3,7 +3,6 @@
 [Mapnik vector tile](https://github.com/mapbox/mapnik-vector-tile)-based geocoder with support for swappable data sources.
 This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
-[![Build Status](https://travis-ci.org/mapbox/carmen.svg?branch=master)](https://travis-ci.org/mapbox/carmen)
 [![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
 
 
@@ -99,8 +98,10 @@ as part of the `options` object:
   output. Defaults to false.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
-- `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
-  are available on a features, response will be returned in that language and
+- `language` - One or more ISO 639-1 codes, separated by commas to be displayed.
+  Only the first language code is used when prioritizing forward geocode results
+  to be matched. If `carmen:text_{lc}` and/or `geocoder_format_{lc}` are
+  available on a features, response will be returned in that language and
   appropriately formatted.
 - `languageMode` - string. If set to `"strict"` the returned features will be
   filtered to only those with text matching the language specified by the

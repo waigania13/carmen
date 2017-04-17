@@ -1,5 +1,13 @@
 # Changelog
 
+## 22.1.1
+
+- Fix a few cases where `matching_text` and `matching_place_name` properties were not set as expected.
+
+## 22.1.0
+
+- Add support for multiple languages to be specified in the `language` option and multiple language output formatting.
+
 ## 22.0.0
 
 - Drop support for node `4.x.x`

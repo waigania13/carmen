@@ -49,14 +49,23 @@ Each feature in the FeatureCollection has the following additional keys:
 
 key | description
 --- | ---
-id | Id of the feature of the form `{index}.{id}` where index is the id/handle of the datasource that contributed the result.
-text | Text representing the feature (e.g. "Austin").
-place_name | Human-readable text representing the full result hierarchy (e.g. "Austin, Texas, United States").
-place_type | An array of index types that this feature may be returned as. Most features have only one type matching its id.
-bbox | Optional. Array bounding box of the form [minx,miny,maxx,maxy].
-address | Where applicable. Contains the housenumber for the returned feature
-center | Array of the form [lon,lat].
-context | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
+`id` | Id of the feature of the form `{index}.{id}` where index is the id/handle of the datasource that contributed the result.
+`text` | Text representing the feature (e.g. "Austin").
+`language` | Optional. The language code of the text returned in `text`.
+`place_name` | Human-readable text representing the full result hierarchy (e.g. "Austin, Texas, United States").
+`place_type` | An array of index types that this feature may be returned as. Most features have only one type matching its id.
+`bbox` | Optional. Array bounding box of the form [minx,miny,maxx,maxy].
+`address` | Where applicable. Contains the housenumber for the returned feature
+`center` | Array of the form [lon,lat].
+`context` | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
+
+For geocodes that include one or more language codes set by `options.language`, the following keys will also be returned for each language requested:
+
+key | description
+--- | ---
+`text_{code}` | The text best suitable for display in the language `{code}`. This is often text in the language requested but may be retrieved from a closely related language if no value in the requested language is available but a fallback value is.
+`language_{code}` | The language code of the text returned in `text_{code}`. The value matches `{code}` unless language fallback has occurred.
+`place_name_{code}` | Full place name text, formatted to be suitable for display in the language `{code}`.
 
 ### Feature properties
 
