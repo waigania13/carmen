@@ -1,5 +1,9 @@
 # Changelog
 
+## v22.0.1
+
+- :bug: fix bug introduced in lastest version of GeoJSONHint that hard failed on single Feature GeometryCollections. Change this to a soft error.
+
 ## 22.0.0
 
 - Drop support for node `4.x.x`
