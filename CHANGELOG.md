@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.1.2
+
+- Handle situations in which an ID shard contains multiple features from the same tile
+
 ## 22.1.1
 
 - Fix a few cases where `matching_text` and `matching_place_name` properties were not set as expected.
