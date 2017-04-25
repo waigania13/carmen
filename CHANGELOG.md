@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.1.3
+
+- Update to mapnik `~3.6.0`
+
 ## 22.1.2
 
 - Handle situations in which an ID shard contains multiple features from the same tile
