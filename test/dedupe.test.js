@@ -257,6 +257,26 @@ tape('dedupe', function(assert) {
         features[0]
     ], 'dedupes identical addresses, prioritizes non-omitted');
 
+    features = [];
+    var dragons = ['Drogon', 'Rhaegal', 'Viserion', 'Balerion', 'Vhagar', 'Meraxes', 'Sunfyre', 'Dreamfyre',
+        'Tessarion', 'Morghul', 'Shrykos', 'Syrax', 'Caraxes', 'Vermax', 'Arrax' ];
+
+    dragons.forEach(function(dragon) {
+        var dragonFeature = {
+            place_name: dragon,
+            text: dragon,
+            center:[0,0],
+            relevance: 1,
+            geometry: {
+                type:'Point',
+                coordinates:[0,0]
+            }
+        }
+        features.push(dragonFeature);
+    });
+
+    assert.deepEqual(dedupe(features), features, 'retains order for large lists of non-duplicates');
+
     assert.end();
 });
 
