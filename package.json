@@ -30,6 +30,7 @@
     "split": "1.0.0",
     "tile-cover": "3.0.x",
     "tilelive": "5.12.x",
+    "timsort": "^0.3.0",
     "xregexp": "3.1.1"
   },
   "devDependencies": {
