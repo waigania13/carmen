@@ -4,7 +4,7 @@ var test = require('tape');
 // Convert bitmasks to readable strings that are 0-padded.
 function debug(p) {
     var length = p[0].toString(2).length;
-    return p.map(function(v) {
+    return p.map((v) => {
         v = v.toString(2);
         return new Array(length-v.length+1).join('0') + v;
     });

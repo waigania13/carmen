@@ -30,7 +30,7 @@ tape('index place', (t) => {
 
 // this should have been indexed properly despite having a zero score in an index with zero maxscore
 tape('geocode against an all-zero-score index', (t) => {
-    c.geocode('chicago', { limit_verify: 1 }, function(err, res) {
+    c.geocode('chicago', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.end();

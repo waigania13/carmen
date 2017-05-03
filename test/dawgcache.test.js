@@ -15,10 +15,10 @@ tape('dump/load', (t) => {
     dict.setText("a3");
     dict.setText("a4");
 
-    zlib.gzip(dict.dump(), function(err, zdata) {
+    zlib.gzip(dict.dump(), (err, zdata) => {
         t.ifError(err);
         t.ok(zdata.length < 200e3, 'gzipped dictcache < 200k');
-        zlib.gunzip(zdata, function(err, data) {
+        zlib.gunzip(zdata, (err, data) => {
             t.ifError(err);
             var loaded = new DawgCache(data);
             for (var i = 1; i <= 4; i++) {

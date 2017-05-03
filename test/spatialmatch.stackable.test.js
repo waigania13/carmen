@@ -15,10 +15,10 @@ test('stackable simple', (t) => {
         new PhrasematchResult([b1, b2], { idx: 1, bmask: {}, ndx: 1 })
     ]);
 
-    debug.forEach(function(stack) { stack.sort(sortByZoomIdx); });
+    debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
-    debug = debug.map(function(stack) {
-        return stack.map(function(s) { return s.subquery.join(' '); });
+    debug = debug.map((stack) => {
+        return stack.map((s) => { return s.subquery.join(' '); });
     });
 
     t.deepEqual(debug, [
@@ -38,10 +38,10 @@ test('stackable nmask', (t) => {
         new PhrasematchResult([c1], { idx: 2, bmask: {}, ndx: 1 })
     ]);
 
-    debug.forEach(function(stack) { stack.sort(sortByZoomIdx); });
+    debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
-    debug = debug.map(function(stack) {
-        return stack.map(function(s) { return s.subquery.join(' '); });
+    debug = debug.map((stack) => {
+        return stack.map((s) => { return s.subquery.join(' '); });
     });
 
     t.deepEqual(debug, [
@@ -59,10 +59,10 @@ test('stackable bmask', (t) => {
         new PhrasematchResult([b1], { idx: 1, bmask: [1, 0], ndx: 1 })
     ]);
 
-    debug.forEach(function(stack) { stack.sort(sortByZoomIdx); });
+    debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
-    debug = debug.map(function(stack) {
-        return stack.map(function(s) { return s.subquery.join(' '); });
+    debug = debug.map((stack) => {
+        return stack.map((s) => { return s.subquery.join(' '); });
     });
 
     t.deepEqual(debug, [
@@ -85,10 +85,10 @@ test('stackable complex', (t) => {
         new PhrasematchResult([c1, c2], { idx: 1, bmask: [], ndx: 2 }),
     ]);
 
-    debug.forEach(function(stack) { stack.sort(sortByZoomIdx); });
+    debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
-    debug = debug.map(function(stack) {
-        return stack.relev.toFixed(2) + ' - ' + stack.map(function(s) { return s.subquery.join(' ')}).join(', ');
+    debug = debug.map((stack) => {
+        return stack.relev.toFixed(2) + ' - ' + stack.map((s) => { return s.subquery.join(' ')}).join(', ');
     });
 
     t.deepEqual(debug, [
@@ -121,10 +121,10 @@ test('stackable direction change', (t) => {
         new PhrasematchResult([d1, d2], { idx: 3, bmask: [], ndx: 3 }),
     ]);
 
-    debug.forEach(function(stack) { stack.sort(sortByZoomIdx); });
+    debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
-    debug = debug.map(function(stack) {
-        return stack.map(function(s) { return s.subquery.join(' ')});
+    debug = debug.map((stack) => {
+        return stack.map((s) => { return s.subquery.join(' ')});
     });
 
     t.deepEqual(debug, [

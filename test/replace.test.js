@@ -216,17 +216,17 @@ test('replacer', (q) => {
         'Road': 'Rd',
         'Street': 'St'
     });
-    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false]);
-    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Rd$2', '$1St$2']);
-    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
+    q.deepEqual(rep.map((r) => { return r.named; }), [false, false]);
+    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Rd$2', '$1St$2']);
+    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
 
     rep = token.createReplacer({
         'Maréchal': 'Mal',
         'Monsieur': 'M'
     });
-    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false, false]);
-    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
-    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
+    q.deepEqual(rep.map((r) => { return r.named; }), [false, false, false]);
+    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
+    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
 
     q.end();
 });

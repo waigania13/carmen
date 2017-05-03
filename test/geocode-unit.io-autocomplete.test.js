@@ -43,7 +43,7 @@ function reset() {
 
 tape('io', (t) => {
     reset();
-    c.geocode('aa', {}, function(err, res) {
+    c.geocode('aa', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 5, 'returns 5 features');
         var loaded = c.indexes.place._original.logs.getGeocoderData.filter(function(id) { return /grid/.test(id) }).length;

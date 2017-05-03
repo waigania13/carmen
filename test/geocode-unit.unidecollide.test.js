@@ -28,7 +28,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('heading to Aruba, I hope you packed warm clothes', (t) => {
-        c.geocode('aruba', { limit_verify:1 }, function(err, res) {
+        c.geocode('aruba', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 0, 'Alberta feature does not match \'Aruba\'');
             t.end();
@@ -36,7 +36,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('JP query works', (t) => {
-        c.geocode('アルバータ州', { limit_verify:1 }, function(err, res) {
+        c.geocode('アルバータ州', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Alberta');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -45,7 +45,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('Latin query works', (t) => {
-        c.geocode('Alber', { limit_verify:1 }, function(err, res) {
+        c.geocode('Alber', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Alberta');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('check for collisions based on char prefixing', (t) => {
-        c.geocode('yz', { limit_verify:1 }, function(err, res) {
+        c.geocode('yz', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 0, 'search for yz returned no results');
             t.end();
@@ -87,7 +87,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('check for collisions based on char prefixing', (t) => {
-        c.geocode('a yz', { limit_verify:1 }, function(err, res) {
+        c.geocode('a yz', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 0, 'search for \'a yz\' returned no results');
             t.end();

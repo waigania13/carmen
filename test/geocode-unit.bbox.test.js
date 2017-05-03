@@ -61,8 +61,8 @@ tape('index feature', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -71,13 +71,13 @@ tape('build queued features', (t) => {
 
 // run query with invalid bbox, expect error
 tape('fake bbox', (t) => {
-    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, function(err, res) {
+    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'bbox array length = 3');
     });
-    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0, 'a'], allow_dupes: true}, function(err, res) {
+    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0, 'a'], allow_dupes: true}, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'non-numeric bbox param');
     });
-    c.geocode('Main St', {bbox: [-180, -90, 180, 91], allow_dupes: true}, function(err, res) {
+    c.geocode('Main St', {bbox: [-180, -90, 180, 91], allow_dupes: true}, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'maxY out-of-bounds');
     });
     t.end();
@@ -85,7 +85,7 @@ tape('fake bbox', (t) => {
 
 // run query without bbox filter, expect both features back
 tape('no bbox', (t) => {
-    c.geocode('Main St', { allow_dupes: true }, function(err, res) {
+    c.geocode('Main St', { allow_dupes: true }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 5);
         t.end();
@@ -94,7 +94,7 @@ tape('no bbox', (t) => {
 
 // run query with bbox fitler, expect only one feature back
 tape('with bbox', (t) => {
-    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true}, function(err, res) {
+    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true}, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();

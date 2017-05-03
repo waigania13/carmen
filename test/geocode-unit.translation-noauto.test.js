@@ -39,8 +39,8 @@ var runTests = function(mode) {
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -65,7 +65,7 @@ var runTests = function(mode) {
     }
 
     tape('de', (t) => {
-        c.geocode('de', {}, function(err, res) {
+        c.geocode('de', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -79,7 +79,7 @@ var runTests = function(mode) {
         });
     });
     tape('de (language: en)', (t) => {
-        c.geocode('de', {language: 'en'}, function(err, res) {
+        c.geocode('de', {language: 'en'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -93,7 +93,7 @@ var runTests = function(mode) {
         });
     });
     tape('de (language: hu)', (t) => {
-        c.geocode('de', {language: 'hu'}, function(err, res) {
+        c.geocode('de', {language: 'hu'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -108,7 +108,7 @@ var runTests = function(mode) {
         });
     });
     tape('de (language: hu-HU)', (t) => {
-        c.geocode('de', {language: 'hu-HU'}, function(err, res) {
+        c.geocode('de', {language: 'hu-HU'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -123,7 +123,7 @@ var runTests = function(mode) {
         });
     });
     tape('delaware', (t) => {
-        c.geocode('delaware', {}, function(err, res) {
+        c.geocode('delaware', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -132,7 +132,7 @@ var runTests = function(mode) {
         });
     });
     tape('sou', (t) => {
-        c.geocode('sou', {}, function(err, res) {
+        c.geocode('sou', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');
@@ -141,7 +141,7 @@ var runTests = function(mode) {
         });
     });
     tape('south carolina', (t) => {
-        c.geocode('south carolina', {}, function(err, res) {
+        c.geocode('south carolina', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');
@@ -150,7 +150,7 @@ var runTests = function(mode) {
         });
     });
     tape('del karolina', (t) => {
-        c.geocode('del karolina', {}, function(err, res) {
+        c.geocode('del karolina', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');

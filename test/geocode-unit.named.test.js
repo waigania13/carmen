@@ -36,15 +36,15 @@ tape('index place_b', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('sadtown', (t) => {
-    c.geocode('sadtown', { limit_verify:1 }, function(err, res) {
+    c.geocode('sadtown', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'sadtown');
         t.deepEqual(res.features[0].id, 'place.1');
@@ -52,7 +52,7 @@ tape('sadtown', (t) => {
     });
 });
 tape('funtown', (t) => {
-    c.geocode('funtown', { limit_verify:1 }, function(err, res) {
+    c.geocode('funtown', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'funtown');
         t.deepEqual(res.features[0].id, 'place.2');

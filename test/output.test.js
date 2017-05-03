@@ -88,8 +88,8 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -97,7 +97,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Toronto', (t) => {
-    c.geocode('Toronto', {}, function(err, res) {
+    c.geocode('Toronto', {}, (err, res) => {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.default.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
@@ -107,7 +107,7 @@ tape('Toronto', (t) => {
 });
 
 tape('Toronto (dev mode)', (t) => {
-    c.geocode('Toronto', { debug: true }, function(err, res) {
+    c.geocode('Toronto', { debug: true }, (err, res) => {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
@@ -117,7 +117,7 @@ tape('Toronto (dev mode)', (t) => {
 });
 
 tape('0,0 (dev mode)', (t) => {
-    c.geocode('0,0', { debug: true }, function(err, res) {
+    c.geocode('0,0', { debug: true }, (err, res) => {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));

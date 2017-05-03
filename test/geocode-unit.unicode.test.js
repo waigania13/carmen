@@ -47,8 +47,8 @@ tape('index josé', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -56,76 +56,76 @@ tape('build queued features', (t) => {
 });
 
 tape('京 => 京都市', (t) => {
-    c.geocode('京', { limit_verify:1 }, function(err, res) {
+    c.geocode('京', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, '京都市');
         t.end();
     });
 });
 tape('京都市 => 京都市', (t) => {
-    c.geocode('京都市', { limit_verify:1 }, function(err, res) {
+    c.geocode('京都市', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, '京都市');
         t.end();
     });
 });
 tape('jing !=> 京都市', (t) => {
-    c.geocode('jing', { limit_verify:1 }, function(err, res) {
+    c.geocode('jing', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 1');
         t.end();
     });
 });
 tape('jing du shi !=> 京都市', (t) => {
-    c.geocode('jing du shi', { limit_verify:1 }, function(err, res) {
+    c.geocode('jing du shi', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 2');
         t.end();
     });
 });
 // partial unidecoded terms do not match
 tape('ji => no results', (t) => {
-    c.geocode('ji', { limit_verify:1 }, function(err, res) {
+    c.geocode('ji', { limit_verify:1 }, (err, res) => {
         t.equal(res.features.length, 0);
         t.end();
     });
 });
 
 tape('м => москва', (t) => {
-    c.geocode('м', { limit_verify:1 }, function(err, res) {
+    c.geocode('м', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, 'москва');
         t.end();
     });
 });
 tape('москва => москва', (t) => {
-    c.geocode('москва', { limit_verify:1 }, function(err, res) {
+    c.geocode('москва', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, 'москва');
         t.end();
     });
 });
 tape('m => москва', (t) => {
-    c.geocode('m', { limit_verify:1 }, function(err, res) {
+    c.geocode('m', { limit_verify:1 }, (err, res) => {
         t.equal(res.features.length, 0, 'm (no results)');
         t.end();
     });
 });
 tape('moskva => москва', (t) => {
-    c.geocode('moskva', { limit_verify:1 }, function(err, res) {
+    c.geocode('moskva', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features.length, 0, 'moskva (no results)');
         t.end();
     });
 });
 
 tape('j => josé', (t) => {
-    c.geocode('j', { limit_verify:1 }, function(err, res) {
+    c.geocode('j', { limit_verify:1 }, (err, res) => {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
     });
 });
 tape('jose => josé', (t) => {
-    c.geocode('jose', { limit_verify:1 }, function(err, res) {
+    c.geocode('jose', { limit_verify:1 }, (err, res) => {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
     });
 });
 tape('josé => josé', (t) => {
-    c.geocode('josé', { limit_verify:1 }, function(err, res) {
+    c.geocode('josé', { limit_verify:1 }, (err, res) => {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
     });

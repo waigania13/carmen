@@ -29,15 +29,15 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('query place', (t) => {
-    c.geocode('Chicago', { limit_verify: 1 }, function(err, res) {
+    c.geocode('Chicago', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 0.99);
@@ -45,7 +45,7 @@ tape('query place', (t) => {
     });
 });
 tape('reverse place', (t) => {
-    c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
+    c.geocode('0,0', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 1);

@@ -61,15 +61,15 @@ tape('index other address', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('test spatialmatch relev', (t) => {
-    c.geocode('1 fake street fakecity', { limit_verify: 1 }, function(err, res) {
+    c.geocode('1 fake street fakecity', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].relevance, 1);

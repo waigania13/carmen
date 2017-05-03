@@ -68,8 +68,8 @@ tape('ready', (t) => {
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -89,7 +89,7 @@ function reset() {
 
 tape('winding river rd springfield', (t) => {
     reset();
-    c.geocode('winding river rd  springfield', {}, function(err, res) {
+    c.geocode('winding river rd  springfield', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'winding river rd, springfield');
         t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, [], 'place1: loads nothing');
@@ -103,7 +103,7 @@ tape('winding river rd springfield', (t) => {
 
 tape('springfield', (t) => {
     reset();
-    c.geocode('springfield', {}, function(err, res) {
+    c.geocode('springfield', {}, (err, res) => {
         t.ifError(err);
 
         t.deepEqual(res.features.length, 2);
@@ -123,7 +123,7 @@ tape('springfield', (t) => {
 
 tape('springfield, types=place', (t) => {
     reset();
-    c.geocode('springfield', { types:['place'] }, function(err, res) {
+    c.geocode('springfield', { types:['place'] }, (err, res) => {
         t.ifError(err);
 
         t.deepEqual(res.features.length, 1);

@@ -85,8 +85,8 @@ tape('index poi', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -94,7 +94,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Winston-Salem North Carolina', (t) => {
-    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, function(err, res) {
+    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{place} {region}`")
         t.equal(res.features[0].relevance, 1, "Expected ascending order doesn't lower relevance");
@@ -103,7 +103,7 @@ tape('Winston-Salem North Carolina', (t) => {
 });
 
 tape('North Carolina Winston-Salem', (t) => {
-    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
+    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
         t.equal(res.features[0].relevance, 0.99, "Unexpected descending order lowers relevance");
@@ -112,7 +112,7 @@ tape('North Carolina Winston-Salem', (t) => {
 });
 
 tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
-    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, function(err, res) {
+    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
         t.equal(res.features[0].relevance, 0.7666666666666666, "Mixed-up order lowers relevance");
@@ -121,7 +121,7 @@ tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
 });
 
 tape('No descending order POIs', (t) => {
-    c.geocode('North Carolina United States', {limit_verify: 2}, function(err, res) {
+    c.geocode('North Carolina United States', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
         t.deepEqual(res.features[0].id, "region.1", "First result matches expected order");
@@ -130,7 +130,7 @@ tape('No descending order POIs', (t) => {
 });
 
 tape('Descending Gappy', (t) => {
-    c.geocode('United States Winston-Salem', {limit_verify: 2}, function(err, res) {
+    c.geocode('United States Winston-Salem', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
         t.deepEqual(res.features[0].id, "poi.2", "First result matches expected order");

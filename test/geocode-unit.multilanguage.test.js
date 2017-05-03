@@ -70,8 +70,8 @@ var addFeature = require('../lib/util/addfeature'),
 
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('paris ?language=en,es,bogus', (t) => {
-        c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, function(err, res) {
+        c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, (err, res) => {
             t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
             t.equal(err && err.code, 'EINVALID');
             t.end();
@@ -87,7 +87,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('paris ?language=en,es,ja', (t) => {
-        c.geocode('paris', { limit_verify:1, language: 'en,es,ja' }, function(err, res) {
+        c.geocode('paris', { limit_verify:1, language: 'en,es,ja' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].id, 'place.1');
 
@@ -124,7 +124,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('error handling ?language=20+', (t) => {
-        c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, function(err, res) {
+        c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, (err, res) => {
             t.equal(err && err.toString(), 'Error: options.language should be a list of no more than 20 languages');
             t.equal(err && err.code, 'EINVALID');
             t.end();
@@ -132,7 +132,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('error handling ?language=en,en', (t) => {
-        c.geocode('paris', { limit_verify:1, language: 'en,en' }, function(err, res) {
+        c.geocode('paris', { limit_verify:1, language: 'en,en' }, (err, res) => {
             t.equal(err && err.toString(), 'Error: options.language should be a list of unique language codes');
             t.equal(err && err.code, 'EINVALID');
             t.end();

@@ -47,8 +47,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -70,7 +70,7 @@ var addFeature = require('../lib/util/addfeature'),
     })
 
     tape('query: United States', (t) => {
-        c.geocode('United States', { language: 'ar'}, function(err, res) {
+        c.geocode('United States', { language: 'ar'}, (err, res) => {
             t.equal('United States', res.features[0].text, 'Fallback to English');
             t.equal('en', res.features[0].language, 'Language returned is English');
             t.ifError(err);
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: India', (t) => {
-        c.geocode('India', { language: 'ar'}, function(err, res) {
+        c.geocode('India', { language: 'ar'}, (err, res) => {
             t.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
             t.equal('ur', res.features[0].language, 'Language returned is Urdu');
             t.ifError(err);

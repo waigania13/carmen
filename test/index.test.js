@@ -32,13 +32,13 @@ test('index - streaming interface', (t) => {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
             output: outputStream
-        }, function(err) {
+        }, (err) => {
             q.ifError(err);
             q.end();
         });
     });
     t.test('ensure index was successful', (q) => {
-        carmen.analyze(conf.to, function(err, stats) {
+        carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze-small.json', JSON.stringify(stats, null, 4));
@@ -102,7 +102,7 @@ test('index.update -- error', (t) => {
                 type:'Point',
                 coordinates:[0,0]
             }
-        }], { zoom: 6 }, function(err) {
+        }], { zoom: 6 }, (err) => {
             q.ifError(err);
             q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [2]);
             q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
@@ -122,7 +122,7 @@ test('index.update -- error', (t) => {
                 type:'Point',
                 coordinates:[0,0]
             }
-        }], { zoom: 6 }, function(err) {
+        }], { zoom: 6 }, (err) => {
             q.ifError(err);
             q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [4]);
             q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
@@ -137,19 +137,19 @@ test('index.update freq', (t) => {
     var carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('error no id', (q) => {
-        index.update(conf.to, [{ type: 'Point', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
+        index.update(conf.to, [{ type: 'Point', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, (err) => {
             q.equal(err.toString(), 'Error: doc has no id');
             q.end();
         });
     });
     t.test('error no carmen:center', (q) => {
-        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, (err) => {
             q.equal(err.toString(), 'Error: "geometry" member required on id:1');
             q.end();
         });
     });
     t.test('indexes single doc', (q) => {
-        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, function(err) {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, (err) => {
             q.ifError(err);
             q.end();
         });
@@ -162,7 +162,7 @@ test('index.update freq', (t) => {
         });
     });
     t.test('indexes doc with geometry and carmen:center', (q) => {
-        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], { zoom: 6 }, function(err) {
+        index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], { zoom: 6 }, (err) => {
             q.ifError(err);
             q.end();
         });
@@ -191,7 +191,7 @@ test('index', (t) => {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
             output: outputStream
-        }, function(err) {
+        }, (err) => {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
             var memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
@@ -201,7 +201,7 @@ test('index', (t) => {
         });
     });
     t.test('analyzes index', (q) => {
-        carmen.analyze(conf.to, function(err, stats) {
+        carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
             if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
@@ -253,7 +253,7 @@ test('error -- zoom too high', (t) => {
     carmen.index(inputStream, conf.to, {
         zoom: 15,
         output: outputStream
-    }, function(err) {
+    }, (err) => {
         t.equal('Error: zoom must be less than 15 --- zoom was 15', err.toString());
         t.end();
     });
@@ -278,7 +278,7 @@ test('error -- zoom too low', (t) => {
     carmen.index(inputStream, conf.to, {
         zoom: -1,
         output: outputStream
-    }, function(err) {
+    }, (err) => {
         t.equal('Error: zoom must be greater than 0 --- zoom was -1', err.toString());
         t.end();
     });
@@ -346,7 +346,7 @@ test('error -- _geometry too high resolution', (t) => {
     carmen.index(s, conf.to, {
         zoom: 6,
         output: outputStream
-    }, function(err) {
+    }, (err) => {
         t.equal('Error: Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1', err.toString());
         t.end();
     });

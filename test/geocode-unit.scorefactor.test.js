@@ -18,7 +18,7 @@ var addFeature = require('../lib/util/addfeature'),
     var c = new Carmen(conf);
     tape('index small score (noise)', (t) => {
         var q = queue(1);
-        for (var i = 1; i < 41; i++) q.defer(function(i, done) {
+        for (var i = 1; i < 41; i++) q.defer((i, done) => {
             queueFeature(conf.place, {
                 id:i,
                 properties: {
@@ -55,15 +55,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('query', (t) => {
-        c.geocode('testplace', { limit_verify:1 }, function(err, res) {
+        c.geocode('testplace', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'testplace');
             t.deepEqual(res.features[0].id, 'country.2');

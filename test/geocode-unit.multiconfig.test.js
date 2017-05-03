@@ -44,13 +44,13 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(confA).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(confA).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(confA[c], cb);
         });
     });
-    Object.keys(confB).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(confB).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(confB[c], cb);
         });
     });
@@ -58,7 +58,7 @@ tape('build queued features', (t) => {
 });
 tape('chicago (conf a)', (t) => {
     var a = new Carmen(confA);
-    a.geocode('chicago', {}, function(err, res) {
+    a.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
         t.deepEqual(res.features[0].id, 'place.1');
@@ -67,7 +67,7 @@ tape('chicago (conf a)', (t) => {
 });
 tape('chicago (conf b)', (t) => {
     var b = new Carmen(confB);
-    b.geocode('chicago', {}, function(err, res) {
+    b.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
         t.deepEqual(res.features[0].id, 'place.1');

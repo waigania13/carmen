@@ -87,8 +87,8 @@ tape('index address', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -96,11 +96,11 @@ tape('build queued features', (t) => {
 });
 
 tape('Check relevance scoring', (t) => {
-    c.geocode('11027 S. Pikes Peak Drive #201', {limit_verify: 1}, function(err, res) {
+    c.geocode('11027 S. Pikes Peak Drive #201', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].relevance, .49, "Apt. number lowers relevance");
     });
-    c.geocode('11027 S. Pikes Peak Drive', {limit_verify: 1}, function(err, res) {
+    c.geocode('11027 S. Pikes Peak Drive', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].relevance, .99, "High relevance with no apartment number");
         t.end()

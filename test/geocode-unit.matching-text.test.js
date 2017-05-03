@@ -54,15 +54,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('kansas america', (t) => {
-        c.geocode('kansas america', { limit_verify:1 }, function(err, res) {
+        c.geocode('kansas america', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Kansas United States');
             t.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
@@ -71,7 +71,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('america', (t) => {
-        c.geocode('america', { limit_verify:1 }, function(err, res) {
+        c.geocode('america', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
             t.equal(res.features[0].matching_text, 'America');
@@ -80,7 +80,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('jayhawks', (t) => {
-        c.geocode('jayhawks', { limit_verify:1 }, function(err, res) {
+        c.geocode('jayhawks', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Kansas United States');
             t.equal(res.features[0].matching_text, 'Jayhawks');

@@ -20,7 +20,7 @@ test('index - streaming interface', (t) => {
         var count = 0;
         var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
         var transformStream = new Stream.Transform();
-        transformStream._transform = function(data, encoding, done) {
+        transformStream._transform = (data, encoding, done) => {
             if (data) {
                 count ++;
             }
@@ -59,7 +59,7 @@ test('index - streaming interface', (t) => {
                 });
             }, key);
         });
-        q.awaitAll(function(err) {
+        q.awaitAll((err) => {
             t.ifError(err);
             t.end();
         })
@@ -75,7 +75,7 @@ test('index - streaming interface', (t) => {
             carmens[key].index(chunks[key], confs[key].country, {
                 zoom: 6,
                 output: outputStream
-            }, function(err) {
+            }, (err) => {
                 t.ifError(err);
                 t.end();
             });
@@ -92,7 +92,7 @@ test('index - streaming interface', (t) => {
         carmens.D.index(getIndex(0,200), confs.D.country, {
             zoom: 6,
             output: outputStream
-        }, function(err) {
+        }, (err) => {
             q.ifError(err);
             q.end();
         });
@@ -100,7 +100,7 @@ test('index - streaming interface', (t) => {
 
     t.test('multi-way merged indexes', (q) => {
         files.C = randomMBtiles();
-        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, function(err) {
+        merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, (err) => {
             if (err) throw err;
 
             var auto = Carmen.auto(files.C, () => {
@@ -114,21 +114,21 @@ test('index - streaming interface', (t) => {
         });
     });
     t.test('ensure index was successful for index A after merging', (q) => {
-        carmens.C.geocode("India", {}, function(err, result) {
+        carmens.C.geocode("India", {}, (err, result) => {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "India", "found India");
             q.end();
         });
     });
     t.test('ensure index was successful for index B1 after merging', (q) => {
-        carmens.C.geocode("Paraguay", {}, function(err, result) {
+        carmens.C.geocode("Paraguay", {}, (err, result) => {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "Paraguay", "found Paraguay");
             q.end();
         });
     });
     t.test('ensure index was successful for index B2 after merging', (q) => {
-        carmens.C.geocode("Palau", {}, function(err, result) {
+        carmens.C.geocode("Palau", {}, (err, result) => {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "Palau", "found Palau");
             q.end();

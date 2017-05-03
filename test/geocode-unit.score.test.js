@@ -74,7 +74,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
     tape('fairfax', (t) => {
-        c.geocode('fairfax', { limit_verify:1 }, function(err, res) {
+        c.geocode('fairfax', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'fairfax');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -82,7 +82,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('mclean', (t) => {
-        c.geocode('mclean', { limit_verify:1 }, function(err, res) {
+        c.geocode('mclean', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'mclean');
             t.deepEqual(res.features[0].id, 'place.2');
@@ -90,7 +90,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('scored feature beats ghost', (t) => {
-        c.geocode('20009', { limit_verify:2 }, function(err, res) {
+        c.geocode('20009', { limit_verify:2 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, 'ghost feature deduped');
             t.deepEqual(res.features[0].place_name, '20009');
@@ -99,7 +99,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('exact match bests score', (t) => {
-        c.geocode('20003-2004', { limit_verify:1 }, function(err, res) {
+        c.geocode('20003-2004', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, '20003-2004');
             t.deepEqual(res.features[0].id, 'place.3');
@@ -153,15 +153,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('china', (t) => {
-        c.geocode('china', { limit_verify:1 }, function(err, res) {
+        c.geocode('china', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'china');
             t.deepEqual(res.features[0].id, 'country.1');
@@ -217,15 +217,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('china', (t) => {
-        c.geocode('china', { limit_verify:3, allow_dupes: true }, function(err, res) {
+        c.geocode('china', { limit_verify:3, allow_dupes: true }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].id, 'province.2');
             t.deepEqual(res.features[1].id, 'city.3');
@@ -235,7 +235,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('china (dedupe)', (t) => {
-        c.geocode('china', { limit_verify:3 }, function(err, res) {
+        c.geocode('china', { limit_verify:3 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].id, 'province.2');
             t.deepEqual(res.features.length, 1);
@@ -264,7 +264,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query by id', (t) => {
-        c.geocode('country.1', null, function(err, res) {
+        c.geocode('country.1', null, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].relevance, 1, "relevance is 1");
             t.deepEqual(res.features.length, 1);

@@ -38,8 +38,8 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -47,7 +47,7 @@ tape('build queued features', (t) => {
 });
 
 tape('query byid', (t) => {
-    c.geocode('country.1', {}, function(err, res) {
+    c.geocode('country.1', {}, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'china', 'found by id');
@@ -57,7 +57,7 @@ tape('query byid', (t) => {
 });
 
 tape('query byid', (t) => {
-    c.geocode('place.1', {}, function(err, res) {
+    c.geocode('place.1', {}, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'chicago', 'found by id');

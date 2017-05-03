@@ -39,7 +39,7 @@ var queue = require('d3-queue').queue;
     });
     tape('index address (noise)', (t) => {
         var q = queue(1);
-        for (var i = 1; i < 100; i++) q.defer(function(i, done) {
+        for (var i = 1; i < 100; i++) q.defer((i, done) => {
             queueFeature(conf.address, {
                 id:i,
                 properties: {
@@ -54,22 +54,22 @@ var queue = require('d3-queue').queue;
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('geocode proximity=10,10 => superscored', (t) => {
-        c.geocode('main st', { proximity:[10,10] }, function(err, res) {
+        c.geocode('main st', { proximity:[10,10] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].id, 'address.200', 'found address.200');
             t.end();
         });
     });
     tape('geocode proximity=20,0 => nearest', (t) => {
-        c.geocode('main st', { proximity:[20,0] }, function(err, res) {
+        c.geocode('main st', { proximity:[20,0] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].id, 'address.201', 'found address.201');
             t.end();

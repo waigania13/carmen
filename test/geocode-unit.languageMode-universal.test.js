@@ -46,8 +46,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -55,7 +55,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 10000', (t) => {
-        c.geocode('10000', {}, function(err, res) {
+        c.geocode('10000', {}, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, United States');
             t.end();
@@ -63,7 +63,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 10000, language: es', (t) => {
-        c.geocode('10000', { language: 'es' }, function(err, res) {
+        c.geocode('10000', { language: 'es' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
             t.end();
@@ -71,7 +71,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 10000, language: es, languageMode: strict', (t) => {
-        c.geocode('10000', { language: 'es', languageMode: 'strict' }, function(err, res) {
+        c.geocode('10000', { language: 'es', languageMode: 'strict' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
             t.end();
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 1,1', (t) => {
-        c.geocode('1,1', {}, function(err, res) {
+        c.geocode('1,1', {}, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, United States');
             t.end();
@@ -87,7 +87,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 1,1, language: es', (t) => {
-        c.geocode('1,1', { language: 'es' }, function(err, res) {
+        c.geocode('1,1', { language: 'es' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
             t.end();
@@ -95,7 +95,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: 1,1, language: es, languageMode: strict', (t) => {
-        c.geocode('1,1', { language: 'es', languageMode: 'strict' }, function(err, res) {
+        c.geocode('1,1', { language: 'es', languageMode: 'strict' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
             t.end();

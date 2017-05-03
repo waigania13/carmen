@@ -12,7 +12,7 @@ tape('verifymatch.sortFeature', (t) => {
         { id: 1, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} }
     ];
     arr.sort(verifymatch.sortFeature);
-    t.deepEqual(arr.map(function(f) { return f.id }), [1,2,3,4,5,6,7]);
+    t.deepEqual(arr.map((f) => { return f.id }), [1,2,3,4,5,6,7]);
 
     t.end();
 });
@@ -73,7 +73,7 @@ tape('verifymatch.sortContext (no distance)', (t) => {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map(function(c) { return c[0].id }), [0,1,2,3,4,5,6,7,8,9,10]);
+    t.deepEqual(arr.map((c) => { return c[0].id }), [0,1,2,3,4,5,6,7,8,9,10]);
 
     t.end();
 });
@@ -110,7 +110,7 @@ tape('verifymatch.sortContext (with distance)', (t) => {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3,4,5,6]);
+    t.deepEqual(arr.map((c) => { return c[0].id }), [1,2,3,4,5,6]);
 
     t.end();
 });
@@ -132,7 +132,7 @@ tape('verifymatch.sortContext (distance vs addresstype)', (t) => {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3]);
+    t.deepEqual(arr.map((c) => { return c[0].id }), [1,2,3]);
 
     t.end();
 });

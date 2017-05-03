@@ -70,15 +70,15 @@ tape('index street 2', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('west st, tonawanda, ny', (t) => {
-    c.geocode('west st tonawanda ny', { limit_verify:1, debug:4 }, function(err, res) {
+    c.geocode('west st tonawanda ny', { limit_verify:1, debug:4 }, (err, res) => {
         t.ifError(err);
         t.equal(res.debug.id, 4, 'debugs id');
         t.equal(res.debug.extid, 4, 'debugs extid');
@@ -111,7 +111,7 @@ tape('west st, tonawanda, ny', (t) => {
     });
 });
 tape('west st, tonawanda, ny', (t) => {
-    c.geocode('west st tonawanda ny', { limit_verify:1, debug:5 }, function(err, res) {
+    c.geocode('west st tonawanda ny', { limit_verify:1, debug:5 }, (err, res) => {
         t.ifError(err);
         t.equal(res.debug.id, 5, 'debugs id');
         t.equal(res.debug.extid, 5, 'debugs extid');

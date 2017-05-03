@@ -38,15 +38,15 @@ tape('index country2', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('czech => czech republic', (t) => {
-    c.geocode('czech', { limit_verify:1 }, function(err, res) {
+    c.geocode('czech', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'czech republic');
         t.deepEqual(res.features[0].id, 'country.1');
@@ -56,7 +56,7 @@ tape('czech => czech republic', (t) => {
 
 //Is not above 0.5 relev so should fail.
 tape('fake blah blah => [fail]', (t) => {
-    c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
+    c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.notOk(res.features[0]);
         t.end();

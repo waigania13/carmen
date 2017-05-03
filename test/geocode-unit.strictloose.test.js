@@ -48,8 +48,8 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -58,7 +58,7 @@ tape('build queued features', (t) => {
 
 // should reflect relevance of albany + australia (relev ~ 1), not albany + western australia (relev ~ 0.8)
 tape('albany australia', (t) => {
-    c.geocode('albany australia', {}, function(err, res) {
+    c.geocode('albany australia', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'albany, western australia, australia');
         t.deepEqual(res.features[0].relevance, 0.999);

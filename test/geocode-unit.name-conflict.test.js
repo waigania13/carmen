@@ -89,7 +89,7 @@ tape('index neighborhood', (t) => {
 
 tape('index poi', (t) => {
     var q = queue(1);
-    for (var i = 1; i < 20; i++) q.defer(function(i, done) {
+    for (var i = 1; i < 20; i++) q.defer((i, done) => {
         queueFeature(conf.poi, {
             id:i,
             properties: {
@@ -103,8 +103,8 @@ tape('index poi', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -112,7 +112,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Descending Gappy', (t) => {
-    c.geocode('Waterford Valley Canada', {}, function(err, res) {
+    c.geocode('Waterford Valley Canada', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].id, "neighborhood.1");
         t.end();

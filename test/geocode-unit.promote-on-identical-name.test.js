@@ -154,8 +154,8 @@ tape('index poi', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -163,7 +163,7 @@ tape('build queued features', (t) => {
 });
 
 tape('let\'s find new york', (t) => {
-    c.geocode('new york usa', {}, function(err, res) {
+    c.geocode('new york usa', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.3');
         t.equal(res.features[0].relevance, 1);
         t.end();
@@ -171,7 +171,7 @@ tape('let\'s find new york', (t) => {
 });
 
 tape('ensure POI cannot win', (t) => {
-    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, function(err, res) {
+    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, (err, res) => {
         t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
         t.end();
@@ -272,8 +272,8 @@ tape('index country', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf2).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf2).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf2[c], cb);
         });
     });
@@ -281,7 +281,7 @@ tape('build queued features', (t) => {
 });
 
 tape('nonthaburi', (t) => {
-    c2.geocode('nonthaburi', {}, function(err, res) {
+    c2.geocode('nonthaburi', {}, (err, res) => {
         t.equal(res.features[0].id.split('.')[0], 'place', 'lead feature is place');
         t.end();
     });

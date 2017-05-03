@@ -52,8 +52,8 @@ tape('index street', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -61,7 +61,7 @@ tape('build queued features', (t) => {
 });
 // city beats street at context sort
 tape('windsor court (limit 2)', (t) => {
-    c.geocode('windsor court', { limit_verify:2 }, function(err, res) {
+    c.geocode('windsor court', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
         t.deepEqual(res.features[0].id, 'city.1');
@@ -70,7 +70,7 @@ tape('windsor court (limit 2)', (t) => {
 });
 // street beats city
 tape('windsor court windsor', (t) => {
-    c.geocode('windsor court windsor', { limit_verify:2 }, function(err, res) {
+    c.geocode('windsor court windsor', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor court, windsor');
         t.deepEqual(res.features[0].id, 'street.1');

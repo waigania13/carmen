@@ -49,8 +49,8 @@ var addFeature = require('../lib/util/addfeature'),
 
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -58,21 +58,21 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('Invalid stack - not a stack name', (t) => {
-        c.geocode('0,0', { stacks: ['zz'] }, function(err, res) {
+        c.geocode('0,0', { stacks: ['zz'] }, (err, res) => {
             t.ok(err, 'throws error');
             t.end();
         });
     });
 
     tape('Invalid stack - not an array', (t) => {
-        c.geocode('0,0', { stacks: 'zz' }, function(err, res) {
+        c.geocode('0,0', { stacks: 'zz' }, (err, res) => {
             t.ok(err, 'throws error');
             t.end();
         });
     });
 
     tape('query filter', (t) => {
-        c.geocode('0,0', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('0,0', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Canada');
             t.end();
@@ -80,7 +80,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query filter - will be lowercased', (t) => {
-        c.geocode('0,0', { stacks: ['CA'] }, function(err, res) {
+        c.geocode('0,0', { stacks: ['CA'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Canada');
             t.end();
@@ -88,7 +88,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query filter', (t) => {
-        c.geocode('United States', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('United States', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 0);
             t.end();
@@ -96,7 +96,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query filter - reverse (ca)', (t) => {
-        c.geocode('0,0', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('0,0', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'Canada');
@@ -104,7 +104,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('query filter - reverse (us)', (t) => {
-        c.geocode('0,0', { stacks: ['us'] }, function(err, res) {
+        c.geocode('0,0', { stacks: ['us'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'United States');
@@ -173,8 +173,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -184,7 +184,7 @@ var addFeature = require('../lib/util/addfeature'),
     //Features are first filtered by the index level geocoder_stack
     //At the end each feature is then filtered by the feature level geocoder_stack
     tape('dual filter', (t) => {
-        c.geocode('Place', { stacks: ['us'] }, function(err, res) {
+        c.geocode('Place', { stacks: ['us'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.1');
@@ -192,7 +192,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('dual filter', (t) => {
-        c.geocode('Place', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('Place', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.2');
@@ -250,8 +250,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -259,7 +259,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('Canada', (t) => {
-        c.geocode('Canada', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('Canada', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'country.1');
@@ -267,7 +267,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('United States', (t) => {
-        c.geocode('United States', { stacks: ['us'] }, function(err, res) {
+        c.geocode('United States', { stacks: ['us'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'country.2');
@@ -275,7 +275,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('Place', (t) => {
-        c.geocode('Tess, Canada', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.1');
@@ -324,8 +324,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -333,7 +333,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('check stack/idx agreement', (t) => {
-        c.geocode('XXX', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('XXX', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.2');
@@ -387,8 +387,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -396,7 +396,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('Canada', (t) => {
-        c.geocode('Canada', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('Canada', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'country.1');
@@ -404,7 +404,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('United States', (t) => {
-        c.geocode('United States', { stacks: ['us'] }, function(err, res) {
+        c.geocode('United States', { stacks: ['us'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'country.2');
@@ -412,7 +412,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('Place', (t) => {
-        c.geocode('Tess, Canada', { stacks: ['ca'] }, function(err, res) {
+        c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].id, 'place.1');

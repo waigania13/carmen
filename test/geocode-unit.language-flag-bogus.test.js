@@ -39,8 +39,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -48,7 +48,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('0,0 ?language=en', (t) => {
-        c.geocode('0,0', { language:'en', limit_verify:1 }, function(err, res) {
+        c.geocode('0,0', { language:'en', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
             t.equal(res.features[0].id, 'country.1');
@@ -58,7 +58,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('0,0 ?language=es', (t) => {
-        c.geocode('0,0', { language:'es', limit_verify:1 }, function(err, res) {
+        c.geocode('0,0', { language:'es', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
             t.equal(res.features[0].id, 'country.1');
@@ -68,7 +68,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('0,0 ?language=es-XX', (t) => {
-        c.geocode('0,0', { language:'es-XX', limit_verify:1 }, function(err, res) {
+        c.geocode('0,0', { language:'es-XX', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
             t.equal(res.features[0].id, 'country.1');
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('0,0 ?language=en-XX', (t) => {
-        c.geocode('0,0', { language:'en-XX', limit_verify:1 }, function(err, res) {
+        c.geocode('0,0', { language:'en-XX', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
             t.equal(res.features[0].id, 'country.1');

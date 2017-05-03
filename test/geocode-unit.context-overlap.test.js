@@ -58,20 +58,20 @@ tape('index street_b', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('geocoder_name dedupe', (t) => {
-    c.geocode('main street', { limit_verify:1 }, function(err, res) {
+    c.geocode('main street', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'main street, funtown');
         t.deepEqual(res.features[0].id, 'street.1');
         t.deepEqual(res.features[0].context.length, 1);
-        t.deepEqual(res.features[0].context.map(function(c) { return c.text }), ['funtown']);
+        t.deepEqual(res.features[0].context.map((c) => { return c.text }), ['funtown']);
         t.end();
     });
 });

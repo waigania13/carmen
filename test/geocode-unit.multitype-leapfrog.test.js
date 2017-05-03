@@ -98,8 +98,8 @@ tape('index place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -110,7 +110,7 @@ tape('multitype reverse', (t) => {
     t.comment('query:  0,0');
     t.comment('result: capital');
     t.comment('note:   shifted reverse');
-    c.geocode('0,0', {}, function(err, res) {
+    c.geocode('0,0', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'smallplace, district 1, capital');
         t.deepEqual(res.features[0].id, 'place.2');
@@ -126,7 +126,7 @@ tape('multitype forward, q=capital', (t) => {
     t.comment('query:  capital');
     t.comment('result: capital');
     t.comment('note:   shifted forward');
-    c.geocode('capital', {}, function(err, res) {
+    c.geocode('capital', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'capital');
         t.deepEqual(res.features[0].id, 'place.1');

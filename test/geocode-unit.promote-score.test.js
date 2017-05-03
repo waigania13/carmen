@@ -105,8 +105,8 @@ tape('index place', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -114,7 +114,7 @@ tape('build queued features', (t) => {
 });
 
 tape('find georgia', (t) => {
-    c.geocode('georgia', {}, function(err, res) {
+    c.geocode('georgia', {}, (err, res) => {
         t.equal(res.features[0].id, 'region.1');
         t.equal(res.features[0].relevance, 0.99);
         t.end();

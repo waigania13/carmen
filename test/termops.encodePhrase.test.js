@@ -8,8 +8,8 @@ test('termops.encodePhrase clustering', (t) => {
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
         ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
     ];
-    sets.forEach(function(set) {
-        var encoded = set.map(function(text) { return termops.encodePhrase(text); });
+    sets.forEach((set) => {
+        var encoded = set.map((text) => { return termops.encodePhrase(text); });
         t.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
     });
     t.end();

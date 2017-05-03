@@ -65,8 +65,8 @@ tape('index street', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -87,7 +87,7 @@ function resetLogs() {
 
 tape('reverse 0,0', (t) => {
     resetLogs();
-    c.geocode('0,0', {}, function(err, res) {
+    c.geocode('0,0', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'river rd, springfield, ohio, us');
         t.deepEqual(c.indexes.country._original.logs.getGeocoderData, ['feature,1'], 'country: loads 1 feature');
@@ -104,7 +104,7 @@ tape('reverse 0,0', (t) => {
 
 tape('reverse 0,0, types=region', (t) => {
     resetLogs();
-    c.geocode('0,0', { types:['region'] }, function(err, res) {
+    c.geocode('0,0', { types:['region'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'ohio, us');
         t.deepEqual(c.indexes.country._original.logs.getGeocoderData, ['feature,1'], 'country: loads 1 feature');

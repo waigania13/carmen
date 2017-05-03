@@ -41,8 +41,8 @@ tape('index "# r ademar da silva neiva"', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -50,7 +50,7 @@ tape('build queued features', (t) => {
 });
 // partial unidecoded terms do not match
 tape('search: "av francisco de aguirre 2 la serena"', (t) => {
-    c.geocode('av francisco de aguirre 2 la serena', { limit_verify:2 }, function(err, res) {
+    c.geocode('av francisco de aguirre 2 la serena', { limit_verify:2 }, (err, res) => {
         t.equal(res.features.length, 1);
         t.equal(res.features[0].id, 'test.1');
         t.end();

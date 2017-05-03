@@ -73,8 +73,8 @@ tape('index address 1', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -82,7 +82,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Check numeric text', (t) => {
-    c.geocode('神明台三丁目5', { debug: true}, function(err, res) {
+    c.geocode('神明台三丁目5', { debug: true}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
         t.equal(res.features[0].address, '5', "right address");
@@ -91,7 +91,7 @@ tape('Check numeric text', (t) => {
 });
 
 tape('Check numeric text', (t) => {
-    c.geocode('神明台三丁目 5', null, function(err, res) {
+    c.geocode('神明台三丁目 5', null, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
         t.equal(res.features[0].address, '5', "right address");

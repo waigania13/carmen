@@ -100,8 +100,8 @@ tape('index us address', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -109,7 +109,7 @@ tape('build queued features', (t) => {
 });
 
 tape('reverse - good stack, good type', (t) => {
-    c.geocode('8,-2', { stacks: ['ca'], types: ['place']  }, function(err, res) {
+    c.geocode('8,-2', { stacks: ['ca'], types: ['place']  }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Punkeydoodles Corners, Ontario');
         t.end();
@@ -117,7 +117,7 @@ tape('reverse - good stack, good type', (t) => {
 });
 
 tape('reverse - good stack, bad type, limit set', (t) => {
-    c.geocode('0,0', { stacks: ['mx'], types: ['place'], limit: 2 }, function(err, res) {
+    c.geocode('0,0', { stacks: ['mx'], types: ['place'], limit: 2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
         t.end();
@@ -125,7 +125,7 @@ tape('reverse - good stack, bad type, limit set', (t) => {
 });
 
 tape('reverse - bad stack, good type', (t) => {
-    c.geocode('0,0', { stacks: ['us'], types: ['region'] }, function(err, res) {
+    c.geocode('0,0', { stacks: ['us'], types: ['region'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
         t.end();
@@ -133,7 +133,7 @@ tape('reverse - bad stack, good type', (t) => {
 });
 
 tape('reverse - good stack, good type, limit set', (t) => {
-    c.geocode('0,0', { stacks: ['us'], types: ['place'], limit: 2 }, function(err, res) {
+    c.geocode('0,0', { stacks: ['us'], types: ['place'], limit: 2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 feature returned');
         t.deepEqual(res.features[0].place_name, 'Springfield');

@@ -69,8 +69,8 @@ tape('index address 1', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -78,7 +78,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Check order, 岩出市中黒632', (t) => {
-    c.geocode('岩出市中黒632', { limit_verify: 1}, function(err, res) {
+    c.geocode('岩出市中黒632', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1, "Descending order doesn't lower relevance");
         t.end();
@@ -86,7 +86,7 @@ tape('Check order, 岩出市中黒632', (t) => {
 });
 
 tape('Check order, 632 中黒 岩出市', (t) => {
-    c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
+    c.geocode('632 中黒 岩出市', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
         t.equal(res.features[0].relevance, 0.99, "Unexpected ascending lowers relevance")
@@ -95,7 +95,7 @@ tape('Check order, 632 中黒 岩出市', (t) => {
 });
 
 tape('Check order, 632 中黒 Japan 岩出市', (t) => {
-    c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, function(err, res) {
+    c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
         t.equal(res.features[0].relevance, 0.8223333333333333, "Mixed-up order lowers relevance")

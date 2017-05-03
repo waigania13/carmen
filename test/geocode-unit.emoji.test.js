@@ -43,8 +43,8 @@ tape('index non-emoji country', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -53,7 +53,7 @@ tape('build queued features', (t) => {
 
 tape('should not find emoji feaure', (t) => {
     // Line smiley
-    c.geocode(decodeURIComponent('%E2%98%BA'), {}, function(err, res) {
+    c.geocode(decodeURIComponent('%E2%98%BA'), {}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 0, 'finds no features');
         t.end();
@@ -62,7 +62,7 @@ tape('should not find emoji feaure', (t) => {
 
 tape('should not find feaure (atm or ever -- different emoji)', (t) => {
     // Filled smiley
-    c.geocode(decodeURIComponent('%E2%98%BB'), {}, function(err, res) {
+    c.geocode(decodeURIComponent('%E2%98%BB'), {}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 0, 'finds no features');
         t.end();
@@ -72,7 +72,7 @@ tape('should not find feaure (atm or ever -- different emoji)', (t) => {
 tape('should handle a query including emoji', (t) => {
     // Black star
     var query = 'Anarres ' + decodeURIComponent('%E2%98%85');
-    c.geocode(query, {}, function(err, res) {
+    c.geocode(query, {}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].id, 'country.2', 'finds Anarres');
         t.end();

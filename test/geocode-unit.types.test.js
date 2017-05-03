@@ -139,8 +139,8 @@ tape('index third poi (ambiguous landmark)', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -149,7 +149,7 @@ tape('build queued features', (t) => {
 
 // invalid options.types type
 tape('china types: "asdf"', (t) => {
-    c.geocode('china', { types: 'asdf' }, function(err, res) {
+    c.geocode('china', { types: 'asdf' }, (err, res) => {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
         t.end();
@@ -157,7 +157,7 @@ tape('china types: "asdf"', (t) => {
 });
 // invalid options.types length
 tape('china types: []', (t) => {
-    c.geocode('china', { types: [] }, function(err, res) {
+    c.geocode('china', { types: [] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: options.types must be an array with at least 1 type');
         t.equal(err && err.code, 'EINVALID');
         t.end();
@@ -165,7 +165,7 @@ tape('china types: []', (t) => {
 });
 // invalid options.types[0] value
 tape('china types: ["asdf"]', (t) => {
-    c.geocode('china', { types: ['asdf'] }, function(err, res) {
+    c.geocode('china', { types: ['asdf'] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Type "asdf" is not a known type. Must be one of: country, region, place, poi, poi.landmark');
         t.equal(err && err.code, 'EINVALID');
         t.end();
@@ -174,7 +174,7 @@ tape('china types: ["asdf"]', (t) => {
 
 //poi.landmark beats poi
 tape('china types: ["poi.landmark"]', (t) => {
-    c.geocode('china', { types:['poi.landmark'] }, function(err, res) {
+    c.geocode('china', { types:['poi.landmark'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmarks beat pois');
@@ -184,7 +184,7 @@ tape('china types: ["poi.landmark"]', (t) => {
 
 // poi, poi.landmark returns all poi features
 tape('china types:[poi.landmark, poi]', (t) => {
-    c.geocode('china', { types:['poi.landmark', 'poi'] }, function(err, res) {
+    c.geocode('china', { types:['poi.landmark', 'poi'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results');
         t.deepEqual(res.features[0].text, 'china lm', 'subtypes work');
@@ -194,7 +194,7 @@ tape('china types:[poi.landmark, poi]', (t) => {
 
 // poi returns poi.landmark features also
 tape('china poi returns poi.landmark also', (t) => {
-    c.geocode('china', { types:['poi'] }, function(err, res) {
+    c.geocode('china', { types:['poi'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmark ranks higher than poi.');
@@ -204,7 +204,7 @@ tape('china poi returns poi.landmark also', (t) => {
 
 // country wins without type filter
 tape('china', (t) => {
-    c.geocode('china', { limit_verify:4 }, function(err, res) {
+    c.geocode('china', { limit_verify:4 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results');
         t.deepEqual(res.features[0].id, 'country.1', 'country wins');
@@ -214,7 +214,7 @@ tape('china', (t) => {
 
 // types: place
 tape('china', (t) => {
-    c.geocode('china', { limit_verify:3, types:['place'] }, function(err, res) {
+    c.geocode('china', { limit_verify:3, types:['place'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].id, 'place.1', 'place wins');
@@ -224,7 +224,7 @@ tape('china', (t) => {
 
 // types: region, place
 tape('china', (t) => {
-    c.geocode('china', { limit_verify:3, types:['region','place'] }, function(err, res) {
+    c.geocode('china', { limit_verify:3, types:['region','place'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].id, 'region.1', 'region #1');
@@ -235,7 +235,7 @@ tape('china', (t) => {
 
 // reverse without type filter
 tape('reverse', (t) => {
-    c.geocode('113.65,34.75', {}, function(err, res) {
+    c.geocode('113.65,34.75', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results, 1 per layer type');
         t.deepEqual(res.features[0].id, 'poi.1', 'poi wins');
@@ -244,7 +244,7 @@ tape('reverse', (t) => {
 });
 
 tape('reverse: country', (t) => {
-    c.geocode('113.65,34.75', { types:['country'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['country'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].id, 'country.1', 'country wins');
@@ -253,7 +253,7 @@ tape('reverse: country', (t) => {
 });
 
 tape('reverse: country,place', (t) => {
-    c.geocode('113.65,34.75', { types:['country','place'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['country','place'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
         t.deepEqual(res.features[0].id, 'place.1', '1: place');
@@ -268,7 +268,7 @@ tape('reverse: country,place', (t) => {
 });
 
 tape('reverse: poi', (t) => {
-    c.geocode('113.65,34.75', { types:['poi'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['poi'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].context, [
@@ -281,7 +281,7 @@ tape('reverse: poi', (t) => {
 });
 
 tape('reverse: poi.landmark', (t) => {
-    c.geocode('113.65,34.75', { types:['poi.landmark'] }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['poi.landmark'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
@@ -295,7 +295,7 @@ tape('reverse: poi.landmark', (t) => {
 });
 
 tape('reverse returns offset point when its location is specified', (t) => {
-    c.geocode('113.651,34.75', {}, function(err, res) {
+    c.geocode('113.651,34.75', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 4, '4 results (limit=1 reverse query splits context into features)');
         t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
@@ -305,7 +305,7 @@ tape('reverse returns offset point when its location is specified', (t) => {
 
 
 tape('reverse returns landmark point when offset queried w/ filter=poi.landmark', (t) => {
-    c.geocode('113.651,34.75', { types: ['poi.landmark'] }, function(err, res) {
+    c.geocode('113.651,34.75', { types: ['poi.landmark'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results (types filter suppresses split context features)');
         t.deepEqual(res.features[0].text, 'china lm', 'found landmark');
@@ -314,7 +314,7 @@ tape('reverse returns landmark point when offset queried w/ filter=poi.landmark'
 });
 
 tape('reverse returns offset point when offset location is specified, queried w/ filter=poi,poi.landmark', (t) => {
-    c.geocode('113.651, 34.75', { types: ['poi', 'poi.landmark'] }, function(err, res) {
+    c.geocode('113.651, 34.75', { types: ['poi', 'poi.landmark'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
         t.end();
@@ -322,7 +322,7 @@ tape('reverse returns offset point when offset location is specified, queried w/
 });
 
 tape('reverse returns offset point when offset queried location is specified, w/ filter=poi.landmark,poi', (t) => {
-    c.geocode('113.651, 34.75', { types: ['poi.landmark', 'poi'] }, function(err, res) {
+    c.geocode('113.651, 34.75', { types: ['poi.landmark', 'poi'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].text, 'china poi (offset)', 'found offset point');
         t.end();
@@ -330,7 +330,7 @@ tape('reverse returns offset point when offset queried location is specified, w/
 });
 
 tape('reverse: poi (limit 5, expect 3)', (t) => {
-    c.geocode('113.65,34.75', { types:['poi'], limit: 5 }, function(err, res) {
+    c.geocode('113.65,34.75', { types:['poi'], limit: 5 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 3, '3 results');
         t.deepEqual(res.features[0].context, [
@@ -349,7 +349,7 @@ tape('reverse: poi (limit 5, expect 3)', (t) => {
 });
 
 tape('reverse: poi.landmark (limit 5, expect 1)', (t) => {
-    c.geocode('113.65,34.75', { types: ['poi.landmark'], limit: 5 }, function(err, res) {
+    c.geocode('113.65,34.75', { types: ['poi.landmark'], limit: 5 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 results');
         t.deepEqual(res.features[0].text, 'china lm', 'landmark is top result');
@@ -363,11 +363,11 @@ tape('reverse: poi.landmark (limit 5, expect 1)', (t) => {
 });
 
 tape('fwd: landmark filtering works w/ diff score ranges', (t) => {
-    c.geocode('china lm', { types:['poi.landmark'] }, function(err, res) {
+    c.geocode('china lm', { types:['poi.landmark'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
-        t.ok(res.features.map(function(x) { return x.text; }).indexOf('china lm') !== -1, 'cn landmark in results');
-        t.ok(res.features.map(function(x) { return x.id; }).indexOf('poi.5') !== -1, 'au landmark in results');
+        t.ok(res.features.map((x) => { return x.text; }).indexOf('china lm') !== -1, 'cn landmark in results');
+        t.ok(res.features.map((x) => { return x.id; }).indexOf('poi.5') !== -1, 'au landmark in results');
         t.end();
     });
 });

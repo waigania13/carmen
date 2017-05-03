@@ -29,19 +29,19 @@ tape('index Maréchal', (t) => {
     }, () => { buildQueued(conf.test, t.end) });
 });
 tape('Mal => Maréchal', (t) => {
-    c.geocode('Mal', { limit_verify:1 }, function(err, res) {
+    c.geocode('Mal', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });
 });
 tape('Maréchal => Maréchal', (t) => {
-    c.geocode('Maréchal', { limit_verify:1 }, function(err, res) {
+    c.geocode('Maréchal', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });
 });
 tape('Marechal => Maréchal', (t) => {
-    c.geocode('Marechal', { limit_verify:1 }, function(err, res) {
+    c.geocode('Marechal', { limit_verify:1 }, (err, res) => {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });

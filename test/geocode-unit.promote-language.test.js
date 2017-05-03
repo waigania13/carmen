@@ -86,8 +86,8 @@ tape('index place', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -95,7 +95,7 @@ tape('build queued features', (t) => {
 });
 
 tape('find new york', (t) => {
-    c.geocode('new york usa', {}, function(err, res) {
+    c.geocode('new york usa', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1);
         t.end();
@@ -103,7 +103,7 @@ tape('find new york', (t) => {
 });
 
 tape('find nueva york, language=es', (t) => {
-    c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
+    c.geocode('nueva york usa', { language: 'es' }, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1, "query has full relevance penalty applied because 'usa' has no es translation but es falls back");
         t.end();
@@ -192,8 +192,8 @@ tape('index place', (t) => {
 
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf2).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf2).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf2[c], cb);
         });
     });
@@ -201,7 +201,7 @@ tape('build queued features', (t) => {
 });
 
 tape('find makkah', (t) => {
-    c2.geocode('makkah', {}, function(err, res) {
+    c2.geocode('makkah', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 0.99);
         t.end();

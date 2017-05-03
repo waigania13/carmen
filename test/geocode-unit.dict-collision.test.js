@@ -25,8 +25,8 @@ tape('index unicode place', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -34,7 +34,7 @@ tape('build queued features', (t) => {
 });
 
 tape('valid match', (t) => {
-    c.geocode('京都市', { limit_verify:1 }, function(err, res) {
+    c.geocode('京都市', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1);
         t.end();

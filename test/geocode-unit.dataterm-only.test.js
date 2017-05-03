@@ -29,8 +29,8 @@ tape('index address (dataterm only)', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -38,7 +38,7 @@ tape('build queued features', (t) => {
 });
 
 tape('test address', (t) => {
-    c.geocode('100', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 0);
         t.end();

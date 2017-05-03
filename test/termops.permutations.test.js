@@ -1,6 +1,6 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
-var clone = function(d) { return JSON.parse(JSON.stringify(d)); }
+var clone = (d) => { return JSON.parse(JSON.stringify(d)); }
 
 test('termops.permutations', (t) => {
     t.deepEqual(clone(termops.permutations(['a','b','c','d'])), [

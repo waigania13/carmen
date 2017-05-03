@@ -29,8 +29,8 @@ tape('index address', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -38,7 +38,7 @@ tape('build queued features', (t) => {
 });
 
 tape('100 17th', (t) => {
-    c.geocode('100 17th', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 17th', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();
@@ -46,7 +46,7 @@ tape('100 17th', (t) => {
 });
 
 tape('100 17t', (t) => {
-    c.geocode('100 17t', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 17t', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();
@@ -54,7 +54,7 @@ tape('100 17t', (t) => {
 });
 
 tape('100 17', (t) => {
-    c.geocode('100 17', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 17', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();

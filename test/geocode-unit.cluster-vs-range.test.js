@@ -54,15 +54,15 @@ tape('index addressitp', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('test address query with address range', (t) => {
-    c.geocode('100 fake street', { limit_verify: 2 }, function(err, res) {
+    c.geocode('100 fake street', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 0.99);
@@ -72,7 +72,7 @@ tape('test address query with address range', (t) => {
 
 //Reverse geocode will return a pt since it is futher down in the stack than itp
 tape('test reverse address query with address range', (t) => {
-    c.geocode('0,0', { limit_verify: 2 }, function(err, res) {
+    c.geocode('0,0', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 1);

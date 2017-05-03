@@ -46,8 +46,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -55,7 +55,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query on address but still returns poi due to index order', (t) => {
-        c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
+        c.geocode('-77.04312264919281,38.91041215085371', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
             t.equals(res.features[0].relevance, 1);
@@ -64,7 +64,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query on address with type poi', (t) => {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
             t.equals(res.features[0].relevance, 1);
@@ -72,7 +72,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('query on poi with type address', (t) => {
-        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
+        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
             t.equals(res.features[0].relevance, 1);
@@ -120,15 +120,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('address query returns address', (t) => {
-        c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
+        c.geocode('-77.04312264919281,38.91041215085371', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
             t.equals(res.features[0].relevance, 1);
@@ -136,7 +136,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('poi query returns poi', (t) => {
-        c.geocode('-77.04441547393799,38.909427030614665', {}, function(err, res) {
+        c.geocode('-77.04441547393799,38.909427030614665', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank', 'found POI');
             t.equals(res.features[0].relevance, 1);
@@ -144,7 +144,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('query on address with type poi', (t) => {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'big bank')
@@ -152,7 +152,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('query on poi with type address', (t) => {
-        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
+        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, '100 fake street');
@@ -200,15 +200,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('return poi if type filtering removes address', (t) => {
-        c.geocode('-77.04320579767227,38.910435109001334', { types: ['poi'] }, function(err, res) {
+        c.geocode('-77.04320579767227,38.910435109001334', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'big bank');
@@ -216,7 +216,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('return address if type filtering removes poi', (t) => {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['address'] }, function(err, res) {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, '100 fake street');
@@ -282,15 +282,15 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
     tape('Overlapping places return closest centroid', (t) => {
-        c.geocode('-77.0378065109253,38.909836107628074', {}, function(err, res) {
+        c.geocode('-77.0378065109253,38.909836107628074', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Logan Circle', 'found Logan Circle');
             t.equals(res.features[0].relevance, 1);

@@ -35,7 +35,7 @@ var queue = require('d3-queue').queue;
     // Many low-scored features in region index
     tape('index region (low score)', (t) => {
         var q = queue(1);
-        for (var i =2; i < 25; i++) q.defer(function(i, done) {
+        for (var i =2; i < 25; i++) q.defer((i, done) => {
             queueFeature(conf.region, {
                 id:i,
                 properties: {
@@ -52,7 +52,7 @@ var queue = require('d3-queue').queue;
     // Many medium-scored features in region index
     tape('index region (medium score)', (t) => {
         var q = queue(1);
-        for (var i =25; i < 50; i++) q.defer(function(i, done) {
+        for (var i =25; i < 50; i++) q.defer((i, done) => {
             queueFeature(conf.region, {
                 id:i,
                 properties: {
@@ -94,7 +94,7 @@ var queue = require('d3-queue').queue;
     // Many medium-scored features in region index
     tape('index lamplace (medium score)', (t) => {
         var q = queue(1);
-        for (var i =2; i < 25; i++) q.defer(function(i, done) {
+        for (var i =2; i < 25; i++) q.defer((i, done) => {
             queueFeature(conf.lamplace, {
                 id:i,
                 properties: {
@@ -134,8 +134,8 @@ var queue = require('d3-queue').queue;
 
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -144,7 +144,7 @@ var queue = require('d3-queue').queue;
 
     // High-scored feature wins over low-scored features in index with high max score
     tape('high score beats low score + high scorefactor', (t) => {
-        c.geocode('smallville', null, function(err, res) {
+        c.geocode('smallville', null, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].id, "lamplace.1", "Place (high score) is first result")
             t.equal(res.features[1].id, "namplace.1", "Place (high score) is second result")

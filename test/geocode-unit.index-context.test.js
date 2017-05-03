@@ -98,8 +98,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
     tape('build queued features', (t) => {
         var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -107,21 +107,21 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('Search for an address & check indexes', (t) => {
-        c.geocode('9 fake street', { limit_verify: 1, indexes: true }, function(err, res) {
+        c.geocode('9 fake street', { limit_verify: 1, indexes: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();
         });
     });
     tape('Search for an id & check indexes', (t) => {
-        c.geocode('address.1', { indexes: true }, function(err, res) {
+        c.geocode('address.1', { indexes: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address' ]);
             t.end();
         });
     });
     tape('Search for a point & check indexes', (t) => {
-        c.geocode('0,0', { limit_verify: 1, indexes: true }, function(err, res) {
+        c.geocode('0,0', { limit_verify: 1, indexes: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();

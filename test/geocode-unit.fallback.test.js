@@ -119,8 +119,8 @@ tape('index region "Washington" lines up with Seattle', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -129,7 +129,7 @@ tape('build queued features', (t) => {
 
 //Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
 tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', (t) => {
-    c.geocode('100 Main St, 12345 Seattle, Washington', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 Main St, 12345 Seattle, Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '12345, Seattle, Washington', 'matches Seattle instead of address');
         t.equals(res.features.length, 1);
@@ -140,7 +140,7 @@ tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', (t) =
 
 //Make a mismatched query with a street(100 Market - containing 2 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
 tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', (t) => {
-    c.geocode('100 Market 12345 Seattle Washington', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 Market 12345 Seattle Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '12345, Seattle, Washington');
         t.equals(res.features.length, 1);
@@ -151,7 +151,7 @@ tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', (t) => {
 
 //Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and place and region layers lining up with Seattle, Washington
 tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', (t) => {
-    c.geocode('100 Main St, Seattle Washington', { limit_verify: 1 }, function(err, res) {
+    c.geocode('100 Main St, Seattle Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Seattle, Washington');
         t.equals(res.features.length, 1);

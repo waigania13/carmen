@@ -9,7 +9,7 @@ function fuzzIndex(limit, callback) {
     var c = new Carmen(conf);
     var docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
         .split('\n')
-        .filter(function(text) { return !!text; })
+        .filter((text) => { return !!text; })
         .sort(function(a, b) {
             return Math.random() - Math.random();
         });
@@ -28,9 +28,9 @@ function fuzzIndex(limit, callback) {
             geometry: { type:'Point', coordinates:[lon,lat] }
         });
     }
-    index.update(conf.street, features, { zoom:14 }, function(err) {
+    index.update(conf.street, features, { zoom:14 }, (err) => {
         if (err) return callback(err);
-        index.store(conf.street, function(err) {
+        index.store(conf.street, (err) => {
             if (err) return callback(err);
             callback(null, c, conf.street);
         });
@@ -62,7 +62,7 @@ tape('setup b', (t) => {
 tape('merge a + b = c', (t) => {
     var conf = { street: new mem({ maxzoom:14 }, () => {}) };
     var c = new Carmen(conf);
-    c.merge(sources.a, sources.b, conf.street, {}, function(err, stats) {
+    c.merge(sources.a, sources.b, conf.street, {}, (err, stats) => {
         t.ifError(err);
         t.ok(stats.freq, 'merged freq in ' + stats.freq + 'ms');
         t.ok(stats.grid, 'merged grid in ' + stats.grid + 'ms');

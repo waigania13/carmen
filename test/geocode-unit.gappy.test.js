@@ -80,29 +80,29 @@ tape('index street 2', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('west st, tonawanda, ny', (t) => {
-    c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
+    c.geocode('west st tonawanda ny', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, tonawanda, new york');
         t.end();
     });
 });
 tape('west st, new york, ny', (t) => {
-    c.geocode('west st new york ny', { limit_verify:1 }, function(err, res) {
+    c.geocode('west st new york ny', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, new york, new york');
         t.end();
     });
 });
 tape('new york', (t) => {
-    c.geocode('new york', { limit_verify:1 }, function(err, res) {
+    c.geocode('new york', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york');
         t.deepEqual(res.features[0].id, 'province.1');
@@ -110,7 +110,7 @@ tape('new york', (t) => {
     });
 });
 tape('new york new york', (t) => {
-    c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
+    c.geocode('new york new york', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');
@@ -118,7 +118,7 @@ tape('new york new york', (t) => {
     });
 });
 tape('ny ny', (t) => {
-    c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
+    c.geocode('ny ny', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');
@@ -126,7 +126,7 @@ tape('ny ny', (t) => {
     });
 });
 tape('new york ny', (t) => {
-    c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
+    c.geocode('new york ny', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');

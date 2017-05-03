@@ -23,15 +23,15 @@ tape('index country', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 tape('geocodes', (t) => {
-    a.geocode('america', {}, function(err, res) {
+    a.geocode('america', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'america');
         t.deepEqual(res.features[0].id, 'country.1');

@@ -29,8 +29,8 @@ tape('index address', (t) => {
 });
 tape('build queued features', (t) => {
     var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -38,14 +38,14 @@ tape('build queued features', (t) => {
 });
 
 tape('test address', (t) => {
-    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
+    c.geocode('56 Brehmestr.', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
     });
 });
 tape('test address', (t) => {
-    c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
+    c.geocode('56 Brehmestr.', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
@@ -54,7 +54,7 @@ tape('test address', (t) => {
 
 // Real solution here is regex token for *strasse => *str
 tape.skip('test address', (t) => {
-    c.geocode('Brehmestr. 56', { limit_verify: 1 }, function(err, res) {
+    c.geocode('Brehmestr. 56', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
