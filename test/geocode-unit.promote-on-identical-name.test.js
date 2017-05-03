@@ -231,7 +231,7 @@ tape('index country', (t) => {
     }, t.end);
 });
 
-['region', 'district', 'place'].forEach(function(f, i) {
+['region', 'district', 'place'].forEach((f, i) => {
     tape('index ' + f, (t) => {
         queueFeature(conf2[f], {
             id: i + 1,

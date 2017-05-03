@@ -405,7 +405,7 @@ var addFeature = require('../lib/util/addfeature'),
             'zh-TW',
             'zh_tw',
             'zh-tw'
-        ].forEach(function(language) {
+        ].forEach((language) => {
             c.geocode('Saint Petersburg', { limit_verify:1, language: language }, (err, res) => {
                 t.ifError(err);
                 t.deepEqual(res.features[0].context[0].text, '西北部聯邦管區');

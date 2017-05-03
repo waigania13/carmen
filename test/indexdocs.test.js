@@ -251,7 +251,7 @@ tape('indexdocs.standardize', (t) => {
         var covers = [];
         var i;
         for (i = 0; i < 10000; i++) { covers.push('6/40/40'); }
-        for (i = 0; i < 100; i++) central.forEach(function(central) {
+        for (i = 0; i < 100; i++) central.forEach((central) => {
             covers.push(central);
         });
 

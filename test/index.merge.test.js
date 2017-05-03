@@ -28,7 +28,7 @@ test('index - streaming interface', (t) => {
     }
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -179,7 +179,7 @@ test('index - streaming interface', (t) => {
 
     ["freq", "grid"].forEach(function(type) {
         t.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', (q) => {
-            var stringify = function(key) {
+            var stringify = (key) => {
                 return key[0] + "-" + (key[1] ? key[1].map(function(k) { return "" + k; }).sort().join("-") : "null");
             }
             var cSet = new Set(carmenC.indexes.country._geocoder[type].list().map(stringify));

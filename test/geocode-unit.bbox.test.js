@@ -16,8 +16,8 @@ var c = new Carmen(conf);
 tape('index feature', (t) => {
     var range = [];
     for (var i = 1; i < 100; i++) range.push(i);
-    range.forEach(function(i) {
-        t.test('addFeature', function(tt) {
+    range.forEach((i) => {
+        t.test('addFeature', (tt) => {
             queueFeature(conf.street, {
                 id:i,
                 properties: {

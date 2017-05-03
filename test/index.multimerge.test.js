@@ -34,7 +34,7 @@ test('index - streaming interface', (t) => {
     }
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -50,7 +50,7 @@ test('index - streaming interface', (t) => {
     var carmens = {}, confs = {};
     t.test('open carmens', (t) => {
         var q = queue();
-        Object.keys(files).forEach(function(key) {
+        Object.keys(files).forEach((key) => {
             q.defer(function(key, callback) {
                 merge.getOutputConf(files[key], { maxzoom: 6, geocoder_languages: ['zh'] }, function(_oc) {
                     confs[key] = {country: _oc.to};
@@ -70,7 +70,7 @@ test('index - streaming interface', (t) => {
         B1: getIndex(100,150),
         B2: getIndex(150,200)
     }
-    Object.keys(chunks).forEach(function(key) {
+    Object.keys(chunks).forEach((key) => {
         t.test('index docs.json chunk ' + key, (t) => {
             carmens[key].index(chunks[key], confs[key].country, {
                 zoom: 6,
@@ -147,7 +147,7 @@ test('index - streaming interface', (t) => {
     });
 
     t.test('clean up', (t) => {
-        Object.keys(files).forEach(function(key) {
+        Object.keys(files).forEach((key) => {
             fs.unlinkSync(files[key]);
         });
         t.end();

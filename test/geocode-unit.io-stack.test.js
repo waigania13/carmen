@@ -25,7 +25,7 @@ tape('ready', (t) => {
     c._open(t.end);
 });
 
-[1,2,3].forEach(function(i) {
+[1,2,3].forEach((i) => {
     tape('index place ' + i, (t) => {
         queueFeature(conf['place'+i], {
             id:1,
@@ -79,7 +79,7 @@ tape('ready', (t) => {
 
 function reset() {
     context.getTile.cache.reset();
-    [1,2,3].forEach(function(i) {
+    [1,2,3].forEach((i) => {
         conf['place'+i]._original.logs.getGeocoderData = [];
         conf['place'+i]._original.logs.getTile = [];
         conf['street'+i]._original.logs.getGeocoderData = [];

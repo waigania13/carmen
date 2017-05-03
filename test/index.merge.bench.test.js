@@ -10,7 +10,7 @@ function fuzzIndex(limit, callback) {
     var docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
         .split('\n')
         .filter((text) => { return !!text; })
-        .sort(function(a, b) {
+        .sort((a, b) => {
             return Math.random() - Math.random();
         });
     var features = [];

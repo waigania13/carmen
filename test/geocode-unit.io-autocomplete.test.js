@@ -46,7 +46,7 @@ tape('io', (t) => {
     c.geocode('aa', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 5, 'returns 5 features');
-        var loaded = c.indexes.place._original.logs.getGeocoderData.filter(function(id) { return /grid/.test(id) }).length;
+        var loaded = c.indexes.place._original.logs.getGeocoderData.filter((id) => { return /grid/.test(id) }).length;
         t.deepEqual(loaded <= 10, true, '<= 10 shards loaded: ' + loaded);
         t.end();
     });

@@ -15,7 +15,7 @@ test('index - streaming interface', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -174,7 +174,7 @@ test('index', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -236,7 +236,7 @@ test('error -- zoom too high', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -263,7 +263,7 @@ test('error -- zoom too low', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
@@ -330,7 +330,7 @@ test('error -- _geometry too high resolution', (t) => {
     s.push(null);
 
     var outputStream = new Stream.Writable();
-    outputStream._write = function(chunk, encoding, done) {
+    outputStream._write = (chunk, encoding, done) => {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
