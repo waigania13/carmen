@@ -19,7 +19,7 @@ test('index - streaming interface', (t) => {
                 count ++;
             }
             if (count > start && count <= end) {
-                this.push(data+"\n");
+                transformStream.push(data+"\n");
             }
             done();
         };
