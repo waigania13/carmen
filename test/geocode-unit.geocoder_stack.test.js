@@ -1,17 +1,17 @@
 // byId debug geocoding queries
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 //Tests string value for index level geocoder_stack
 (() => {
-    var conf = {
+    const conf = {
         us: new mem({
             maxzoom: 6,
             geocoder_name: 'country',
@@ -23,7 +23,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_stack: 'ca'
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
         queueFeature(conf.ca, {
@@ -48,7 +48,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -115,7 +115,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 //Tests array values for index level geocoder_stack
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
@@ -125,7 +125,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_stack: [ 'ca', 'us' ]
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
         queueFeature(conf.country, {
@@ -172,7 +172,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -205,7 +205,7 @@ var addFeature = require('../lib/util/addfeature'),
 // Test mixed feature level / non existant geocoder_stack tags
 //    - Lack of geocoder_stack should make them able to appear in all stacks
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
@@ -215,7 +215,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_stack: 'ca'
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
         queueFeature(conf.country, {
@@ -249,7 +249,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -286,7 +286,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Test idx assignment
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
@@ -296,7 +296,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_stack: [ 'us', 'ca' ]
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country high score (us)', (t) => {
         queueFeature(conf.country, {
@@ -323,7 +323,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -344,7 +344,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 //Test existing/non-existing index level geocoder_stack
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({
             maxzoom: 6
         }, () => {}),
@@ -353,7 +353,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_stack: [ 'ca', 'us' ]
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
         queueFeature(conf.country, {
@@ -386,7 +386,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

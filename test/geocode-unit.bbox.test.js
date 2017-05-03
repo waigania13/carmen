@@ -1,21 +1,21 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     street: new mem(null, () => {})
 };
 
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index feature', (t) => {
-    var range = [];
-    for (var i = 1; i < 100; i++) range.push(i);
+    let range = [];
+    for (let i = 1; i < 100; i++) range.push(i);
     range.forEach((i) => {
         t.test('addFeature', (tt) => {
             queueFeature(conf.street, {
@@ -35,7 +35,7 @@ tape('index feature', (t) => {
 });
 
 tape('index feature', (t) => {
-    var feature = {
+    let feature = {
         id:102,
         properties: {
             'carmen:text':'Main Street',
@@ -48,7 +48,7 @@ tape('index feature', (t) => {
 });
 
 tape('index feature', (t) => {
-    var feature = {
+    let feature = {
         id:103,
         properties: {
             'carmen:text':'Date Line Street',
@@ -60,7 +60,7 @@ tape('index feature', (t) => {
     queueFeature(conf.street, feature, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

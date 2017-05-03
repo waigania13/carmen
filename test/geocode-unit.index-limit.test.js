@@ -1,21 +1,21 @@
 // Test that up to 128 indexes are supported.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {};
-for (var i = 0; i < 127; i++) {
+let conf = {};
+for (let i = 0; i < 127; i++) {
     conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, () => {});
 }
 conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, () => {});
 
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 tape('index place', (t) => {
     t.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
     queueFeature(conf.place, {
@@ -28,7 +28,7 @@ tape('index place', (t) => {
     }, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

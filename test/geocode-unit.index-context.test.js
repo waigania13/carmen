@@ -1,24 +1,24 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Test that geocoder returns index names for context
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom:6 }, () => {}),
         region: new mem({maxzoom: 6 }, () => {}),
         postcode: new mem({maxzoom: 6 }, () => {}),
         place: new mem({maxzoom: 6 }, () => {}),
         address: new mem({maxzoom: 6 }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
-        var country = {
+        let country = {
             id:1,
             properties: {
                 'carmen:text': 'united states',
@@ -34,7 +34,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index region', (t) => {
-        var region = {
+        let region = {
             id:1,
             properties: {
                 'carmen:text': 'maine',
@@ -50,7 +50,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index place', (t) => {
-        var place = {
+        let place = {
             id:1,
             properties: {
                 'carmen:text': 'springfield',
@@ -66,7 +66,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index postcode', (t) => {
-        var postcode = {
+        let postcode = {
             id:1,
             properties: {
                 'carmen:text': '12345',
@@ -82,7 +82,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index address', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -97,7 +97,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

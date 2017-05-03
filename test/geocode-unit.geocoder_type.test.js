@@ -1,20 +1,20 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require("d3-queue").queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require("d3-queue").queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         address:    new mem({maxzoom: 12, geocoder_address: 1}, () => {}),
         poi:        new mem({maxzoom: 12}, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index address', (t) => {
-        var address = {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        var poi = {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -45,7 +45,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.poi, poi, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -82,13 +82,13 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
         poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index address', (t) => {
-        var address = {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -104,7 +104,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        var poi = {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -119,7 +119,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.poi, poi, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -162,13 +162,13 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
         poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index address', (t) => {
-        var address = {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -184,7 +184,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        var poi = {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -199,7 +199,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.poi, poi, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -226,12 +226,12 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         place:    new mem({maxzoom: 12}, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index place', (t) => {
-        var place = {
+        let place = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -256,7 +256,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index place', (t) => {
-        var place = {
+        let place = {
             id:2,
             type: 'Feature',
             properties:  {
@@ -281,7 +281,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

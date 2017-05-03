@@ -1,9 +1,9 @@
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
 
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
@@ -16,7 +16,7 @@ var mem = require('../lib/api-mem');
     };
     tape('test invalid tokens', (t) => {
         t.throws(() => {
-            var c = new Carmen(conf);
+            const c = new Carmen(conf);
             t.t(c);
         });
         t.end();

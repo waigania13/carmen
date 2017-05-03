@@ -1,28 +1,28 @@
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
-var conf = {
+const conf = {
     place: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('ready', (t) => {
     c._open(t.end);
 });
 
 tape('index place', (t) => {
-    var docs = [];
-    for (var i = 1; i < 100; i++) {
-        var text = Math.random().toString().split('.').pop().toString(36);
+    let docs = [];
+    for (let i = 1; i < 100; i++) {
+        let text = Math.random().toString().split('.').pop().toString(36);
         docs.push({
             id:i,
             properties: {
@@ -46,7 +46,7 @@ tape('io', (t) => {
     c.geocode('aa', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 5, 'returns 5 features');
-        var loaded = c.indexes.place._original.logs.getGeocoderData.filter((id) => { return /grid/.test(id) }).length;
+        let loaded = c.indexes.place._original.logs.getGeocoderData.filter((id) => { return /grid/.test(id) }).length;
         t.deepEqual(loaded <= 10, true, '<= 10 shards loaded: ' + loaded);
         t.end();
     });
