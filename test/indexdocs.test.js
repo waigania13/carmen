@@ -5,7 +5,7 @@ var termops = require('../lib/util/termops.js');
 var token = require('../lib/util/token.js');
 var rewind = require('geojson-rewind');
 
-tape('indexdocs.loadDoc', function(assert) {
+tape('indexdocs.loadDoc', function(t) {
     var token_replacer = token.createReplacer({});
     var patch;
     var tokens;
@@ -40,27 +40,27 @@ tape('indexdocs.loadDoc', function(assert) {
 
     // Indexes single doc.
     err = indexdocs.loadDoc(freq, patch, doc, null, zoom, token_replacer);
-    assert.ok(typeof err !== 'number', 'no error');
+    t.ok(typeof err !== 'number', 'no error');
 
-    assert.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    assert.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'all' ], '1 language in patch.grid[0]');
-    assert.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('all').length, 2, '2 grids for language "all" in patch.grid[0]');
-    assert.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('all')[0]), {
+    t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
+    t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'all' ], '1 language in patch.grid[0]');
+    t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('all').length, 2, '2 grids for language "all" in patch.grid[0]');
+    t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('all')[0]), {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
         x: 32,
         y: 32
     }, 'patch.grid[0][0]');
-    assert.deepEqual(patch.docs.length, 1);
-    assert.deepEqual(patch.docs[0], doc);
-    assert.deepEqual(patch.text, ['main st', 'main']);
+    t.deepEqual(patch.docs.length, 1);
+    t.deepEqual(patch.docs[0], doc);
+    t.deepEqual(patch.text, ['main st', 'main']);
 
-    assert.end();
+    t.end();
 });
 
-tape('indexdocs.standardize', function(assert) {
-    assert.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(t) {
+tape('indexdocs.standardize', function(t) {
+    t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(t) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -77,7 +77,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
         t.throws(function(t) {
             indexdocs.standardize({
                 id: 1,
@@ -97,7 +97,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
         t.throws(function(t) {
             indexdocs.standardize({
                 id: 1,
@@ -117,7 +117,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(t) {
+    t.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(t) {
         t.throws(function() {
             indexdocs.standardize({
                 id: 1,
@@ -137,7 +137,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(t) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -156,7 +156,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:addressnumber lowercased', function(t) {
+    t.test('indexdocs.standardize - carmen:addressnumber lowercased', function(t) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -175,7 +175,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:rangetype invalid', function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype invalid', function(t) {
         t.throws(function(t) {
             indexdocs.standardize({
                 id: 1,
@@ -195,7 +195,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(t) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -220,7 +220,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(t) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -245,7 +245,7 @@ tape('indexdocs.standardize', function(assert) {
         t.end();
     });
 
-    assert.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(t) {
+    t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(t) {
         // Build a zxy list with covers of varying distance from center.
         var central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
         var covers = [];
@@ -269,32 +269,32 @@ tape('indexdocs.standardize', function(assert) {
             }
         }, 6, {});
 
-        assert.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
+        t.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
         central.forEach(function(cover) {
-            assert.deepEqual(res.properties['carmen:zxy'].filter(function(zxy) { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
+            t.deepEqual(res.properties['carmen:zxy'].filter(function(zxy) { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
         });
         t.end();
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('indexdocs.verifyCenter', function(assert) {
-    assert.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
-    assert.equal(indexdocs.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
-    assert.equal(indexdocs.verifyCenter([0,null], [[32,32,6]]), false, 'handle null lon');
-    assert.equal(indexdocs.verifyCenter([null,0], [[32,32,6]]), false, 'handle null lat');
-    assert.equal(indexdocs.verifyCenter([null,null], [[32,32,6]]), false, 'handle null lon,lat');
-    assert.end();
+tape('indexdocs.verifyCenter', function(t) {
+    t.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
+    t.equal(indexdocs.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
+    t.equal(indexdocs.verifyCenter([0,null], [[32,32,6]]), false, 'handle null lon');
+    t.equal(indexdocs.verifyCenter([null,0], [[32,32,6]]), false, 'handle null lat');
+    t.equal(indexdocs.verifyCenter([null,null], [[32,32,6]]), false, 'handle null lon,lat');
+    t.end();
 });
 
-tape('indexdocs.runChecks', function(assert) {
-    assert.throws(function(t) {
+tape('indexdocs.runChecks', function(t) {
+    t.throws(function(t) {
         indexdocs.runChecks({});
     }, /doc has no id/);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {},
@@ -305,8 +305,8 @@ tape('indexdocs.runChecks', function(assert) {
         }));
     }, /doc has no carmen:text on id:1/);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
@@ -316,7 +316,7 @@ tape('indexdocs.runChecks', function(assert) {
     }, /"geometry" member required on id:1/);
 
     //GeometryCollection with a single geometry is caught and not thrown from GeoJSONHint
-    assert.equal(indexdocs.runChecks({
+    t.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -333,8 +333,8 @@ tape('indexdocs.runChecks', function(assert) {
         }
     }), undefined);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
@@ -348,8 +348,8 @@ tape('indexdocs.runChecks', function(assert) {
     var coords = [Array.apply(null, Array(50001)).map(function(ele, i) {return [1.1 + 0.001 * i,1.1]})]
     coords[0].push([1.1,1.1]);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks(rewind({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
@@ -360,8 +360,8 @@ tape('indexdocs.runChecks', function(assert) {
         }), 12));
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
@@ -372,8 +372,8 @@ tape('indexdocs.runChecks', function(assert) {
         }, 12));
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
-    assert.throws(function(t) {
-        assert.equal(indexdocs.runChecks(rewind({
+    t.throws(function(t) {
+        t.equal(indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
@@ -390,7 +390,7 @@ tape('indexdocs.runChecks', function(assert) {
         }), 12));
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
-    assert.equal(indexdocs.runChecks({
+    t.equal(indexdocs.runChecks({
         id:1,
         type: 'Feature',
         properties: {
@@ -399,10 +399,10 @@ tape('indexdocs.runChecks', function(assert) {
         },
         geometry: { type: 'Point', coordinates: [0,0] }
     }, 12), undefined);
-    assert.end();
+    t.end();
 });
 
-tape('indexdocs.generateFrequency', function(assert) {
+tape('indexdocs.generateFrequency', function(t) {
     var docs = [{
         type: "Feature",
         properties: {
@@ -419,7 +419,7 @@ tape('indexdocs.generateFrequency', function(assert) {
         geometry: {}
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
-    assert.deepEqual(indexdocs.generateFrequency(docs, {}), {
+    t.deepEqual(indexdocs.generateFrequency(docs, {}), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
@@ -427,12 +427,12 @@ tape('indexdocs.generateFrequency', function(assert) {
         street: [ 1 ]
     });
     // @TODO should 'main' in this case collapse down to 2?
-    assert.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
+    t.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
         rd: [ 1 ],
         st: [ 1 ]
     });
-    assert.end();
+    t.end();
 });

@@ -160,7 +160,7 @@ tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', function(t) 
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

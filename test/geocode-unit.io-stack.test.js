@@ -21,8 +21,8 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(assert) {
-    c._open(assert.end);
+tape('ready', function(t) {
+    c._open(t.end);
 });
 
 [1,2,3].forEach(function(i) {
@@ -139,7 +139,7 @@ tape('springfield, types=place', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

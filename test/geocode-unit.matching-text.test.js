@@ -61,36 +61,36 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('kansas america', function(assert) {
+    tape('kansas america', function(t) {
         c.geocode('kansas america', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'Kansas United States');
-            assert.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
-            assert.equal(res.features[0].matching_place_name, 'Kansas America');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Kansas United States');
+            t.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
+            t.equal(res.features[0].matching_place_name, 'Kansas America');
+            t.end();
         });
     });
-    tape('america', function(assert) {
+    tape('america', function(t) {
         c.geocode('america', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'United States');
-            assert.equal(res.features[0].matching_text, 'America');
-            assert.equal(res.features[0].matching_place_name, 'America');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'United States');
+            t.equal(res.features[0].matching_text, 'America');
+            t.equal(res.features[0].matching_place_name, 'America');
+            t.end();
         });
     });
-    tape('jayhawks', function(assert) {
+    tape('jayhawks', function(t) {
         c.geocode('jayhawks', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'Kansas United States');
-            assert.equal(res.features[0].matching_text, 'Jayhawks');
-            assert.equal(res.features[0].matching_place_name, 'Jayhawks United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Kansas United States');
+            t.equal(res.features[0].matching_text, 'Jayhawks');
+            t.equal(res.features[0].matching_place_name, 'Jayhawks United States');
+            t.end();
         });
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

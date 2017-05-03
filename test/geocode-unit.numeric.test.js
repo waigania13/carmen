@@ -13,7 +13,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index', function(assert) {
+tape('index', function(t) {
     queueFeature(conf.postcode, {
         id:1,
         properties: {
@@ -21,10 +21,10 @@ tape('index', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
 
-tape('index', function(assert) {
+tape('index', function(t) {
     queueFeature(conf.postcode, {
         id:2,
         properties: {
@@ -32,10 +32,10 @@ tape('index', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
 
-tape('index address', function(assert) {
+tape('index address', function(t) {
     queueFeature(conf.address, {
         id:2,
         properties: {
@@ -49,7 +49,7 @@ tape('index address', function(assert) {
             type: 'MultiPoint',
             coordinates: [[0,0]]
         }
-    }, assert.end);
+    }, t.end);
 });
 
 tape('build queued features', function(t) {
@@ -90,7 +90,7 @@ tape('does index degens for non-numeric terms', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

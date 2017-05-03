@@ -6,7 +6,7 @@ var Phrasematch = phrasematch.Phrasematch;
 var PhrasematchResult = phrasematch.PhrasematchResult;
 var test = require('tape');
 
-test('stackable simple', function(assert) {
+test('stackable simple', function(t) {
     var a1 = new Phrasematch(['a1'], 0.5, parseInt('10', 2), null, null, 0, null, 0);
     var b1 = new Phrasematch(['b1'], 0.5, parseInt('1', 2), null, null, 1, null, 1);
     var b2 = new Phrasematch(['b2'], 0.5, parseInt('1', 2), null, null, 1, null, 1);
@@ -21,14 +21,14 @@ test('stackable simple', function(assert) {
         return stack.map(function(s) { return s.subquery.join(' '); });
     });
 
-    assert.deepEqual(debug, [
+    t.deepEqual(debug, [
         [ 'a1', 'b1' ],
         [ 'a1', 'b2' ]
     ]);
-    assert.end();
+    t.end();
 });
 
-test('stackable nmask', function(assert) {
+test('stackable nmask', function(t) {
     var a1 = new Phrasematch(['a1'], 0.33, parseInt('100', 2), null, null, 0, null, 1);
     var b1 = new Phrasematch(['b1'], 0.33, parseInt('10', 2), null, null, 1, null, 1);
     var c1 = new Phrasematch(['c1'], 0.33, parseInt('1', 2), null, null, 2, null, 1);
@@ -44,14 +44,14 @@ test('stackable nmask', function(assert) {
         return stack.map(function(s) { return s.subquery.join(' '); });
     });
 
-    assert.deepEqual(debug, [
+    t.deepEqual(debug, [
         [ 'a1', 'b1' ],
         [ 'a1', 'c1' ],
     ], 'b1 and c1 do not stack (nmask: same geocoder_name)');
-    assert.end();
+    t.end();
 });
 
-test('stackable bmask', function(assert) {
+test('stackable bmask', function(t) {
     var a1 = new Phrasematch(['a1'], 0.66, parseInt('100', 2), null, null, 0, null, 1);
     var b1 = new Phrasematch(['b1'], 0.66, parseInt('10', 2), null, null, 1, null, 1);
     var debug = stackable([
@@ -65,14 +65,14 @@ test('stackable bmask', function(assert) {
         return stack.map(function(s) { return s.subquery.join(' '); });
     });
 
-    assert.deepEqual(debug, [
+    t.deepEqual(debug, [
         [ 'a1' ],
         [ 'b1' ],
     ], 'a1 and b1 do not stack (bmask: exclusive bounds)');
-    assert.end();
+    t.end();
 });
 
-test('stackable complex', function(assert) {
+test('stackable complex', function(t) {
     var a1 = new Phrasematch(['a1'], 0.33, parseInt('10', 2), null, null, 0, null, 0);
     var a2 = new Phrasematch(['a2'], 0.66, parseInt('110', 2), null, null, 0, null, 0);
     var b1 = new Phrasematch(['b1'], 0.33, parseInt('1', 2), null, null, 1, null, 1);
@@ -91,7 +91,7 @@ test('stackable complex', function(assert) {
         return stack.relev.toFixed(2) + ' - ' + stack.map(function(s) { return s.subquery.join(' ')}).join(', ');
     });
 
-    assert.deepEqual(debug, [
+    t.deepEqual(debug, [
         '0.99 - a2, c1',
         '0.99 - a2, b1',
         '0.99 - a1, b2, c1',
@@ -102,10 +102,10 @@ test('stackable complex', function(assert) {
         '0.66 - a1, b2',
         '0.66 - b2, c1'
     ]);
-    assert.end();
+    t.end();
 });
 
-test('stackable direction change', function(assert) {
+test('stackable direction change', function(t) {
     var a1 = new Phrasematch(['a1'], 0.25, parseInt('0001', 2), null, null, 0, null, 0);
     var a2 = new Phrasematch(['a2'], 0.25, parseInt('1000', 2), null, null, 0, null, 0);
     var b1 = new Phrasematch(['b1'], 0.25, parseInt('0010', 2), null, null, 1, null, 1);
@@ -127,7 +127,7 @@ test('stackable direction change', function(assert) {
         return stack.map(function(s) { return s.subquery.join(' ')});
     });
 
-    assert.deepEqual(debug, [
+    t.deepEqual(debug, [
         [ 'a2', 'b2', 'c2', 'd2' ],
         [ 'a2', 'b1', 'c1', 'd2' ],
         [ 'a1', 'b2', 'c2', 'd1' ],
@@ -149,10 +149,10 @@ test('stackable direction change', function(assert) {
         [ 'b1', 'c1', 'd1' ],
         [ 'b2', 'c2', 'd1' ]
     ]);
-    assert.end();
+    t.end();
 });
 
-test('stackable bench', function(assert) {
+test('stackable bench', function(t) {
     runBench(5, 10);
     runBench(6, 10);
     runBench(7, 10);
@@ -164,8 +164,8 @@ test('stackable bench', function(assert) {
         var time = 0;
         var runs = 5;
         for (var i = 0; i < runs; i++) time += bench(indexCount, termCount);
-        assert.comment('bench x' + runs + ' (indexCount=' + indexCount + ', termCount=' + termCount + ')');
-        assert.ok(true, 'avg time ' + Math.round(time/runs) + 'ms');
+        t.comment('bench x' + runs + ' (indexCount=' + indexCount + ', termCount=' + termCount + ')');
+        t.ok(true, 'avg time ' + Math.round(time/runs) + 'ms');
     }
 
     // Suppose each index matches each term
@@ -188,6 +188,6 @@ test('stackable bench', function(assert) {
         stackable(phraseMatches);
         return (+new Date) - start;
     }
-    assert.end();
+    t.end();
 });
 

@@ -178,9 +178,9 @@ tape('ensure POI cannot win', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 
@@ -287,7 +287,7 @@ tape('nonthaburi', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

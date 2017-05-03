@@ -103,7 +103,7 @@ tape('Check order, 632 中黒 Japan 岩出市', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

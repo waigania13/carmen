@@ -21,7 +21,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('add POIs', function(assert) {
+tape('add POIs', function(t) {
     var poi = {
         id: 1,
         type: 'Feature',
@@ -35,10 +35,10 @@ tape('add POIs', function(assert) {
             coordinates: [0,0]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
+tape('add POIs', function(t) {
     var poi = {
         id: 2,
         type: 'Feature',
@@ -52,10 +52,10 @@ tape('add POIs', function(assert) {
             coordinates: [0.1,-0.1]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
+tape('add POIs', function(t) {
     var poi = {
         id: 3,
         type: 'Feature',
@@ -70,10 +70,10 @@ tape('add POIs', function(assert) {
             coordinates: [1.005,1.005]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
+tape('add POIs', function(t) {
     var poi = {
         id: 4,
         type: 'Feature',
@@ -88,10 +88,10 @@ tape('add POIs', function(assert) {
             coordinates: [1.006,1.006]
         }
     }
-    queueFeature(conf.poi, poi, function() { buildQueued(conf.poi, assert.end) });
+    queueFeature(conf.poi, poi, function() { buildQueued(conf.poi, t.end) });
 });
 
-tape('add address', function(assert) {
+tape('add address', function(t) {
     var address = {
         id: 1,
         type: 'Feature',
@@ -107,43 +107,43 @@ tape('add address', function(assert) {
         }
     }
 
-    queueFeature(conf.address, address, function() { buildQueued(conf.address, assert.end) });
+    queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
 
 });
 
-tape('invalid', function(assert) {
+tape('invalid', function(t) {
     c.geocode('0,0', {reverseMode: 'foo'}, function(err, res) {
-        assert.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
+        t.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('reverse distance threshold - close enough', function(assert) {
+tape('reverse distance threshold - close enough', function(t) {
     c.geocode('0.106,-0.106', {}, function(err, res) {
-        assert.deepEqual(res.features.length, 1, 'finds a feature when coords are off by .006');
+        t.deepEqual(res.features.length, 1, 'finds a feature when coords are off by .006');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('reverse distance threshold - too far', function(assert) {
+tape('reverse distance threshold - too far', function(t) {
     c.geocode('0.107,-0.107', {}, function(err, res) {
-        assert.deepEqual(res.features.length, 0, 'does not find a feature when coords are off by .007');
+        t.deepEqual(res.features.length, 0, 'does not find a feature when coords are off by .007');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('get the higher-scored, more distant feature first', function(assert) {
+tape('get the higher-scored, more distant feature first', function(t) {
     c.geocode('1.007, 1.007', {reverseMode: 'score'}, function(err, res) {
-        assert.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
+        t.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

@@ -91,7 +91,7 @@ tape('Search for Starbucks', (t) => {
     });
 });
 
-tape('teardown', (assert) => {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

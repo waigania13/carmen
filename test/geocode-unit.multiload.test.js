@@ -48,7 +48,7 @@ tape('sets cache/dictcache', function(t) {
     t.equal(b.indexes.country._dictcache, a.indexes.country._dictcache, 'a dictcache === b dictcache');
     t.end();
 });
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

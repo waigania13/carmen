@@ -39,36 +39,36 @@ function fuzzIndex(limit, callback) {
 
 var sources = {};
 
-tape('setup a', function(assert) {
+tape('setup a', function(t) {
     var start = +new Date;
     fuzzIndex(50000, function(err, geocoder, a) {
         var time = +new Date - start;
-        assert.ifError(err, 'completed indexing a in ' + time + 'ms');
+        t.ifError(err, 'completed indexing a in ' + time + 'ms');
         sources.a = a;
-        assert.end();
+        t.end();
     });
 });
 
-tape('setup b', function(assert) {
+tape('setup b', function(t) {
     var start = +new Date;
     fuzzIndex(50000, function(err, geocoder, b) {
         var time = +new Date - start;
-        assert.ifError(err, 'completed indexing b in ' + time + 'ms');
+        t.ifError(err, 'completed indexing b in ' + time + 'ms');
         sources.b = b;
-        assert.end();
+        t.end();
     });
 });
 
-tape('merge a + b = c', function(assert) {
+tape('merge a + b = c', function(t) {
     var conf = { street: new mem({ maxzoom:14 }, function() {}) };
     var c = new Carmen(conf);
     c.merge(sources.a, sources.b, conf.street, {}, function(err, stats) {
-        assert.ifError(err);
-        assert.ok(stats.freq, 'merged freq in ' + stats.freq + 'ms');
-        assert.ok(stats.grid, 'merged grid in ' + stats.grid + 'ms');
-        assert.ok(stats.feature, 'merged feature in ' + stats.feature + 'ms');
-        assert.ok(stats.stat, 'merged stat in ' + stats.stat + 'ms');
-        assert.end();
+        t.ifError(err);
+        t.ok(stats.freq, 'merged freq in ' + stats.freq + 'ms');
+        t.ok(stats.grid, 'merged grid in ' + stats.grid + 'ms');
+        t.ok(stats.feature, 'merged feature in ' + stats.feature + 'ms');
+        t.ok(stats.stat, 'merged stat in ' + stats.stat + 'ms');
+        t.end();
     });
 });
 

@@ -46,8 +46,8 @@ tape('Marechal => Maréchal', function(t) {
         t.end();
     });
 });
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

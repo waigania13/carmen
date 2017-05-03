@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(assert) {
+tape('index country', function(t) {
     var country = {
         id:1,
         geometry: {
@@ -34,10 +34,10 @@ tape('index country', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    queueFeature(conf.country, country, assert.end);
+    queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(assert) {
+tape('index region', function(t) {
     var region = {
         id:1,
         geometry: {
@@ -56,10 +56,10 @@ tape('index region', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    queueFeature(conf.region, region, assert.end);
+    queueFeature(conf.region, region, t.end);
 });
 
-tape('index place', function(assert) {
+tape('index place', function(t) {
     var place = {
         id:1,
         geometry: {
@@ -84,7 +84,7 @@ tape('index place', function(assert) {
             'carmen:center':[0,0]
         }
     };
-    queueFeature(conf.place, place, assert.end);
+    queueFeature(conf.place, place, t.end);
 });
 tape('build queued features', function(t) {
     var q = queue();
@@ -96,37 +96,37 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Toronto', function(assert) {
+tape('Toronto', function(t) {
     c.geocode('Toronto', {}, function(err, res) {
-        assert.ifError(err);
+        t.ifError(err);
         var filepath = __dirname + '/fixtures/output.default.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
-        assert.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
-        assert.end();
+        t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
+        t.end();
     });
 });
 
-tape('Toronto (dev mode)', function(assert) {
+tape('Toronto (dev mode)', function(t) {
     c.geocode('Toronto', { debug: true }, function(err, res) {
-        assert.ifError(err);
+        t.ifError(err);
         var filepath = __dirname + '/fixtures/output.dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
-        assert.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
-        assert.end();
+        t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
+        t.end();
     });
 });
 
-tape('0,0 (dev mode)', function(assert) {
+tape('0,0 (dev mode)', function(t) {
     c.geocode('0,0', { debug: true }, function(err, res) {
-        assert.ifError(err);
+        t.ifError(err);
         var filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
-        assert.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
-        assert.end();
+        t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
+        t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

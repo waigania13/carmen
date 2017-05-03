@@ -1,7 +1,7 @@
 var verifymatch = require('../lib/verifymatch');
 var tape = require('tape');
 
-tape('verifymatch.sortFeature', function(assert) {
+tape('verifymatch.sortFeature', function(t) {
     var arr = [
         { id: 7, properties: { 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null } },
         { id: 6, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': null } },
@@ -12,12 +12,12 @@ tape('verifymatch.sortFeature', function(assert) {
         { id: 1, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} }
     ];
     arr.sort(verifymatch.sortFeature);
-    assert.deepEqual(arr.map(function(f) { return f.id }), [1,2,3,4,5,6,7]);
+    t.deepEqual(arr.map(function(f) { return f.id }), [1,2,3,4,5,6,7]);
 
-    assert.end();
+    t.end();
 });
 
-tape('verifymatch.sortContext (no distance)', function(assert) {
+tape('verifymatch.sortContext (no distance)', function(t) {
     var c;
     var arr = [];
 
@@ -73,12 +73,12 @@ tape('verifymatch.sortContext (no distance)', function(assert) {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    assert.deepEqual(arr.map(function(c) { return c[0].id }), [0,1,2,3,4,5,6,7,8,9,10]);
+    t.deepEqual(arr.map(function(c) { return c[0].id }), [0,1,2,3,4,5,6,7,8,9,10]);
 
-    assert.end();
+    t.end();
 });
 
-tape('verifymatch.sortContext (with distance)', function(assert) {
+tape('verifymatch.sortContext (with distance)', function(t) {
     var c;
     var arr = [];
 
@@ -110,12 +110,12 @@ tape('verifymatch.sortContext (with distance)', function(assert) {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    assert.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3,4,5,6]);
+    t.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3,4,5,6]);
 
-    assert.end();
+    t.end();
 });
 
-tape('verifymatch.sortContext (distance vs addresstype)', function(assert) {
+tape('verifymatch.sortContext (distance vs addresstype)', function(t) {
     var c;
     var arr = [];
 
@@ -132,8 +132,8 @@ tape('verifymatch.sortContext (distance vs addresstype)', function(assert) {
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    assert.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3]);
+    t.deepEqual(arr.map(function(c) { return c[0].id }), [1,2,3]);
 
-    assert.end();
+    t.end();
 });
 

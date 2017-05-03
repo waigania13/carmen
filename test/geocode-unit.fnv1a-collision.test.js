@@ -57,7 +57,7 @@ tape('search: "av francisco de aguirre 2 la serena"', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

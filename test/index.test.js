@@ -11,7 +11,7 @@ var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 
-test('index - streaming interface', function(assert) {
+test('index - streaming interface', function(t) {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
@@ -19,7 +19,7 @@ test('index - streaming interface', function(assert) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -28,7 +28,7 @@ test('index - streaming interface', function(assert) {
     };
 
     var carmen = new Carmen(conf);
-    assert.test('index docs.json', function(q) {
+    t.test('index docs.json', function(q) {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
             output: outputStream
@@ -37,7 +37,7 @@ test('index - streaming interface', function(assert) {
             q.end();
         });
     });
-    assert.test('ensure index was successful', function(q) {
+    t.test('ensure index was successful', function(q) {
         carmen.analyze(conf.to, function(err, stats) {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
@@ -46,10 +46,10 @@ test('index - streaming interface', function(assert) {
             q.end();
         });
     });
-    assert.end();
+    t.end();
 });
 
-test('index.generateStats', function(assert) {
+test('index.generateStats', function(t) {
     var docs = [{
         type: "Feature",
         properties: {
@@ -66,7 +66,7 @@ test('index.generateStats', function(assert) {
         geometry: {}
     }];
     var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
-    assert.deepEqual(indexdocs.generateFrequency(docs, {}), {
+    t.deepEqual(indexdocs.generateFrequency(docs, {}), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
@@ -74,14 +74,14 @@ test('index.generateStats', function(assert) {
         street: [ 1 ]
     });
     // @TODO should 'main' in this case collapse down to 2?
-    assert.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
+    t.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
         main: [ 2 ],
         rd: [ 1 ],
         st: [ 1 ]
     });
-    assert.end();
+    t.end();
 });
 
 test('index.update -- error', function(t) {
@@ -284,10 +284,10 @@ test('error -- zoom too low', function(t) {
     });
 });
 
-test('index phrase collection', function(assert) {
+test('index phrase collection', function(t) {
     var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
-    assert.ok(c);
+    t.ok(c);
     var docs = [{
         id:1,
         type: 'Feature',
@@ -313,11 +313,11 @@ test('index phrase collection', function(assert) {
     }];
     index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
-        assert.ifError(err);
+        t.ifError(err);
         var id1 = termops.encodePhrase('a');
-        assert.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), null] ], '1 phrase');
-        assert.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
-        assert.end();
+        t.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), null] ], '1 phrase');
+        t.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
+        t.end();
     }
 });
 
@@ -352,13 +352,13 @@ test('error -- _geometry too high resolution', function(t) {
     });
 });
 
-test('index.cleanDocs', function(assert) {
+test('index.cleanDocs', function(t) {
     var sourceWithAddress = {geocoder_address:true};
     var sourceWithoutAddress = {geocoder_address:false};
 
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');
-    assert.equal(typeof index.cleanDocs(sourceWithAddress, [{geometry:{},properties: { 'carmen:addressnumber':{}} }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
-    assert.end();
+    t.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
+    t.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');
+    t.equal(typeof index.cleanDocs(sourceWithAddress, [{geometry:{},properties: { 'carmen:addressnumber':{}} }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
+    t.end();
 });
 

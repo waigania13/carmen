@@ -106,35 +106,35 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('multitype reverse', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: capital');
-    assert.comment('note:   shifted reverse');
+tape('multitype reverse', function(t) {
+    t.comment('query:  0,0');
+    t.comment('result: capital');
+    t.comment('note:   shifted reverse');
     c.geocode('0,0', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'smallplace, district 1, capital');
-        assert.deepEqual(res.features[0].id, 'place.2');
-        assert.deepEqual(res.features[0].context, [
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'smallplace, district 1, capital');
+        t.deepEqual(res.features[0].id, 'place.2');
+        t.deepEqual(res.features[0].context, [
             { id: 'district.1', text: 'district 1' },
             { id: 'region.1', text: 'capital' }
         ]);
-        assert.end();
+        t.end();
     });
 });
 
-tape('multitype forward, q=capital', function(assert) {
-    assert.comment('query:  capital');
-    assert.comment('result: capital');
-    assert.comment('note:   shifted forward');
+tape('multitype forward, q=capital', function(t) {
+    t.comment('query:  capital');
+    t.comment('result: capital');
+    t.comment('note:   shifted forward');
     c.geocode('capital', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'capital');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.deepEqual(res.features[0].context, undefined);
-        assert.end();
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'capital');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context, undefined);
+        t.end();
     });
 });
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

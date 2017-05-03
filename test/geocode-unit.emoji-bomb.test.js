@@ -9,18 +9,18 @@ for (var i = 0; i < 100; i++) {
 }
 
 var c = new Carmen(conf);
-tape('rejects a heavy emoji query quickly', function(assert) {
+tape('rejects a heavy emoji query quickly', function(t) {
     var start = +new Date();
     c.geocode(decodeURIComponent('%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82'), {}, function(err, res) {
-        assert.ifError(err);
-        assert.equal(+new Date() - start < 50, true, 'takes less than 50ms to reject query');
-        assert.equal(res.features.length, 0, 'finds no features');
-        assert.end();
+        t.ifError(err);
+        t.equal(+new Date() - start < 50, true, 'takes less than 50ms to reject query');
+        t.equal(res.features.length, 0, 'finds no features');
+        t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

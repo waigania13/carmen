@@ -15,11 +15,11 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(assert) {
-    c._open(assert.end);
+tape('ready', function(t) {
+    c._open(t.end);
 });
 
-tape('index place', function(assert) {
+tape('index place', function(t) {
     var docs = [];
     for (var i = 1; i < 100; i++) {
         var text = Math.random().toString().split('.').pop().toString(36);
@@ -32,7 +32,7 @@ tape('index place', function(assert) {
             }
         });
     }
-    queueFeature(conf.place, docs, function() { buildQueued(conf.place, assert.end) })
+    queueFeature(conf.place, docs, function() { buildQueued(conf.place, t.end) })
 });
 
 function reset() {
@@ -52,8 +52,8 @@ tape('io', function(t) {
     });
 });
 
-tape('index.teardown', function(assert) {
+tape('index.teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

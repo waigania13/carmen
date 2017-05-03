@@ -259,9 +259,9 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 //Handle addressclusters
@@ -339,9 +339,9 @@ tape('teardown', function(assert) {
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 //Handle ITP lines
@@ -415,7 +415,7 @@ tape('teardown', function(assert) {
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

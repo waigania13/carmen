@@ -14,7 +14,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -27,10 +27,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index postcode', function(assert) {
+    tape('index postcode', function(t) {
         queueFeature(conf.postcode, {
             id: 1,
             type: 'Feature',
@@ -42,7 +42,7 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
     tape('build queued features', function(t) {
         var q = queue();
@@ -54,56 +54,56 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('query: 10000', function(assert) {
+    tape('query: 10000', function(t) {
         c.geocode('10000', {}, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, United States');
+            t.end();
         });
     });
 
-    tape('query: 10000, language: es', function(assert) {
+    tape('query: 10000, language: es', function(t) {
         c.geocode('10000', { language: 'es' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, Estados Unidos');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, Estados Unidos');
+            t.end();
         });
     });
 
-    tape('query: 10000, language: es, languageMode: strict', function(assert) {
+    tape('query: 10000, language: es, languageMode: strict', function(t) {
         c.geocode('10000', { language: 'es', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, Estados Unidos');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, Estados Unidos');
+            t.end();
         });
     });
 
-    tape('query: 1,1', function(assert) {
+    tape('query: 1,1', function(t) {
         c.geocode('1,1', {}, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, United States');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: es', function(assert) {
+    tape('query: 1,1, language: es', function(t) {
         c.geocode('1,1', { language: 'es' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, Estados Unidos');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, Estados Unidos');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: es, languageMode: strict', function(assert) {
+    tape('query: 1,1, language: es, languageMode: strict', function(t) {
         c.geocode('1,1', { language: 'es', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, '10000, Estados Unidos');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '10000, Estados Unidos');
+            t.end();
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 })();

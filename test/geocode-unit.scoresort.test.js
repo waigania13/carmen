@@ -151,9 +151,9 @@ var queue = require('d3-queue').queue;
             t.end();
         });
     });
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 
 })();

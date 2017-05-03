@@ -110,9 +110,9 @@ tape('find nueva york, language=es', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 // Simulate a case where carmen:text has a discrepancy but carmen:text_en
@@ -208,8 +208,8 @@ tape('find makkah', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

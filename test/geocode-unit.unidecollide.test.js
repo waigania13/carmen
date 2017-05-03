@@ -54,9 +54,9 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 
 })();
@@ -94,9 +94,9 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 
 })();

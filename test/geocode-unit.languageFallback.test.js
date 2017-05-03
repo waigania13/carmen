@@ -14,7 +14,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -27,9 +27,9 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
-    tape('index country2', function(assert) {
+    tape('index country2', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 2,
@@ -43,7 +43,7 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
     tape('build queued features', function(t) {
         var q = queue();
@@ -55,8 +55,8 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('make sure indexes contain pre-computed fallbacks', function(assert) {
-        assert.deepEquals(
+    tape('make sure indexes contain pre-computed fallbacks', function(t) {
+        t.deepEquals(
             conf.country._geocoder.grid.list(),
             [
                 [ 'india', [ 0, 1 ] ],
@@ -66,29 +66,29 @@ var addFeature = require('../lib/util/addfeature'),
             ],
             "fallbacks have been properly computed"
         );
-        assert.end();
+        t.end();
     })
 
-    tape('query: United States', function(assert) {
+    tape('query: United States', function(t) {
         c.geocode('United States', { language: 'ar'}, function(err, res) {
-            assert.equal('United States', res.features[0].text, 'Fallback to English');
-            assert.equal('en', res.features[0].language, 'Language returned is English');
-            assert.ifError(err);
-            assert.end();
+            t.equal('United States', res.features[0].text, 'Fallback to English');
+            t.equal('en', res.features[0].language, 'Language returned is English');
+            t.ifError(err);
+            t.end();
         });
     });
 
-    tape('query: India', function(assert) {
+    tape('query: India', function(t) {
         c.geocode('India', { language: 'ar'}, function(err, res) {
-            assert.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
-            assert.equal('ur', res.features[0].language, 'Language returned is Urdu');
-            assert.ifError(err);
-            assert.end();
+            t.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
+            t.equal('ur', res.features[0].language, 'Language returned is Urdu');
+            t.ifError(err);
+            t.end();
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 })();

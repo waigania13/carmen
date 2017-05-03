@@ -19,8 +19,8 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(assert) {
-    c._open(assert.end);
+tape('ready', function(t) {
+    c._open(t.end);
 });
 
 tape('index country', function(t) {
@@ -119,7 +119,7 @@ tape('reverse 0,0, types=region', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

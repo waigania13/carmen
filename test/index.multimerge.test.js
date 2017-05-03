@@ -14,7 +14,7 @@ var randomMBtiles = function() {
     return '/tmp/' + ((new Date()).getTime() + Math.random()).toString().replace(".", "_") + ".mbtiles";
 }
 
-test('index - streaming interface', function(assert) {
+test('index - streaming interface', function(t) {
     function getIndex(start, end) {
 
         var count = 0;
@@ -38,7 +38,7 @@ test('index - streaming interface', function(assert) {
         var doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
-        if (!doc.id) assert.ok(doc.id, 'has id: ' + doc.id);
+        if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
@@ -48,7 +48,7 @@ test('index - streaming interface', function(assert) {
         B2: randomMBtiles()
     }
     var carmens = {}, confs = {};
-    assert.test('open carmens', function(t) {
+    t.test('open carmens', function(t) {
         var q = queue();
         Object.keys(files).forEach(function(key) {
             q.defer(function(key, callback) {
@@ -71,7 +71,7 @@ test('index - streaming interface', function(assert) {
         B2: getIndex(150,200)
     }
     Object.keys(chunks).forEach(function(key) {
-        assert.test('index docs.json chunk ' + key, function(t) {
+        t.test('index docs.json chunk ' + key, function(t) {
             carmens[key].index(chunks[key], confs[key].country, {
                 zoom: 6,
                 output: outputStream
@@ -88,7 +88,7 @@ test('index - streaming interface', function(assert) {
     };
 
     carmens.D = new Carmen(confs.D);
-    assert.test('index docs.json in its entirety', function(q) {
+    t.test('index docs.json in its entirety', function(q) {
         carmens.D.index(getIndex(0,200), confs.D.country, {
             zoom: 6,
             output: outputStream
@@ -98,7 +98,7 @@ test('index - streaming interface', function(assert) {
         });
     });
 
-    assert.test('multi-way merged indexes', function(q) {
+    t.test('multi-way merged indexes', function(q) {
         files.C = randomMBtiles();
         merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, function(err) {
             if (err) throw err;
@@ -113,45 +113,45 @@ test('index - streaming interface', function(assert) {
             });
         });
     });
-    assert.test('ensure index was successful for index A after merging', function(q) {
+    t.test('ensure index was successful for index A after merging', function(q) {
         carmens.C.geocode("India", {}, function(err, result) {
-            assert.ifError(err, "error");
-            assert.equal(result.features[0].text, "India", "found India");
+            t.ifError(err, "error");
+            t.equal(result.features[0].text, "India", "found India");
             q.end();
         });
     });
-    assert.test('ensure index was successful for index B1 after merging', function(q) {
+    t.test('ensure index was successful for index B1 after merging', function(q) {
         carmens.C.geocode("Paraguay", {}, function(err, result) {
-            assert.ifError(err, "error");
-            assert.equal(result.features[0].text, "Paraguay", "found Paraguay");
+            t.ifError(err, "error");
+            t.equal(result.features[0].text, "Paraguay", "found Paraguay");
             q.end();
         });
     });
-    assert.test('ensure index was successful for index B2 after merging', function(q) {
+    t.test('ensure index was successful for index B2 after merging', function(q) {
         carmens.C.geocode("Palau", {}, function(err, result) {
-            assert.ifError(err, "error");
-            assert.equal(result.features[0].text, "Palau", "found Palau");
+            t.ifError(err, "error");
+            t.equal(result.features[0].text, "Palau", "found Palau");
             q.end();
         });
     });
 
-    assert.test('ensure geocode of a term that occurs in both indexes produces the same results', function(q) {
+    t.test('ensure geocode of a term that occurs in both indexes produces the same results', function(q) {
         carmens.C.geocode('Republic', {}, function(err, resultC) {
-            assert.ifError(err, "error");
+            t.ifError(err, "error");
             carmens.D.geocode('Republic', {}, function(err, resultD) {
-                assert.ifError(err, "error");
-                assert.ok(de(resultC, resultD), 'geocoding "Republic" produces identical results in merged and complete index');
+                t.ifError(err, "error");
+                t.ok(de(resultC, resultD), 'geocoding "Republic" produces identical results in merged and complete index');
                 q.end();
             });
         });
     });
 
-    assert.test('clean up', function(t) {
+    t.test('clean up', function(t) {
         Object.keys(files).forEach(function(key) {
             fs.unlinkSync(files[key]);
         });
         t.end();
     })
 
-    assert.end();
+    t.end();
 });

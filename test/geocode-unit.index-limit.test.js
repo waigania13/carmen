@@ -16,8 +16,8 @@ for (var i = 0; i < 127; i++) {
 conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, function() {});
 
 var c = new Carmen(conf);
-tape('index place', function(assert) {
-    assert.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
+tape('index place', function(t) {
+    t.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -25,7 +25,7 @@ tape('index place', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
 tape('build queued features', function(t) {
     var q = queue();
@@ -53,7 +53,7 @@ tape('reverse place', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

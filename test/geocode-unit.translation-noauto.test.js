@@ -164,8 +164,8 @@ var runTests = function(mode) {
 
 runTests("memory_cache");
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

@@ -242,7 +242,7 @@ test('ops#toFeature', function(t) {
     t.end();
 });
 
-test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
+test('ops#toFeature + no formatter + languageMode=strict', function(t) {
     var context, feature;
 
     context = [{
@@ -274,22 +274,22 @@ test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
     }];
 
     feature = ops.toFeature(context, {}, ['en'], 'strict', true);
-    assert.deepEqual(feature.place_name, 'Chicago, Illinois, United States');
-    assert.deepEqual(feature.context, [
+    t.deepEqual(feature.place_name, 'Chicago, Illinois, United States');
+    t.deepEqual(feature.context, [
         { id: 'region.1', language: 'en', language_en: 'en', text: 'Illinois', text_en: 'Illinois' },
         { id: 'country.1', language: 'en', language_en: 'en', text: 'United States', text_en: 'United States' }
     ]);
 
     feature = ops.toFeature(context, {}, ['zh'], 'strict', true);
-    assert.deepEqual(feature.place_name, '芝加哥, 美国');
-    assert.deepEqual(feature.context, [
+    t.deepEqual(feature.place_name, '芝加哥, 美国');
+    t.deepEqual(feature.context, [
         { id: 'country.1', language: 'zh', language_zh: 'zh', text: '美国', text_zh: '美国' }
     ]);
 
-    assert.end()
+    t.end()
 });
 
-test('ops#toFeature + formatter + languageMode=strict', function(assert) {
+test('ops#toFeature + formatter + languageMode=strict', function(t) {
     var context, feature;
 
     context = [{
@@ -324,8 +324,8 @@ test('ops#toFeature + formatter + languageMode=strict', function(assert) {
         en: '{place._name}, {country._name}',
         zh: '{country._name}{place._name}'
     }, ['en'], 'strict', true);
-    assert.deepEqual(feature.place_name, 'Chicago, United States');
-    assert.deepEqual(feature.context, [
+    t.deepEqual(feature.place_name, 'Chicago, United States');
+    t.deepEqual(feature.context, [
         { id: 'region.1', language: 'en', language_en: 'en', text: 'Illinois', text_en: 'Illinois' },
         { id: 'country.1', language: 'en', language_en: 'en', text: 'United States', text_en: 'United States' }
     ]);
@@ -334,11 +334,11 @@ test('ops#toFeature + formatter + languageMode=strict', function(assert) {
         en: '{place._name}, {country._name}',
         zh: '{country._name}{place._name}'
     }, ['zh'], 'strict', true);
-    assert.deepEqual(feature.place_name, '美国芝加哥');
-    assert.deepEqual(feature.context, [
+    t.deepEqual(feature.place_name, '美国芝加哥');
+    t.deepEqual(feature.context, [
         { id: 'country.1', language: 'zh', language_zh: 'zh', text: '美国', text_zh: '美国' }
     ]);
 
-    assert.end()
+    t.end()
 });
 

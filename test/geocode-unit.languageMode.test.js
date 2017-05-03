@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -27,10 +27,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             id: 2,
             type: 'Feature',
@@ -43,10 +43,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             id: 3,
             type: 'Feature',
@@ -58,7 +58,7 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
     tape('build queued features', function(t) {
@@ -71,83 +71,83 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('query: c, language: zh, languageMode: strict', function(assert) {
+    tape('query: c, language: zh, languageMode: strict', function(t) {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
-            assert.equal(res.features[0].place_name, '中国', '0 - China');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
+            t.equal(res.features[0].place_name, '中国', '0 - China');
+            t.end();
         });
     });
 
-    tape('query: c, language: en, languageMode: strict', function(assert) {
+    tape('query: c, language: en, languageMode: strict', function(t) {
         c.geocode('c', { language: 'en', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
-            assert.equal(res.features[0].place_name, 'China', '0 - China');
-            assert.equal(res.features[1].place_name, 'Canada', '1 - Canada');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
+            t.equal(res.features[0].place_name, 'China', '0 - China');
+            t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
+            t.end();
         });
     });
 
-    tape('query: c, languageMode: strict', function(assert) {
+    tape('query: c, languageMode: strict', function(t) {
         c.geocode('c', { languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 3, 'does nothing without language code');
-            assert.equal(res.features[0].place_name, 'China', '0 - China');
-            assert.equal(res.features[1].place_name, 'Canada', '1 - Canada');
-            assert.equal(res.features[2].place_name, 'Cambodia', '2 - Cambodia');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 3, 'does nothing without language code');
+            t.equal(res.features[0].place_name, 'China', '0 - China');
+            t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
+            t.equal(res.features[2].place_name, 'Cambodia', '2 - Cambodia');
+            t.end();
         });
     });
 
-    tape('query: c, language: en, languageMode: bogus', function(assert) {
+    tape('query: c, language: en, languageMode: bogus', function(t) {
         c.geocode('c', { language: 'en', languageMode: 'bogus' }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
-            assert.end();
+            t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: zh, languageMode: strict', function(assert) {
+    tape('query: 1,1, language: zh, languageMode: strict', function(t) {
         c.geocode('1,1', { language: 'zh', languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
-            assert.equal(res.features[0].place_name, '中国', '0 - China');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
+            t.equal(res.features[0].place_name, '中国', '0 - China');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: strict', function(assert) {
+    tape('query: 1,1, language: en, languageMode: strict', function(t) {
         c.geocode('1,1', { language: 'en', languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
-            assert.equal(res.features[0].place_name, 'China', '0 - China');
-            assert.equal(res.features[1].place_name, 'Canada', '1 - Canada');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
+            t.equal(res.features[0].place_name, 'China', '0 - China');
+            t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
+            t.end();
         });
     });
 
-    tape('query: 1,1, languageMode: strict', function(assert) {
+    tape('query: 1,1, languageMode: strict', function(t) {
         c.geocode('1,1', { languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 3, 'does nothing without language code');
-            assert.equal(res.features[0].place_name, 'China', '0 - China');
-            assert.equal(res.features[1].place_name, 'Canada', '1 - Canada');
-            assert.equal(res.features[2].place_name, 'Cambodia', '2 - Cambodia');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 3, 'does nothing without language code');
+            t.equal(res.features[0].place_name, 'China', '0 - China');
+            t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
+            t.equal(res.features[2].place_name, 'Cambodia', '2 - Cambodia');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: bogus', function(assert) {
+    tape('query: 1,1, language: en, languageMode: bogus', function(t) {
         c.geocode('1,1', { language: 'en', languageMode: 'bogus', types: ['country'], limit: 5 }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
-            assert.end();
+            t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
+            t.end();
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 })();
 
@@ -160,7 +160,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -174,10 +174,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index region', function(assert) {
+    tape('index region', function(t) {
         queueFeature(conf.region, {
             type: 'Feature',
             id: 1,
@@ -190,10 +190,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index place', function(assert) {
+    tape('index place', function(t) {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 1,
@@ -207,7 +207,7 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
     tape('build queued features', function(t) {
@@ -221,58 +221,58 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('query: c, language: zh, languageMode: strict', function(assert) {
+    tape('query: c, language: zh, languageMode: strict', function(t) {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
-            assert.equal(res.features[0].place_name, '芝加哥, 美国', '0 - Chicago');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
+            t.equal(res.features[0].place_name, '芝加哥, 美国', '0 - Chicago');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: zh, languageMode: strict', function(assert) {
+    tape('query: 1,1, language: zh, languageMode: strict', function(t) {
         c.geocode('1,1', { language: 'zh', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 2, 'filters features to just those with "zh" (x2)');
-            assert.equal(res.features[0].place_name, '芝加哥, 美国', '0 - Chicago');
-            assert.equal(res.features[1].place_name, '美国', '1 - United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 2, 'filters features to just those with "zh" (x2)');
+            t.equal(res.features[0].place_name, '芝加哥, 美国', '0 - Chicago');
+            t.equal(res.features[1].place_name, '美国', '1 - United States');
+            t.end();
         });
     });
 
 
-    tape('query: 1,1, language: en, languageMode: strict', function(assert) {
+    tape('query: 1,1, language: en, languageMode: strict', function(t) {
         c.geocode('1,1', { language: 'en', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
-            assert.equal(res.features[0].place_name, 'Chicago, Illinois, United States', '0 - Chicago');
-            assert.equal(res.features[1].place_name, 'Illinois, United States', '1 - Illinois');
-            assert.equal(res.features[2].place_name, 'United States', '2 - United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
+            t.equal(res.features[0].place_name, 'Chicago, Illinois, United States', '0 - Chicago');
+            t.equal(res.features[1].place_name, 'Illinois, United States', '1 - Illinois');
+            t.equal(res.features[2].place_name, 'United States', '2 - United States');
+            t.end();
         });
     });
 
-    tape('query: 1,1, languageMode: strict', function(assert) {
+    tape('query: 1,1, languageMode: strict', function(t) {
         c.geocode('1,1', { languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
-            assert.equal(res.features[0].place_name, 'Chicago, Illinois, United States', '0 - Chicago');
-            assert.equal(res.features[1].place_name, 'Illinois, United States', '1 - Illinois');
-            assert.equal(res.features[2].place_name, 'United States', '2 - United States');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
+            t.equal(res.features[0].place_name, 'Chicago, Illinois, United States', '0 - Chicago');
+            t.equal(res.features[1].place_name, 'Illinois, United States', '1 - Illinois');
+            t.equal(res.features[2].place_name, 'United States', '2 - United States');
+            t.end();
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: bogus', function(assert) {
+    tape('query: 1,1, language: en, languageMode: bogus', function(t) {
         c.geocode('1,1', { language: 'en', languageMode: 'bogus', types: ['country'], limit: 5 }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
-            assert.end();
+            t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
+            t.end();
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 })();
 
@@ -285,7 +285,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(assert) {
+    tape('index country', function(t) {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -300,10 +300,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index region', function(assert) {
+    tape('index region', function(t) {
         queueFeature(conf.region, {
             type: 'Feature',
             id: 1,
@@ -316,10 +316,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index place', function(assert) {
+    tape('index place', function(t) {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 1,
@@ -332,10 +332,10 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
-    tape('index place', function(assert) {
+    tape('index place', function(t) {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 2,
@@ -349,7 +349,7 @@ var addFeature = require('../lib/util/addfeature'),
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, assert.end);
+        }, t.end);
     });
 
     tape('build queued features', function(t) {
@@ -363,35 +363,35 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('query: paris, language: sr-Latn, languageMode: strict', function(assert) {
+    tape('query: paris, language: sr-Latn, languageMode: strict', function(t) {
         c.geocode('paris', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 0, 'filters out mixed-script results');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 0, 'filters out mixed-script results');
+            t.end();
         });
     });
 
-    tape('query: belgrade, language: sr-Latn, languageMode: strict', function(assert) {
+    tape('query: belgrade, language: sr-Latn, languageMode: strict', function(t) {
         c.geocode('belgrade', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 1, 'allows hr result');
-            assert.equal(res.features[0].language, 'hr', 'language code is hr');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'allows hr result');
+            t.equal(res.features[0].language, 'hr', 'language code is hr');
+            t.end();
         });
     });
 
-    tape('query: belgrade, language: hr, languageMode: strict', function(assert) {
+    tape('query: belgrade, language: hr, languageMode: strict', function(t) {
         c.geocode('belgrade', { language: 'hr', languageMode: 'strict' }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features.length, 1, 'allows hr result');
-            assert.equal(res.features[0].language, 'hr', 'language code is hr');
-            assert.equal(res.features[0].place_name, 'Beograd, Teksas', 'language=hr excludes sr results');
-            assert.end();
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'allows hr result');
+            t.equal(res.features[0].language, 'hr', 'language code is hr');
+            t.equal(res.features[0].place_name, 'Beograd, Teksas', 'language=hr excludes sr results');
+            t.end();
         });
     });
 
-    tape('teardown', function(assert) {
+    tape('teardown', function(t) {
         context.getTile.cache.reset();
-        assert.end();
+        t.end();
     });
 })();

@@ -78,11 +78,11 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('paris ?language=en,es,bogus', function(assert) {
+    tape('paris ?language=en,es,bogus', function(t) {
         c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
-            assert.equal(err && err.code, 'EINVALID');
-            assert.end();
+            t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
+            t.equal(err && err.code, 'EINVALID');
+            t.end();
         });
     });
 
@@ -141,7 +141,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', function(t) {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
