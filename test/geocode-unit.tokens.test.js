@@ -8,12 +8,12 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {"Street": "St"}
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('geocoder token test', (t) => {
@@ -28,7 +28,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('test address index for relev', (t) => {
         c.geocode('fake st', { limit_verify: 1 }, function(err, res) {
@@ -39,11 +39,11 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
         address: new mem({
             maxzoom: 6
-        }, function() {})
+        }, () => {})
     };
     var opts = {
         tokens: {"dix-huitième": "18e"}
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('test address index for relev', (t) => {
         c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function(err, res) {
@@ -80,12 +80,12 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 // RegExp captures have been put on hiatus per https://github.com/mapbox/carmen/pull/283.
-(function() {
+(() => {
     var conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {'q([a-z])([a-z])([a-z])': "$3$2$1"}
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('geocoder token test', (t) => {
@@ -100,7 +100,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('test token replacement', (t) => {
         c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
@@ -111,7 +111,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
         address: new mem({
             maxzoom: 6,
@@ -119,7 +119,7 @@ var addFeature = require('../lib/util/addfeature'),
                 "Road": "Rd",
                 "Street": "St"
             }
-        }, function() {})
+        }, () => {})
     };
     var opts = {
         tokens: {
@@ -159,7 +159,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('unset opts', (t) => {
         addFeature.setOptions({});
@@ -183,12 +183,12 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {'strasse':'str'}
-        }, function() {})
+        }, () => {})
     };
     var opts = {
         tokens: {
@@ -213,7 +213,7 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('test token replacement', (t) => {
         c.geocode('Talstrasse', { limit_verify: 1 }, function(err, res) {

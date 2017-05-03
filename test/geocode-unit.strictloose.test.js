@@ -11,9 +11,9 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem(null, function() {}),
-    province: new mem(null, function() {}),
-    place: new mem(null, function() {})
+    country: new mem(null, () => {}),
+    province: new mem(null, () => {}),
+    place: new mem(null, () => {})
 };
 var c = new Carmen(conf);
 tape('index country', (t) => {

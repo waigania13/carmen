@@ -10,9 +10,9 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    region: new mem({maxzoom:6, geocoder_types:['region','place']}, function() {}),
-    place: new mem({maxzoom:6}, function() {}),
-    poi: new mem({maxzoom:6}, function() {})
+    region: new mem({maxzoom:6, geocoder_types:['region','place']}, () => {}),
+    place: new mem({maxzoom:6}, () => {}),
+    poi: new mem({maxzoom:6}, () => {})
 };
 var c = new Carmen(conf);
 

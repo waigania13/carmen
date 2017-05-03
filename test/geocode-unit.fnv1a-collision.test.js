@@ -8,7 +8,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    test: new mem({ maxzoom:6, geocoder_address: 1 }, function() {})
+    test: new mem({ maxzoom:6, geocoder_address: 1 }, () => {})
 };
 var c = new Carmen(conf);
 tape('index "av francisco de aguirre #"', (t) => {

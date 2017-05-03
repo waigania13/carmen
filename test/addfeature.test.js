@@ -8,8 +8,8 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    address : new mem({maxzoom: 6}, function() {}),
-    poi : new mem({maxzoom: 6}, function() {})
+    address : new mem({maxzoom: 6}, () => {}),
+    poi : new mem({maxzoom: 6}, () => {})
 };
 const c = new Carmen(conf);
 

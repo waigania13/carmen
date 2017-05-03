@@ -8,9 +8,9 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    province: new mem(null, function() {}),
-    city: new mem(null, function() {}),
-    street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
+    province: new mem(null, () => {}),
+    city: new mem(null, () => {}),
+    street: new mem({ maxzoom:6, geocoder_address:1 }, () => {})
 };
 var c = new Carmen(conf);
 tape('index province', (t) => {

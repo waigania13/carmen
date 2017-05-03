@@ -11,11 +11,11 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6 }, function() {}),
-    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: 'cn'}, function() {}),
-    poi_au: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au'}, function() {})
+    country: new mem({ maxzoom: 6 }, () => {}),
+    region: new mem({ maxzoom: 6 }, () => {}),
+    place: new mem({ maxzoom: 6 }, () => {}),
+    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: 'cn'}, () => {}),
+    poi_au: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au'}, () => {})
 };
 
 var c = new Carmen(conf);

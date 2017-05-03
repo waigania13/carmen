@@ -10,15 +10,15 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {})
 };
 var c = new Carmen(conf);
 
 tape('index region with bad language code', (t) => {
     var conf2 = {
-        country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
-        region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {})
     };
     var c2 = new Carmen(conf2);
     t.ok(c2);
@@ -34,7 +34,7 @@ tape('index region with bad language code', (t) => {
         geometry: { type: 'MultiPolygon', coordinates: [] },
         bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
     };
-    queueFeature(conf2.region, region, function() { buildQueued(conf2.region, function(err) {
+    queueFeature(conf2.region, region, () => { buildQueued(conf2.region, function(err) {
         t.equal(err.message, 'fake is an invalid language code');
         t.end();
     })});

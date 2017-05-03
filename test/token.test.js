@@ -1,7 +1,7 @@
 var tokenize = require('../lib/util/token.js');
 var tape = require('tape');
 
-(function() {
+(() => {
     tape('test tokens', (t) => {
         var tokens = {
             'Street': 'st'
@@ -13,7 +13,7 @@ var tape = require('tape');
     });
 })();
 
-(function() {
+(() => {
     tape('test tokens', (t) => {
         var tokens = {
             'Street': 'st'
@@ -26,7 +26,7 @@ var tape = require('tape');
     });
 })();
 
-(function() {
+(() => {
     tape('test global tokens - talstrasse', (t) => {
         var tokens = {
             '\\b(.+)(strasse|str|straße)\\b': "$1 str"

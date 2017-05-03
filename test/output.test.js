@@ -9,9 +9,9 @@ var addFeature = require('../lib/util/addfeature'),
 var fs = require('fs');
 
 var conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {})
 };
 var c = new Carmen(conf);
 

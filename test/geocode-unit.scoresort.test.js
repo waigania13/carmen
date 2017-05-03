@@ -9,14 +9,14 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 var queue = require('d3-queue').queue;
 
-(function() {
+(() => {
 
     var conf = {
-        region: new mem(null, function() {}),
-        place: new mem(null, function() {}),
-        lamplace: new mem(null, function() {}),
-        namplace: new mem(null, function() {}),
-        locality: new mem(null, function() {})
+        region: new mem(null, () => {}),
+        place: new mem(null, () => {}),
+        lamplace: new mem(null, () => {}),
+        namplace: new mem(null, () => {}),
+        locality: new mem(null, () => {})
     };
     var c = new Carmen(conf);
     // very high max score in region index

@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
 var conf = {
-    place: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
+    place: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
 };
 var c = new Carmen(conf);
 
@@ -32,7 +32,7 @@ tape('index place', (t) => {
             }
         });
     }
-    queueFeature(conf.place, docs, function() { buildQueued(conf.place, t.end) })
+    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end) })
 });
 
 function reset() {

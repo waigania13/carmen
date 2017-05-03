@@ -11,16 +11,16 @@ var conf = {
     region: new mem({
         maxzoom: 6,
         geocoder_stack: ['ca', 'us', 'mx']
-    }, function() {}),
+    }, () => {}),
     place: new mem({
         maxzoom: 6,
         geocoder_stack: ['ca', 'us']
-    }, function() {}),
+    }, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: true,
         geocoder_stack: ['us']
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 

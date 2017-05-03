@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    test: new mem({ maxzoom:6 }, function() {})
+    test: new mem({ maxzoom:6 }, () => {})
 };
 var c = new Carmen(conf);
 tape('index 京都市', (t) => {

@@ -10,18 +10,18 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 //Tests string value for index level geocoder_stack
-(function() {
+(() => {
     var conf = {
         us: new mem({
             maxzoom: 6,
             geocoder_name: 'country',
             geocoder_stack: 'us'
-        }, function() {}),
+        }, () => {}),
         ca: new mem({
             maxzoom: 6,
             geocoder_name: 'country',
             geocoder_stack: 'ca'
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
 
@@ -114,16 +114,16 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 //Tests array values for index level geocoder_stack
-(function() {
+(() => {
     var conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'ca', 'us' ]
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
 
@@ -204,16 +204,16 @@ var addFeature = require('../lib/util/addfeature'),
 //Test mixed string/array index level geocoder stack
 // Test mixed feature level / non existant geocoder_stack tags
 //    - Lack of geocoder_stack should make them able to appear in all stacks
-(function() {
+(() => {
     var conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6,
             geocoder_stack: 'ca'
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
 
@@ -285,16 +285,16 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 // Test idx assignment
-(function() {
+(() => {
     var conf = {
         country: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'us', 'ca' ]
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
 
@@ -343,15 +343,15 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 //Test existing/non-existing index level geocoder_stack
-(function() {
+(() => {
     var conf = {
         country: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6,
             geocoder_stack: [ 'ca', 'us' ]
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
 

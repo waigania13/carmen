@@ -5,7 +5,7 @@ var mem = require('../lib/api-mem');
 
 var conf = {};
 for (var i = 0; i < 100; i++) {
-    conf['place-'+i] = new mem({ maxzoom: 6 }, function() {});
+    conf['place-'+i] = new mem({ maxzoom: 6 }, () => {});
 }
 
 var c = new Carmen(conf);

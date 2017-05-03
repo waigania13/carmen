@@ -5,7 +5,7 @@ var tape = require('tape');
 
 // Creates an index with fuzzed data
 function fuzzIndex(limit, callback) {
-    var conf = { street: new mem({ maxzoom:14 }, function() {}) };
+    var conf = { street: new mem({ maxzoom:14 }, () => {}) };
     var c = new Carmen(conf);
     var docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
         .split('\n')
@@ -60,7 +60,7 @@ tape('setup b', (t) => {
 });
 
 tape('merge a + b = c', (t) => {
-    var conf = { street: new mem({ maxzoom:14 }, function() {}) };
+    var conf = { street: new mem({ maxzoom:14 }, () => {}) };
     var c = new Carmen(conf);
     c.merge(sources.a, sources.b, conf.street, {}, function(err, stats) {
         t.ifError(err);

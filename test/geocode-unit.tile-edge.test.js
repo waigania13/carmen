@@ -9,7 +9,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    test: new mem({maxzoom:14}, function() {})
+    test: new mem({maxzoom:14}, () => {})
 };
 var c = new Carmen(conf);
 
@@ -22,7 +22,7 @@ tape('index test', (t) => {
             'carmen:center':[-2.17405858745506,53.4619151830114]
         }
     };
-    queueFeature(conf.test, feature, function() { buildQueued(conf.test, t.end) });
+    queueFeature(conf.test, feature, () => { buildQueued(conf.test, t.end) });
 });
 
 tape('forward between tiles', (t) => {

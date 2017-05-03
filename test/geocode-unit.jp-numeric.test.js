@@ -8,14 +8,14 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    district: new mem(null, function() {}),
-    place: new mem(null, function() {}),
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    district: new mem(null, () => {}),
+    place: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 

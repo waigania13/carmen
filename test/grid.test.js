@@ -2,19 +2,19 @@ var grid = require('../lib/util/grid');
 var test = require('tape');
 
 test('grid', (t) => {
-    t.throws(function() {
+    t.throws(() => {
         grid.encode({ id: Math.pow(2,20) });
     }, Error, 'throws on bad id');
 
-    t.throws(function() {
+    t.throws(() => {
         grid.encode({ id: 1, x: Math.pow(2,14) });
     }, Error, 'throws on bad x');
 
-    t.throws(function() {
+    t.throws(() => {
         grid.encode({ id: 1, x:0, y: Math.pow(2,14) });
     }, Error, 'throws on bad y');
 
-    t.throws(function() {
+    t.throws(() => {
         grid.encode({ id: 1, x:0, y:0, relev: 2 });
     }, Error, 'throws on bad relev');
 

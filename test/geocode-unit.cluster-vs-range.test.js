@@ -11,8 +11,8 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+    addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
 };
 var c = new Carmen(conf);
 tape('index address', (t) => {

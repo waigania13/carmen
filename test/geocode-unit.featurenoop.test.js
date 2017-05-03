@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    a: new mem(null, function() {}),
+    a: new mem(null, () => {}),
 };
 var c = new Carmen(conf);
 tape('index', (t) => {
@@ -22,7 +22,7 @@ tape('index', (t) => {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, function() { buildQueued(conf.a, t.end) });
+    }, () => { buildQueued(conf.a, t.end) });
 });
 tape('reverse geocode', (t) => {
     c.geocode('0,0', { limit_verify:1 }, function(err, res) {

@@ -7,7 +7,7 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var country = new mem(null, function() {});
+var country = new mem(null, () => {});
 var conf = { country: country };
 var a = new Carmen(conf);
 

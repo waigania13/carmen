@@ -7,7 +7,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    place: new mem({maxzoom: 12}, function() {})
+    place: new mem({maxzoom: 12}, () => {})
 };
 var c = new Carmen(conf);
 var tiles = [];
@@ -65,7 +65,7 @@ tape('index place', (t) => {
     };
     docs.push(place);
 
-    queueFeature(conf.place, docs, function() { buildQueued(conf.place, t.end) });
+    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end) });
 });
 
 tape('query', (t) => {

@@ -11,13 +11,13 @@ var conf = {
         maxzoom:6,
         geocoder_type: 'address',
         geocoder_name: 'address'
-    }, function() {}),
+    }, () => {}),
     poi: new mem({
         maxzoom:6,
         geocoder_type: 'poi',
         geocoder_name: 'address',
         geocoder_reverse_mode: true
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 
@@ -88,7 +88,7 @@ tape('add POIs', (t) => {
             coordinates: [1.006,1.006]
         }
     }
-    queueFeature(conf.poi, poi, function() { buildQueued(conf.poi, t.end) });
+    queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end) });
 });
 
 tape('add address', (t) => {
@@ -107,7 +107,7 @@ tape('add address', (t) => {
         }
     }
 
-    queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+    queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
 
 });
 

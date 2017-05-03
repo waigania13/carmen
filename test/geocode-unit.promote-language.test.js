@@ -11,9 +11,9 @@ var addFeature = require('../lib/util/addfeature'),
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
 var conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
 };
 
 var c = new Carmen(conf);
@@ -118,9 +118,9 @@ tape('teardown', (t) => {
 // Simulate a case where carmen:text has a discrepancy but carmen:text_en
 // allows a text match to occur.
 var conf2 = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
 };
 
 var c2 = new Carmen(conf2);

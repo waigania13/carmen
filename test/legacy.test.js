@@ -4,7 +4,7 @@ var mem = require('../lib/api-mem');
 
 tape('legacy version (pre-v1 => ok)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:null }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:null }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ifError(err);
@@ -16,7 +16,7 @@ tape('legacy version (pre-v1 => ok)', (t) => {
 
 tape('legacy version (v1 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:1 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:1 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -27,7 +27,7 @@ tape('legacy version (v1 => error)', (t) => {
 
 tape('current version (v2 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:2 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:2 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -38,7 +38,7 @@ tape('current version (v2 => error)', (t) => {
 
 tape('current version (v3 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:3 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:3 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -49,7 +49,7 @@ tape('current version (v3 => error)', (t) => {
 
 tape('current version (v4 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:4 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:4 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -60,7 +60,7 @@ tape('current version (v4 => error)', (t) => {
 
 tape('current version (v5 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:5 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:5 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -71,7 +71,7 @@ tape('current version (v5 => error)', (t) => {
 
 tape('current version (v6 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:6 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:6 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);
@@ -82,7 +82,7 @@ tape('current version (v6 => error)', (t) => {
 
 tape('current version (v6 => error)', (t) => {
     var c = new Carmen({
-        test: new mem({ maxzoom:6, geocoder_version:7 }, function() {})
+        test: new mem({ maxzoom:6, geocoder_version:7 }, () => {})
     });
     c.geocode('test', {}, function(err, res) {
         t.ok(err);

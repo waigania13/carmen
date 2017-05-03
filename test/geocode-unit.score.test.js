@@ -10,8 +10,8 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 // Confirms that you can forward search a ghost feature and that a scored featre will always win
-(function() {
-    var conf = { place: new mem(null, function() {}) };
+(() => {
+    var conf = { place: new mem(null, () => {}) };
     var c = new Carmen(conf);
     tape('index place', (t) => {
         var place = {
@@ -71,7 +71,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
     tape('fairfax', (t) => {
         c.geocode('fairfax', { limit_verify:1 }, function(err, res) {
@@ -111,11 +111,11 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Confirm that for equally relevant features across three indexes
 // the first in hierarchy beats the others. (NO SCORES)
-(function() {
+(() => {
     var conf = {
-        country: new mem(null, function() {}),
-        province: new mem(null, function() {}),
-        city: new mem(null, function() {}),
+        country: new mem(null, () => {}),
+        province: new mem(null, () => {}),
+        city: new mem(null, () => {}),
     };
     var c = new Carmen(conf);
     tape('index country', (t) => {
@@ -172,11 +172,11 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Confirm that for equally relevant features across three indexes
 // the one with the highest score beats the others.
-(function() {
+(() => {
     var conf = {
-        country: new mem(null, function() {}),
-        province: new mem(null, function() {}),
-        city: new mem(null, function() {}),
+        country: new mem(null, () => {}),
+        province: new mem(null, () => {}),
+        city: new mem(null, () => {}),
     };
     var c = new Carmen(conf);
     tape('index country', (t) => {
@@ -245,9 +245,9 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 // confirm that a feature queried by id has a relevance set to 1
-(function() {
+(() => {
     var conf = {
-        country: new mem(null, function() {}),
+        country: new mem(null, () => {}),
     };
     var c = new Carmen(conf);
     tape('index country', (t) => {
@@ -260,7 +260,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.country, country, function() { buildQueued(conf.country, t.end) });
+        queueFeature(conf.country, country, () => { buildQueued(conf.country, t.end) });
     });
 
     tape('query by id', (t) => {

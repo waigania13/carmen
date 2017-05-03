@@ -7,9 +7,9 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var country =new mem(null, function() {});
-var region = new mem(null, function() {});
-var place = new mem(null, function() {});
+var country =new mem(null, () => {});
+var region = new mem(null, () => {});
+var place = new mem(null, () => {});
 var confA = {
     country: country,
     place: place

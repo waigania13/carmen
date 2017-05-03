@@ -8,7 +8,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    place: new mem(null, function() {}),
+    place: new mem(null, () => {}),
 };
 var c = new Carmen(conf);
 

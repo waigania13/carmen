@@ -10,8 +10,8 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Confirm that disabling autocomplete works, and that in situations where an autocomplete
 // result scores highest, the winner changes depending on whether or not autocomplete is enabled
-(function() {
-    var conf = { place: new mem(null, function() {}) };
+(() => {
+    var conf = { place: new mem(null, () => {}) };
     var c = new Carmen(conf);
     tape('index first place', (t) => {
         var place = {
@@ -35,7 +35,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
     tape('abc - with autocomplete', (t) => {
         c.geocode('abc', { limit_verify:1 }, function(err, res) {
@@ -87,8 +87,8 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 // test autocomplete where tokenization is implicated
-(function() {
-    var conf = { place: new mem(null, function() {}) };
+(() => {
+    var conf = { place: new mem(null, () => {}) };
     var c = new Carmen(conf);
     tape('index place', (t) => {
         var place = {
@@ -100,7 +100,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
     tape('place - with autocomplete', (t) => {
         c.geocode('place', { limit_verify:1 }, function(err, res) {

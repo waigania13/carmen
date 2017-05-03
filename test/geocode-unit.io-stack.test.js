@@ -12,12 +12,12 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
 var conf = {
-    place1: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    place2: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    place3: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    street1: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {}),
-    street2: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {}),
-    street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {})
+    place1: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    place2: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    place3: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    street1: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {}),
+    street2: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {}),
+    street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {})
 };
 var c = new Carmen(conf);
 

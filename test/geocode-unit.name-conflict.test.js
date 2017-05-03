@@ -8,22 +8,22 @@ var addFeature = require('../lib/util/addfeature'),
 var queue = require('d3-queue').queue;
 
 var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    postcode: new mem(null, function() {}),
-    place: new mem(null, function() {}),
-    neighborhood: new mem(null, function() {}),
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    postcode: new mem(null, () => {}),
+    place: new mem(null, () => {}),
+    neighborhood: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_name: 'address',
         geocoder_type: 'address',
         geocoder_address: 1
-    }, function() {}),
+    }, () => {}),
     poi: new mem({
         maxzoom:6,
         geocoder_name: 'address',
         geocoder_type: 'poi'
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 

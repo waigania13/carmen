@@ -10,10 +10,10 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
-        country: new mem(null, function() {}),
-        place: new mem(null, function() {})
+        country: new mem(null, () => {}),
+        place: new mem(null, () => {})
     };
     var c = new Carmen(conf);
     tape('index small score (noise)', (t) => {

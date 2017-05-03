@@ -36,6 +36,6 @@ tape('dump/load', (t) => {
 
 tape('invalid data', (t) => {
     const dict = new DawgCache();
-    t.throws(function() { dict.setText(""); });
+    t.throws(() => { dict.setText(""); });
     t.end();
 });

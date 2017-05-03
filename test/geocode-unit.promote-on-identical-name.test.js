@@ -12,11 +12,11 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    district: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    poi: new mem({ maxzoom: 14 }, function() {})
+    country: new mem({ maxzoom: 6 }, () => {}),
+    region: new mem({ maxzoom: 6 }, () => {}),
+    district: new mem({ maxzoom: 6 }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    poi: new mem({ maxzoom: 14 }, () => {})
 };
 
 var c = new Carmen(conf);
@@ -186,10 +186,10 @@ tape('teardown', (t) => {
 
 
 var conf2 = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6 }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {})
 };
 var c2 = new Carmen(conf2);
 

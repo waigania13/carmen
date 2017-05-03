@@ -9,10 +9,10 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 var queue = require('d3-queue').queue;
 
-(function() {
+(() => {
 
     var conf = {
-        address: new mem(null, function() {}),
+        address: new mem(null, () => {}),
     };
     var c = new Carmen(conf);
     tape('index address (signal 1)', (t) => {

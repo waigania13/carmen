@@ -8,7 +8,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    street: new mem(null, function() {})
+    street: new mem(null, () => {})
 };
 
 var c = new Carmen(conf);
@@ -26,7 +26,7 @@ tape('index feature', (t) => {
                     'carmen:center':[-100,60],
                     'carmen:score': 2
                 }
-            }, function() {
+            }, () => {
                 tt.end();
             });
         });

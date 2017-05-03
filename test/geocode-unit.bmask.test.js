@@ -6,9 +6,9 @@ var mem = require('../lib/api-mem');
 
 tape('boundsmask', (t) => {
     var conf = {
-        small: new mem({maxzoom:6, geocoder_stack: ['west', 'east']}, function() {}),
-        west: new mem({maxzoom:6, geocoder_stack: ['west']}, function() {}),
-        east: new mem({maxzoom:6, geocoder_stack: ['east']}, function() {})
+        small: new mem({maxzoom:6, geocoder_stack: ['west', 'east']}, () => {}),
+        west: new mem({maxzoom:6, geocoder_stack: ['west']}, () => {}),
+        east: new mem({maxzoom:6, geocoder_stack: ['east']}, () => {})
     };
     var c = new Carmen(conf);
     t.deepEqual(conf.small.bmask, [0,0,0], 'small overlaps with all');

@@ -8,13 +8,13 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 // Test that geocoder returns index names for context
-(function() {
+(() => {
     var conf = {
-        country: new mem({ maxzoom:6 }, function() {}),
-        region: new mem({maxzoom: 6 }, function() {}),
-        postcode: new mem({maxzoom: 6 }, function() {}),
-        place: new mem({maxzoom: 6 }, function() {}),
-        address: new mem({maxzoom: 6 }, function() {})
+        country: new mem({ maxzoom:6 }, () => {}),
+        region: new mem({maxzoom: 6 }, () => {}),
+        postcode: new mem({maxzoom: 6 }, () => {}),
+        place: new mem({maxzoom: 6 }, () => {}),
+        address: new mem({maxzoom: 6 }, () => {})
     };
     var c = new Carmen(conf);
     tape('index country', (t) => {

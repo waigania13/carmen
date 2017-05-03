@@ -7,10 +7,10 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
-        country: new mem({ maxzoom: 6, geocoder_languages: ['es'] }, function() {}),
-        postcode: new mem({ maxzoom:6, geocoder_universal_text: true }, function() {})
+        country: new mem({ maxzoom: 6, geocoder_languages: ['es'] }, () => {}),
+        postcode: new mem({ maxzoom:6, geocoder_universal_text: true }, () => {})
     };
     var c = new Carmen(conf);
 

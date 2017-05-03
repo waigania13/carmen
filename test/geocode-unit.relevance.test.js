@@ -8,16 +8,16 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    postcode: new mem(null, function() {}),
-    place: new mem(null, function() {}),
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    postcode: new mem(null, () => {}),
+    place: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1,
         geocoder_tokens: {"Drive": "Dr"},
         geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 

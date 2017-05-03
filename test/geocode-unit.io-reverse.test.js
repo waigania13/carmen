@@ -12,10 +12,10 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
 var conf = {
-    country: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    region: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    place: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    street: new mem({ maxzoom:6, timeout:10, geocoder_address:1 }, function() {})
+    country: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    region: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    place: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    street: new mem({ maxzoom:6, timeout:10, geocoder_address:1 }, () => {})
 };
 var c = new Carmen(conf);
 

@@ -244,7 +244,7 @@ test('named/numbered group replacement', (q) => {
 });
 
 test('throw on mixed name/num replacement groups', (q) => {
-    q.throws(function() {
+    q.throws(() => {
         token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
     });
     q.end();

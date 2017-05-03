@@ -9,14 +9,14 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
         country: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('index country', (t) => {
@@ -113,22 +113,22 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_name: 'address',
             geocoder_type: 'address',
             geocoder_address: true
-        }, function() {}),
+        }, () => {}),
         poi: new mem({
             maxzoom: 12,
             geocoder_name: 'poi',
             geocoder_type: 'poi'
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('index place', (t) => {
@@ -265,15 +265,15 @@ tape('teardown', (t) => {
 });
 
 //Handle addressclusters
-(function() {
+(() => {
     var conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_address: 1
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('index place', (t) => {
@@ -345,15 +345,15 @@ tape('teardown', (t) => {
 });
 
 //Handle ITP lines
-(function() {
+(() => {
     var conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_address: 1
-        }, function() {})
+        }, () => {})
     };
     var c = new Carmen(conf);
     tape('index place', (t) => {

@@ -9,10 +9,10 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
 
     var conf = {
-        place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, function() {}),
+        place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, () => {}),
     };
     var c = new Carmen(conf);
     tape('index Alberta', (t) => {
@@ -24,7 +24,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
-        }, function() { buildQueued(conf.place_a, t.end) });
+        }, () => { buildQueued(conf.place_a, t.end) });
     });
 
     tape('heading to Aruba, I hope you packed warm clothes', (t) => {
@@ -61,10 +61,10 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-(function() {
+(() => {
 
     var conf = {
-        place_a: new mem({maxzoom:6, geocoder_name:'region'}, function() {}),
+        place_a: new mem({maxzoom:6, geocoder_name:'region'}, () => {}),
     };
     var c = new Carmen(conf);
     tape('index abc xyz', (t) => {
@@ -75,7 +75,7 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
-        }, function() { buildQueued(conf.place_a, t.end) });
+        }, () => { buildQueued(conf.place_a, t.end) });
     });
 
     tape('check for collisions based on char prefixing', (t) => {

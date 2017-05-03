@@ -10,10 +10,10 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['zh'] }, function() {}),
-        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['zh'], geocoder_format_zh: '{country._name}{region._name}{place._name}' }, function() {}),
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['zh'] }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['zh'], geocoder_format_zh: '{country._name}{region._name}{place._name}' }, () => {}),
     };
     var c = new Carmen(conf);
 

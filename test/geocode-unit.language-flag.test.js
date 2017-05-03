@@ -10,17 +10,17 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, function() {}),
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region',
             geocoder_format_ru: '{country._name}, {region._name}',
             geocoder_format_zh: '{country._name}{region._name}',
             geocoder_format_es: '{region._name} {region._name} {country._name}',
             geocoder_languages: ['zh', 'zh_Hant', 'eo', 'ru']
-        }, function() {}),
-        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, function() {}),
-        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, function() {})
+        }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, () => {}),
+        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, () => {})
     };
     var c = new Carmen(conf);
 

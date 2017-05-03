@@ -7,10 +7,10 @@ var addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
+(() => {
     var conf = {
-        address:    new mem({maxzoom: 12, geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12}, function() {})
+        address:    new mem({maxzoom: 12, geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12}, () => {})
     };
     var c = new Carmen(conf);
     tape('index address', (t) => {
@@ -81,10 +81,10 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
+        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
     var c = new Carmen(conf);
     tape('index address', (t) => {
@@ -161,10 +161,10 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
+        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
     var c = new Carmen(conf);
     tape('index address', (t) => {
@@ -225,9 +225,9 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
+(() => {
     var conf = {
-        place:    new mem({maxzoom: 12}, function() {})
+        place:    new mem({maxzoom: 12}, () => {})
     };
     var c = new Carmen(conf);
     tape('index place', (t) => {

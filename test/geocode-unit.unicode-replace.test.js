@@ -15,7 +15,7 @@ var conf = {
             'Maréchal': 'Mal'
         },
         maxzoom:6
-    }, function() {})
+    }, () => {})
 };
 var c = new Carmen(conf);
 tape('index Maréchal', (t) => {
@@ -26,7 +26,7 @@ tape('index Maréchal', (t) => {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, function() { buildQueued(conf.test, t.end) });
+    }, () => { buildQueued(conf.test, t.end) });
 });
 tape('Mal => Maréchal', (t) => {
     c.geocode('Mal', { limit_verify:1 }, function(err, res) {

@@ -10,7 +10,7 @@ var queue = require("d3-queue").queue;
 var test = require('tape');
 var merge = require('../lib/merge');
 
-var randomMBtiles = function() {
+var randomMBtiles = () => {
     return '/tmp/' + ((new Date()).getTime() + Math.random()).toString().replace(".", "_") + ".mbtiles";
 }
 
@@ -82,7 +82,7 @@ test('index - streaming interface', (t) => {
         });
     });
 
-    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['zh'] }, function() {});
+    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['zh'] }, () => {});
     confs.D = {
         country: memObjectD
     };
@@ -103,7 +103,7 @@ test('index - streaming interface', (t) => {
         merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, function(err) {
             if (err) throw err;
 
-            var auto = Carmen.auto(files.C, function() {
+            var auto = Carmen.auto(files.C, () => {
                 var conf = {
                     country: auto
                 };

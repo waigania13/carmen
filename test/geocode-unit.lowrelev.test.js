@@ -11,7 +11,7 @@ var addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 var conf = {
-    country: new mem({ maxzoom:6 }, function() {})
+    country: new mem({ maxzoom:6 }, () => {})
 };
 var c = new Carmen(conf);
 tape('index country', (t) => {

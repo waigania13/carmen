@@ -11,9 +11,9 @@ var addFeature = require('../lib/util/addfeature'),
 
 var conf = {};
 for (var i = 0; i < 127; i++) {
-    conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, function() {});
+    conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, () => {});
 }
-conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, function() {});
+conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, () => {});
 
 var c = new Carmen(conf);
 tape('index place', (t) => {

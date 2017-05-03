@@ -24,7 +24,7 @@ test('index - streaming interface', (t) => {
     };
 
     var conf = {
-        to: new mem([], null, function() {})
+        to: new mem([], null, () => {})
     };
 
     var carmen = new Carmen(conf);
@@ -86,7 +86,7 @@ test('index.generateStats', (t) => {
 
 test('index.update -- error', (t) => {
     var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, null, function() {}) };
+    var conf = { to: new mem(memdocs, null, () => {}) };
     var carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('update 1', (q) => {
@@ -133,7 +133,7 @@ test('index.update -- error', (t) => {
 });
 
 test('index.update freq', (t) => {
-    var conf = { to: new mem(null, function() {}) };
+    var conf = { to: new mem(null, () => {}) };
     var carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('error no id', (q) => {
@@ -183,7 +183,7 @@ test('index', (t) => {
     };
 
     var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, function() {}) }
+    var conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, () => {}) }
 
     var carmen = new Carmen(conf);
 
@@ -246,7 +246,7 @@ test('error -- zoom too high', (t) => {
 
 
     var conf = {
-        to: new mem([], null, function() {})
+        to: new mem([], null, () => {})
     };
 
     var carmen = new Carmen(conf);
@@ -272,7 +272,7 @@ test('error -- zoom too low', (t) => {
     };
 
     var conf = {
-        to: new mem([], null, function() {})
+        to: new mem([], null, () => {})
     };
     var carmen = new Carmen(conf);
     carmen.index(inputStream, conf.to, {
@@ -285,7 +285,7 @@ test('error -- zoom too low', (t) => {
 });
 
 test('index phrase collection', (t) => {
-    var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
+    var conf = { test:new mem(null, {maxzoom:6}, () => {}) };
     var c = new Carmen(conf);
     t.ok(c);
     var docs = [{
@@ -339,7 +339,7 @@ test('error -- _geometry too high resolution', (t) => {
     };
 
     var conf = {
-        to: new mem(docs, null, function() {})
+        to: new mem(docs, null, () => {})
     };
 
     var carmen = new Carmen(conf);

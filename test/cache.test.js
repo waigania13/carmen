@@ -14,7 +14,7 @@ test('#get', (t) => {
     const cache = new Cache('a');
     cache.set('5', [0,1,2]);
     t.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
-    t.throws(function() { cache.get(); }, Error, 'throws on misuse');
+    t.throws(() => { cache.get(); }, Error, 'throws on misuse');
     t.end();
 });
 

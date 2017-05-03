@@ -11,9 +11,9 @@ var addFeature = require('../lib/util/addfeature'),
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
 var conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en'], geocoder_inherit_score: true }, function() {})
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en'], geocoder_inherit_score: true }, () => {})
 };
 
 var c = new Carmen(conf);
