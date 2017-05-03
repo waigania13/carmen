@@ -1,5 +1,5 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('tokenizes basic strings', (t) => {
     t.deepEqual(termops.tokenize('foo'), ['foo']);

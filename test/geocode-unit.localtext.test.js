@@ -1,28 +1,28 @@
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index region with bad language code', (t) => {
-    var conf2 = {
+    const conf2 = {
         country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, () => {})
     };
-    var c2 = new Carmen(conf2);
+    const c2 = new Carmen(conf2);
     t.ok(c2);
-    var region = {
+    let region = {
         type: 'Feature',
         properties: {
             'carmen:center': [ 0, 0 ],
@@ -41,7 +41,7 @@ tape('index region with bad language code', (t) => {
 });
 
 tape('index country', (t) => {
-    var country = {
+    let country = {
         type: 'Feature',
         properties: {
             'carmen:center': [ 0, 0 ],
@@ -59,7 +59,7 @@ tape('index country', (t) => {
 });
 
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

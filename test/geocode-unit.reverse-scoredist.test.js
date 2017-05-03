@@ -1,12 +1,12 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     address: new mem({
         maxzoom:6,
         geocoder_type: 'address',
@@ -19,10 +19,10 @@ var conf = {
         geocoder_reverse_mode: true
     }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('add POIs', (t) => {
-    var poi = {
+    let poi = {
         id: 1,
         type: 'Feature',
         properties: {
@@ -39,7 +39,7 @@ tape('add POIs', (t) => {
 });
 
 tape('add POIs', (t) => {
-    var poi = {
+    let poi = {
         id: 2,
         type: 'Feature',
         properties: {
@@ -56,7 +56,7 @@ tape('add POIs', (t) => {
 });
 
 tape('add POIs', (t) => {
-    var poi = {
+    let poi = {
         id: 3,
         type: 'Feature',
         properties: {
@@ -74,7 +74,7 @@ tape('add POIs', (t) => {
 });
 
 tape('add POIs', (t) => {
-    var poi = {
+    let poi = {
         id: 4,
         type: 'Feature',
         properties: {
@@ -92,7 +92,7 @@ tape('add POIs', (t) => {
 });
 
 tape('add address', (t) => {
-    var address = {
+    let address= {
         id: 1,
         type: 'Feature',
         properties: {

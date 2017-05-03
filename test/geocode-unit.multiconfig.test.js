@@ -1,25 +1,25 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var country =new mem(null, () => {});
-var region = new mem(null, () => {});
-var place = new mem(null, () => {});
-var confA = {
+const country =new mem(null, () => {});
+const region = new mem(null, () => {});
+const place = new mem(null, () => {});
+const confA = {
     country: country,
     place: place
 };
-var confB = {
+const confB = {
     country: country,
     region: region,
     place: place
 };
-var pre = new Carmen(confA);
+const pre = new Carmen(confA);
 
 tape('index province', (t) => {
     t.ok(pre);
@@ -43,7 +43,7 @@ tape('index place', (t) => {
     }, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(confA).forEach((c) => {
         q.defer((cb) => {
             buildQueued(confA[c], cb);
@@ -57,7 +57,7 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 tape('chicago (conf a)', (t) => {
-    var a = new Carmen(confA);
+    const a = new Carmen(confA);
     a.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
@@ -66,7 +66,7 @@ tape('chicago (conf a)', (t) => {
     });
 });
 tape('chicago (conf b)', (t) => {
-    var b = new Carmen(confB);
+    const b = new Carmen(confB);
     b.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');

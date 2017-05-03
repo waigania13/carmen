@@ -1,13 +1,13 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     postcode: new mem(null, () => {}),
@@ -19,10 +19,10 @@ var conf = {
         geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'
     }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    var country = {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'United States',
@@ -34,7 +34,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    var region = {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'Colorado',
@@ -46,7 +46,7 @@ tape('index region', (t) => {
 });
 
 tape('index postcode', (t) => {
-    var postcode = {
+    let postcode = {
         id:1,
         properties: {
             'carmen:text':'80138',
@@ -58,7 +58,7 @@ tape('index postcode', (t) => {
 });
 
 tape('index place', (t) => {
-    var place = {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Parker',
@@ -70,7 +70,7 @@ tape('index place', (t) => {
 });
 
 tape('index address', (t) => {
-    var address = {
+    let address = {
         id:1,
         properties: {
             'carmen:text':'S Pikes Peak Dr',
@@ -86,7 +86,7 @@ tape('index address', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

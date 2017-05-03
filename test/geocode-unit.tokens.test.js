@@ -1,23 +1,23 @@
 // Test geocoder_tokens
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {"Street": "St"}
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -40,17 +40,17 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6
         }, () => {})
     };
-    var opts = {
+    const opts = {
         tokens: {"dix-huitième": "18e"}
     };
-    var c = new Carmen(conf, opts);
+    const c = new Carmen(conf, opts);
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'avenue du 18e régiment',
@@ -81,15 +81,15 @@ var addFeature = require('../lib/util/addfeature'),
 
 // RegExp captures have been put on hiatus per https://github.com/mapbox/carmen/pull/283.
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {'q([a-z])([a-z])([a-z])': "$3$2$1"}
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'cba',
@@ -112,7 +112,7 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
@@ -121,19 +121,19 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, () => {})
     };
-    var opts = {
+    const opts = {
         tokens: {
             'Suite [0-9]+': '',
             'Lot [0-9]+': ''
         }
     }
-    var c = new Carmen(conf, opts);
+    const c = new Carmen(conf, opts);
     tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -148,7 +148,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:2,
             properties: {
                 'carmen:text':'main road lot 42 suite 432',
@@ -184,25 +184,25 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {'strasse':'str'}
         }, () => {})
     };
-    var opts = {
+    const opts = {
         tokens: {
             '\\b(.+)(strasse|str)\\b': "$1 str"
         }
     };
 
-    var c = new Carmen(conf, opts);
+    const c = new Carmen(conf, opts);
     tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
     tape('geocoder token test', (t) => {
-        var address = {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'Talstrasse ',

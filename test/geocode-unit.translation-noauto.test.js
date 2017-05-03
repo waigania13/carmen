@@ -1,18 +1,18 @@
 // Confirm that translations are not included in the autocomplete index
 
-var tape = require('tape');
-var Carmen = require('..');
-var cxxcache = require('../lib/util/cxxcache');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const cxxcache = require('../lib/util/cxxcache');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var runTests = (mode) => {
-    var conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, () => {}) };
-    var c = new Carmen(conf);
+const runTests = (mode) => {
+    const conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, () => {}) };
+    const c = new Carmen(conf);
     tape('index first region', (t) => {
         queueFeature(conf.region, {
             id:1,
@@ -38,7 +38,7 @@ var runTests = (mode) => {
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -51,10 +51,10 @@ var runTests = (mode) => {
         // on the second run through the tests, force carmen-cache to use lazy
         // instead of in-memory caching
         tape('reload cache', (t) => {
-            var cache = c.byidx[0]._geocoder;
+            let cache = c.byidx[0]._geocoder;
 
             ['freq', 'grid'].forEach((type) => {
-                var rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
+                const rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
                 cache[type].pack(rocksdb);
                 cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb)

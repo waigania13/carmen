@@ -1,5 +1,5 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('numTokenV2', (t) => {
     t.deepEqual(termops.numTokenV2(''), '', 'no digits');

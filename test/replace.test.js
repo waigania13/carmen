@@ -1,7 +1,7 @@
-var token = require('../lib/util/token');
-var test = require('tape');
+const token = require('../lib/util/token');
+const test = require('tape');
 
-var tokens = token.createReplacer({
+let tokens = token.createReplacer({
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -212,7 +212,7 @@ test('replacer', (q) => {
 
     // deepEqual doesn't compare regex objects intelligently / accurately
     // so we have to roll our own :-&
-    var rep = token.createReplacer({
+    let rep = token.createReplacer({
         'Road': 'Rd',
         'Street': 'St'
     });
@@ -232,7 +232,7 @@ test('replacer', (q) => {
 });
 
 test('named/numbered group replacement', (q) => {
-    var tokens = token.createReplacer({
+    let tokens = token.createReplacer({
         "abc": "xyz",
         "(1\\d+)": "@@@$1@@@",
         "(?<number>2\\d+)": "###${number}###"

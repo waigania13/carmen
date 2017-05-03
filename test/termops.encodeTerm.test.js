@@ -1,5 +1,5 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('termops.encodeTerm', (t) => {
     t.deepEqual(termops.encodeTerm('main'), 'main', 'encodes term');
@@ -11,13 +11,13 @@ test('termops.encodeTerm', (t) => {
 });
 
 test('termops.encodeTerm collisions', (t) => {
-    var texts = 0;
-    var sample = 1e6;
-    var ids = {};
-    var collisions = [];
+    let texts = 0;
+    let sample = 1e6;
+    let ids = {};
+    let collisions = [];
     while (texts < sample) {
-        var text = Math.random().toString(36);
-        var id = termops.encodeTerm(text);
+        let text = Math.random().toString(36);
+        let id = termops.encodeTerm(text);
         if (ids[id] === text) {
             continue;
         } else if (ids[id]) {
@@ -27,8 +27,8 @@ test('termops.encodeTerm collisions', (t) => {
         }
         texts++;
     }
-    var rate = (collisions.length/sample);
-    var thresh = 1/1e6;
+    let rate = (collisions.length/sample);
+    let thresh = 1/1e6;
     t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
     t.end();
 });

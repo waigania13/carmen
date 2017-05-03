@@ -1,22 +1,22 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
-var fs = require('fs');
+const fs = require('fs');
 
-var conf = {
+const conf = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {}),
     place: new mem({ maxzoom: 6, geocoder_languages: ['ru', 'zh'] }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    var country = {
+    let country = {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -38,7 +38,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    var region = {
+    let region = {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -60,7 +60,7 @@ tape('index region', (t) => {
 });
 
 tape('index place', (t) => {
-    var place = {
+    let place = {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -87,7 +87,7 @@ tape('index place', (t) => {
     queueFeature(conf.place, place, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);
@@ -99,7 +99,7 @@ tape('build queued features', (t) => {
 tape('Toronto', (t) => {
     c.geocode('Toronto', {}, (err, res) => {
         t.ifError(err);
-        var filepath = __dirname + '/fixtures/output.default.geojson';
+        const filepath = __dirname + '/fixtures/output.default.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();
@@ -109,7 +109,7 @@ tape('Toronto', (t) => {
 tape('Toronto (dev mode)', (t) => {
     c.geocode('Toronto', { debug: true }, (err, res) => {
         t.ifError(err);
-        var filepath = __dirname + '/fixtures/output.dev.geojson';
+        const filepath = __dirname + '/fixtures/output.dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();
@@ -119,7 +119,7 @@ tape('Toronto (dev mode)', (t) => {
 tape('0,0 (dev mode)', (t) => {
     c.geocode('0,0', { debug: true }, (err, res) => {
         t.ifError(err);
-        var filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
+        const filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();

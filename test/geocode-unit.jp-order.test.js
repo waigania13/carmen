@@ -1,22 +1,22 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     place: new mem(null, () => {}),
     address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    var country = {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'Japan',
@@ -28,7 +28,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    var region = {
+    let region = {
         id:2,
         properties: {
             'carmen:text':'和歌山県',
@@ -40,7 +40,7 @@ tape('index region', (t) => {
 });
 
 tape('index place 1', (t) => {
-    var place = {
+    let place = {
         id:3,
         properties: {
             'carmen:text':'岩出市',
@@ -52,7 +52,7 @@ tape('index place 1', (t) => {
 });
 
 tape('index address 1', (t) => {
-    var address = {
+    let address = {
         id:4,
         properties: {
             'carmen:text':'中黒',
@@ -68,7 +68,7 @@ tape('index address 1', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

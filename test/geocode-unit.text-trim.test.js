@@ -1,18 +1,18 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'zh'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_format: '{region._name}, {country._name}', geocoder_languages: ['en', 'zh']}, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
         queueFeature(conf.country, {
             id:1,
@@ -44,7 +44,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

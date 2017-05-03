@@ -1,17 +1,17 @@
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
-var conf = {
+const conf = {
     place1: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
     place2: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
     place3: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
@@ -19,7 +19,7 @@ var conf = {
     street2: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {}),
     street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('ready', (t) => {
     c._open(t.end);
@@ -67,7 +67,7 @@ tape('ready', (t) => {
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

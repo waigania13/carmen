@@ -1,5 +1,5 @@
-var proximity = require('../lib/util/proximity');
-var test = require('tape');
+const proximity = require('../lib/util/proximity');
+const test = require('tape');
 
 test('proximity.center2zxy', (t) => {
     t.deepEqual(proximity.center2zxy([0,0],5), [5,16,16]);

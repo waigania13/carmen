@@ -1,25 +1,25 @@
-var fs = require('fs');
-var path = require('path');
-var Stream = require('stream');
-var split = require('split');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var de = require('deep-equal');
-var queue = require("d3-queue").queue;
+const fs = require('fs');
+const path = require('path');
+const Stream = require('stream');
+const split = require('split');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const de = require('deep-equal');
+const queue = require("d3-queue").queue;
 
-var test = require('tape');
-var merge = require('../lib/merge');
+const test = require('tape');
+const merge = require('../lib/merge');
 
-var randomMBtiles = () => {
+const randomMBtiles = () => {
     return '/tmp/' + ((new Date()).getTime() + Math.random()).toString().replace(".", "_") + ".mbtiles";
 }
 
 test('index - streaming interface', (t) => {
     function getIndex(start, end) {
 
-        var count = 0;
-        var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
-        var transformStream = new Stream.Transform();
+        let count = 0;
+        let inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+        let transformStream = new Stream.Transform();
         transformStream._transform = (data, encoding, done) => {
             if (data) {
                 count ++;
@@ -33,23 +33,23 @@ test('index - streaming interface', (t) => {
         return transformStream;
     }
 
-    var outputStream = new Stream.Writable();
+    let outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var files = {
+    let files = {
         A: randomMBtiles(),
         B1: randomMBtiles(),
         B2: randomMBtiles()
     }
-    var carmens = {}, confs = {};
+    const carmens = {}, confs = {};
     t.test('open carmens', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(files).forEach((key) => {
             q.defer((key, callback) => {
                 merge.getOutputConf(files[key], { maxzoom: 6, geocoder_languages: ['zh'] }, (_oc) => {
@@ -65,7 +65,7 @@ test('index - streaming interface', (t) => {
         })
     });
 
-    var chunks = {
+    const chunks = {
         A: getIndex(0,100),
         B1: getIndex(100,150),
         B2: getIndex(150,200)
@@ -82,7 +82,7 @@ test('index - streaming interface', (t) => {
         });
     });
 
-    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['zh'] }, () => {});
+    const memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['zh'] }, () => {});
     confs.D = {
         country: memObjectD
     };
@@ -103,8 +103,8 @@ test('index - streaming interface', (t) => {
         merge.multimerge([files.A, files.B1, files.B2], files.C, { maxzoom: 6, geocoder_languages: ['zh'] }, (err) => {
             if (err) throw err;
 
-            var auto = Carmen.auto(files.C, () => {
-                var conf = {
+            const auto = Carmen.auto(files.C, () => {
+                const conf = {
                     country: auto
                 };
                 confs.C = conf;

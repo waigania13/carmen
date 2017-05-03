@@ -1,15 +1,15 @@
 // Ensures that token replacement casts a wide (unidecoded) net for
 // left-hand side of token mapping.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     test: new mem({
         geocoder_tokens: {
             'Maréchal': 'Mal'
@@ -17,7 +17,7 @@ var conf = {
         maxzoom:6
     }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 tape('index Maréchal', (t) => {
     queueFeature(conf.test, {
         id:1,

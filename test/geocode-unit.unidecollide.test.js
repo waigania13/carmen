@@ -1,20 +1,20 @@
 // test separation of character sets, avoiding unidecode problems like:
 // 'Alberta' aka 'アルバータ州' =[unidecode]=> 'arubataZhou' => false positives for 'Aruba'
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
 
-    var conf = {
+    const conf = {
         place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index Alberta', (t) => {
         queueFeature(conf.place_a, {
             id:1,
@@ -62,11 +62,10 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-
-    var conf = {
+    const conf = {
         place_a: new mem({maxzoom:6, geocoder_name:'region'}, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index abc xyz', (t) => {
         queueFeature(conf.place_a, {
             id:1,

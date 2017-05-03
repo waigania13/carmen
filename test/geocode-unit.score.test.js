@@ -1,20 +1,20 @@
 // Test score handling across indexes
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Confirms that you can forward search a ghost feature and that a scored featre will always win
 (() => {
-    var conf = { place: new mem(null, () => {}) };
-    var c = new Carmen(conf);
+    const conf = { place: new mem(null, () => {}) };
+    const c = new Carmen(conf);
     tape('index place', (t) => {
-        var place = {
+        let place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -26,7 +26,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index ghost place', (t) => {
-        var place = {
+        let place = {
             id:2,
             properties: {
                 'carmen:score': -1,
@@ -38,7 +38,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index zip+4', (t) => {
-        var place = {
+        let place = {
             id:3,
             properties: {
                 'carmen:score': -1,
@@ -50,7 +50,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index zip', (t) => {
-        var place = {
+        let place = {
             id:4,
             properties: {
                 'carmen:score': 100,
@@ -62,7 +62,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index ghost zip', (t) => {
-        var place = {
+        let place = {
             id:5,
             properties: {
                 'carmen:score': -1,
@@ -112,14 +112,14 @@ var addFeature = require('../lib/util/addfeature'),
 // Confirm that for equally relevant features across three indexes
 // the first in hierarchy beats the others. (NO SCORES)
 (() => {
-    var conf = {
+    const conf = {
         country: new mem(null, () => {}),
         province: new mem(null, () => {}),
         city: new mem(null, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
-        var country = {
+        let country = {
             id:1,
             properties: {
                 'carmen:text':'china',
@@ -130,7 +130,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
     tape('index province', (t) => {
-        var province = {
+        let province = {
             id:1,
             properties: {
                 'carmen:text':'china',
@@ -141,7 +141,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.province, province, t.end);
     });
     tape('index city', (t) => {
-        var city = {
+        let city = {
             id:1,
             properties: {
                 'carmen:text':'china',
@@ -152,7 +152,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.city, city, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -173,14 +173,14 @@ var addFeature = require('../lib/util/addfeature'),
 // Confirm that for equally relevant features across three indexes
 // the one with the highest score beats the others.
 (() => {
-    var conf = {
+    const conf = {
         country: new mem(null, () => {}),
         province: new mem(null, () => {}),
         city: new mem(null, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
-        var country = {
+        let country = {
             id:1,
             properties: {
                 'carmen:score': 5,
@@ -192,7 +192,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
     tape('index province', (t) => {
-        var province = {
+        let province = {
             id:2,
             properties: {
                 'carmen:score': 10,
@@ -204,7 +204,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.province, province, t.end);
     });
     tape('index city', (t) => {
-        var city = {
+        let city = {
             id:3,
             properties: {
                 'carmen:score': 6,
@@ -216,7 +216,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.city, city, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -246,12 +246,12 @@ var addFeature = require('../lib/util/addfeature'),
 
 // confirm that a feature queried by id has a relevance set to 1
 (() => {
-    var conf = {
+    const conf = {
         country: new mem(null, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
-        var country = {
+        let country = {
             id:1,
             properties: {
                 'carmen:score': 5,

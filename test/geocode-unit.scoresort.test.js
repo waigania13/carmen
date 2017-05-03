@@ -1,24 +1,23 @@
 // scoredist unit test
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
-var queue = require('d3-queue').queue;
+const queue = require('d3-queue').queue;
 
 (() => {
-
-    var conf = {
+    const conf = {
         region: new mem(null, () => {}),
         place: new mem(null, () => {}),
         lamplace: new mem(null, () => {}),
         namplace: new mem(null, () => {}),
         locality: new mem(null, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     // very high max score in region index
     tape('index region (high score)', (t) => {
         queueFeature(conf.region, {
@@ -34,8 +33,8 @@ var queue = require('d3-queue').queue;
 
     // Many low-scored features in region index
     tape('index region (low score)', (t) => {
-        var q = queue(1);
-        for (var i =2; i < 25; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 2; i < 25; i++) q.defer((i, done) => {
             queueFeature(conf.region, {
                 id:i,
                 properties: {
@@ -51,8 +50,8 @@ var queue = require('d3-queue').queue;
 
     // Many medium-scored features in region index
     tape('index region (medium score)', (t) => {
-        var q = queue(1);
-        for (var i =25; i < 50; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 25; i < 50; i++) q.defer((i, done) => {
             queueFeature(conf.region, {
                 id:i,
                 properties: {
@@ -93,8 +92,8 @@ var queue = require('d3-queue').queue;
 
     // Many medium-scored features in region index
     tape('index lamplace (medium score)', (t) => {
-        var q = queue(1);
-        for (var i =2; i < 25; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i =2; i < 25; i++) q.defer((i, done) => {
             queueFeature(conf.lamplace, {
                 id:i,
                 properties: {
@@ -133,7 +132,7 @@ var queue = require('d3-queue').queue;
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

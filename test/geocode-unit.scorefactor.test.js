@@ -1,24 +1,24 @@
 // Test that score is multiplied by the index scorefactor so that
 // cross-index comparisons make sense.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         country: new mem(null, () => {}),
         place: new mem(null, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index small score (noise)', (t) => {
-        var q = queue(1);
-        for (var i = 1; i < 41; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 1; i < 41; i++) q.defer((i, done) => {
             queueFeature(conf.place, {
                 id:i,
                 properties: {
@@ -54,7 +54,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

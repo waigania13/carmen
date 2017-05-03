@@ -1,11 +1,11 @@
-var termops = require('../lib/util/termops');
-var token = require('../lib/util/token');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const token = require('../lib/util/token');
+const test = require('tape');
 
 test('termops.getIndexableText', (t) => {
-    var replacer;
-    var doc;
-    var texts;
+    let replacer;
+    let doc;
+    let texts;
 
     replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'Main Street' } };

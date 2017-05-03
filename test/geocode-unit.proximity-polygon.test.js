@@ -1,22 +1,22 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     place: new mem({maxzoom: 12}, () => {})
 };
-var c = new Carmen(conf);
-var tiles = [];
-var tiles1 = [];
-var tiles2 = [];
-var tiles3 = [];
-var tile;
-for (var k=2048; k<2080; k++) {
-    for (var l=2048; l<2080; l++) {
+const c = new Carmen(conf);
+let tiles = [];
+let tiles1 = [];
+let tiles2 = [];
+let tiles3 = [];
+let tile;
+for (let k=2048; k<2080; k++) {
+    for (let l=2048; l<2080; l++) {
         tile = '12/' + k + '/' + l;
         tiles.push(tile);
     }
@@ -26,8 +26,8 @@ tiles2 = tiles.slice(341,682);
 tiles3 = tiles.slice(682);
 
 tape('index place', (t) => {
-    var docs = [];
-    var place;
+    let docs = [];
+    let place;
 
     place = {
         id:1,

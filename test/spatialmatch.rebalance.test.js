@@ -1,10 +1,10 @@
-var rebalance = require('../lib/spatialmatch.js').rebalance;
-var Phrasematch = require('../lib/phrasematch').Phrasematch;
-var test = require('tape');
+const rebalance = require('../lib/spatialmatch.js').rebalance;
+const Phrasematch = require('../lib/phrasematch').Phrasematch;
+const test = require('tape');
 
 test('rebalance, no garbage', (t) => {
-    var query = ['100','main','st','12345','seattle','washington'];
-    var stack = [
+    let query = ['100','main','st','12345','seattle','washington'];
+    let stack = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['seattle'], 0.16666666666666666, 16, null, null, null, null),
@@ -13,7 +13,7 @@ test('rebalance, no garbage', (t) => {
 
     stack.relev = 1;
 
-    var rebalanced = rebalance(query, stack);
+    let rebalanced = rebalance(query, stack);
     t.equal(rebalanced.relev, 1, 'relev = 1');
     t.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
     t.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
@@ -23,9 +23,9 @@ test('rebalance, no garbage', (t) => {
 });
 
 test('rebalance, with garbage', (t) => {
-    var query = ['100','main','st','12345','seattle','washington'];
+    let query = ['100','main','st','12345','seattle','washington'];
 
-    var stack = [
+    let stack = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['washington'], 0.16666666666666666, 32, null, null, null, null),
@@ -33,7 +33,7 @@ test('rebalance, with garbage', (t) => {
 
     stack.relev = 0.8333333333333333;
 
-    var rebalanced = rebalance(query, stack);
+    let rebalanced = rebalance(query, stack);
     t.equal(rebalanced.relev, 0.75, 'relev = 0.75');
     t.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
     t.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
@@ -42,9 +42,9 @@ test('rebalance, with garbage', (t) => {
 });
 
 test('rebalance copies', (t) => {
-    var query = ['100','main','st','12345','seattle','washington'];
+    let query = ['100','main','st','12345','seattle','washington'];
 
-    var stackA = [
+    let stackA = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['seattle'], 0.16666666666666666, 16, null, null, null, null),
@@ -53,11 +53,11 @@ test('rebalance copies', (t) => {
 
     stackA.relev = 1;
 
-    var stackB = [];
+    let stackB = [];
     stackB[0] = stackA[0];
 
-    var rebalancedA = rebalance(query, stackA);
-    var rebalancedB = rebalance(query, stackB);
+    let rebalancedA = rebalance(query, stackA);
+    let rebalancedB = rebalance(query, stackB);
 
     // Assert that the subqueries in rebalancedA are not affected by
     // the rebalance done to rebalancedB.

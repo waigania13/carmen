@@ -1,33 +1,33 @@
-var fs = require('fs');
-var path = require('path');
-var Stream = require('stream');
-var Carmen = require('..');
-var index = require('../lib/index');
-var indexdocs = require('../lib/indexer/indexdocs.js');
-var mem = require('../lib/api-mem');
-var token = require('../lib/util/token');
+const fs = require('fs');
+const path = require('path');
+const Stream = require('stream');
+const Carmen = require('..');
+const index = require('../lib/index');
+const indexdocs = require('../lib/indexer/indexdocs.js');
+const mem = require('../lib/api-mem');
+const token = require('../lib/util/token');
 
-var UPDATE = process.env.UPDATE;
-var test = require('tape');
-var termops = require('../lib/util/termops');
+const UPDATE = process.env.UPDATE;
+const test = require('tape');
+const termops = require('../lib/util/termops');
 
 test('index - streaming interface', (t) => {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
-    var outputStream = new Stream.Writable();
+    const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var conf = {
+    const conf = {
         to: new mem([], null, () => {})
     };
 
-    var carmen = new Carmen(conf);
+    const carmen = new Carmen(conf);
     t.test('index docs.json', (q) => {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
@@ -50,7 +50,7 @@ test('index - streaming interface', (t) => {
 });
 
 test('index.generateStats', (t) => {
-    var docs = [{
+    let docs = [{
         type: "Feature",
         properties: {
             "carmen:text": 'main street',
@@ -65,7 +65,7 @@ test('index.generateStats', (t) => {
         },
         geometry: {}
     }];
-    var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
+    let geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     t.deepEqual(indexdocs.generateFrequency(docs, {}), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],
@@ -85,9 +85,9 @@ test('index.generateStats', (t) => {
 });
 
 test('index.update -- error', (t) => {
-    var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, null, () => {}) };
-    var carmen = new Carmen(conf);
+    const memdocs = require('./fixtures/mem-docs.json');
+    const conf = { to: new mem(memdocs, null, () => {}) };
+    const carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('update 1', (q) => {
         index.update(conf.to, [{
@@ -133,8 +133,8 @@ test('index.update -- error', (t) => {
 });
 
 test('index.update freq', (t) => {
-    var conf = { to: new mem(null, () => {}) };
-    var carmen = new Carmen(conf);
+    const conf = { to: new mem(null, () => {}) };
+    const carmen = new Carmen(conf);
     t.ok(carmen);
     t.test('error no id', (q) => {
         index.update(conf.to, [{ type: 'Point', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, (err) => {
@@ -155,7 +155,7 @@ test('index.update freq', (t) => {
         });
     });
     t.test('indexes doc with geometry and no carmen:center', (q) => {
-        var doc = { id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}};
+        let doc = { id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}};
         index.update(conf.to, [doc], { zoom: 6 }, (err, res, too) => {
             q.ok(doc.properties['carmen:center'], 'carmen:center has been set');
             q.end();
@@ -171,21 +171,21 @@ test('index.update freq', (t) => {
 });
 
 test('index', (t) => {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
-    var outputStream = new Stream.Writable();
+    const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var memdocs = require('./fixtures/mem-docs.json');
-    var conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, () => {}) }
+    const memdocs = require('./fixtures/mem-docs.json');
+    const conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, () => {}) }
 
-    var carmen = new Carmen(conf);
+    const carmen = new Carmen(conf);
 
     t.test('indexes a document', (q) => {
         carmen.index(inputStream, conf.to, {
@@ -194,7 +194,7 @@ test('index', (t) => {
         }, (err) => {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            var memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
+            let memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
             if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
             q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
@@ -210,10 +210,10 @@ test('index', (t) => {
         });
     });
     t.test('confirm that iterator works', (q) => {
-        var monotonic = true;
-        var output = [];
-        var iterator = conf.to.geocoderDataIterator('freq');
-        var next = (err, n) => {
+        let monotonic = true;
+        let output = [];
+        let iterator = conf.to.geocoderDataIterator('freq');
+        let next = (err, n) => {
             q.ifError(err);
             if (!n.done) {
                 output.push(n.value.shard);
@@ -233,11 +233,11 @@ test('index', (t) => {
 });
 
 test('error -- zoom too high', (t) => {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
-    var outputStream = new Stream.Writable();
+    const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
@@ -245,11 +245,11 @@ test('error -- zoom too high', (t) => {
     };
 
 
-    var conf = {
+    const conf = {
         to: new mem([], null, () => {})
     };
 
-    var carmen = new Carmen(conf);
+    const carmen = new Carmen(conf);
     carmen.index(inputStream, conf.to, {
         zoom: 15,
         output: outputStream
@@ -260,21 +260,21 @@ test('error -- zoom too high', (t) => {
 });
 
 test('error -- zoom too low', (t) => {
-    var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
-    var outputStream = new Stream.Writable();
+    const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var conf = {
+    const conf = {
         to: new mem([], null, () => {})
     };
-    var carmen = new Carmen(conf);
+    const carmen = new Carmen(conf);
     carmen.index(inputStream, conf.to, {
         zoom: -1,
         output: outputStream
@@ -285,10 +285,10 @@ test('error -- zoom too low', (t) => {
 });
 
 test('index phrase collection', (t) => {
-    var conf = { test:new mem(null, {maxzoom:6}, () => {}) };
-    var c = new Carmen(conf);
+    const conf = { test:new mem(null, {maxzoom:6}, () => {}) };
+    const c = new Carmen(conf);
     t.ok(c);
-    var docs = [{
+    let docs = [{
         id:1,
         type: 'Feature',
         properties: {
@@ -314,7 +314,7 @@ test('index phrase collection', (t) => {
     index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
         t.ifError(err);
-        var id1 = termops.encodePhrase('a');
+        let id1 = termops.encodePhrase('a');
         t.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), null] ], '1 phrase');
         t.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
         t.end();
@@ -322,27 +322,27 @@ test('index phrase collection', (t) => {
 });
 
 test('error -- _geometry too high resolution', (t) => {
-    var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/hugedoc.json'));
+    let docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/hugedoc.json'));
 
-    var s = new Stream.Readable();
+    const s = new Stream.Readable();
     s._read = function noop() {}; // redundant? see update below
     s.push(JSON.stringify(docs[0]) + '\n');
     s.push(null);
 
-    var outputStream = new Stream.Writable();
+    let outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var conf = {
+    const conf = {
         to: new mem(docs, null, () => {})
     };
 
-    var carmen = new Carmen(conf);
+    const carmen = new Carmen(conf);
     carmen.index(s, conf.to, {
         zoom: 6,
         output: outputStream
@@ -353,8 +353,8 @@ test('error -- _geometry too high resolution', (t) => {
 });
 
 test('index.cleanDocs', (t) => {
-    var sourceWithAddress = {geocoder_address:true};
-    var sourceWithoutAddress = {geocoder_address:false};
+    const sourceWithAddress = {geocoder_address:true};
+    const sourceWithoutAddress = {geocoder_address:false};
 
     t.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{}} ])[0].geometry, 'object', 'with address: preserves geometry');
     t.equal(typeof index.cleanDocs(sourceWithoutAddress, [{geometry:{}}])[0].geometry, 'undefined', 'without address: removes geometry');

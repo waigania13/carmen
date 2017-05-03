@@ -1,18 +1,18 @@
-var indexdocs = require('../lib/indexer/indexdocs.js');
-var grid = require('../lib/util/grid.js');
-var tape = require('tape');
-var termops = require('../lib/util/termops.js');
-var token = require('../lib/util/token.js');
-var rewind = require('geojson-rewind');
+const indexdocs = require('../lib/indexer/indexdocs.js');
+const grid = require('../lib/util/grid.js');
+const tape = require('tape');
+const termops = require('../lib/util/termops.js');
+const token = require('../lib/util/token.js');
+const rewind = require('geojson-rewind');
 
 tape('indexdocs.loadDoc', (t) => {
-    var token_replacer = token.createReplacer({});
-    var patch;
-    var tokens;
-    var freq;
-    var zoom;
-    var doc;
-    var err;
+    let token_replacer = token.createReplacer({});
+    let patch;
+    let tokens;
+    let freq;
+    let zoom;
+    let doc;
+    let err;
 
     patch = { grid:{}, docs:[], text:[] };
     freq = {};
@@ -61,7 +61,7 @@ tape('indexdocs.loadDoc', (t) => {
 
 tape('indexdocs.standardize', (t) => {
     t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', (q) => {
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -138,7 +138,7 @@ tape('indexdocs.standardize', (t) => {
     });
 
     t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', (q) => {
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -157,7 +157,7 @@ tape('indexdocs.standardize', (t) => {
     });
 
     t.test('indexdocs.standardize - carmen:addressnumber lowercased', (q) => {
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -196,7 +196,7 @@ tape('indexdocs.standardize', (t) => {
     });
 
     t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', (q) => {
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -221,7 +221,7 @@ tape('indexdocs.standardize', (t) => {
     });
 
     t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', (q) => {
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -246,16 +246,16 @@ tape('indexdocs.standardize', (t) => {
     });
 
     t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', (q) => {
-        // Build a zxy list with covers of varying distance from center.
-        var central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
-        var covers = [];
-        var i;
+        // Build a zxy list with covers of letying distance from center.
+        let central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
+        let covers = [];
+        let i;
         for (i = 0; i < 10000; i++) { covers.push('6/40/40'); }
         for (i = 0; i < 100; i++) central.forEach((central) => {
             covers.push(central);
         });
 
-        var res = indexdocs.standardize({
+        let res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
             properties: {
@@ -345,7 +345,7 @@ tape('indexdocs.runChecks', (t) => {
         }, 12);
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
-    var coords = [Array.apply(null, Array(50001)).map((ele, i) => {return [1.1 + 0.001 * i,1.1]})]
+    let coords = [Array.apply(null, Array(50001)).map((ele, i) => {return [1.1 + 0.001 * i,1.1]})]
     coords[0].push([1.1,1.1]);
 
     t.throws(() => {
@@ -403,7 +403,7 @@ tape('indexdocs.runChecks', (t) => {
 });
 
 tape('indexdocs.generateFrequency', (t) => {
-    var docs = [{
+    let docs = [{
         type: "Feature",
         properties: {
             "carmen:text": 'main street',
@@ -418,7 +418,7 @@ tape('indexdocs.generateFrequency', (t) => {
         },
         geometry: {}
     }];
-    var geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
+    let geocoder_tokens = token.createReplacer({'street':'st','road':'rd'});
     t.deepEqual(indexdocs.generateFrequency(docs, {}), {
         __COUNT__: [ 4 ],
         __MAX__: [ 2 ],

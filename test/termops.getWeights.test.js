@@ -1,10 +1,10 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('termops.getWeights', (t) => {
-    var res;
-    var tokens;
-    var freq;
+    let res;
+    let tokens;
+    let freq;
 
     tokens = ['a','b','c'];
     freq = {};

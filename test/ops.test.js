@@ -1,8 +1,8 @@
-var ops = require('../lib/util/ops');
-var test = require('tape');
+const ops = require('../lib/util/ops');
+const test = require('tape');
 
 test('ops#toFeature', (t) => {
-    var feat = [{
+    let feat = [{
         properties: {
             "carmen:center": [-99.392855, 63.004759],
             "carmen:text": "Canada, CA",
@@ -125,7 +125,7 @@ test('ops#toFeature', (t) => {
     }], "{address._number} {address.name}, {place._name}").place_name, 'Andor', 'Just place');
 
     //This stack used for the next series of tests
-    var fullStack = [{
+    let fullStack = [{
         properties: {
             "carmen:center": [-99.392855,63.004759],
             "carmen:text": "Fake Street",
@@ -243,7 +243,7 @@ test('ops#toFeature', (t) => {
 });
 
 test('ops#toFeature + no formatter + languageMode=strict', (t) => {
-    var context, feature;
+    let context, feature;
 
     context = [{
         properties: {
@@ -290,7 +290,7 @@ test('ops#toFeature + no formatter + languageMode=strict', (t) => {
 });
 
 test('ops#toFeature + formatter + languageMode=strict', (t) => {
-    var context, feature;
+    let context, feature;
 
     context = [{
         properties: {

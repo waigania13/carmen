@@ -1,8 +1,8 @@
-var verifymatch = require('../lib/verifymatch');
-var tape = require('tape');
+const verifymatch = require('../lib/verifymatch');
+const tape = require('tape');
 
 tape('verifymatch.sortFeature', (t) => {
-    var arr = [
+    let arr = [
         { id: 7, properties: { 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null } },
         { id: 6, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': null } },
         { id: 5, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26' }, geometry: { omitted: true } },
@@ -18,8 +18,8 @@ tape('verifymatch.sortFeature', (t) => {
 });
 
 tape('verifymatch.sortContext (no distance)', (t) => {
-    var c;
-    var arr = [];
+    let c;
+    let arr = [];
 
     c = [{ id: 10, properties: {} }];
     c._relevance = 0.9;
@@ -79,8 +79,8 @@ tape('verifymatch.sortContext (no distance)', (t) => {
 });
 
 tape('verifymatch.sortContext (with distance)', (t) => {
-    var c;
-    var arr = [];
+    let c;
+    let arr = [];
 
     c = [{ id: 6 }];
     c._relevance = 0.9;
@@ -116,8 +116,8 @@ tape('verifymatch.sortContext (with distance)', (t) => {
 });
 
 tape('verifymatch.sortContext (distance vs addresstype)', (t) => {
-    var c;
-    var arr = [];
+    let c;
+    let arr = [];
 
     c = [{ id: 3 }];
     c._relevance = 0.9;

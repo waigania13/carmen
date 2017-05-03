@@ -1,19 +1,19 @@
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     test: new mem({ maxzoom:6 }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 tape('index 京都市', (t) => {
     queueFeature(conf.test, {
         id:1,
@@ -46,7 +46,7 @@ tape('index josé', (t) => {
 });
 
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

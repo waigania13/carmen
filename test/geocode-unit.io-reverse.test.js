@@ -1,23 +1,23 @@
 // Unit tests for reverse geocoding IO. Confirms type filters restrict loading
 // tiles for excluded indexes.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
-var conf = {
+const conf = {
     country: new mem({ maxzoom:6, timeout:10 }, () => {}),
     region: new mem({ maxzoom:6, timeout:10 }, () => {}),
     place: new mem({ maxzoom:6, timeout:10 }, () => {}),
     street: new mem({ maxzoom:6, timeout:10, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('ready', (t) => {
     c._open(t.end);
@@ -64,7 +64,7 @@ tape('index street', (t) => {
     }, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

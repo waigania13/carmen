@@ -1,15 +1,15 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var country = new mem(null, () => {});
-var conf = { country: country };
-var a = new Carmen(conf);
+const country = new mem(null, () => {});
+const conf = { country: country };
+const a = new Carmen(conf);
 
 tape('index country', (t) => {
     queueFeature(conf.country, {
@@ -22,7 +22,7 @@ tape('index country', (t) => {
     }, t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);
@@ -43,7 +43,7 @@ tape('sets cache/dictcache', (t) => {
     t.ok(country._dictcache, 'sets source._dictcache on original instance');
     t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
     t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
-    var b = new Carmen({ country: country });
+    const b = new Carmen({ country: country });
     t.equal(b.indexes.country._geocoder, a.indexes.country._geocoder, 'a cache === b cache');
     t.equal(b.indexes.country._dictcache, a.indexes.country._dictcache, 'a dictcache === b dictcache');
     t.end();

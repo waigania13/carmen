@@ -1,8 +1,8 @@
-var test = require('tape');
-var termops = require('../lib/util/termops');
+const test = require('tape');
+const termops = require('../lib/util/termops');
 
 test('encode', (t) => {
-    var term = 0;
+    let term = 0;
     term = termops.encode3BitLogScale(3566,180000);
     t.equal(term, 5);
 
@@ -23,7 +23,7 @@ test('encode', (t) => {
 });
 
 test('decode', (t) => {
-    var term = 0;
+    let term = 0;
     term = termops.decode3BitLogScale(5,180000);
     t.equal(term, 5672);
 

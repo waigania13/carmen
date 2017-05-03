@@ -1,16 +1,16 @@
 // Test geocoder_tokens
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({
             maxzoom: 6
         }, () => {}),
@@ -18,7 +18,7 @@ var addFeature = require('../lib/util/addfeature'),
             maxzoom: 6
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index country', (t) => {
         queueFeature(conf.country, {
             id: 1,
@@ -30,8 +30,8 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
     tape('index place', (t) => {
-        var q = queue(1);
-        for (var i = 1; i < 21; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 1; i < 21; i++) q.defer((i, done) => {
             queueFeature(conf.place, {
                 id:i,
                 properties: {
@@ -48,7 +48,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -114,7 +114,7 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 (() => {
-    var conf = {
+    const conf = {
         place: new mem({
             maxzoom: 6
         }, () => {}),
@@ -130,7 +130,7 @@ var addFeature = require('../lib/util/addfeature'),
             geocoder_type: 'poi'
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index place', (t) => {
         queueFeature(conf.place, {
             id: 1,
@@ -142,7 +142,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    var coords = [
+    let coords = [
         [-79.37663912773132,38.83417524443351],
         [-79.37698781490326,38.83414599360498],
         [-79.37705218791960,38.83398302448309],
@@ -156,8 +156,8 @@ var addFeature = require('../lib/util/addfeature'),
     ]
 
     tape('index poi', (t) => {
-        var q = queue(1);
-        for (var i = 1; i < 6; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 1; i < 6; i++) q.defer((i, done) => {
             queueFeature(conf.poi, {
                 id:i,
                 properties: {
@@ -189,7 +189,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -266,7 +266,7 @@ tape('teardown', (t) => {
 
 //Handle addressclusters
 (() => {
-    var conf = {
+    const conf = {
         place: new mem({
             maxzoom: 6
         }, () => {}),
@@ -275,7 +275,7 @@ tape('teardown', (t) => {
             geocoder_address: 1
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index place', (t) => {
         queueFeature(conf.place, {
             id: 1,
@@ -316,7 +316,7 @@ tape('teardown', (t) => {
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -346,7 +346,7 @@ tape('teardown', (t) => {
 
 //Handle ITP lines
 (() => {
-    var conf = {
+    const conf = {
         place: new mem({
             maxzoom: 6
         }, () => {}),
@@ -355,7 +355,7 @@ tape('teardown', (t) => {
             geocoder_address: 1
         }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index place', (t) => {
         queueFeature(conf.place, {
             id: 1,
@@ -394,7 +394,7 @@ tape('teardown', (t) => {
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

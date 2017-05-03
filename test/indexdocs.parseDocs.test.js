@@ -1,9 +1,9 @@
-var fs = require('fs');
-var indexdocs = require('../lib/indexer/indexdocs.js');
-var tape = require('tape');
+const fs = require('fs');
+const indexdocs = require('../lib/indexer/indexdocs.js');
+const tape = require('tape');
 
 tape('indexdocs.parseDocs (passthru)', (t) => {
-    var docs = [{
+    let docs = [{
         id: 1,
         type: 'Feature',
         properties: {
@@ -12,9 +12,9 @@ tape('indexdocs.parseDocs (passthru)', (t) => {
         },
         geometry: { type: 'Point', coordinates: [0,0] }
     }];
-    var settings = { zoom: 6, geocoder_tokens: {} };
-    var full = { vectors: [] };
-    var err = indexdocs.parseDocs(docs, settings, full);
+    let settings = { zoom: 6, geocoder_tokens: {} };
+    let full = { vectors: [] };
+    let err = indexdocs.parseDocs(docs, settings, full);
     t.ifError(err);
     t.deepEqual(full.vectors, [{
         id: 1,
@@ -30,7 +30,7 @@ tape('indexdocs.parseDocs (passthru)', (t) => {
 });
 
 tape('indexdocs.parseDocs (address MultiPoint)', (t) => {
-    var docs = [{
+    let docs = [{
         id: 1,
         type: 'Feature',
         properties: {
@@ -72,15 +72,15 @@ tape('indexdocs.parseDocs (address MultiPoint)', (t) => {
             ]
         }
     }];
-    var settings = { zoom: 6, geocoder_tokens: {} };
-    var full = { vectors: [] };
-    var err = indexdocs.parseDocs(docs, settings, full);
+    let settings = { zoom: 6, geocoder_tokens: {} };
+    let full = { vectors: [] };
+    let err = indexdocs.parseDocs(docs, settings, full);
     t.ifError(err);
 
     if (process.env.UPDATE) {
         fs.writeFileSync(__dirname + '/fixtures/indexdocs.parseDocs.json', JSON.stringify(full.vectors, null, 2));
     }
-    var expected = JSON.parse(fs.readFileSync(__dirname + '/fixtures/indexdocs.parseDocs.json'));
+    let expected = JSON.parse(fs.readFileSync(__dirname + '/fixtures/indexdocs.parseDocs.json'));
 
     t.deepEqual(full.vectors, expected);
     t.end();

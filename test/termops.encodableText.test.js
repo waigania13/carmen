@@ -1,5 +1,5 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('termops.encodableText', (t) => {
     t.deepEqual(termops.encodableText('New York'), 'new york', 'encodes latin range');

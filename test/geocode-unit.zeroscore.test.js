@@ -1,20 +1,20 @@
 // Tests Windsor CT (city) vs Windsor Ct (street name)
 // Windsor CT should win via stacky bonus.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     // make maxscore a string to simulate how carmen will encounter it after pulling it from the meta table in an mbtiles file
     place: new mem({geocoder_name: 'place', maxzoom: 6, minscore: '0', maxscore: '0', geocoder_stack: 'us'}, () => {}),
 };
 
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index place', (t) => {
     queueFeature(conf.place, {

@@ -1,20 +1,20 @@
 // scoredist unit test
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
-var queue = require('d3-queue').queue;
+const queue = require('d3-queue').queue;
 
 (() => {
 
-    var conf = {
+    const conf = {
         address: new mem(null, () => {}),
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
     tape('index address (signal 1)', (t) => {
         queueFeature(conf.address, {
             id:200,
@@ -38,8 +38,8 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
     tape('index address (noise)', (t) => {
-        var q = queue(1);
-        for (var i = 1; i < 100; i++) q.defer((i, done) => {
+        const q = queue(1);
+        for (let i = 1; i < 100; i++) q.defer((i, done) => {
             queueFeature(conf.address, {
                 id:i,
                 properties: {
@@ -53,7 +53,7 @@ var queue = require('d3-queue').queue;
         q.awaitAll(t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

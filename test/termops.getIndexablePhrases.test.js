@@ -1,9 +1,9 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('termops.getIndexablePhrases', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['main', 'st'];
     freq = {};
@@ -29,8 +29,8 @@ test('termops.getIndexablePhrases', (t) => {
 
 
 test('termops.getIndexablePhrases (weight sieve)', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['jose', 'de', 'la', 'casa'];
     freq = {};
@@ -53,8 +53,8 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
 });
 
 test('termops.getIndexablePhrases (京都市)', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['京都市'];
     freq = {};
@@ -69,8 +69,8 @@ test('termops.getIndexablePhrases (京都市)', (t) => {
 });
 
 test('termops.getIndexablePhrases (москва)', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['москва'];
     freq = {};
@@ -85,8 +85,8 @@ test('termops.getIndexablePhrases (москва)', (t) => {
 });
 
 test('termops.getIndexablePhrases (josé)', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['josé'];
     freq = {};
@@ -101,8 +101,8 @@ test('termops.getIndexablePhrases (josé)', (t) => {
 });
 
 test('termops.getIndexablePhrases (josé, no degens)', (t) => {
-    var tokens;
-    var freq;
+    let tokens;
+    let freq;
 
     tokens = ['josé'];
     freq = {};

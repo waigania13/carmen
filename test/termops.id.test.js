@@ -1,8 +1,8 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
 test('id - tests if searching by id', (q) => {
-    var indexes = {
+    let indexes = {
         country: {},
         province: {},
         place: {},

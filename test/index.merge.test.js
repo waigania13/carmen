@@ -1,19 +1,19 @@
-var fs = require('fs');
-var path = require('path');
-var Stream = require('stream');
-var split = require('split');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var de = require('deep-equal');
+const fs = require('fs');
+const path = require('path');
+const Stream = require('stream');
+const split = require('split');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const de = require('deep-equal');
 
-var test = require('tape');
+const test = require('tape');
 
 test('index - streaming interface', (t) => {
     function getIndex(start, end) {
 
-        var count = 0;
-        var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
-        var transformStream = new Stream.Transform();
+        let count = 0;
+        let inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+        let transformStream = new Stream.Transform();
         transformStream._transform = (data, encoding, done) => {
             if (data) {
                 count ++;
@@ -27,22 +27,22 @@ test('index - streaming interface', (t) => {
         return transformStream;
     }
 
-    var outputStream = new Stream.Writable();
+    let outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
-        var doc = JSON.parse(chunk.toString());
+        let doc = JSON.parse(chunk.toString());
 
         //Only print on error or else the logs are super long
         if (!doc.id) t.ok(doc.id, 'has id: ' + doc.id);
         done();
     };
 
-    var memObjectA = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
-    var confA = {
+    const memObjectA = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
+    const confA = {
         country : memObjectA
     };
 
-    var carmenA = new Carmen(confA);
-    var indexA = getIndex(0,100);
+    const carmenA = new Carmen(confA);
+    const indexA = getIndex(0,100);
     t.test('index docs.json', (q) => {
         carmenA.index(indexA, confA.country, {
             zoom: 6,
@@ -67,13 +67,13 @@ test('index - streaming interface', (t) => {
         });
     });
 
-    var memObjectB = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
-    var confB = {
+    const memObjectB = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
+    const confB = {
         country: memObjectB
     };
 
-    var carmenB = new Carmen(confB);
-    var indexB = getIndex(100,200);
+    const carmenB = new Carmen(confB);
+    const indexB = getIndex(100,200);
     t.test('index docs.json', (q) => {
         carmenB.index(indexB, confB.country, {
             zoom: 6,
@@ -98,13 +98,13 @@ test('index - streaming interface', (t) => {
         });
     });
 
-    var memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
-    var confD = {
+    const memObjectD = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
+    const confD = {
         country: memObjectD
     };
 
-    var carmenD = new Carmen(confD);
-    var indexD = getIndex(0,200);
+    const carmenD = new Carmen(confD);
+    const indexD = getIndex(0,200);
     t.test('index docs.json', (q) => {
         carmenD.index(indexD, confD.country, {
             zoom: 6,
@@ -115,9 +115,9 @@ test('index - streaming interface', (t) => {
         });
     });
 
-    var memObjectC = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
-    var confC = { country: memObjectC };
-    var carmenC = new Carmen(confC);
+    const memObjectC = new mem([], { maxzoom: 6, geocoder_languages: ['fa', 'zh'] }, () => {});
+    const confC = { country: memObjectC };
+    const carmenC = new Carmen(confC);
 
     t.test('merged indexes', (q) => {
         carmenC.merge(memObjectA, memObjectB, memObjectC, {}, (err) => {
@@ -144,11 +144,11 @@ test('index - streaming interface', (t) => {
 
     t.test('ensure total indexes in C is greater than A and B', (q) => {
         carmenA.analyze(memObjectA, (err, stats) => {
-            var a = stats.total;
+            let a = stats.total;
             carmenB.analyze(memObjectB, (err, stats) => {
-                var b = stats.total;
+                let b = stats.total;
                 carmenC.analyze(memObjectC, (err, stats) => {
-                    var c = stats.total;
+                    let c = stats.total;
                     t.ok((c > a && c > b), "ok");
                     q.end();
                 });
@@ -168,25 +168,25 @@ test('index - streaming interface', (t) => {
     });
 
     t.test('ensure merged index features and original features are identical', (q) => {
-        var count = 0;
-        for (var i = 1; i <= 200; i++) {
+        let count = 0;
+        for (let i = 1; i <= 200; i++) {
             count += de(memObjectC._shards.feature[i], memObjectD._shards.feature[i], "==") ? 1 : 0;
         }
-        var percentage = (count/200)*100;
+        let percentage = (count/200)*100;
         t.ok(percentage == 100, "features are identical");
         q.end();
     });
 
     ["freq", "grid"].forEach((type) => {
         t.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', (q) => {
-            var stringify = (key) => {
+            let stringify = (key) => {
                 return key[0] + "-" + (key[1] ? key[1].map((k) => { return "" + k; }).sort().join("-") : "null");
             }
-            var cSet = new Set(carmenC.indexes.country._geocoder[type].list().map(stringify));
-            var dSet = new Set(carmenD.indexes.country._geocoder[type].list().map(stringify));
-            var intersection = new Set(Array.from(cSet).filter((x) => { return dSet.has(x) }));
-            var union = new Set(Array.from(cSet).concat(Array.from(dSet)));
-            var percentage = 100 * intersection.size / (union.size);
+            let cSet = new Set(carmenC.indexes.country._geocoder[type].list().map(stringify));
+            let dSet = new Set(carmenD.indexes.country._geocoder[type].list().map(stringify));
+            let intersection = new Set(Array.from(cSet).filter((x) => { return dSet.has(x) }));
+            let union = new Set(Array.from(cSet).concat(Array.from(dSet)));
+            let percentage = 100 * intersection.size / (union.size);
             t.ok(percentage >= 97, type + ' matches > 97%: ' + percentage);
 
             q.end();

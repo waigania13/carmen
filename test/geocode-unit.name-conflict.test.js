@@ -1,13 +1,13 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
-var queue = require('d3-queue').queue;
+const queue = require('d3-queue').queue;
 
-var conf = {
+const conf = {
     country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     postcode: new mem(null, () => {}),
@@ -25,10 +25,10 @@ var conf = {
         geocoder_type: 'poi'
     }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    var country = {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'Canada',
@@ -40,7 +40,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    var region = {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'Newfoundland and Labrador',
@@ -52,7 +52,7 @@ tape('index region', (t) => {
 });
 
 tape('index postcode', (t) => {
-    var postcode = {
+    let postcode = {
         id:1,
         properties: {
             'carmen:text':'A1N 4Y1',
@@ -64,7 +64,7 @@ tape('index postcode', (t) => {
 });
 
 tape('index place', (t) => {
-    var place = {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Mount Pearl',
@@ -76,7 +76,7 @@ tape('index place', (t) => {
 });
 
 tape('index neighborhood', (t) => {
-    var neighborhood = {
+    let neighborhood = {
         id:1,
         properties: {
             'carmen:text':'Waterford Valley',
@@ -88,8 +88,8 @@ tape('index neighborhood', (t) => {
 });
 
 tape('index poi', (t) => {
-    var q = queue(1);
-    for (var i = 1; i < 20; i++) q.defer((i, done) => {
+    const q = queue(1);
+    for (let i = 1; i < 20; i++) q.defer((i, done) => {
         queueFeature(conf.poi, {
             id:i,
             properties: {
@@ -102,7 +102,7 @@ tape('index poi', (t) => {
     q.awaitAll(t.end);
 });
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);

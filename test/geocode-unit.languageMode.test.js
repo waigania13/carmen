@@ -1,17 +1,17 @@
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var context = require('../lib/context');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const context = require('../lib/context');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country', (t) => {
         queueFeature(conf.country, {
@@ -62,7 +62,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -153,12 +153,12 @@ var addFeature = require('../lib/util/addfeature'),
 
 // Separate context (non-limit) test
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
         place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country', (t) => {
         queueFeature(conf.country, {
@@ -211,7 +211,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -278,12 +278,12 @@ var addFeature = require('../lib/util/addfeature'),
 
 // digraphic exclusion test
 (() => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
         place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
     tape('index country', (t) => {
         queueFeature(conf.country, {
@@ -353,7 +353,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);

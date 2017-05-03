@@ -1,22 +1,22 @@
-var termops = require('../lib/util/termops');
-var uniq = require('../lib/util/uniq');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const uniq = require('../lib/util/uniq');
+const test = require('tape');
 
 test('termops.encodePhrase clustering', (t) => {
-    var sets = [
+    let sets = [
         ['apples', 'application', 'apply', 'appears', 'appomattox'],
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
         ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
     ];
     sets.forEach((set) => {
-        var encoded = set.map((text) => { return termops.encodePhrase(text); });
+        let encoded = set.map((text) => { return termops.encodePhrase(text); });
         t.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
     });
     t.end();
 });
 
 test('termops.encodePhrase', (t) => {
-    var a;
+    let a;
 
     a = termops.encodePhrase('main');
     t.deepEqual(a, 'main', 'main');
@@ -69,13 +69,13 @@ test('termops.encodePhrase', (t) => {
 });
 
 test('termops.encodePhrase collisions', (t) => {
-    var texts = 0;
-    var sample = 1e6;
-    var ids = {};
-    var collisions = [];
+    let texts = 0;
+    let sample = 1e6;
+    let ids = {};
+    let collisions = [];
     while (texts < sample) {
-        var text = Math.random().toString(36);
-        var id = termops.encodePhrase(text);
+        let text = Math.random().toString(36);
+        let id = termops.encodePhrase(text);
 
         if (id >= Math.pow(2,52)) {
             t.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
@@ -92,8 +92,8 @@ test('termops.encodePhrase collisions', (t) => {
         }
         texts++;
     }
-    var rate = (collisions.length/sample);
-    var thresh = 1/1e6;
+    let rate = (collisions.length/sample);
+    let thresh = 1/1e6;
     t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
     t.end();
 });

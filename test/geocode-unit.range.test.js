@@ -1,13 +1,13 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     region: new mem({
         maxzoom: 6,
         geocoder_stack: ['ca', 'us', 'mx']
@@ -22,10 +22,10 @@ var conf = {
         geocoder_stack: ['us']
     }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
 tape('index region', (t) => {
-    var region = {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'Ontario',
@@ -39,7 +39,7 @@ tape('index region', (t) => {
 });
 
 tape('index mx region', (t) => {
-    var region = {
+    let region = {
         id:2,
         properties: {
             'carmen:text':'Veracruz',
@@ -53,7 +53,7 @@ tape('index mx region', (t) => {
 });
 
 tape('index us place', (t) => {
-    var place = {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Springfield',
@@ -66,7 +66,7 @@ tape('index us place', (t) => {
 });
 
 tape('index ca place', (t) => {
-    var place = {
+    let place = {
         id:2,
         properties: {
             'carmen:text':'Punkeydoodles Corners',
@@ -80,7 +80,7 @@ tape('index ca place', (t) => {
 });
 
 tape('index us address', (t) => {
-    var address = {
+    let address = {
         id:1,
         properties: {
             'carmen:text':'Evergreen Terrace',
@@ -99,7 +99,7 @@ tape('index us address', (t) => {
 });
 
 tape('build queued features', (t) => {
-    var q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);
