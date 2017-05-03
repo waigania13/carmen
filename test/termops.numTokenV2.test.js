@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('numTokenV2', function(t) {
+test('numTokenV2', (t) => {
     t.deepEqual(termops.numTokenV2(''), '', 'no digits');
     t.deepEqual(termops.numTokenV2('1'), '#', '1 digit');
     t.deepEqual(termops.numTokenV2('12'), '##', '2 digit');

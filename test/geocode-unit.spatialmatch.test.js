@@ -16,7 +16,7 @@ var conf = {
     address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
 };
 var c = new Carmen(conf);
-tape('index place', function(t) {
+tape('index place', (t) => {
     var feature = {
         id:1,
         properties: {
@@ -27,7 +27,7 @@ tape('index place', function(t) {
     };
     queueFeature(conf.place, feature, t.end);
 });
-tape('index matching address', function(t) {
+tape('index matching address', (t) => {
     var feature = {
         id:2,
         properties: {
@@ -43,7 +43,7 @@ tape('index matching address', function(t) {
     };
     queueFeature(conf.address, feature, t.end);
 });
-tape('index other address', function(t) {
+tape('index other address', (t) => {
     var feature = {
         id:3,
         properties: {
@@ -59,7 +59,7 @@ tape('index other address', function(t) {
     };
     queueFeature(conf.address, feature, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -68,7 +68,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('test spatialmatch relev', function(t) {
+tape('test spatialmatch relev', (t) => {
     c.geocode('1 fake street fakecity', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -78,7 +78,7 @@ tape('test spatialmatch relev', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

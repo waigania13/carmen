@@ -2,13 +2,13 @@ const tape = require('tape');
 const zlib = require('zlib');
 const DawgCache = require('../lib/util/dawg');
 
-tape('create', function(t) {
+tape('create', (t) => {
     const dict = new DawgCache();
     t.ok(dict, "dawg created")
     t.end();
 });
 
-tape('dump/load', function(t) {
+tape('dump/load', (t) => {
     const dict = new DawgCache();
     dict.setText("a1");
     dict.setText("a2");
@@ -34,7 +34,7 @@ tape('dump/load', function(t) {
     });
 });
 
-tape('invalid data', function(t) {
+tape('invalid data', (t) => {
     const dict = new DawgCache();
     t.throws(function() { dict.setText(""); });
     t.end();

@@ -19,11 +19,11 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(t) {
+tape('ready', (t) => {
     c._open(t.end);
 });
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -33,7 +33,7 @@ tape('index country', function(t) {
         }
     }, t.end);
 });
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id:1,
         properties: {
@@ -43,7 +43,7 @@ tape('index region', function(t) {
         }
     }, t.end);
 });
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -53,7 +53,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('index street', function(t) {
+tape('index street', (t) => {
     queueFeature(conf.street, {
         id:1,
         properties: {
@@ -63,7 +63,7 @@ tape('index street', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -85,7 +85,7 @@ function resetLogs() {
     conf.street._original.logs.getTile = [];
 }
 
-tape('reverse 0,0', function(t) {
+tape('reverse 0,0', (t) => {
     resetLogs();
     c.geocode('0,0', {}, function(err, res) {
         t.ifError(err);
@@ -102,7 +102,7 @@ tape('reverse 0,0', function(t) {
     });
 });
 
-tape('reverse 0,0, types=region', function(t) {
+tape('reverse 0,0, types=region', (t) => {
     resetLogs();
     c.geocode('0,0', { types:['region'] }, function(err, res) {
         t.ifError(err);
@@ -119,7 +119,7 @@ tape('reverse 0,0, types=region', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

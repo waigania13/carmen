@@ -25,7 +25,7 @@ tiles1 = tiles.slice(0, 341);
 tiles2 = tiles.slice(341,682);
 tiles3 = tiles.slice(682);
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     var docs = [];
     var place;
 
@@ -68,7 +68,7 @@ tape('index place', function(t) {
     queueFeature(conf.place, docs, function() { buildQueued(conf.place, t.end) });
 });
 
-tape('query', function(t) {
+tape('query', (t) => {
     context.getTile.cache.reset();
     addFeature.resetLogs(conf);
     c.geocode('san', {debug: true, proximity: [3, -3]}, function(err, res) {
@@ -80,7 +80,7 @@ tape('query', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

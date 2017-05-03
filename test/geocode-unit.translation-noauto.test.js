@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
 var runTests = function(mode) {
     var conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, function() {}) };
     var c = new Carmen(conf);
-    tape('index first region', function(t) {
+    tape('index first region', (t) => {
         queueFeature(conf.region, {
             id:1,
             properties: {
@@ -25,7 +25,7 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
-    tape('index second region', function(t) {
+    tape('index second region', (t) => {
         queueFeature(conf.region, {
             id:2,
             properties: {
@@ -37,7 +37,7 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -50,7 +50,7 @@ var runTests = function(mode) {
     if (mode == "lazy") {
         // on the second run through the tests, force carmen-cache to use lazy
         // instead of in-memory caching
-        tape('reload cache', function(t) {
+        tape('reload cache', (t) => {
             var cache = c.byidx[0]._geocoder;
 
             ['freq', 'grid'].forEach(function(type) {
@@ -64,7 +64,7 @@ var runTests = function(mode) {
         });
     }
 
-    tape('de', function(t) {
+    tape('de', (t) => {
         c.geocode('de', {}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
@@ -78,7 +78,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: en)', function(t) {
+    tape('de (language: en)', (t) => {
         c.geocode('de', {language: 'en'}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
@@ -92,7 +92,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: hu)', function(t) {
+    tape('de (language: hu)', (t) => {
         c.geocode('de', {language: 'hu'}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
@@ -107,7 +107,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: hu-HU)', function(t) {
+    tape('de (language: hu-HU)', (t) => {
         c.geocode('de', {language: 'hu-HU'}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
@@ -122,7 +122,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('delaware', function(t) {
+    tape('delaware', (t) => {
         c.geocode('delaware', {}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
@@ -131,7 +131,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('sou', function(t) {
+    tape('sou', (t) => {
         c.geocode('sou', {}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
@@ -140,7 +140,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('south carolina', function(t) {
+    tape('south carolina', (t) => {
         c.geocode('south carolina', {}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
@@ -149,7 +149,7 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('del karolina', function(t) {
+    tape('del karolina', (t) => {
         c.geocode('del karolina', {}, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
@@ -164,7 +164,7 @@ var runTests = function(mode) {
 
 runTests("memory_cache");
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

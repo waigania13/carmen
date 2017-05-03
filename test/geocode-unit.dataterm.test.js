@@ -12,7 +12,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index address (noise)', function(t) {
+tape('index address (noise)', (t) => {
     var q = queue(1);
     for (var i = 1; i < 41; i++) q.defer(function(i, done) {
         var address = {
@@ -32,7 +32,7 @@ tape('index address (noise)', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('index address (signal)', function(t) {
+tape('index address (signal)', (t) => {
     var address = {
         id:101,
         properties: {
@@ -47,7 +47,7 @@ tape('index address (signal)', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -57,7 +57,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('test address', function(t) {
+tape('test address', (t) => {
     c.geocode('1500 fake street', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '1500 fake street', 'found 1500 fake street');
@@ -66,7 +66,7 @@ tape('test address', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

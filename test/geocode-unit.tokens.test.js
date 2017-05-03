@@ -16,7 +16,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, function() {})
     };
     var c = new Carmen(conf);
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:1,
             properties: {
@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
-    tape('test address index for relev', function(t) {
+    tape('test address index for relev', (t) => {
         c.geocode('fake st', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement test, fake st');
@@ -49,7 +49,7 @@ var addFeature = require('../lib/util/addfeature'),
         tokens: {"dix-huitième": "18e"}
     };
     var c = new Carmen(conf, opts);
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:1,
             properties: {
@@ -63,14 +63,14 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
-    tape('test address index for relev', function(t) {
+    tape('test address index for relev', (t) => {
         c.geocode('avenue du 18e régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du 18e');
             t.end();
         });
     });
-    tape('test address index for relev', function(t) {
+    tape('test address index for relev', (t) => {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'avenue du dix-huitième régiment');
@@ -88,7 +88,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, function() {})
     };
     var c = new Carmen(conf);
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:1,
             properties: {
@@ -102,7 +102,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
-    tape('test token replacement', function(t) {
+    tape('test token replacement', (t) => {
         c.geocode('qabc', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
@@ -128,11 +128,11 @@ var addFeature = require('../lib/util/addfeature'),
         }
     }
     var c = new Carmen(conf, opts);
-    tape('set opts', function(t) {
+    tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:1,
             properties: {
@@ -147,7 +147,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:2,
             properties: {
@@ -161,11 +161,11 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
-    tape('unset opts', function(t) {
+    tape('unset opts', (t) => {
         addFeature.setOptions({});
         t.end();
     });
-    tape('test address index for relev', function(t) {
+    tape('test address index for relev', (t) => {
         c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
@@ -173,7 +173,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('test address index for relev', function(t) {
+    tape('test address index for relev', (t) => {
         c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
@@ -197,11 +197,11 @@ var addFeature = require('../lib/util/addfeature'),
     };
 
     var c = new Carmen(conf, opts);
-    tape('set opts', function(t) {
+    tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
-    tape('geocoder token test', function(t) {
+    tape('geocoder token test', (t) => {
         var address = {
             id:1,
             properties: {
@@ -215,41 +215,41 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
     });
-    tape('test token replacement', function(t) {
+    tape('test token replacement', (t) => {
         c.geocode('Talstrasse', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
             t.end();
         });
     });
-    tape('test token replacement', function(t) {
+    tape('test token replacement', (t) => {
         c.geocode('Talstr ', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
             t.end();
         });
     });
-    tape('test token replacement', function(t) {
+    tape('test token replacement', (t) => {
         c.geocode('Tal str ', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
             t.end();
         });
     });
-    tape('test token replacement', function(t) {
+    tape('test token replacement', (t) => {
         c.geocode('Talstrassesomthing', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
             t.end();
         });
     });
-    tape('unset opts', function(t) {
+    tape('unset opts', (t) => {
         addFeature.setOptions({});
         t.end();
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

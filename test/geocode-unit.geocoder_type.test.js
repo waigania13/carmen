@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
         poi:        new mem({maxzoom: 12}, function() {})
     };
     var c = new Carmen(conf);
-    tape('index address', function(t) {
+    tape('index address', (t) => {
         var address = {
             id:1,
             type: 'Feature',
@@ -29,7 +29,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
+    tape('index poi', (t) => {
         var poi = {
             id:1,
             type: 'Feature',
@@ -44,7 +44,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -54,7 +54,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('query on address but still returns poi due to index order', function(t) {
+    tape('query on address but still returns poi due to index order', (t) => {
         c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
@@ -63,7 +63,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query on address with type poi', function(t) {
+    tape('query on address with type poi', (t) => {
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
@@ -71,7 +71,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('query on poi with type address', function(t) {
+    tape('query on poi with type address', (t) => {
         c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
@@ -87,7 +87,7 @@ var addFeature = require('../lib/util/addfeature'),
         poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
     };
     var c = new Carmen(conf);
-    tape('index address', function(t) {
+    tape('index address', (t) => {
         var address = {
             id:1,
             type: 'Feature',
@@ -103,7 +103,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
+    tape('index poi', (t) => {
         var poi = {
             id:1,
             type: 'Feature',
@@ -118,7 +118,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -127,7 +127,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('address query returns address', function(t) {
+    tape('address query returns address', (t) => {
         c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
@@ -135,7 +135,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('poi query returns poi', function(t) {
+    tape('poi query returns poi', (t) => {
         c.geocode('-77.04441547393799,38.909427030614665', {}, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank', 'found POI');
@@ -143,7 +143,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('query on address with type poi', function(t) {
+    tape('query on address with type poi', (t) => {
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
@@ -151,7 +151,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('query on poi with type address', function(t) {
+    tape('query on poi with type address', (t) => {
         c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
@@ -167,7 +167,7 @@ var addFeature = require('../lib/util/addfeature'),
         poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
     };
     var c = new Carmen(conf);
-    tape('index address', function(t) {
+    tape('index address', (t) => {
         var address = {
             id:1,
             type: 'Feature',
@@ -183,7 +183,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
+    tape('index poi', (t) => {
         var poi = {
             id:1,
             type: 'Feature',
@@ -198,7 +198,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -207,7 +207,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('return poi if type filtering removes address', function(t) {
+    tape('return poi if type filtering removes address', (t) => {
         c.geocode('-77.04320579767227,38.910435109001334', { types: ['poi'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
@@ -215,7 +215,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('return address if type filtering removes poi', function(t) {
+    tape('return address if type filtering removes poi', (t) => {
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['address'] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 1);
@@ -230,7 +230,7 @@ var addFeature = require('../lib/util/addfeature'),
         place:    new mem({maxzoom: 12}, function() {})
     };
     var c = new Carmen(conf);
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             id:1,
             type: 'Feature',
@@ -255,7 +255,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             id:2,
             type: 'Feature',
@@ -280,7 +280,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -289,7 +289,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('Overlapping places return closest centroid', function(t) {
+    tape('Overlapping places return closest centroid', (t) => {
         c.geocode('-77.0378065109253,38.909836107628074', {}, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Logan Circle', 'found Logan Circle');
@@ -300,7 +300,7 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

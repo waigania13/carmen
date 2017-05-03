@@ -9,7 +9,7 @@ for (var i = 0; i < 100; i++) {
 }
 
 var c = new Carmen(conf);
-tape('rejects a heavy emoji query quickly', function(t) {
+tape('rejects a heavy emoji query quickly', (t) => {
     var start = +new Date();
     c.geocode(decodeURIComponent('%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82'), {}, function(err, res) {
         t.ifError(err);
@@ -19,7 +19,7 @@ tape('rejects a heavy emoji query quickly', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

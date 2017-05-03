@@ -1,7 +1,7 @@
 var grid = require('../lib/util/grid');
 var test = require('tape');
 
-test('grid', function(t) {
+test('grid', (t) => {
     t.throws(function() {
         grid.encode({ id: Math.pow(2,20) });
     }, Error, 'throws on bad id');

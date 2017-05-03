@@ -16,7 +16,7 @@ var conf = {
 
 var c = new Carmen(conf);
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -29,7 +29,7 @@ tape('index place', function(t) {
 });
 
 // this should have been indexed properly despite having a zero score in an index with zero maxscore
-tape('geocode against an all-zero-score index', function(t) {
+tape('geocode against an all-zero-score index', (t) => {
     c.geocode('chicago', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
@@ -37,7 +37,7 @@ tape('geocode against an all-zero-score index', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

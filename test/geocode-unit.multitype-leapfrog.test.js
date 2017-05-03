@@ -16,7 +16,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id:1,
         geometry: {
@@ -37,7 +37,7 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index district', function(t) {
+tape('index district', (t) => {
     queueFeature(conf.district, {
         id:1,
         geometry: {
@@ -57,7 +57,7 @@ tape('index district', function(t) {
     }, t.end);
 });
 
-tape('index district', function(t) {
+tape('index district', (t) => {
     queueFeature(conf.district, {
         id:2,
         geometry: {
@@ -77,7 +77,7 @@ tape('index district', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:2,
         geometry: {
@@ -96,7 +96,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -106,7 +106,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('multitype reverse', function(t) {
+tape('multitype reverse', (t) => {
     t.comment('query:  0,0');
     t.comment('result: capital');
     t.comment('note:   shifted reverse');
@@ -122,7 +122,7 @@ tape('multitype reverse', function(t) {
     });
 });
 
-tape('multitype forward, q=capital', function(t) {
+tape('multitype forward, q=capital', (t) => {
     t.comment('query:  capital');
     t.comment('result: capital');
     t.comment('note:   shifted forward');
@@ -134,7 +134,7 @@ tape('multitype forward, q=capital', function(t) {
         t.end();
     });
 });
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

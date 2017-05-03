@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
         region: new mem({ maxzoom: 6, geocoder_format: '{region._name}, {country._name}', geocoder_languages: ['en', 'zh']}, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             id:1,
             properties: {
@@ -28,7 +28,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('index region', function(t) {
+    tape('index region', (t) => {
         queueFeature(conf.region, {
             id:1,
             properties: {
@@ -43,7 +43,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -52,7 +52,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('trims text (forward)', function(t) {
+    tape('trims text (forward)', (t) => {
         c.geocode('Bogota', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Bogotá, Colombia');
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('trims text (reverse)', function(t) {
+    tape('trims text (reverse)', (t) => {
         c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Bogotá, Colombia');
@@ -70,7 +70,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('trims text (forward, ?language=en)', function(t) {
+    tape('trims text (forward, ?language=en)', (t) => {
         c.geocode('Bogota', { limit_verify: 1, language: 'en' }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Bogota, Colombia');
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('trims text (reverse, ?language=en)', function(t) {
+    tape('trims text (reverse, ?language=en)', (t) => {
         c.geocode('0,0', { limit_verify: 1, language: 'en' }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Bogota, Colombia');
@@ -88,7 +88,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('trims text (forward, ?language=zh)', function(t) {
+    tape('trims text (forward, ?language=zh)', (t) => {
         c.geocode('Bogota', { limit_verify: 1, language: 'zh' }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '波哥大, 哥伦比亚');
@@ -97,7 +97,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('trims text (reverse, ?language=en)', function(t) {
+    tape('trims text (reverse, ?language=en)', (t) => {
         c.geocode('0,0', { limit_verify: 1, language: 'zh' }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].place_name, '波哥大, 哥伦比亚');
@@ -108,7 +108,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

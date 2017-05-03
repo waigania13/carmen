@@ -13,7 +13,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index test', function(t) {
+tape('index test', (t) => {
     var feature = {
         id:1,
         properties: {
@@ -25,7 +25,7 @@ tape('index test', function(t) {
     queueFeature(conf.test, feature, function() { buildQueued(conf.test, t.end) });
 });
 
-tape('forward between tiles', function(t) {
+tape('forward between tiles', (t) => {
     c.geocode('test', { limit_verify: 1, }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'test', 'found feature');
@@ -35,7 +35,7 @@ tape('forward between tiles', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

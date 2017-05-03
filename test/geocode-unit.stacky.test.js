@@ -17,7 +17,7 @@ var conf = {
     street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index province', function(t) {
+tape('index province', (t) => {
     var province = {
         id:1,
         properties: {
@@ -28,7 +28,7 @@ tape('index province', function(t) {
     };
     queueFeature(conf.province, province, t.end);
 });
-tape('index city', function(t) {
+tape('index city', (t) => {
     var city = {
         id:1,
         properties: {
@@ -39,7 +39,7 @@ tape('index city', function(t) {
     };
     queueFeature(conf.city, city, t.end);
 });
-tape('index street', function(t) {
+tape('index street', (t) => {
     var street = {
         id:1,
         properties: {
@@ -50,7 +50,7 @@ tape('index street', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -60,7 +60,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 // city beats street at context sort
-tape('windsor court (limit 2)', function(t) {
+tape('windsor court (limit 2)', (t) => {
     c.geocode('windsor court', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor, connecticut');
@@ -69,7 +69,7 @@ tape('windsor court (limit 2)', function(t) {
     });
 });
 // street beats city
-tape('windsor court windsor', function(t) {
+tape('windsor court windsor', (t) => {
     c.geocode('windsor court windsor', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor court, windsor');
@@ -79,7 +79,7 @@ tape('windsor court windsor', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

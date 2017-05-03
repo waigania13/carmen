@@ -16,7 +16,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id:1,
         geometry: {
@@ -37,7 +37,7 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         geometry: {
@@ -57,7 +57,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('index poi', function(t) {
+tape('index poi', (t) => {
     queueFeature(conf.poi, {
         id:1,
         geometry: {
@@ -70,7 +70,7 @@ tape('index poi', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -80,7 +80,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('multitype reverse', function(t) {
+tape('multitype reverse', (t) => {
     t.comment('query:  0,0');
     t.comment('result: cafe, libertador, caracas');
     t.comment('note:   returns full context, no shifts');
@@ -99,7 +99,7 @@ tape('multitype reverse', function(t) {
     });
 });
 
-tape('multitype reverse, types=poi', function(t) {
+tape('multitype reverse, types=poi', (t) => {
     t.comment('query:  0,0');
     t.comment('result: cafe, libertador, caracas');
     t.comment('note:   returns full context, no shifts');
@@ -118,7 +118,7 @@ tape('multitype reverse, types=poi', function(t) {
     });
 });
 
-tape('multitype reverse, types=place', function(t) {
+tape('multitype reverse, types=place', (t) => {
     t.comment('query:  0,0');
     t.comment('result: liberatador, caracas');
     t.comment('note:   returns libertador, caracas, no shift');
@@ -130,7 +130,7 @@ tape('multitype reverse, types=place', function(t) {
     });
 });
 
-tape('multitype reverse, types=region', function(t) {
+tape('multitype reverse, types=region', (t) => {
     t.comment('query:  0,0');
     t.comment('result: caracas');
     t.comment('note:   returns caracas, no shift');
@@ -142,7 +142,7 @@ tape('multitype reverse, types=region', function(t) {
     });
 });
 
-tape('multitype reverse, types=place,region', function(t) {
+tape('multitype reverse, types=place,region', (t) => {
     t.comment('query:  0,0');
     t.comment('result: libertador, caracas');
     t.comment('note:   returns libertador, caracas, no shift');
@@ -154,7 +154,7 @@ tape('multitype reverse, types=place,region', function(t) {
     });
 });
 
-tape('multitype forward, q=cafe', function(t) {
+tape('multitype forward, q=cafe', (t) => {
     t.comment('query:  cafe');
     t.comment('result: cafe, libertador, caracas');
     t.comment('note:   returns full context, no shifts');
@@ -173,7 +173,7 @@ tape('multitype forward, q=cafe', function(t) {
     });
 });
 
-tape('multitype forward, q=libertador', function(t) {
+tape('multitype forward, q=libertador', (t) => {
     t.comment('query:  libertador');
     t.comment('result: libertador, caracas');
     t.comment('note:   returns full context, no shifts');
@@ -189,7 +189,7 @@ tape('multitype forward, q=libertador', function(t) {
     });
 });
 
-tape('multitype forward, q=caracas', function(t) {
+tape('multitype forward, q=caracas', (t) => {
     t.comment('query:  caracas');
     t.comment('result: caracas');
     t.comment('note:   returns caracas with shift');
@@ -201,7 +201,7 @@ tape('multitype forward, q=caracas', function(t) {
     });
 });
 
-tape('multitype forward, q=caracas, types=place', function(t) {
+tape('multitype forward, q=caracas, types=place', (t) => {
     t.comment('query:  caracas');
     t.comment('result: caracas');
     t.comment('note:   returns caracas with shift');
@@ -213,7 +213,7 @@ tape('multitype forward, q=caracas, types=place', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

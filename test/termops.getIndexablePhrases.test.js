@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('termops.getIndexablePhrases', function(t) {
+test('termops.getIndexablePhrases', (t) => {
     var tokens;
     var freq;
 
@@ -28,7 +28,7 @@ test('termops.getIndexablePhrases', function(t) {
 });
 
 
-test('termops.getIndexablePhrases (weight sieve)', function(t) {
+test('termops.getIndexablePhrases (weight sieve)', (t) => {
     var tokens;
     var freq;
 
@@ -52,7 +52,7 @@ test('termops.getIndexablePhrases (weight sieve)', function(t) {
     t.end();
 });
 
-test('termops.getIndexablePhrases (京都市)', function(t) {
+test('termops.getIndexablePhrases (京都市)', (t) => {
     var tokens;
     var freq;
 
@@ -68,7 +68,7 @@ test('termops.getIndexablePhrases (京都市)', function(t) {
     t.end();
 });
 
-test('termops.getIndexablePhrases (москва)', function(t) {
+test('termops.getIndexablePhrases (москва)', (t) => {
     var tokens;
     var freq;
 
@@ -84,7 +84,7 @@ test('termops.getIndexablePhrases (москва)', function(t) {
     t.end();
 });
 
-test('termops.getIndexablePhrases (josé)', function(t) {
+test('termops.getIndexablePhrases (josé)', (t) => {
     var tokens;
     var freq;
 
@@ -100,7 +100,7 @@ test('termops.getIndexablePhrases (josé)', function(t) {
     t.end();
 });
 
-test('termops.getIndexablePhrases (josé, no degens)', function(t) {
+test('termops.getIndexablePhrases (josé, no degens)', (t) => {
     var tokens;
     var freq;
 

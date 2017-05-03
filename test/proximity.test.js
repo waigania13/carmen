@@ -1,7 +1,7 @@
 var proximity = require('../lib/util/proximity');
 var test = require('tape');
 
-test('proximity.center2zxy', function(t) {
+test('proximity.center2zxy', (t) => {
     t.deepEqual(proximity.center2zxy([0,0],5), [5,16,16]);
     t.deepEqual(proximity.center2zxy([-90,45],5), [5,8,11.51171875]);
     t.deepEqual(proximity.center2zxy([-181,90.1],5), [5,0,0], 'respects world extents');
@@ -9,7 +9,7 @@ test('proximity.center2zxy', function(t) {
     t.end();
 });
 
-test('proximity.distance', function(t) {
+test('proximity.distance', (t) => {
     // uses distance to center when closer than furthest corner of cover
     t.equal(proximity.distance([0, 0], [0, 0], { x: 0, y: 0, zoom: 2 }), 0);
     // uses distance to furthest corner of cover when closer than center
@@ -19,7 +19,7 @@ test('proximity.distance', function(t) {
     t.end();
 });
 
-test('proximity.distscore', function(t) {
+test('proximity.distscore', (t) => {
     t.deepEqual(proximity.distscore(50, 10), 200, '20x score bump when 50 meters away');
     t.deepEqual(proximity.distscore(500, 10000), 20000, '2x score bump when 500 meters away');
 

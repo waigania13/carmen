@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index region with bad language code', function(t) {
+tape('index region with bad language code', (t) => {
     var conf2 = {
         country: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {}),
         region: new mem({ maxzoom: 6, geocoder_languages: ['es', 'ru', 'zh_Latn'] }, function() {})
@@ -40,7 +40,7 @@ tape('index region with bad language code', function(t) {
     })});
 });
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         type: 'Feature',
         properties: {
@@ -58,7 +58,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -68,7 +68,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('russia => Russian Federation', function(t) {
+tape('russia => Russian Federation', (t) => {
     c.geocode('russia', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
@@ -78,7 +78,7 @@ tape('russia => Russian Federation', function(t) {
     });
 });
 
-tape('Rossiyskaya ==> Russian Federation (synonyms are not available in autoc)', function(t) {
+tape('Rossiyskaya ==> Russian Federation (synonyms are not available in autoc)', (t) => {
     c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
@@ -89,7 +89,7 @@ tape('Rossiyskaya ==> Russian Federation (synonyms are not available in autoc)',
     });
 });
 
-tape('Российская => Russian Federation (autocomplete without language flag)', function(t) {
+tape('Российская => Russian Federation (autocomplete without language flag)', (t) => {
     c.geocode('Российская', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
@@ -101,7 +101,7 @@ tape('Российская => Russian Federation (autocomplete without language 
     });
 });
 
-tape('Российская => Российская Федерация (autocomplete with language flag)', function(t) {
+tape('Российская => Российская Федерация (autocomplete with language flag)', (t) => {
     c.geocode('Российская', { limit_verify:1, language: 'ru' }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
@@ -114,7 +114,7 @@ tape('Российская => Российская Федерация (autocompl
     });
 });
 
-tape('Российская => Российская Федерация (autocomplete with multilanguage flag uses first)', function(t) {
+tape('Российская => Российская Федерация (autocomplete with multilanguage flag uses first)', (t) => {
     c.geocode('Российская', { limit_verify:1, language: 'en,ru' }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
@@ -126,7 +126,7 @@ tape('Российская => Российская Федерация (autocompl
     });
 });
 
-tape('Российская Федерация => Russian Federation', function(t) {
+tape('Российская Федерация => Russian Federation', (t) => {
     c.geocode('Российская Федерация', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
@@ -138,7 +138,7 @@ tape('Российская Федерация => Russian Federation', function(t
 
 // carmen:text_zh_Latn should be indexed as a synonym for _text since
 // as zh_Latn is a valid language code with IETF tag
-tape('Elousi => Russian Federation', function(t) {
+tape('Elousi => Russian Federation', (t) => {
     c.geocode('Elousi', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
@@ -150,7 +150,7 @@ tape('Elousi => Russian Federation', function(t) {
 
 // carmen:text_fake should not be indexed as a synonym for _text since
 // 'fake' is not a valid language code
-tape('beetlejuice => [fail]', function(t) {
+tape('beetlejuice => [fail]', (t) => {
     c.geocode('beetlejuice', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.notOk(res.features[0]);
@@ -159,7 +159,7 @@ tape('beetlejuice => [fail]', function(t) {
 });
 
 //Is not above 0.5 relev so should fail.
-tape('fake blah blah => [fail]', function(t) {
+tape('fake blah blah => [fail]', (t) => {
     c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.notOk(res.features[0]);

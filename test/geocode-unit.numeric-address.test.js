@@ -12,7 +12,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index address', function(t) {
+tape('index address', (t) => {
     var address = {
         id:100,
         properties: {
@@ -27,7 +27,7 @@ tape('index address', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -37,7 +37,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('100 17th', function(t) {
+tape('100 17th', (t) => {
     c.geocode('100 17th', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -45,7 +45,7 @@ tape('100 17th', function(t) {
     });
 });
 
-tape('100 17t', function(t) {
+tape('100 17t', (t) => {
     c.geocode('100 17t', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -53,7 +53,7 @@ tape('100 17t', function(t) {
     });
 });
 
-tape('100 17', function(t) {
+tape('100 17', (t) => {
     c.geocode('100 17', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -61,7 +61,7 @@ tape('100 17', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

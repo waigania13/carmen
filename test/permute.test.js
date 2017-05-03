@@ -10,7 +10,7 @@ function debug(p) {
     });
 }
 
-test('permute.all', function(t) {
+test('permute.all', (t) => {
     t.deepEqual(permute.all(1).length, 1);
     t.deepEqual(permute.all(2).length, 3);
     t.deepEqual(permute.all(3).length, 7);
@@ -58,7 +58,7 @@ test('permute.all', function(t) {
     t.end();
 });
 
-test('permute.continuous', function(t) {
+test('permute.continuous', (t) => {
     t.deepEqual(debug(permute.continuous(1)), [
         '1'
     ]);

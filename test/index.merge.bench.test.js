@@ -39,7 +39,7 @@ function fuzzIndex(limit, callback) {
 
 var sources = {};
 
-tape('setup a', function(t) {
+tape('setup a', (t) => {
     var start = +new Date;
     fuzzIndex(50000, function(err, geocoder, a) {
         var time = +new Date - start;
@@ -49,7 +49,7 @@ tape('setup a', function(t) {
     });
 });
 
-tape('setup b', function(t) {
+tape('setup b', (t) => {
     var start = +new Date;
     fuzzIndex(50000, function(err, geocoder, b) {
         var time = +new Date - start;
@@ -59,7 +59,7 @@ tape('setup b', function(t) {
     });
 });
 
-tape('merge a + b = c', function(t) {
+tape('merge a + b = c', (t) => {
     var conf = { street: new mem({ maxzoom:14 }, function() {}) };
     var c = new Carmen(conf);
     c.merge(sources.a, sources.b, conf.street, {}, function(err, stats) {

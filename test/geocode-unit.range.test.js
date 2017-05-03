@@ -24,7 +24,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:1,
         properties: {
@@ -38,7 +38,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index mx region', function(t) {
+tape('index mx region', (t) => {
     var region = {
         id:2,
         properties: {
@@ -52,7 +52,7 @@ tape('index mx region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index us place', function(t) {
+tape('index us place', (t) => {
     var place = {
         id:1,
         properties: {
@@ -65,7 +65,7 @@ tape('index us place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index ca place', function(t) {
+tape('index ca place', (t) => {
     var place = {
         id:2,
         properties: {
@@ -79,7 +79,7 @@ tape('index ca place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index us address', function(t) {
+tape('index us address', (t) => {
     var address = {
         id:1,
         properties: {
@@ -98,7 +98,7 @@ tape('index us address', function(t) {
     queueFeature(conf.address, address, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -108,7 +108,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('reverse - good stack, good type', function(t) {
+tape('reverse - good stack, good type', (t) => {
     c.geocode('8,-2', { stacks: ['ca'], types: ['place']  }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Punkeydoodles Corners, Ontario');
@@ -116,7 +116,7 @@ tape('reverse - good stack, good type', function(t) {
     });
 });
 
-tape('reverse - good stack, bad type, limit set', function(t) {
+tape('reverse - good stack, bad type, limit set', (t) => {
     c.geocode('0,0', { stacks: ['mx'], types: ['place'], limit: 2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
@@ -124,7 +124,7 @@ tape('reverse - good stack, bad type, limit set', function(t) {
     });
 });
 
-tape('reverse - bad stack, good type', function(t) {
+tape('reverse - bad stack, good type', (t) => {
     c.geocode('0,0', { stacks: ['us'], types: ['region'] }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
@@ -132,7 +132,7 @@ tape('reverse - bad stack, good type', function(t) {
     });
 });
 
-tape('reverse - good stack, good type, limit set', function(t) {
+tape('reverse - good stack, good type, limit set', (t) => {
     c.geocode('0,0', { stacks: ['us'], types: ['place'], limit: 2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 feature returned');
@@ -141,7 +141,7 @@ tape('reverse - good stack, good type, limit set', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         properties: {
@@ -27,7 +27,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:2,
         properties: {
@@ -39,7 +39,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index place 1', function(t) {
+tape('index place 1', (t) => {
     var place = {
         id:3,
         properties: {
@@ -51,7 +51,7 @@ tape('index place 1', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index address 1', function(t) {
+tape('index address 1', (t) => {
     var address = {
         id:4,
         properties: {
@@ -67,7 +67,7 @@ tape('index address 1', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -77,7 +77,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Check order, 岩出市中黒632', function(t) {
+tape('Check order, 岩出市中黒632', (t) => {
     c.geocode('岩出市中黒632', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "Descending order doesn't lower relevance");
@@ -85,7 +85,7 @@ tape('Check order, 岩出市中黒632', function(t) {
     });
 });
 
-tape('Check order, 632 中黒 岩出市', function(t) {
+tape('Check order, 632 中黒 岩出市', (t) => {
     c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
@@ -94,7 +94,7 @@ tape('Check order, 632 中黒 岩出市', function(t) {
     });
 });
 
-tape('Check order, 632 中黒 Japan 岩出市', function(t) {
+tape('Check order, 632 中黒 Japan 岩出市', (t) => {
     c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
@@ -103,7 +103,7 @@ tape('Check order, 632 中黒 Japan 岩出市', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -11,7 +11,7 @@ var country = new mem(null, function() {});
 var conf = { country: country };
 var a = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -21,7 +21,7 @@ tape('index country', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -30,7 +30,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('geocodes', function(t) {
+tape('geocodes', (t) => {
     a.geocode('america', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'america');
@@ -38,7 +38,7 @@ tape('geocodes', function(t) {
         t.end();
     });
 });
-tape('sets cache/dictcache', function(t) {
+tape('sets cache/dictcache', (t) => {
     t.ok(country._geocoder, 'sets source._geocoder on original instance');
     t.ok(country._dictcache, 'sets source._dictcache on original instance');
     t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
@@ -48,7 +48,7 @@ tape('sets cache/dictcache', function(t) {
     t.equal(b.indexes.country._dictcache, a.indexes.country._dictcache, 'a dictcache === b dictcache');
     t.end();
 });
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

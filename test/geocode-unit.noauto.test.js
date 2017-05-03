@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
 (function() {
     var conf = { place: new mem(null, function() {}) };
     var c = new Carmen(conf);
-    tape('index first place', function(t) {
+    tape('index first place', (t) => {
         var place = {
             id:1,
             properties: {
@@ -25,7 +25,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index second place', function(t) {
+    tape('index second place', (t) => {
         var place = {
             id:2,
             properties: {
@@ -37,7 +37,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
     });
-    tape('abc - with autocomplete', function(t) {
+    tape('abc - with autocomplete', (t) => {
         c.geocode('abc', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abc with autocomplete');
@@ -45,7 +45,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('abc - no autocomplete', function(t) {
+    tape('abc - no autocomplete', (t) => {
         c.geocode('abc', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abc', 'abc wins for abc without autocomplete');
@@ -53,7 +53,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('abcde - with autocomplete', function(t) {
+    tape('abcde - with autocomplete', (t) => {
         c.geocode('abcde', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde with autocomplete');
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('abcde - no autocomplete', function(t) {
+    tape('abcde - no autocomplete', (t) => {
         c.geocode('abcde', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde without autocomplete');
@@ -69,7 +69,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('ab - with autocomplete', function(t) {
+    tape('ab - with autocomplete', (t) => {
         c.geocode('ab', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for ab with autocomplete');
@@ -77,7 +77,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('ab - no autocomplete', function(t) {
+    tape('ab - no autocomplete', (t) => {
         c.geocode('ab', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'ab matches nothing without autocomplete');
@@ -90,7 +90,7 @@ var addFeature = require('../lib/util/addfeature'),
 (function() {
     var conf = { place: new mem(null, function() {}) };
     var c = new Carmen(conf);
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             id:1,
             properties: {
@@ -102,7 +102,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
     });
-    tape('place - with autocomplete', function(t) {
+    tape('place - with autocomplete', (t) => {
         c.geocode('place', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'place one', 'place matches with autocomplete');
@@ -110,28 +110,28 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('place - no autocomplete', function(t) {
+    tape('place - no autocomplete', (t) => {
         c.geocode('place', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place matches nothing without autocomplete');
             t.end();
         });
     });
-    tape('one - with autocomplete', function(t) {
+    tape('one - with autocomplete', (t) => {
         c.geocode('one', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'one matches nothing with autocomplete');
             t.end();
         });
     });
-    tape('one - no autocomplete', function(t) {
+    tape('one - no autocomplete', (t) => {
         c.geocode('one', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'one matches nothing without autocomplete');
             t.end();
         });
     });
-    tape('place o - with autocomplete', function(t) {
+    tape('place o - with autocomplete', (t) => {
         c.geocode('place o', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'place one', 'abcde wins for abc with autocomplete');
@@ -139,7 +139,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('place o - no autocomplete', function(t) {
+    tape('place o - no autocomplete', (t) => {
         c.geocode('place o', { limit_verify:1, autocomplete: 0 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place o matches nothing without autocomplete');
@@ -148,7 +148,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

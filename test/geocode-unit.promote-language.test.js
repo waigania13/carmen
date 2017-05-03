@@ -18,7 +18,7 @@ var conf = {
 
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id: 1,
         properties: {
@@ -40,7 +40,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id: 1,
         properties: {
@@ -62,7 +62,7 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id: 1,
         properties: {
@@ -84,7 +84,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -94,7 +94,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('find new york', function(t) {
+tape('find new york', (t) => {
     c.geocode('new york usa', {}, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1);
@@ -102,7 +102,7 @@ tape('find new york', function(t) {
     });
 });
 
-tape('find nueva york, language=es', function(t) {
+tape('find nueva york, language=es', (t) => {
     c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1, "query has full relevance penalty applied because 'usa' has no es translation but es falls back");
@@ -110,7 +110,7 @@ tape('find nueva york, language=es', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
@@ -125,7 +125,7 @@ var conf2 = {
 
 var c2 = new Carmen(conf2);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf2.country, {
         id: 1,
         properties: {
@@ -146,7 +146,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf2.region, {
         id: 1,
         properties: {
@@ -168,7 +168,7 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf2.place, {
         id: 1,
         properties: {
@@ -190,7 +190,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf2).forEach(function(c) {
         q.defer(function(cb) {
@@ -200,7 +200,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('find makkah', function(t) {
+tape('find makkah', (t) => {
     c2.geocode('makkah', {}, function(err, res) {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 0.99);
@@ -208,7 +208,7 @@ tape('find makkah', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

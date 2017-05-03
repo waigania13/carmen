@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('tokenizes basic strings', function(t) {
+test('tokenizes basic strings', (t) => {
     t.deepEqual(termops.tokenize('foo'), ['foo']);
     t.deepEqual(termops.tokenize('foo bar'), ['foo', 'bar']);
     t.deepEqual(termops.tokenize('foo-bar'), ['foo', 'bar'], 'splits on - (non-numeric)');
@@ -28,7 +28,7 @@ test('tokenizes basic strings', function(t) {
     t.deepEqual(termops.tokenize('京都市'), ['京','都','市']);
     t.end();
 });
-test('tokenizes lonlat', function(t) {
+test('tokenizes lonlat', (t) => {
     t.deepEqual(termops.tokenize('40,0', true), [40,0]);
     t.deepEqual(termops.tokenize('40.00000,-40.31200', true), [40,-40.312]);
     t.deepEqual(termops.tokenize('-120.9129102983109, 45.312312', true), [-120.9129102983109,45.312312]);
@@ -44,12 +44,12 @@ test('tokenizes lonlat', function(t) {
 
     t.end();
 });
-test('edge cases - empty string', function(t) {
+test('edge cases - empty string', (t) => {
     t.deepEqual(termops.tokenize(''), []);
     t.end();
 });
 
-test('tokenize Japanese strings with numeric component', function(t) {
+test('tokenize Japanese strings with numeric component', (t) => {
     t.deepEqual(termops.tokenize('中津川市馬籠4571-1'), ['中','津','川','市','馬','籠','4571','-','1'], 'dashed number at end');
     t.deepEqual(termops.tokenize('中津川市4571-1馬籠'), ['中','津','川','市','4571','-','1','馬','籠'], 'dashed number in middle');
     t.deepEqual(termops.tokenize('中津川市4571馬籠'), ['中','津','川','市','4571','馬','籠'], 'number in middle');
@@ -58,7 +58,7 @@ test('tokenize Japanese strings with numeric component', function(t) {
     t.end();
 });
 
-test('tokenize excludes un-unidecodable characters', function(t) {
+test('tokenize excludes un-unidecodable characters', (t) => {
     t.deepEqual(termops.tokenize(decodeURIComponent('%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82')), [], '20 sobbies = 0 tokens');
     t.deepEqual(termops.tokenize(decodeURIComponent('new+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+%F0%9F%98%82+york')), ['new', 'york'], 'intermediate emojis removed');
     t.end();

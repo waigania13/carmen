@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('termops.encodeTerm', function(t) {
+test('termops.encodeTerm', (t) => {
     t.deepEqual(termops.encodeTerm('main'), 'main', 'encodes term');
     t.deepEqual(termops.encodeTerm('1234'), '1234', 'encodes numeric term');
     t.deepEqual(termops.encodeTerm('2345b'), '2345b', 'encodes seminumeric term');
@@ -10,7 +10,7 @@ test('termops.encodeTerm', function(t) {
     t.end();
 });
 
-test('termops.encodeTerm collisions', function(t) {
+test('termops.encodeTerm collisions', (t) => {
     var texts = 0;
     var sample = 1e6;
     var ids = {};

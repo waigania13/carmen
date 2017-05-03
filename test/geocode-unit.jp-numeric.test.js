@@ -19,7 +19,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         properties: {
@@ -31,7 +31,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:1,
         properties: {
@@ -43,7 +43,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index place 1', function(t) {
+tape('index place 1', (t) => {
     var place = {
         id:1,
         properties: {
@@ -55,7 +55,7 @@ tape('index place 1', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index address 1', function(t) {
+tape('index address 1', (t) => {
     var address = {
         id:1,
         properties: {
@@ -71,7 +71,7 @@ tape('index address 1', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -81,7 +81,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Check numeric text', function(t) {
+tape('Check numeric text', (t) => {
     c.geocode('神明台三丁目5', { debug: true}, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
@@ -90,7 +90,7 @@ tape('Check numeric text', function(t) {
     });
 });
 
-tape('Check numeric text', function(t) {
+tape('Check numeric text', (t) => {
     c.geocode('神明台三丁目 5', null, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1, "1 feature");
@@ -99,7 +99,7 @@ tape('Check numeric text', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

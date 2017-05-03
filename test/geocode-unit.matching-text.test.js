@@ -14,7 +14,7 @@ var addFeature = require('../lib/util/addfeature'),
         region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, function() {})
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             type: 'Feature',
             properties: {
@@ -33,7 +33,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('index region', function(t) {
+    tape('index region', (t) => {
         var region = {
             type: 'Feature',
             properties: {
@@ -52,7 +52,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.region, region, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('kansas america', function(t) {
+    tape('kansas america', (t) => {
         c.geocode('kansas america', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Kansas United States');
@@ -70,7 +70,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('america', function(t) {
+    tape('america', (t) => {
         c.geocode('america', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
@@ -79,7 +79,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('jayhawks', function(t) {
+    tape('jayhawks', (t) => {
         c.geocode('jayhawks', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Kansas United States');
@@ -90,7 +90,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

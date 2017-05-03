@@ -8,7 +8,7 @@ var de = require('deep-equal');
 
 var test = require('tape');
 
-test('index - streaming interface', function(t) {
+test('index - streaming interface', (t) => {
     function getIndex(start, end) {
 
         var count = 0;
@@ -43,7 +43,7 @@ test('index - streaming interface', function(t) {
 
     var carmenA = new Carmen(confA);
     var indexA = getIndex(0,100);
-    t.test('index docs.json', function(q) {
+    t.test('index docs.json', (q) => {
         carmenA.index(indexA, confA.country, {
             zoom: 6,
             output: outputStream
@@ -52,14 +52,14 @@ test('index - streaming interface', function(t) {
             q.end();
         });
     });
-    t.test('ensure index was successful for index A', function(q) {
+    t.test('ensure index was successful for index A', (q) => {
         carmenA.geocode("India", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "India", "found India");
             q.end();
         });
     });
-    t.test("can't find Turkmenistan, not in Index A", function(q) {
+    t.test("can't find Turkmenistan, not in Index A", (q) => {
         carmenA.geocode("Turkmenistan", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features.length, 0, "Can't find Turkmenistan");
@@ -74,7 +74,7 @@ test('index - streaming interface', function(t) {
 
     var carmenB = new Carmen(confB);
     var indexB = getIndex(100,200);
-    t.test('index docs.json', function(q) {
+    t.test('index docs.json', (q) => {
         carmenB.index(indexB, confB.country, {
             zoom: 6,
             output: outputStream
@@ -83,14 +83,14 @@ test('index - streaming interface', function(t) {
             q.end();
         });
     });
-    t.test('ensure index was successful for index B', function(q) {
+    t.test('ensure index was successful for index B', (q) => {
         carmenB.geocode("Paraguay", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "Paraguay", "found Paraguay");
             q.end();
         });
     });
-    t.test("can't find Nauru, not in index B", function(q) {
+    t.test("can't find Nauru, not in index B", (q) => {
         carmenB.geocode("Nauru", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features.length, 0, "can't find Nauru");
@@ -105,7 +105,7 @@ test('index - streaming interface', function(t) {
 
     var carmenD = new Carmen(confD);
     var indexD = getIndex(0,200);
-    t.test('index docs.json', function(q) {
+    t.test('index docs.json', (q) => {
         carmenD.index(indexD, confD.country, {
             zoom: 6,
             output: outputStream
@@ -119,7 +119,7 @@ test('index - streaming interface', function(t) {
     var confC = { country: memObjectC };
     var carmenC = new Carmen(confC);
 
-    t.test('merged indexes', function(q) {
+    t.test('merged indexes', (q) => {
         carmenC.merge(memObjectA, memObjectB, memObjectC, {}, function(err) {
             if (err) throw err;
             // the dictcache has been reloaded, so copy it over to the carmen object
@@ -127,14 +127,14 @@ test('index - streaming interface', function(t) {
             q.end();
         });
     });
-    t.test('ensure index was successful for index A after merging', function(q) {
+    t.test('ensure index was successful for index A after merging', (q) => {
         carmenC.geocode("India", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "India", "found India");
             q.end();
         });
     });
-    t.test('ensure index was successful for index B after merging', function(q) {
+    t.test('ensure index was successful for index B after merging', (q) => {
         carmenC.geocode("Paraguay", {}, function(err, result) {
             t.ifError(err, "error");
             t.equal(result.features[0].text, "Paraguay", "found Paraguay");
@@ -142,7 +142,7 @@ test('index - streaming interface', function(t) {
         });
     });
 
-    t.test('ensure total indexes in C is greater than A and B', function(q) {
+    t.test('ensure total indexes in C is greater than A and B', (q) => {
         carmenA.analyze(memObjectA, function(err, stats) {
             var a = stats.total;
             carmenB.analyze(memObjectB, function(err, stats) {
@@ -156,7 +156,7 @@ test('index - streaming interface', function(t) {
         });
     });
 
-    t.test('ensure geocode of a term that occurs in both indexes produces the same results', function(q) {
+    t.test('ensure geocode of a term that occurs in both indexes produces the same results', (q) => {
         carmenC.geocode('Republic', {}, function(err, resultC) {
             t.ifError(err, "error");
             carmenD.geocode('Republic', {}, function(err, resultD) {
@@ -167,7 +167,7 @@ test('index - streaming interface', function(t) {
         });
     });
 
-    t.test('ensure merged index features and original features are identical', function(q) {
+    t.test('ensure merged index features and original features are identical', (q) => {
         var count = 0;
         for (var i = 1; i <= 200; i++) {
             count += de(memObjectC._shards.feature[i], memObjectD._shards.feature[i], "==") ? 1 : 0;
@@ -178,7 +178,7 @@ test('index - streaming interface', function(t) {
     });
 
     ["freq", "grid"].forEach(function(type) {
-        t.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', function(q) {
+        t.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', (q) => {
             var stringify = function(key) {
                 return key[0] + "-" + (key[1] ? key[1].map(function(k) { return "" + k; }).sort().join("-") : "null");
             }

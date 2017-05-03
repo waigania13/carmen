@@ -12,7 +12,7 @@ var conf = {
 };
 
 var c = new Carmen(conf);
-tape('index emoji country', function(t) {
+tape('index emoji country', (t) => {
     queueFeature(conf.country, {
         id: 1,
         geometry: {
@@ -27,7 +27,7 @@ tape('index emoji country', function(t) {
     }, t.end);
 });
 
-tape('index non-emoji country', function(t) {
+tape('index non-emoji country', (t) => {
     queueFeature(conf.country, {
         id: 2,
         geometry: {
@@ -41,7 +41,7 @@ tape('index non-emoji country', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -51,7 +51,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('should not find emoji feaure', function(t) {
+tape('should not find emoji feaure', (t) => {
     // Line smiley
     c.geocode(decodeURIComponent('%E2%98%BA'), {}, function(err, res) {
         t.ifError(err);
@@ -60,7 +60,7 @@ tape('should not find emoji feaure', function(t) {
     });
 });
 
-tape('should not find feaure (atm or ever -- different emoji)', function(t) {
+tape('should not find feaure (atm or ever -- different emoji)', (t) => {
     // Filled smiley
     c.geocode(decodeURIComponent('%E2%98%BB'), {}, function(err, res) {
         t.ifError(err);
@@ -69,7 +69,7 @@ tape('should not find feaure (atm or ever -- different emoji)', function(t) {
     });
 });
 
-tape('should handle a query including emoji', function(t) {
+tape('should handle a query including emoji', (t) => {
     // Black star
     var query = 'Anarres ' + decodeURIComponent('%E2%98%85');
     c.geocode(query, {}, function(err, res) {
@@ -79,7 +79,7 @@ tape('should handle a query including emoji', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

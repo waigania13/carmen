@@ -21,7 +21,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         properties: {
@@ -33,7 +33,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:1,
         properties: {
@@ -45,7 +45,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index postcode', function(t) {
+tape('index postcode', (t) => {
     var postcode = {
         id:1,
         properties: {
@@ -57,7 +57,7 @@ tape('index postcode', function(t) {
     queueFeature(conf.postcode, postcode, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     var place = {
         id:1,
         properties: {
@@ -69,7 +69,7 @@ tape('index place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index address', function(t) {
+tape('index address', (t) => {
     var address = {
         id:1,
         properties: {
@@ -85,7 +85,7 @@ tape('index address', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -95,7 +95,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Check relevance scoring', function(t) {
+tape('Check relevance scoring', (t) => {
     c.geocode('11027 S. Pikes Peak Drive #201', {limit_verify: 1}, function(err, res) {
         t.ifError(err);
         t.equal(res.features[0].relevance, .49, "Apt. number lowers relevance");
@@ -107,7 +107,7 @@ tape('Check relevance scoring', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

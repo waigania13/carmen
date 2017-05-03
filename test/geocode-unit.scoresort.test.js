@@ -20,7 +20,7 @@ var queue = require('d3-queue').queue;
     };
     var c = new Carmen(conf);
     // very high max score in region index
-    tape('index region (high score)', function(t) {
+    tape('index region (high score)', (t) => {
         queueFeature(conf.region, {
             id:1,
             properties: {
@@ -33,7 +33,7 @@ var queue = require('d3-queue').queue;
     });
 
     // Many low-scored features in region index
-    tape('index region (low score)', function(t) {
+    tape('index region (low score)', (t) => {
         var q = queue(1);
         for (var i =2; i < 25; i++) q.defer(function(i, done) {
             queueFeature(conf.region, {
@@ -50,7 +50,7 @@ var queue = require('d3-queue').queue;
     });
 
     // Many medium-scored features in region index
-    tape('index region (medium score)', function(t) {
+    tape('index region (medium score)', (t) => {
         var q = queue(1);
         for (var i =25; i < 50; i++) q.defer(function(i, done) {
             queueFeature(conf.region, {
@@ -67,7 +67,7 @@ var queue = require('d3-queue').queue;
     });
 
     // Feature is scored higher than all but one region
-    tape('index place (high score)', function(t) {
+    tape('index place (high score)', (t) => {
         queueFeature(conf.place, {
             id:1,
             properties: {
@@ -79,7 +79,7 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
 
-    tape('index lamplace (high score)', function(t) {
+    tape('index lamplace (high score)', (t) => {
         queueFeature(conf.lamplace, {
             id:1,
             properties: {
@@ -92,7 +92,7 @@ var queue = require('d3-queue').queue;
     });
 
     // Many medium-scored features in region index
-    tape('index lamplace (medium score)', function(t) {
+    tape('index lamplace (medium score)', (t) => {
         var q = queue(1);
         for (var i =2; i < 25; i++) q.defer(function(i, done) {
             queueFeature(conf.lamplace, {
@@ -108,7 +108,7 @@ var queue = require('d3-queue').queue;
         q.awaitAll(t.end);
     });
 
-    tape('index namplace (high score)', function(t) {
+    tape('index namplace (high score)', (t) => {
         queueFeature(conf.namplace, {
             id:1,
             properties: {
@@ -120,7 +120,7 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
 
-    tape('index locality (low score)', function(t) {
+    tape('index locality (low score)', (t) => {
         queueFeature(conf.locality, {
             id:1,
             properties: {
@@ -132,7 +132,7 @@ var queue = require('d3-queue').queue;
         }, t.end);
     });
 
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -143,7 +143,7 @@ var queue = require('d3-queue').queue;
     });
 
     // High-scored feature wins over low-scored features in index with high max score
-    tape('high score beats low score + high scorefactor', function(t) {
+    tape('high score beats low score + high scorefactor', (t) => {
         c.geocode('smallville', null, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].id, "lamplace.1", "Place (high score) is first result")
@@ -151,7 +151,7 @@ var queue = require('d3-queue').queue;
             t.end();
         });
     });
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

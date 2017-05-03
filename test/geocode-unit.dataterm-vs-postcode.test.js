@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index address (noise)', function(t) {
+tape('index address (noise)', (t) => {
     var q = queue(1);
     for (var i = 1; i < 20; i++) q.defer(function(i, done) {
         var address = {
@@ -36,7 +36,7 @@ tape('index address (noise)', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -47,7 +47,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index postcode', function(t) {
+tape('index postcode', (t) => {
     queueFeature(conf.postcode, {
         id:1,
         properties: {
@@ -57,7 +57,7 @@ tape('index postcode', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -67,7 +67,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('test address', function(t) {
+tape('test address', (t) => {
     c.geocode('2000 Austria', { limit_verify: 5 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].id, 'postcode.1');
@@ -75,7 +75,7 @@ tape('test address', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

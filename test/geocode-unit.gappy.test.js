@@ -23,7 +23,7 @@ var conf = {
     street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index province', function(t) {
+tape('index province', (t) => {
     var province = {
         id:1,
         properties: {
@@ -34,7 +34,7 @@ tape('index province', function(t) {
     };
     queueFeature(conf.province, province, t.end);
 });
-tape('index city 1', function(t) {
+tape('index city 1', (t) => {
     var city = {
         id:1,
         properties: {
@@ -45,7 +45,7 @@ tape('index city 1', function(t) {
     };
     queueFeature(conf.city, city, t.end);
 });
-tape('index city 2', function(t) {
+tape('index city 2', (t) => {
     var city = {
         id:2,
         properties: {
@@ -56,7 +56,7 @@ tape('index city 2', function(t) {
     };
     queueFeature(conf.city, city, t.end);
 });
-tape('index street 1', function(t) {
+tape('index street 1', (t) => {
     var street = {
         id:1,
         properties: {
@@ -67,7 +67,7 @@ tape('index street 1', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
-tape('index street 2', function(t) {
+tape('index street 2', (t) => {
     var street = {
         id:2,
         properties: {
@@ -78,7 +78,7 @@ tape('index street 2', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -87,21 +87,21 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('west st, tonawanda, ny', function(t) {
+tape('west st, tonawanda, ny', (t) => {
     c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, tonawanda, new york');
         t.end();
     });
 });
-tape('west st, new york, ny', function(t) {
+tape('west st, new york, ny', (t) => {
     c.geocode('west st new york ny', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, new york, new york');
         t.end();
     });
 });
-tape('new york', function(t) {
+tape('new york', (t) => {
     c.geocode('new york', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york');
@@ -109,7 +109,7 @@ tape('new york', function(t) {
         t.end();
     });
 });
-tape('new york new york', function(t) {
+tape('new york new york', (t) => {
     c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
@@ -117,7 +117,7 @@ tape('new york new york', function(t) {
         t.end();
     });
 });
-tape('ny ny', function(t) {
+tape('ny ny', (t) => {
     c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
@@ -125,7 +125,7 @@ tape('ny ny', function(t) {
         t.end();
     });
 });
-tape('new york ny', function(t) {
+tape('new york ny', (t) => {
     c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
@@ -134,7 +134,7 @@ tape('new york ny', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

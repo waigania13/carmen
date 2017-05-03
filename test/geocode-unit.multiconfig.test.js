@@ -21,7 +21,7 @@ var confB = {
 };
 var pre = new Carmen(confA);
 
-tape('index province', function(t) {
+tape('index province', (t) => {
     t.ok(pre);
     queueFeature(confA.country, {
         id:1,
@@ -32,7 +32,7 @@ tape('index province', function(t) {
         }
     }, t.end);
 });
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(confA.place, {
         id:1,
         properties: {
@@ -42,7 +42,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(confA).forEach(function(c) {
         q.defer(function(cb) {
@@ -56,7 +56,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('chicago (conf a)', function(t) {
+tape('chicago (conf a)', (t) => {
     var a = new Carmen(confA);
     a.geocode('chicago', {}, function(err, res) {
         t.ifError(err);
@@ -65,7 +65,7 @@ tape('chicago (conf a)', function(t) {
         t.end();
     });
 });
-tape('chicago (conf b)', function(t) {
+tape('chicago (conf b)', (t) => {
     var b = new Carmen(confB);
     b.geocode('chicago', {}, function(err, res) {
         t.ifError(err);
@@ -75,7 +75,7 @@ tape('chicago (conf b)', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -2,7 +2,7 @@ var termops = require('../lib/util/termops');
 var token = require('../lib/util/token');
 var test = require('tape');
 
-test('termops.getIndexableText', function(t) {
+test('termops.getIndexableText', (t) => {
     var replacer;
     var doc;
     var texts;

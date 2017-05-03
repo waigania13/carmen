@@ -15,11 +15,11 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(t) {
+tape('ready', (t) => {
     c._open(t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     var docs = [];
     for (var i = 1; i < 100; i++) {
         var text = Math.random().toString().split('.').pop().toString(36);
@@ -41,7 +41,7 @@ function reset() {
     conf.place._original.logs.getTile = [];
 }
 
-tape('io', function(t) {
+tape('io', (t) => {
     reset();
     c.geocode('aa', {}, function(err, res) {
         t.ifError(err);
@@ -52,7 +52,7 @@ tape('io', function(t) {
     });
 });
 
-tape('index.teardown', function(t) {
+tape('index.teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

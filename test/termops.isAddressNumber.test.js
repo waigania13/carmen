@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('termops.isAddressNumber', function(t) {
+test('termops.isAddressNumber', (t) => {
     t.deepEqual(termops.isAddressNumber(['12345']), false, '12345');
     t.deepEqual(termops.isAddressNumber(['12###']), true, '12###');
     t.deepEqual(termops.isAddressNumber(['#####']), true, '#####');

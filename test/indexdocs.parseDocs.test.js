@@ -2,7 +2,7 @@ var fs = require('fs');
 var indexdocs = require('../lib/indexer/indexdocs.js');
 var tape = require('tape');
 
-tape('indexdocs.parseDocs (passthru)', function(t) {
+tape('indexdocs.parseDocs (passthru)', (t) => {
     var docs = [{
         id: 1,
         type: 'Feature',
@@ -29,7 +29,7 @@ tape('indexdocs.parseDocs (passthru)', function(t) {
     t.end();
 });
 
-tape('indexdocs.parseDocs (address MultiPoint)', function(t) {
+tape('indexdocs.parseDocs (address MultiPoint)', (t) => {
     var docs = [{
         id: 1,
         type: 'Feature',

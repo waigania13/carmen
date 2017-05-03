@@ -14,7 +14,7 @@ var conf = {
     a: new mem(null, function() {}),
 };
 var c = new Carmen(conf);
-tape('index', function(t) {
+tape('index', (t) => {
     queueVT(conf.a, {
         id:1,
         properties: {
@@ -24,7 +24,7 @@ tape('index', function(t) {
         }
     }, function() { buildQueued(conf.a, t.end) });
 });
-tape('reverse geocode', function(t) {
+tape('reverse geocode', (t) => {
     c.geocode('0,0', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features.length, 0);
@@ -32,7 +32,7 @@ tape('reverse geocode', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

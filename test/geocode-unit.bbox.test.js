@@ -13,7 +13,7 @@ var conf = {
 
 var c = new Carmen(conf);
 
-tape('index feature', function(t) {
+tape('index feature', (t) => {
     var range = [];
     for (var i = 1; i < 100; i++) range.push(i);
     range.forEach(function(i) {
@@ -34,7 +34,7 @@ tape('index feature', function(t) {
     t.end();
 });
 
-tape('index feature', function(t) {
+tape('index feature', (t) => {
     var feature = {
         id:102,
         properties: {
@@ -47,7 +47,7 @@ tape('index feature', function(t) {
     queueFeature(conf.street, feature, t.end);
 });
 
-tape('index feature', function(t) {
+tape('index feature', (t) => {
     var feature = {
         id:103,
         properties: {
@@ -59,7 +59,7 @@ tape('index feature', function(t) {
     };
     queueFeature(conf.street, feature, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -70,7 +70,7 @@ tape('build queued features', function(t) {
 });
 
 // run query with invalid bbox, expect error
-tape('fake bbox', function(t) {
+tape('fake bbox', (t) => {
     c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, function(err, res) {
         t.equal(err && err.code, 'EINVALID', 'bbox array length = 3');
     });
@@ -84,7 +84,7 @@ tape('fake bbox', function(t) {
 });
 
 // run query without bbox filter, expect both features back
-tape('no bbox', function(t) {
+tape('no bbox', (t) => {
     c.geocode('Main St', { allow_dupes: true }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 5);
@@ -93,7 +93,7 @@ tape('no bbox', function(t) {
 });
 
 // run query with bbox fitler, expect only one feature back
-tape('with bbox', function(t) {
+tape('with bbox', (t) => {
     c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -101,7 +101,7 @@ tape('with bbox', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('numTokenize', function(t) {
+test('numTokenize', (t) => {
     t.deepEqual(termops.numTokenize('foo-bar'), [], 'no numbers');
     t.deepEqual(termops.numTokenize('69-150'), [['#####']], 'only numbers');
     t.deepEqual(termops.numTokenize('500 main street 20009'), [

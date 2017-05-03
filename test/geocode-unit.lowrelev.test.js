@@ -14,7 +14,7 @@ var conf = {
     country: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         properties: {
@@ -25,7 +25,7 @@ tape('index country', function(t) {
     };
     queueFeature(conf.country, country, t.end);
 });
-tape('index country2', function(t) {
+tape('index country2', (t) => {
     var country = {
         id:2,
         properties: {
@@ -36,7 +36,7 @@ tape('index country2', function(t) {
     };
     queueFeature(conf.country, country, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -45,7 +45,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('czech => czech republic', function(t) {
+tape('czech => czech republic', (t) => {
     c.geocode('czech', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'czech republic');
@@ -55,7 +55,7 @@ tape('czech => czech republic', function(t) {
 });
 
 //Is not above 0.5 relev so should fail.
-tape('fake blah blah => [fail]', function(t) {
+tape('fake blah blah => [fail]', (t) => {
     c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.notOk(res.features[0]);
@@ -63,7 +63,7 @@ tape('fake blah blah => [fail]', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

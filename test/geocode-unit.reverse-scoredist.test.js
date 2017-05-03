@@ -21,7 +21,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('add POIs', function(t) {
+tape('add POIs', (t) => {
     var poi = {
         id: 1,
         type: 'Feature',
@@ -38,7 +38,7 @@ tape('add POIs', function(t) {
     queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(t) {
+tape('add POIs', (t) => {
     var poi = {
         id: 2,
         type: 'Feature',
@@ -55,7 +55,7 @@ tape('add POIs', function(t) {
     queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(t) {
+tape('add POIs', (t) => {
     var poi = {
         id: 3,
         type: 'Feature',
@@ -73,7 +73,7 @@ tape('add POIs', function(t) {
     queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(t) {
+tape('add POIs', (t) => {
     var poi = {
         id: 4,
         type: 'Feature',
@@ -91,7 +91,7 @@ tape('add POIs', function(t) {
     queueFeature(conf.poi, poi, function() { buildQueued(conf.poi, t.end) });
 });
 
-tape('add address', function(t) {
+tape('add address', (t) => {
     var address = {
         id: 1,
         type: 'Feature',
@@ -111,7 +111,7 @@ tape('add address', function(t) {
 
 });
 
-tape('invalid', function(t) {
+tape('invalid', (t) => {
     c.geocode('0,0', {reverseMode: 'foo'}, function(err, res) {
         t.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
     });
@@ -119,7 +119,7 @@ tape('invalid', function(t) {
     t.end();
 });
 
-tape('reverse distance threshold - close enough', function(t) {
+tape('reverse distance threshold - close enough', (t) => {
     c.geocode('0.106,-0.106', {}, function(err, res) {
         t.deepEqual(res.features.length, 1, 'finds a feature when coords are off by .006');
     });
@@ -127,7 +127,7 @@ tape('reverse distance threshold - close enough', function(t) {
     t.end();
 });
 
-tape('reverse distance threshold - too far', function(t) {
+tape('reverse distance threshold - too far', (t) => {
     c.geocode('0.107,-0.107', {}, function(err, res) {
         t.deepEqual(res.features.length, 0, 'does not find a feature when coords are off by .007');
     });
@@ -135,7 +135,7 @@ tape('reverse distance threshold - too far', function(t) {
     t.end();
 });
 
-tape('get the higher-scored, more distant feature first', function(t) {
+tape('get the higher-scored, more distant feature first', (t) => {
     c.geocode('1.007, 1.007', {reverseMode: 'score'}, function(err, res) {
         t.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
     });
@@ -143,7 +143,7 @@ tape('get the higher-scored, more distant feature first', function(t) {
     t.end();
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -2,7 +2,7 @@ var tokenize = require('../lib/util/token.js');
 var tape = require('tape');
 
 (function() {
-    tape('test tokens', function(t) {
+    tape('test tokens', (t) => {
         var tokens = {
             'Street': 'st'
         }
@@ -14,7 +14,7 @@ var tape = require('tape');
 })();
 
 (function() {
-    tape('test tokens', function(t) {
+    tape('test tokens', (t) => {
         var tokens = {
             'Street': 'st'
         }
@@ -27,25 +27,25 @@ var tape = require('tape');
 })();
 
 (function() {
-    tape('test global tokens - talstrasse', function(t) {
+    tape('test global tokens - talstrasse', (t) => {
         var tokens = {
             '\\b(.+)(strasse|str|straße)\\b': "$1 str"
         };
-        tape.test('talstrasse', function(q) {
+        tape.test('talstrasse', (q) => {
             var query = 'talstrasse';
             var tokensRegex = tokenize.createGlobalReplacer(tokens)
             var replace = tokenize.replaceToken(tokensRegex, query);
             q.deepEquals('tal str', replace, 'okay, talstrasse')
             q.end();
         });
-        tape.test('talstraße', function(q) {
+        tape.test('talstraße', (q) => {
             var query = 'talstraße';
             var tokensRegex = tokenize.createGlobalReplacer(tokens)
             var replace = tokenize.replaceToken(tokensRegex, query);
             q.deepEquals('tal str', replace, 'okay, talstraße')
             q.end();
         });
-        tape.test('talstr', function(q) {
+        tape.test('talstr', (q) => {
             var query = 'talstr';
             var tokensRegex = tokenize.createGlobalReplacer(tokens)
             var replace = tokenize.replaceToken(tokensRegex, query);

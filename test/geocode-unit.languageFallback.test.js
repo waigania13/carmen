@@ -14,7 +14,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -29,7 +29,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('index country2', function(t) {
+    tape('index country2', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 2,
@@ -45,7 +45,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -55,7 +55,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('make sure indexes contain pre-computed fallbacks', function(t) {
+    tape('make sure indexes contain pre-computed fallbacks', (t) => {
         t.deepEquals(
             conf.country._geocoder.grid.list(),
             [
@@ -69,7 +69,7 @@ var addFeature = require('../lib/util/addfeature'),
         t.end();
     })
 
-    tape('query: United States', function(t) {
+    tape('query: United States', (t) => {
         c.geocode('United States', { language: 'ar'}, function(err, res) {
             t.equal('United States', res.features[0].text, 'Fallback to English');
             t.equal('en', res.features[0].language, 'Language returned is English');
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: India', function(t) {
+    tape('query: India', (t) => {
         c.geocode('India', { language: 'ar'}, function(err, res) {
             t.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
             t.equal('ur', res.features[0].language, 'Language returned is Urdu');
@@ -87,7 +87,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

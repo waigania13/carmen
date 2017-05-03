@@ -2,7 +2,7 @@ var termops = require('../lib/util/termops');
 var uniq = require('../lib/util/uniq');
 var test = require('tape');
 
-test('termops.encodePhrase clustering', function(t) {
+test('termops.encodePhrase clustering', (t) => {
     var sets = [
         ['apples', 'application', 'apply', 'appears', 'appomattox'],
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
@@ -15,7 +15,7 @@ test('termops.encodePhrase clustering', function(t) {
     t.end();
 });
 
-test('termops.encodePhrase', function(t) {
+test('termops.encodePhrase', (t) => {
     var a;
 
     a = termops.encodePhrase('main');
@@ -68,7 +68,7 @@ test('termops.encodePhrase', function(t) {
     t.end();
 });
 
-test('termops.encodePhrase collisions', function(t) {
+test('termops.encodePhrase collisions', (t) => {
     var texts = 0;
     var sample = 1e6;
     var ids = {};

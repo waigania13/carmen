@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             id: 2,
             type: 'Feature',
@@ -46,7 +46,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             id: 3,
             type: 'Feature',
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -71,7 +71,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('query: c, language: zh, languageMode: strict', function(t) {
+    tape('query: c, language: zh, languageMode: strict', (t) => {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
@@ -80,7 +80,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: c, language: en, languageMode: strict', function(t) {
+    tape('query: c, language: en, languageMode: strict', (t) => {
         c.geocode('c', { language: 'en', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
@@ -90,7 +90,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: c, languageMode: strict', function(t) {
+    tape('query: c, languageMode: strict', (t) => {
         c.geocode('c', { languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 3, 'does nothing without language code');
@@ -101,14 +101,14 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: c, language: en, languageMode: bogus', function(t) {
+    tape('query: c, language: en, languageMode: bogus', (t) => {
         c.geocode('c', { language: 'en', languageMode: 'bogus' }, function(err, res) {
             t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
             t.end();
         });
     });
 
-    tape('query: 1,1, language: zh, languageMode: strict', function(t) {
+    tape('query: 1,1, language: zh, languageMode: strict', (t) => {
         c.geocode('1,1', { language: 'zh', languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
@@ -117,7 +117,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: strict', function(t) {
+    tape('query: 1,1, language: en, languageMode: strict', (t) => {
         c.geocode('1,1', { language: 'en', languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
@@ -127,7 +127,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, languageMode: strict', function(t) {
+    tape('query: 1,1, languageMode: strict', (t) => {
         c.geocode('1,1', { languageMode: 'strict', types: ['country'], limit: 5 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 3, 'does nothing without language code');
@@ -138,14 +138,14 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: bogus', function(t) {
+    tape('query: 1,1, language: en, languageMode: bogus', (t) => {
         c.geocode('1,1', { language: 'en', languageMode: 'bogus', types: ['country'], limit: 5 }, function(err, res) {
             t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
             t.end();
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });
@@ -160,7 +160,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -177,7 +177,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index region', function(t) {
+    tape('index region', (t) => {
         queueFeature(conf.region, {
             type: 'Feature',
             id: 1,
@@ -193,7 +193,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 1,
@@ -210,7 +210,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -221,7 +221,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('query: c, language: zh, languageMode: strict', function(t) {
+    tape('query: c, language: zh, languageMode: strict', (t) => {
         c.geocode('c', { language: 'zh', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 1, 'filters features to just those with "zh" (x1)');
@@ -230,7 +230,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: zh, languageMode: strict', function(t) {
+    tape('query: 1,1, language: zh, languageMode: strict', (t) => {
         c.geocode('1,1', { language: 'zh', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 2, 'filters features to just those with "zh" (x2)');
@@ -241,7 +241,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('query: 1,1, language: en, languageMode: strict', function(t) {
+    tape('query: 1,1, language: en, languageMode: strict', (t) => {
         c.geocode('1,1', { language: 'en', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
@@ -252,7 +252,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, languageMode: strict', function(t) {
+    tape('query: 1,1, languageMode: strict', (t) => {
         c.geocode('1,1', { languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 3, 'filters features to just those with "en" (x1)');
@@ -263,14 +263,14 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: en, languageMode: bogus', function(t) {
+    tape('query: 1,1, language: en, languageMode: bogus', (t) => {
         c.geocode('1,1', { language: 'en', languageMode: 'bogus', types: ['country'], limit: 5 }, function(err, res) {
             t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language mode');
             t.end();
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });
@@ -285,7 +285,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -303,7 +303,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index region', function(t) {
+    tape('index region', (t) => {
         queueFeature(conf.region, {
             type: 'Feature',
             id: 1,
@@ -319,7 +319,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 1,
@@ -335,7 +335,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         queueFeature(conf.place, {
             type: 'Feature',
             id: 2,
@@ -352,7 +352,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -363,7 +363,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('query: paris, language: sr-Latn, languageMode: strict', function(t) {
+    tape('query: paris, language: sr-Latn, languageMode: strict', (t) => {
         c.geocode('paris', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 0, 'filters out mixed-script results');
@@ -371,7 +371,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: belgrade, language: sr-Latn, languageMode: strict', function(t) {
+    tape('query: belgrade, language: sr-Latn, languageMode: strict', (t) => {
         c.geocode('belgrade', { language: 'sr-Latn', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 1, 'allows hr result');
@@ -380,7 +380,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: belgrade, language: hr, languageMode: strict', function(t) {
+    tape('query: belgrade, language: hr, languageMode: strict', (t) => {
         c.geocode('belgrade', { language: 'hr', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features.length, 1, 'allows hr result');
@@ -390,7 +390,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

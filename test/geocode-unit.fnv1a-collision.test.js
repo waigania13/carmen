@@ -11,7 +11,7 @@ var conf = {
     test: new mem({ maxzoom:6, geocoder_address: 1 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index "av francisco de aguirre #"', function(t) {
+tape('index "av francisco de aguirre #"', (t) => {
     queueFeature(conf.test, {
         id:1,
         properties: {
@@ -25,7 +25,7 @@ tape('index "av francisco de aguirre #"', function(t) {
         }
     }, t.end);
 });
-tape('index "# r ademar da silva neiva"', function(t) {
+tape('index "# r ademar da silva neiva"', (t) => {
     queueFeature(conf.test, {
         id:2,
         properties: {
@@ -39,7 +39,7 @@ tape('index "# r ademar da silva neiva"', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -49,7 +49,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 // partial unidecoded terms do not match
-tape('search: "av francisco de aguirre 2 la serena"', function(t) {
+tape('search: "av francisco de aguirre 2 la serena"', (t) => {
     c.geocode('av francisco de aguirre 2 la serena', { limit_verify:2 }, function(err, res) {
         t.equal(res.features.length, 1);
         t.equal(res.features[0].id, 'test.1');
@@ -57,7 +57,7 @@ tape('search: "av francisco de aguirre 2 la serena"', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

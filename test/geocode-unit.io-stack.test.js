@@ -21,12 +21,12 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('ready', function(t) {
+tape('ready', (t) => {
     c._open(t.end);
 });
 
 [1,2,3].forEach(function(i) {
-    tape('index place ' + i, function(t) {
+    tape('index place ' + i, (t) => {
         queueFeature(conf['place'+i], {
             id:1,
             properties: {
@@ -36,7 +36,7 @@ tape('ready', function(t) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:1,
             properties: {
@@ -46,7 +46,7 @@ tape('ready', function(t) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:2,
             properties: {
@@ -56,7 +56,7 @@ tape('ready', function(t) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:3,
             properties: {
@@ -66,7 +66,7 @@ tape('ready', function(t) {
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -87,7 +87,7 @@ function reset() {
     });
 }
 
-tape('winding river rd springfield', function(t) {
+tape('winding river rd springfield', (t) => {
     reset();
     c.geocode('winding river rd  springfield', {}, function(err, res) {
         t.ifError(err);
@@ -101,7 +101,7 @@ tape('winding river rd springfield', function(t) {
     });
 });
 
-tape('springfield', function(t) {
+tape('springfield', (t) => {
     reset();
     c.geocode('springfield', {}, function(err, res) {
         t.ifError(err);
@@ -121,7 +121,7 @@ tape('springfield', function(t) {
     });
 });
 
-tape('springfield, types=place', function(t) {
+tape('springfield, types=place', (t) => {
     reset();
     c.geocode('springfield', { types:['place'] }, function(err, res) {
         t.ifError(err);
@@ -139,7 +139,7 @@ tape('springfield, types=place', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

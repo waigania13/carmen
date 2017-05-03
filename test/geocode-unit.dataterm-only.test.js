@@ -12,7 +12,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index address (dataterm only)', function(t) {
+tape('index address (dataterm only)', (t) => {
     var address = {
         id:100,
         properties: {
@@ -27,7 +27,7 @@ tape('index address (dataterm only)', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -37,7 +37,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('test address', function(t) {
+tape('test address', (t) => {
     c.geocode('100', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 0);
@@ -45,7 +45,7 @@ tape('test address', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

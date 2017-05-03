@@ -16,7 +16,7 @@ var conf = {
     place: new mem(null, function() {})
 };
 var c = new Carmen(conf);
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -26,7 +26,7 @@ tape('index country', function(t) {
         }
     }, t.end);
 });
-tape('index province', function(t) {
+tape('index province', (t) => {
     queueFeature(conf.province, {
         id:2,
         properties: {
@@ -36,7 +36,7 @@ tape('index province', function(t) {
         }
     }, t.end);
 });
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:3,
         properties: {
@@ -46,7 +46,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -57,7 +57,7 @@ tape('build queued features', function(t) {
 });
 
 // should reflect relevance of albany + australia (relev ~ 1), not albany + western australia (relev ~ 0.8)
-tape('albany australia', function(t) {
+tape('albany australia', (t) => {
     c.geocode('albany australia', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'albany, western australia, australia');
@@ -66,7 +66,7 @@ tape('albany australia', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

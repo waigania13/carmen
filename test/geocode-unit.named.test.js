@@ -14,7 +14,7 @@ var conf = {
     place_b: new mem({maxzoom:6, geocoder_name:'place'}, function() {})
 };
 var c = new Carmen(conf);
-tape('index place_a', function(t) {
+tape('index place_a', (t) => {
     queueFeature(conf.place_a, {
         id:1,
         properties: {
@@ -24,7 +24,7 @@ tape('index place_a', function(t) {
         }
     }, t.end);
 });
-tape('index place_b', function(t) {
+tape('index place_b', (t) => {
     queueFeature(conf.place_b, {
         id:2,
         properties: {
@@ -34,7 +34,7 @@ tape('index place_b', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -43,7 +43,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('sadtown', function(t) {
+tape('sadtown', (t) => {
     c.geocode('sadtown', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'sadtown');
@@ -51,7 +51,7 @@ tape('sadtown', function(t) {
         t.end();
     });
 });
-tape('funtown', function(t) {
+tape('funtown', (t) => {
     c.geocode('funtown', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'funtown');
@@ -60,7 +60,7 @@ tape('funtown', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

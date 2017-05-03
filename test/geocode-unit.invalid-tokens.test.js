@@ -14,7 +14,7 @@ var mem = require('../lib/api-mem');
             }
         }, function() {})
     };
-    tape('test invalid tokens', function(t) {
+    tape('test invalid tokens', (t) => {
         t.throws(function() {
             var c = new Carmen(conf);
             t.t(c);

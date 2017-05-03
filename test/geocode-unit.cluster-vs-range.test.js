@@ -15,7 +15,7 @@ var conf = {
     address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
 };
 var c = new Carmen(conf);
-tape('index address', function(t) {
+tape('index address', (t) => {
     var address = {
         id:1,
         properties: {
@@ -30,7 +30,7 @@ tape('index address', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('index addressitp', function(t) {
+tape('index addressitp', (t) => {
     var addressitp = {
         id:1,
         properties: {
@@ -52,7 +52,7 @@ tape('index addressitp', function(t) {
     };
     queueFeature(conf.addressitp, addressitp, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -61,7 +61,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('test address query with address range', function(t) {
+tape('test address query with address range', (t) => {
     c.geocode('100 fake street', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
@@ -71,7 +71,7 @@ tape('test address query with address range', function(t) {
 });
 
 //Reverse geocode will return a pt since it is futher down in the stack than itp
-tape('test reverse address query with address range', function(t) {
+tape('test reverse address query with address range', (t) => {
     c.geocode('0,0', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
@@ -80,7 +80,7 @@ tape('test reverse address query with address range', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

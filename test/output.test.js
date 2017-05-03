@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         geometry: {
@@ -37,7 +37,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:1,
         geometry: {
@@ -59,7 +59,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     var place = {
         id:1,
         geometry: {
@@ -86,7 +86,7 @@ tape('index place', function(t) {
     };
     queueFeature(conf.place, place, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -96,7 +96,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Toronto', function(t) {
+tape('Toronto', (t) => {
     c.geocode('Toronto', {}, function(err, res) {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.default.geojson';
@@ -106,7 +106,7 @@ tape('Toronto', function(t) {
     });
 });
 
-tape('Toronto (dev mode)', function(t) {
+tape('Toronto (dev mode)', (t) => {
     c.geocode('Toronto', { debug: true }, function(err, res) {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.dev.geojson';
@@ -116,7 +116,7 @@ tape('Toronto (dev mode)', function(t) {
     });
 });
 
-tape('0,0 (dev mode)', function(t) {
+tape('0,0 (dev mode)', (t) => {
     c.geocode('0,0', { debug: true }, function(err, res) {
         t.ifError(err);
         var filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
@@ -126,7 +126,7 @@ tape('0,0 (dev mode)', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

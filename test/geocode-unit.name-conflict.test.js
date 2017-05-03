@@ -27,7 +27,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     var country = {
         id:1,
         properties: {
@@ -39,7 +39,7 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     var region = {
         id:1,
         properties: {
@@ -51,7 +51,7 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index postcode', function(t) {
+tape('index postcode', (t) => {
     var postcode = {
         id:1,
         properties: {
@@ -63,7 +63,7 @@ tape('index postcode', function(t) {
     queueFeature(conf.postcode, postcode, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     var place = {
         id:1,
         properties: {
@@ -75,7 +75,7 @@ tape('index place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index neighborhood', function(t) {
+tape('index neighborhood', (t) => {
     var neighborhood = {
         id:1,
         properties: {
@@ -87,7 +87,7 @@ tape('index neighborhood', function(t) {
     queueFeature(conf.neighborhood, neighborhood, t.end);
 });
 
-tape('index poi', function(t) {
+tape('index poi', (t) => {
     var q = queue(1);
     for (var i = 1; i < 20; i++) q.defer(function(i, done) {
         queueFeature(conf.poi, {
@@ -101,7 +101,7 @@ tape('index poi', function(t) {
     }, i);
     q.awaitAll(t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -111,7 +111,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('Descending Gappy', function(t) {
+tape('Descending Gappy', (t) => {
     c.geocode('Waterford Valley Canada', {}, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].id, "neighborhood.1");
@@ -119,7 +119,7 @@ tape('Descending Gappy', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

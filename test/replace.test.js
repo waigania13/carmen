@@ -201,14 +201,14 @@ var tokens = token.createReplacer({
     "San Francisco": "sf"
 });
 
-test('token replacement', function(q) {
+test('token replacement', (q) => {
     q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
     q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
     q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
     q.end();
 });
 
-test('replacer', function(q) {
+test('replacer', (q) => {
 
     // deepEqual doesn't compare regex objects intelligently / accurately
     // so we have to roll our own :-&
@@ -231,7 +231,7 @@ test('replacer', function(q) {
     q.end();
 });
 
-test('named/numbered group replacement', function(q) {
+test('named/numbered group replacement', (q) => {
     var tokens = token.createReplacer({
         "abc": "xyz",
         "(1\\d+)": "@@@$1@@@",
@@ -243,7 +243,7 @@ test('named/numbered group replacement', function(q) {
     q.end();
 });
 
-test('throw on mixed name/num replacement groups', function(q) {
+test('throw on mixed name/num replacement groups', (q) => {
     q.throws(function() {
         token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
     });

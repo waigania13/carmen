@@ -12,7 +12,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index unicode place', function(t) {
+tape('index unicode place', (t) => {
     var place = {
         id: 1,
         properties: {
@@ -23,7 +23,7 @@ tape('index unicode place', function(t) {
     };
     queueFeature(conf.place, place, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -33,7 +33,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('valid match', function(t) {
+tape('valid match', (t) => {
     c.geocode('京都市', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.equal(res.features.length, 1);
@@ -41,7 +41,7 @@ tape('valid match', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

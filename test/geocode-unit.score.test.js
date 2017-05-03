@@ -13,7 +13,7 @@ var addFeature = require('../lib/util/addfeature'),
 (function() {
     var conf = { place: new mem(null, function() {}) };
     var c = new Carmen(conf);
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             id:1,
             properties: {
@@ -25,7 +25,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index ghost place', function(t) {
+    tape('index ghost place', (t) => {
         var place = {
             id:2,
             properties: {
@@ -37,7 +37,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index zip+4', function(t) {
+    tape('index zip+4', (t) => {
         var place = {
             id:3,
             properties: {
@@ -49,7 +49,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index zip', function(t) {
+    tape('index zip', (t) => {
         var place = {
             id:4,
             properties: {
@@ -61,7 +61,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index ghost zip', function(t) {
+    tape('index ghost zip', (t) => {
         var place = {
             id:5,
             properties: {
@@ -73,7 +73,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
     });
-    tape('fairfax', function(t) {
+    tape('fairfax', (t) => {
         c.geocode('fairfax', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'fairfax');
@@ -81,7 +81,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('mclean', function(t) {
+    tape('mclean', (t) => {
         c.geocode('mclean', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'mclean');
@@ -89,7 +89,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('scored feature beats ghost', function(t) {
+    tape('scored feature beats ghost', (t) => {
         c.geocode('20009', { limit_verify:2 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, 'ghost feature deduped');
@@ -98,7 +98,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('exact match bests score', function(t) {
+    tape('exact match bests score', (t) => {
         c.geocode('20003-2004', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, '20003-2004');
@@ -118,7 +118,7 @@ var addFeature = require('../lib/util/addfeature'),
         city: new mem(null, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             id:1,
             properties: {
@@ -129,7 +129,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('index province', function(t) {
+    tape('index province', (t) => {
         var province = {
             id:1,
             properties: {
@@ -140,7 +140,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.province, province, t.end);
     });
-    tape('index city', function(t) {
+    tape('index city', (t) => {
         var city = {
             id:1,
             properties: {
@@ -151,7 +151,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.city, city, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -160,7 +160,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('china', function(t) {
+    tape('china', (t) => {
         c.geocode('china', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'china');
@@ -179,7 +179,7 @@ var addFeature = require('../lib/util/addfeature'),
         city: new mem(null, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             id:1,
             properties: {
@@ -191,7 +191,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('index province', function(t) {
+    tape('index province', (t) => {
         var province = {
             id:2,
             properties: {
@@ -203,7 +203,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.province, province, t.end);
     });
-    tape('index city', function(t) {
+    tape('index city', (t) => {
         var city = {
             id:3,
             properties: {
@@ -215,7 +215,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.city, city, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -224,7 +224,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('china', function(t) {
+    tape('china', (t) => {
         c.geocode('china', { limit_verify:3, allow_dupes: true }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].id, 'province.2');
@@ -234,7 +234,7 @@ var addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-    tape('china (dedupe)', function(t) {
+    tape('china (dedupe)', (t) => {
         c.geocode('china', { limit_verify:3 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].id, 'province.2');
@@ -250,7 +250,7 @@ var addFeature = require('../lib/util/addfeature'),
         country: new mem(null, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             id:1,
             properties: {
@@ -263,7 +263,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, function() { buildQueued(conf.country, t.end) });
     });
 
-    tape('query by id', function(t) {
+    tape('query by id', (t) => {
         c.geocode('country.1', null, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].relevance, 1, "relevance is 1");
@@ -273,7 +273,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -15,7 +15,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -26,7 +26,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -36,7 +36,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -46,7 +46,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('query byid', function(t) {
+tape('query byid', (t) => {
     c.geocode('country.1', {}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -56,7 +56,7 @@ tape('query byid', function(t) {
     });
 });
 
-tape('query byid', function(t) {
+tape('query byid', (t) => {
     c.geocode('place.1', {}, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -66,7 +66,7 @@ tape('query byid', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

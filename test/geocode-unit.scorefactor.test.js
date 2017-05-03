@@ -16,7 +16,7 @@ var addFeature = require('../lib/util/addfeature'),
         place: new mem(null, function() {})
     };
     var c = new Carmen(conf);
-    tape('index small score (noise)', function(t) {
+    tape('index small score (noise)', (t) => {
         var q = queue(1);
         for (var i = 1; i < 41; i++) q.defer(function(i, done) {
             queueFeature(conf.place, {
@@ -31,7 +31,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, i);
         q.awaitAll(t.end);
     });
-    tape('index big score (noise)', function(t) {
+    tape('index big score (noise)', (t) => {
         queueFeature(conf.country, {
             id:1,
             properties: {
@@ -42,7 +42,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('index big score (signal)', function(t) {
+    tape('index big score (signal)', (t) => {
         queueFeature(conf.country, {
             id:2,
             properties: {
@@ -53,7 +53,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -62,7 +62,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
         q.awaitAll(t.end);
     });
-    tape('query', function(t) {
+    tape('query', (t) => {
         c.geocode('testplace', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'testplace');
@@ -72,7 +72,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

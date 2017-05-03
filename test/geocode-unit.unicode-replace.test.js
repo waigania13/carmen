@@ -18,7 +18,7 @@ var conf = {
     }, function() {})
 };
 var c = new Carmen(conf);
-tape('index Maréchal', function(t) {
+tape('index Maréchal', (t) => {
     queueFeature(conf.test, {
         id:1,
         properties: {
@@ -28,25 +28,25 @@ tape('index Maréchal', function(t) {
         }
     }, function() { buildQueued(conf.test, t.end) });
 });
-tape('Mal => Maréchal', function(t) {
+tape('Mal => Maréchal', (t) => {
     c.geocode('Mal', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });
 });
-tape('Maréchal => Maréchal', function(t) {
+tape('Maréchal => Maréchal', (t) => {
     c.geocode('Maréchal', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });
 });
-tape('Marechal => Maréchal', function(t) {
+tape('Marechal => Maréchal', (t) => {
     c.geocode('Marechal', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, 'Maréchal');
         t.end();
     });
 });
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

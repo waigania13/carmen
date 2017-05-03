@@ -16,7 +16,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             type: 'Feature',
             properties: {
@@ -37,7 +37,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -47,7 +47,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('0,0 ?language=en', function(t) {
+    tape('0,0 ?language=en', (t) => {
         c.geocode('0,0', { language:'en', limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
@@ -57,7 +57,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=es', function(t) {
+    tape('0,0 ?language=es', (t) => {
         c.geocode('0,0', { language:'es', limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
@@ -67,7 +67,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=es-XX', function(t) {
+    tape('0,0 ?language=es-XX', (t) => {
         c.geocode('0,0', { language:'es-XX', limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
@@ -77,7 +77,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=en-XX', function(t) {
+    tape('0,0 ?language=en-XX', (t) => {
         c.geocode('0,0', { language:'en-XX', limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
@@ -89,7 +89,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

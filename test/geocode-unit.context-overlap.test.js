@@ -16,7 +16,7 @@ var conf = {
     street_b: new mem({maxzoom:6, geocoder_name:'street'}, function() {})
 };
 var c = new Carmen(conf);
-tape('index place_a', function(t) {
+tape('index place_a', (t) => {
     queueFeature(conf.place_a, {
         id:1,
         properties: {
@@ -26,7 +26,7 @@ tape('index place_a', function(t) {
         }
     }, t.end);
 });
-tape('index place_b', function(t) {
+tape('index place_b', (t) => {
     queueFeature(conf.place_b, {
         id:2,
         properties: {
@@ -36,7 +36,7 @@ tape('index place_b', function(t) {
         }
     }, t.end);
 });
-tape('index street_a', function(t) {
+tape('index street_a', (t) => {
     queueFeature(conf.street_a, {
         id:2,
         properties: {
@@ -46,7 +46,7 @@ tape('index street_a', function(t) {
         }
     }, t.end);
 });
-tape('index street_b', function(t) {
+tape('index street_b', (t) => {
     queueFeature(conf.street_b, {
         id:1,
         properties: {
@@ -56,7 +56,7 @@ tape('index street_b', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -65,7 +65,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('geocoder_name dedupe', function(t) {
+tape('geocoder_name dedupe', (t) => {
     c.geocode('main street', { limit_verify:1 }, function(err, res) {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'main street, funtown');
@@ -76,7 +76,7 @@ tape('geocoder_name dedupe', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -2,7 +2,7 @@ var rebalance = require('../lib/spatialmatch.js').rebalance;
 var Phrasematch = require('../lib/phrasematch').Phrasematch;
 var test = require('tape');
 
-test('rebalance, no garbage', function(t) {
+test('rebalance, no garbage', (t) => {
     var query = ['100','main','st','12345','seattle','washington'];
     var stack = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
@@ -22,7 +22,7 @@ test('rebalance, no garbage', function(t) {
     t.end();
 });
 
-test('rebalance, with garbage', function(t) {
+test('rebalance, with garbage', (t) => {
     var query = ['100','main','st','12345','seattle','washington'];
 
     var stack = [
@@ -41,7 +41,7 @@ test('rebalance, with garbage', function(t) {
     t.end();
 });
 
-test('rebalance copies', function(t) {
+test('rebalance copies', (t) => {
     var query = ['100','main','st','12345','seattle','washington'];
 
     var stackA = [

@@ -14,7 +14,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         queueFeature(conf.country, {
             type: 'Feature',
             id: 1,
@@ -30,7 +30,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    tape('index postcode', function(t) {
+    tape('index postcode', (t) => {
         queueFeature(conf.postcode, {
             id: 1,
             type: 'Feature',
@@ -44,7 +44,7 @@ var addFeature = require('../lib/util/addfeature'),
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -54,7 +54,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('query: 10000', function(t) {
+    tape('query: 10000', (t) => {
         c.geocode('10000', {}, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, United States');
@@ -62,7 +62,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 10000, language: es', function(t) {
+    tape('query: 10000, language: es', (t) => {
         c.geocode('10000', { language: 'es' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
@@ -70,7 +70,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 10000, language: es, languageMode: strict', function(t) {
+    tape('query: 10000, language: es, languageMode: strict', (t) => {
         c.geocode('10000', { language: 'es', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1', function(t) {
+    tape('query: 1,1', (t) => {
         c.geocode('1,1', {}, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, United States');
@@ -86,7 +86,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: es', function(t) {
+    tape('query: 1,1, language: es', (t) => {
         c.geocode('1,1', { language: 'es' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
@@ -94,7 +94,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query: 1,1, language: es, languageMode: strict', function(t) {
+    tape('query: 1,1, language: es, languageMode: strict', (t) => {
         c.geocode('1,1', { language: 'es', languageMode: 'strict' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
@@ -102,7 +102,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

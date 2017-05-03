@@ -1,7 +1,7 @@
 var getHousenumRangeV3 = require('../lib/util/termops').getHousenumRangeV3;
 var test = require('tape');
 
-test('termops.getHousenumRangeV3', function(t) {
+test('termops.getHousenumRangeV3', (t) => {
     t.deepEqual(getHousenumRangeV3({ properties: {} }), false, 'non-address doc => false');
 
     t.deepEqual(getHousenumRangeV3({

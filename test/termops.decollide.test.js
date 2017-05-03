@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('termops.decollide', function(t) {
+test('termops.decollide', (t) => {
     t.deepEqual(termops.decollide([], {
         properties: { 'carmen:text': 'main street' }
     }, '## ma'), true, 'decollides "## ma"');

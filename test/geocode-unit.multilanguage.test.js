@@ -22,7 +22,7 @@ var addFeature = require('../lib/util/addfeature'),
     };
     var c = new Carmen(conf);
 
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             type: 'Feature',
             properties: {
@@ -45,7 +45,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
 
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             type: 'Feature',
             properties: {
@@ -68,7 +68,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
 
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('paris ?language=en,es,bogus', function(t) {
+    tape('paris ?language=en,es,bogus', (t) => {
         c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, function(err, res) {
             t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
             t.equal(err && err.code, 'EINVALID');
@@ -86,7 +86,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('paris ?language=en,es,ja', function(t) {
+    tape('paris ?language=en,es,ja', (t) => {
         c.geocode('paris', { limit_verify:1, language: 'en,es,ja' }, function(err, res) {
             t.ifError(err);
             t.equal(res.features[0].id, 'place.1');
@@ -123,7 +123,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('error handling ?language=20+', function(t) {
+    tape('error handling ?language=20+', (t) => {
         c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, function(err, res) {
             t.equal(err && err.toString(), 'Error: options.language should be a list of no more than 20 languages');
             t.equal(err && err.code, 'EINVALID');
@@ -131,7 +131,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('error handling ?language=en,en', function(t) {
+    tape('error handling ?language=en,en', (t) => {
         c.geocode('paris', { limit_verify:1, language: 'en,en' }, function(err, res) {
             t.equal(err && err.toString(), 'Error: options.language should be a list of unique language codes');
             t.equal(err && err.code, 'EINVALID');
@@ -141,7 +141,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

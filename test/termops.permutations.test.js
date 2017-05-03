@@ -2,7 +2,7 @@ var termops = require('../lib/util/termops');
 var test = require('tape');
 var clone = function(d) { return JSON.parse(JSON.stringify(d)); }
 
-test('termops.permutations', function(t) {
+test('termops.permutations', (t) => {
     t.deepEqual(clone(termops.permutations(['a','b','c','d'])), [
         ['a','b','c','d'],
         ['a','b','c'],
@@ -58,7 +58,7 @@ test('termops.permutations', function(t) {
     t.end();
 });
 
-test('termops.permutations (props)', function(t) {
+test('termops.permutations (props)', (t) => {
     var permutations = termops.permutations(['a','b','c','d'], [0.1, 0.1, 0.2, 0.6]);
     permutations.length = 10;
 
@@ -95,7 +95,7 @@ test('termops.permutations (props)', function(t) {
     t.end();
 });
 
-test('termops.permutations (props)', function(t) {
+test('termops.permutations (props)', (t) => {
     var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6]);
     t.deepEqual(permutations.length, 6);
 
@@ -117,7 +117,7 @@ test('termops.permutations (props)', function(t) {
     t.end();
 });
 
-test('termops.permutations (props + all)', function(t) {
+test('termops.permutations (props + all)', (t) => {
     var permutations = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6], true);
     t.deepEqual(permutations.length, 7);
 

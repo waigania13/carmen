@@ -12,7 +12,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index address', function(t) {
+tape('index address', (t) => {
     var address = {
         id:1,
         properties: {
@@ -27,7 +27,7 @@ tape('index address', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -37,14 +37,14 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('test address', function(t) {
+tape('test address', (t) => {
     c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
         t.end();
     });
 });
-tape('test address', function(t) {
+tape('test address', (t) => {
     c.geocode('56 Brehmestr.', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
@@ -53,7 +53,7 @@ tape('test address', function(t) {
 });
 
 // Real solution here is regex token for *strasse => *str
-tape.skip('test address', function(t) {
+tape.skip('test address', (t) => {
     c.geocode('Brehmestr. 56', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0] && res.features[0].place_name, 'Brehmestraße 56');
@@ -61,7 +61,7 @@ tape.skip('test address', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

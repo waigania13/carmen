@@ -19,7 +19,7 @@ var coldCityCenter = [10,0];
 var seattleCenter = [0,0];
 
 //Place 1: Cold City
-tape('index place "Cold City"', function(t) {
+tape('index place "Cold City"', (t) => {
     var place = {
         id:105,
         properties: {
@@ -35,7 +35,7 @@ tape('index place "Cold City"', function(t) {
 });
 
 //Address 1 in Cold City
-tape('index address "Main St" in "Cold City"', function(t) {
+tape('index address "Main St" in "Cold City"', (t) => {
     
     var address = {
         id:100,
@@ -53,7 +53,7 @@ tape('index address "Main St" in "Cold City"', function(t) {
 });
 
 //Address 2 in Cold City
-tape('index address "Market" in "Cold City"', function(t) {
+tape('index address "Market" in "Cold City"', (t) => {
     var address = {
         id:101,
         properties: {
@@ -70,7 +70,7 @@ tape('index address "Market" in "Cold City"', function(t) {
 });
 
 //Place 2: Seattle
-tape('index place Seattle', function(t) {
+tape('index place Seattle', (t) => {
 
     var place = {
         id:100,
@@ -87,7 +87,7 @@ tape('index place Seattle', function(t) {
 });
 
 //Postcode 1: Centered to line up with Seattle
-tape('index postcode "12345" in Seattle', function(t) {
+tape('index postcode "12345" in Seattle', (t) => {
     var postcode = {
         id:100,
         properties: {
@@ -103,7 +103,7 @@ tape('index postcode "12345" in Seattle', function(t) {
 });
 
 //Region 1: Centered to line up with Seattle 
-tape('index region "Washington" lines up with Seattle', function(t) {
+tape('index region "Washington" lines up with Seattle', (t) => {
     var region = {
         id:100,
         properties: {
@@ -117,7 +117,7 @@ tape('index region "Washington" lines up with Seattle', function(t) {
     };
     queueFeature(conf.region, region, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -128,7 +128,7 @@ tape('build queued features', function(t) {
 });
 
 //Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
-tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', function(t) {
+tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', (t) => {
     c.geocode('100 Main St, 12345 Seattle, Washington', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '12345, Seattle, Washington', 'matches Seattle instead of address');
@@ -139,7 +139,7 @@ tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', funct
 });
 
 //Make a mismatched query with a street(100 Market - containing 2 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
-tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', function(t) {
+tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', (t) => {
     c.geocode('100 Market 12345 Seattle Washington', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '12345, Seattle, Washington');
@@ -150,7 +150,7 @@ tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', function
 });
 
 //Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and place and region layers lining up with Seattle, Washington
-tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', function(t) {
+tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', (t) => {
     c.geocode('100 Main St, Seattle Washington', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Seattle, Washington');
@@ -160,7 +160,7 @@ tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', function(t) 
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

@@ -15,7 +15,7 @@ var queue = require('d3-queue').queue;
         address: new mem(null, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index address (signal 1)', function(t) {
+    tape('index address (signal 1)', (t) => {
         queueFeature(conf.address, {
             id:200,
             properties: {
@@ -26,7 +26,7 @@ var queue = require('d3-queue').queue;
             }
         }, t.end);
     });
-    tape('index address (signal 2)', function(t) {
+    tape('index address (signal 2)', (t) => {
         queueFeature(conf.address, {
             id:201,
             properties: {
@@ -37,7 +37,7 @@ var queue = require('d3-queue').queue;
             }
         }, t.end);
     });
-    tape('index address (noise)', function(t) {
+    tape('index address (noise)', (t) => {
         var q = queue(1);
         for (var i = 1; i < 100; i++) q.defer(function(i, done) {
             queueFeature(conf.address, {
@@ -52,7 +52,7 @@ var queue = require('d3-queue').queue;
         }, i);
         q.awaitAll(t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -61,21 +61,21 @@ var queue = require('d3-queue').queue;
         });
         q.awaitAll(t.end);
     });
-    tape('geocode proximity=10,10 => superscored', function(t) {
+    tape('geocode proximity=10,10 => superscored', (t) => {
         c.geocode('main st', { proximity:[10,10] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].id, 'address.200', 'found address.200');
             t.end();
         });
     });
-    tape('geocode proximity=20,0 => nearest', function(t) {
+    tape('geocode proximity=20,0 => nearest', (t) => {
         c.geocode('main st', { proximity:[20,0] }, function(err, res) {
             t.ifError(err);
             t.equals(res.features[0].id, 'address.201', 'found address.201');
             t.end();
         });
     });
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

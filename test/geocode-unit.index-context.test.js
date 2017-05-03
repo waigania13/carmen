@@ -17,7 +17,7 @@ var addFeature = require('../lib/util/addfeature'),
         address: new mem({maxzoom: 6 }, function() {})
     };
     var c = new Carmen(conf);
-    tape('index country', function(t) {
+    tape('index country', (t) => {
         var country = {
             id:1,
             properties: {
@@ -33,7 +33,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
 
-    tape('index region', function(t) {
+    tape('index region', (t) => {
         var region = {
             id:1,
             properties: {
@@ -49,7 +49,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.region, region, t.end);
     });
 
-    tape('index place', function(t) {
+    tape('index place', (t) => {
         var place = {
             id:1,
             properties: {
@@ -65,7 +65,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
 
-    tape('index postcode', function(t) {
+    tape('index postcode', (t) => {
         var postcode = {
             id:1,
             properties: {
@@ -81,7 +81,7 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.postcode, postcode, t.end);
     });
 
-    tape('index address', function(t) {
+    tape('index address', (t) => {
         var address = {
             id:1,
             properties: {
@@ -96,7 +96,7 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('build queued features', function(t) {
+    tape('build queued features', (t) => {
         var q = queue();
         Object.keys(conf).forEach(function(c) {
             q.defer(function(cb) {
@@ -106,21 +106,21 @@ var addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    tape('Search for an address & check indexes', function(t) {
+    tape('Search for an address & check indexes', (t) => {
         c.geocode('9 fake street', { limit_verify: 1, indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
             t.end();
         });
     });
-    tape('Search for an id & check indexes', function(t) {
+    tape('Search for an id & check indexes', (t) => {
         c.geocode('address.1', { indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address' ]);
             t.end();
         });
     });
-    tape('Search for a point & check indexes', function(t) {
+    tape('Search for a point & check indexes', (t) => {
         c.geocode('0,0', { limit_verify: 1, indexes: true }, function(err, res) {
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
@@ -129,7 +129,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

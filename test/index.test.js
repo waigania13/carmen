@@ -11,7 +11,7 @@ var UPDATE = process.env.UPDATE;
 var test = require('tape');
 var termops = require('../lib/util/termops');
 
-test('index - streaming interface', function(t) {
+test('index - streaming interface', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
@@ -28,7 +28,7 @@ test('index - streaming interface', function(t) {
     };
 
     var carmen = new Carmen(conf);
-    t.test('index docs.json', function(q) {
+    t.test('index docs.json', (q) => {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
             output: outputStream
@@ -37,7 +37,7 @@ test('index - streaming interface', function(t) {
             q.end();
         });
     });
-    t.test('ensure index was successful', function(q) {
+    t.test('ensure index was successful', (q) => {
         carmen.analyze(conf.to, function(err, stats) {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
@@ -49,7 +49,7 @@ test('index - streaming interface', function(t) {
     t.end();
 });
 
-test('index.generateStats', function(t) {
+test('index.generateStats', (t) => {
     var docs = [{
         type: "Feature",
         properties: {
@@ -84,12 +84,12 @@ test('index.generateStats', function(t) {
     t.end();
 });
 
-test('index.update -- error', function(t) {
+test('index.update -- error', (t) => {
     var memdocs = require('./fixtures/mem-docs.json');
     var conf = { to: new mem(memdocs, null, function() {}) };
     var carmen = new Carmen(conf);
     t.ok(carmen);
-    t.test('update 1', function(q) {
+    t.test('update 1', (q) => {
         index.update(conf.to, [{
             id: 1,
             type: "Feature",
@@ -109,7 +109,7 @@ test('index.update -- error', function(t) {
             q.end();
         });
     });
-    t.test('update 2', function(q) {
+    t.test('update 2', (q) => {
         index.update(conf.to, [{
             id: 1,
             type: "Feature",
@@ -132,36 +132,36 @@ test('index.update -- error', function(t) {
     t.end();
 });
 
-test('index.update freq', function(t) {
+test('index.update freq', (t) => {
     var conf = { to: new mem(null, function() {}) };
     var carmen = new Carmen(conf);
     t.ok(carmen);
-    t.test('error no id', function(q) {
+    t.test('error no id', (q) => {
         index.update(conf.to, [{ type: 'Point', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
             q.equal(err.toString(), 'Error: doc has no id');
             q.end();
         });
     });
-    t.test('error no carmen:center', function(q) {
+    t.test('error no carmen:center', (q) => {
         index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st' } }], { zoom: 6 }, function(err) {
             q.equal(err.toString(), 'Error: "geometry" member required on id:1');
             q.end();
         });
     });
-    t.test('indexes single doc', function(q) {
+    t.test('indexes single doc', (q) => {
         index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0]}, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.end();
         });
     });
-    t.test('indexes doc with geometry and no carmen:center', function(q) {
+    t.test('indexes doc with geometry and no carmen:center', (q) => {
         var doc = { id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}};
         index.update(conf.to, [doc], { zoom: 6 }, function(err, res, too) {
             q.ok(doc.properties['carmen:center'], 'carmen:center has been set');
             q.end();
         });
     });
-    t.test('indexes doc with geometry and carmen:center', function(q) {
+    t.test('indexes doc with geometry and carmen:center', (q) => {
         index.update(conf.to, [{ id:1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center': [-75.598211,38.367333] }, geometry:{ type: 'Point', coordinates: [-75.598211,38.367333]}}], { zoom: 6 }, function(err) {
             q.ifError(err);
             q.end();
@@ -170,7 +170,7 @@ test('index.update freq', function(t) {
     t.end();
 });
 
-test('index', function(t) {
+test('index', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
@@ -187,7 +187,7 @@ test('index', function(t) {
 
     var carmen = new Carmen(conf);
 
-    t.test('indexes a document', function(q) {
+    t.test('indexes a document', (q) => {
         carmen.index(inputStream, conf.to, {
             zoom: 6,
             output: outputStream
@@ -200,7 +200,7 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('analyzes index', function(q) {
+    t.test('analyzes index', (q) => {
         carmen.analyze(conf.to, function(err, stats) {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
@@ -209,7 +209,7 @@ test('index', function(t) {
             q.end();
         });
     });
-    t.test('confirm that iterator works', function(q) {
+    t.test('confirm that iterator works', (q) => {
         var monotonic = true;
         var output = [];
         var iterator = conf.to.geocoderDataIterator('freq');
@@ -232,7 +232,7 @@ test('index', function(t) {
     t.end();
 });
 
-test('error -- zoom too high', function(t) {
+test('error -- zoom too high', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
@@ -259,7 +259,7 @@ test('error -- zoom too high', function(t) {
     });
 });
 
-test('error -- zoom too low', function(t) {
+test('error -- zoom too low', (t) => {
     var inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     var outputStream = new Stream.Writable();
@@ -284,7 +284,7 @@ test('error -- zoom too low', function(t) {
     });
 });
 
-test('index phrase collection', function(t) {
+test('index phrase collection', (t) => {
     var conf = { test:new mem(null, {maxzoom:6}, function() {}) };
     var c = new Carmen(conf);
     t.ok(c);
@@ -321,7 +321,7 @@ test('index phrase collection', function(t) {
     }
 });
 
-test('error -- _geometry too high resolution', function(t) {
+test('error -- _geometry too high resolution', (t) => {
     var docs = JSON.parse(fs.readFileSync(__dirname+'/fixtures/hugedoc.json'));
 
     var s = new Stream.Readable();
@@ -352,7 +352,7 @@ test('error -- _geometry too high resolution', function(t) {
     });
 });
 
-test('index.cleanDocs', function(t) {
+test('index.cleanDocs', (t) => {
     var sourceWithAddress = {geocoder_address:true};
     var sourceWithoutAddress = {geocoder_address:false};
 

@@ -13,7 +13,7 @@ var conf = {
     street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index province', function(t) {
+tape('index province', (t) => {
     var province = {
         id:1,
         properties: {
@@ -24,7 +24,7 @@ tape('index province', function(t) {
     };
     queueFeature(conf.province, province, t.end);
 });
-tape('index city 1', function(t) {
+tape('index city 1', (t) => {
     var city = {
         id:2,
         properties: {
@@ -35,7 +35,7 @@ tape('index city 1', function(t) {
     }
     queueFeature(conf.city, city, t.end);
 });
-tape('index city 2', function(t) {
+tape('index city 2', (t) => {
     var city = {
         id:3,
         properties: {
@@ -46,7 +46,7 @@ tape('index city 2', function(t) {
     };
     queueFeature(conf.city, city, t.end);
 });
-tape('index street 1', function(t) {
+tape('index street 1', (t) => {
     var street = {
         id:4,
         properties: {
@@ -57,7 +57,7 @@ tape('index street 1', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
-tape('index street 2', function(t) {
+tape('index street 2', (t) => {
     var street = {
         id:5,
         properties: {
@@ -68,7 +68,7 @@ tape('index street 2', function(t) {
     };
     queueFeature(conf.street, street, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -77,7 +77,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('west st, tonawanda, ny', function(t) {
+tape('west st, tonawanda, ny', (t) => {
     c.geocode('west st tonawanda ny', { limit_verify:1, debug:4 }, function(err, res) {
         t.ifError(err);
         t.equal(res.debug.id, 4, 'debugs id');
@@ -110,7 +110,7 @@ tape('west st, tonawanda, ny', function(t) {
         t.end();
     });
 });
-tape('west st, tonawanda, ny', function(t) {
+tape('west st, tonawanda, ny', (t) => {
     c.geocode('west st tonawanda ny', { limit_verify:1, debug:5 }, function(err, res) {
         t.ifError(err);
         t.equal(res.debug.id, 5, 'debugs id');
@@ -150,7 +150,7 @@ tape('west st, tonawanda, ny', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

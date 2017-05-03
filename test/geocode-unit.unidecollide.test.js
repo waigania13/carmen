@@ -15,7 +15,7 @@ var addFeature = require('../lib/util/addfeature'),
         place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index Alberta', function(t) {
+    tape('index Alberta', (t) => {
         queueFeature(conf.place_a, {
             id:1,
             properties: {
@@ -27,7 +27,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, function() { buildQueued(conf.place_a, t.end) });
     });
 
-    tape('heading to Aruba, I hope you packed warm clothes', function(t) {
+    tape('heading to Aruba, I hope you packed warm clothes', (t) => {
         c.geocode('aruba', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 0, 'Alberta feature does not match \'Aruba\'');
@@ -35,7 +35,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('JP query works', function(t) {
+    tape('JP query works', (t) => {
         c.geocode('アルバータ州', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Alberta');
@@ -44,7 +44,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Latin query works', function(t) {
+    tape('Latin query works', (t) => {
         c.geocode('Alber', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Alberta');
@@ -54,7 +54,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });
@@ -67,7 +67,7 @@ var addFeature = require('../lib/util/addfeature'),
         place_a: new mem({maxzoom:6, geocoder_name:'region'}, function() {}),
     };
     var c = new Carmen(conf);
-    tape('index abc xyz', function(t) {
+    tape('index abc xyz', (t) => {
         queueFeature(conf.place_a, {
             id:1,
             properties: {
@@ -78,7 +78,7 @@ var addFeature = require('../lib/util/addfeature'),
         }, function() { buildQueued(conf.place_a, t.end) });
     });
 
-    tape('check for collisions based on char prefixing', function(t) {
+    tape('check for collisions based on char prefixing', (t) => {
         c.geocode('yz', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 0, 'search for yz returned no results');
@@ -86,7 +86,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('check for collisions based on char prefixing', function(t) {
+    tape('check for collisions based on char prefixing', (t) => {
         c.geocode('a yz', { limit_verify:1 }, function(err, res) {
             t.ifError(err);
             t.equals(res.features.length, 0, 'search for \'a yz\' returned no results');
@@ -94,7 +94,7 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('teardown', function(t) {
+    tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
     });

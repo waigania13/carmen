@@ -21,7 +21,7 @@ var conf = {
 
 var c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -59,7 +59,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id: 2,
         properties: {
@@ -98,7 +98,7 @@ tape('index region', function(t) {
 });
 
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id: 3,
         properties: {
@@ -136,7 +136,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('index poi', function(t) {
+tape('index poi', (t) => {
     queueFeature(conf.poi, {
         id:4,
         properties: {
@@ -152,7 +152,7 @@ tape('index poi', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -162,7 +162,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('let\'s find new york', function(t) {
+tape('let\'s find new york', (t) => {
     c.geocode('new york usa', {}, function(err, res) {
         t.equal(res.features[0].id, 'place.3');
         t.equal(res.features[0].relevance, 1);
@@ -170,7 +170,7 @@ tape('let\'s find new york', function(t) {
     });
 });
 
-tape('ensure POI cannot win', function(t) {
+tape('ensure POI cannot win', (t) => {
     c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, function(err, res) {
         t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
@@ -178,7 +178,7 @@ tape('ensure POI cannot win', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
@@ -193,7 +193,7 @@ var conf2 = {
 };
 var c2 = new Carmen(conf2);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf2.country, {
         id: 10,
         properties: {
@@ -232,7 +232,7 @@ tape('index country', function(t) {
 });
 
 ['region', 'district', 'place'].forEach(function(f, i) {
-    tape('index ' + f, function(t) {
+    tape('index ' + f, (t) => {
         queueFeature(conf2[f], {
             id: i + 1,
             properties: {
@@ -270,7 +270,7 @@ tape('index country', function(t) {
         }, t.end);
     });
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf2).forEach(function(c) {
         q.defer(function(cb) {
@@ -280,14 +280,14 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('nonthaburi', function(t) {
+tape('nonthaburi', (t) => {
     c2.geocode('nonthaburi', {}, function(err, res) {
         t.equal(res.features[0].id.split('.')[0], 'place', 'lead feature is place');
         t.end();
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

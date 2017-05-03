@@ -14,7 +14,7 @@ var conf = {
     test: new mem({ maxzoom:6 }, function() {})
 };
 var c = new Carmen(conf);
-tape('index 京都市', function(t) {
+tape('index 京都市', (t) => {
     queueFeature(conf.test, {
         id:1,
         properties: {
@@ -24,7 +24,7 @@ tape('index 京都市', function(t) {
         }
     }, t.end);
 });
-tape('index москва', function(t) {
+tape('index москва', (t) => {
     queueFeature(conf.test, {
         id:2,
         properties: {
@@ -34,7 +34,7 @@ tape('index москва', function(t) {
         }
     }, t.end);
 });
-tape('index josé', function(t) {
+tape('index josé', (t) => {
     queueFeature(conf.test, {
         id:3,
         properties: {
@@ -45,7 +45,7 @@ tape('index josé', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -55,76 +55,76 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('京 => 京都市', function(t) {
+tape('京 => 京都市', (t) => {
     c.geocode('京', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, '京都市');
         t.end();
     });
 });
-tape('京都市 => 京都市', function(t) {
+tape('京都市 => 京都市', (t) => {
     c.geocode('京都市', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, '京都市');
         t.end();
     });
 });
-tape('jing !=> 京都市', function(t) {
+tape('jing !=> 京都市', (t) => {
     c.geocode('jing', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 1');
         t.end();
     });
 });
-tape('jing du shi !=> 京都市', function(t) {
+tape('jing du shi !=> 京都市', (t) => {
     c.geocode('jing du shi', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features.length, 0, 'CJK transliteration disabled 2');
         t.end();
     });
 });
 // partial unidecoded terms do not match
-tape('ji => no results', function(t) {
+tape('ji => no results', (t) => {
     c.geocode('ji', { limit_verify:1 }, function(err, res) {
         t.equal(res.features.length, 0);
         t.end();
     });
 });
 
-tape('м => москва', function(t) {
+tape('м => москва', (t) => {
     c.geocode('м', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, 'москва');
         t.end();
     });
 });
-tape('москва => москва', function(t) {
+tape('москва => москва', (t) => {
     c.geocode('москва', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features[0].place_name, 'москва');
         t.end();
     });
 });
-tape('m => москва', function(t) {
+tape('m => москва', (t) => {
     c.geocode('m', { limit_verify:1 }, function(err, res) {
         t.equal(res.features.length, 0, 'm (no results)');
         t.end();
     });
 });
-tape('moskva => москва', function(t) {
+tape('moskva => москва', (t) => {
     c.geocode('moskva', { limit_verify:1 }, function(err, res) {
         t.deepEqual(res.features.length, 0, 'moskva (no results)');
         t.end();
     });
 });
 
-tape('j => josé', function(t) {
+tape('j => josé', (t) => {
     c.geocode('j', { limit_verify:1 }, function(err, res) {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
     });
 });
-tape('jose => josé', function(t) {
+tape('jose => josé', (t) => {
     c.geocode('jose', { limit_verify:1 }, function(err, res) {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
     });
 });
-tape('josé => josé', function(t) {
+tape('josé => josé', (t) => {
     c.geocode('josé', { limit_verify:1 }, function(err, res) {
         t.equal(res.features[0].place_name, 'josé');
         t.end();
@@ -132,7 +132,7 @@ tape('josé => josé', function(t) {
 });
 
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

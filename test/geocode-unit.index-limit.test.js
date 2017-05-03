@@ -16,7 +16,7 @@ for (var i = 0; i < 127; i++) {
 conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, function() {});
 
 var c = new Carmen(conf);
-tape('index place', function(t) {
+tape('index place', (t) => {
     t.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
     queueFeature(conf.place, {
         id:1,
@@ -27,7 +27,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -36,7 +36,7 @@ tape('build queued features', function(t) {
     });
     q.awaitAll(t.end);
 });
-tape('query place', function(t) {
+tape('query place', (t) => {
     c.geocode('Chicago', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
@@ -44,7 +44,7 @@ tape('query place', function(t) {
         t.end();
     });
 });
-tape('reverse place', function(t) {
+tape('reverse place', (t) => {
     c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
@@ -53,7 +53,7 @@ tape('reverse place', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

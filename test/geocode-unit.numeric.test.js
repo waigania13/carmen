@@ -13,7 +13,7 @@ var conf = {
 };
 var c = new Carmen(conf);
 
-tape('index', function(t) {
+tape('index', (t) => {
     queueFeature(conf.postcode, {
         id:1,
         properties: {
@@ -24,7 +24,7 @@ tape('index', function(t) {
     }, t.end);
 });
 
-tape('index', function(t) {
+tape('index', (t) => {
     queueFeature(conf.postcode, {
         id:2,
         properties: {
@@ -35,7 +35,7 @@ tape('index', function(t) {
     }, t.end);
 });
 
-tape('index address', function(t) {
+tape('index address', (t) => {
     queueFeature(conf.address, {
         id:2,
         properties: {
@@ -52,7 +52,7 @@ tape('index address', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
+tape('build queued features', (t) => {
     var q = queue();
     Object.keys(conf).forEach(function(c) {
         q.defer(function(cb) {
@@ -62,7 +62,7 @@ tape('build queued features', function(t) {
     q.awaitAll(t.end);
 });
 
-tape('query', function(t) {
+tape('query', (t) => {
     c.geocode('22209', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         // 22209 does not win here until we have suggest vs final modes.
@@ -74,7 +74,7 @@ tape('query', function(t) {
     });
 });
 
-tape('indexes degen', function(t) {
+tape('indexes degen', (t) => {
     c.geocode('222', { limit_verify: 1 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features.length, 1);
@@ -82,7 +82,7 @@ tape('indexes degen', function(t) {
     });
 });
 
-tape('does index degens for non-numeric terms', function(t) {
+tape('does index degens for non-numeric terms', (t) => {
     c.geocode('22209 rest', { limit_verify: 2 }, function(err, res) {
         t.ifError(err);
         t.equals(res.features[0].place_name, '22209 restaurant', 'found 22209 restaurant');
@@ -90,7 +90,7 @@ tape('does index degens for non-numeric terms', function(t) {
     });
 });
 
-tape('teardown', function(t) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });

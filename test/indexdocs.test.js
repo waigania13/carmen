@@ -5,7 +5,7 @@ var termops = require('../lib/util/termops.js');
 var token = require('../lib/util/token.js');
 var rewind = require('geojson-rewind');
 
-tape('indexdocs.loadDoc', function(t) {
+tape('indexdocs.loadDoc', (t) => {
     var token_replacer = token.createReplacer({});
     var patch;
     var tokens;
@@ -59,8 +59,8 @@ tape('indexdocs.loadDoc', function(t) {
     t.end();
 });
 
-tape('indexdocs.standardize', function(t) {
-    t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(q) {
+tape('indexdocs.standardize', (t) => {
+    t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', (q) => {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -77,7 +77,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(q) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', (q) => {
         q.throws(() => {
             indexdocs.standardize({
                 id: 1,
@@ -97,7 +97,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(q) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', (q) => {
         q.throws(() => {
             indexdocs.standardize({
                 id: 1,
@@ -117,7 +117,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(q) {
+    t.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', (q) => {
         q.throws(() => {
             indexdocs.standardize({
                 id: 1,
@@ -137,7 +137,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(q) {
+    t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', (q) => {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -156,7 +156,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber lowercased', function(q) {
+    t.test('indexdocs.standardize - carmen:addressnumber lowercased', (q) => {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -175,8 +175,8 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype invalid', function(q) {
-        q.throws(function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype invalid', (q) => {
+        q.throws((t) => {
             indexdocs.standardize({
                 id: 1,
                 type: 'Feature',
@@ -195,7 +195,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(q) {
+    t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', (q) => {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -220,7 +220,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(q) {
+    t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', (q) => {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -245,7 +245,7 @@ tape('indexdocs.standardize', function(t) {
         q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(q) {
+    t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', (q) => {
         // Build a zxy list with covers of varying distance from center.
         var central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
         var covers = [];
@@ -279,7 +279,7 @@ tape('indexdocs.standardize', function(t) {
     t.end();
 });
 
-tape('indexdocs.verifyCenter', function(t) {
+tape('indexdocs.verifyCenter', (t) => {
     t.equal(indexdocs.verifyCenter([0,0], [[0,0,0]]), true, 'center in tiles');
     t.equal(indexdocs.verifyCenter([0,-45], [[0,0,1],[1,0,1]]), false, 'center outside tiles');
     t.equal(indexdocs.verifyCenter([0,null], [[32,32,6]]), false, 'handle null lon');
@@ -288,7 +288,7 @@ tape('indexdocs.verifyCenter', function(t) {
     t.end();
 });
 
-tape('indexdocs.runChecks', function(t) {
+tape('indexdocs.runChecks', (t) => {
     t.throws(() => {
         indexdocs.runChecks({});
     }, /doc has no id/);
@@ -402,7 +402,7 @@ tape('indexdocs.runChecks', function(t) {
     t.end();
 });
 
-tape('indexdocs.generateFrequency', function(t) {
+tape('indexdocs.generateFrequency', (t) => {
     var docs = [{
         type: "Feature",
         properties: {

@@ -1,7 +1,7 @@
 var termops = require('../lib/util/termops');
 var test = require('tape');
 
-test('termops.uniqPermutations', function(t) {
+test('termops.uniqPermutations', (t) => {
     var a = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6]);
     var b = termops.permutations(['a','b','c'], [0.2, 0.1, 0.7]);
 

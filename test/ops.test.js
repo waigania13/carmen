@@ -1,7 +1,7 @@
 var ops = require('../lib/util/ops');
 var test = require('tape');
 
-test('ops#toFeature', function(t) {
+test('ops#toFeature', (t) => {
     var feat = [{
         properties: {
             "carmen:center": [-99.392855, 63.004759],
@@ -242,7 +242,7 @@ test('ops#toFeature', function(t) {
     t.end();
 });
 
-test('ops#toFeature + no formatter + languageMode=strict', function(t) {
+test('ops#toFeature + no formatter + languageMode=strict', (t) => {
     var context, feature;
 
     context = [{
@@ -289,7 +289,7 @@ test('ops#toFeature + no formatter + languageMode=strict', function(t) {
     t.end()
 });
 
-test('ops#toFeature + formatter + languageMode=strict', function(t) {
+test('ops#toFeature + formatter + languageMode=strict', (t) => {
     var context, feature;
 
     context = [{
