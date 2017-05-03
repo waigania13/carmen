@@ -60,7 +60,7 @@ tape('indexdocs.loadDoc', function(t) {
 });
 
 tape('indexdocs.standardize', function(t) {
-    t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(t) {
+    t.test('indexdocs.standardize - carmen:center & carmen:zxy calculated', function(q) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -73,12 +73,12 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEquals(res, { geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 1, properties: { 'carmen:center': [ 0, 0 ], 'carmen:text': 'main street', 'carmen:zxy': [ '6/32/32' ] }, type: 'Feature' });
-        t.end();
+        q.deepEquals(res, { geometry: { coordinates: [ 0, 0 ], type: 'Point' }, id: 1, properties: { 'carmen:center': [ 0, 0 ], 'carmen:text': 'main street', 'carmen:zxy': [ '6/32/32' ] }, type: 'Feature' });
+        q.end();
     });
 
-    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
-        t.throws(function(t) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(q) {
+        q.throws(() => {
             indexdocs.standardize({
                 id: 1,
                 type: 'Feature',
@@ -94,11 +94,11 @@ tape('indexdocs.standardize', function(t) {
             }, 6, {});
         }, /carmen:addressnumber must be MultiPoint or GeometryCollection/);
 
-        t.end();
+        q.end();
     });
 
-    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(t) {
-        t.throws(function(t) {
+    t.test('indexdocs.standardize - Must be MultiPoint or GeometryCollection', function(q) {
+        q.throws(() => {
             indexdocs.standardize({
                 id: 1,
                 type: 'Feature',
@@ -114,11 +114,11 @@ tape('indexdocs.standardize', function(t) {
             }, 6, {});
         }, /carmen:addressnumber must be MultiPoint or GeometryCollection/);
 
-        t.end();
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(t) {
-        t.throws(function() {
+    t.test('indexdocs.standardize - carmen:addressnumber parallel arrays must equal', function(q) {
+        q.throws(() => {
             indexdocs.standardize({
                 id: 1,
                 type: 'Feature',
@@ -134,10 +134,10 @@ tape('indexdocs.standardize', function(t) {
             }, 6, {});
         }, /carmen:addressnumber\[i\] array must be equal to geometry.geometries\[i\] array/);
 
-        t.end();
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:addressnumber MultiPoint => GeometryCollection', function(q) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -152,11 +152,11 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[[9]],"carmen:zxy":["6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
-        t.end();
+        q.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[[9]],"carmen:zxy":["6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:addressnumber lowercased', function(t) {
+    t.test('indexdocs.standardize - carmen:addressnumber lowercased', function(q) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -171,12 +171,12 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[['9a']],"carmen:zxy":["6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
-        t.end();
+        q.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:addressnumber":[['9a']],"carmen:zxy":["6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0]]}]}});
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype invalid', function(t) {
-        t.throws(function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype invalid', function(q) {
+        q.throws(function(t) {
             indexdocs.standardize({
                 id: 1,
                 type: 'Feature',
@@ -192,10 +192,10 @@ tape('indexdocs.standardize', function(t) {
             }, 6, {});
         }, /ITP results must be a LineString, MultiLineString, or GeometryCollection/);
 
-        t.end();
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype LineString => GeometryCollection', function(q) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -216,11 +216,11 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
-        t.end();
+        q.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(t) {
+    t.test('indexdocs.standardize - carmen:rangetype MultiLineString => GeometryCollection', function(q) {
         var res = indexdocs.standardize({
             id: 1,
             type: 'Feature',
@@ -241,11 +241,11 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
-        t.end();
+        q.deepEquals(res, {"id":1,"type":"Feature","properties":{"carmen:text":"main street","carmen:center":[0,0],"carmen:rangetype":"tiger","carmen:parityl":[["E"]],"carmen:parityr":[["O"]],"carmen:lfromhn":[["2"]],"carmen:ltohn":[["100"]],"carmen:rfromhn":[["1"]],"carmen:rtohn":[["101"]],"carmen:zxy":["6/32/31","6/32/32"]},"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiLineString","coordinates":[[[0,0],[1,1]]]}]}});
+        q.end();
     });
 
-    t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(t) {
+    t.test('indexdocs.standardize - carmen:zxy exceeds 10000 covers', function(q) {
         // Build a zxy list with covers of varying distance from center.
         var central = ['6/32/32','6/33/33','6/31/31','6/32/30','6/30/32'];
         var covers = [];
@@ -269,11 +269,11 @@ tape('indexdocs.standardize', function(t) {
             }
         }, 6, {});
 
-        t.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
+        q.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
         central.forEach(function(cover) {
             t.deepEqual(res.properties['carmen:zxy'].filter(function(zxy) { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
         });
-        t.end();
+        q.end();
     });
 
     t.end();
@@ -289,12 +289,12 @@ tape('indexdocs.verifyCenter', function(t) {
 });
 
 tape('indexdocs.runChecks', function(t) {
-    t.throws(function(t) {
+    t.throws(() => {
         indexdocs.runChecks({});
     }, /doc has no id/);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks({
+    t.throws(() => {
+        indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {},
@@ -302,17 +302,17 @@ tape('indexdocs.runChecks', function(t) {
                 type: 'Point',
                 coordinates: [0,0]
             }
-        }));
+        });
     }, /doc has no carmen:text on id:1/);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks({
+    t.throws(() => {
+        indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
                 'carmen:text':'Main Street'
             }
-        }));
+        });
     }, /"geometry" member required on id:1/);
 
     //GeometryCollection with a single geometry is caught and not thrown from GeoJSONHint
@@ -333,8 +333,8 @@ tape('indexdocs.runChecks', function(t) {
         }
     }), undefined);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks({
+    t.throws(() => {
+        indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
@@ -342,14 +342,14 @@ tape('indexdocs.runChecks', function(t) {
                 'carmen:center':[0,0]
             },
             geometry: { type: 'Polygon', coordinates: [new Array(60e3)] }
-        }, 12));
+        }, 12);
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
     var coords = [Array.apply(null, Array(50001)).map(function(ele, i) {return [1.1 + 0.001 * i,1.1]})]
     coords[0].push([1.1,1.1]);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks(rewind({
+    t.throws(() => {
+        indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
@@ -357,11 +357,11 @@ tape('indexdocs.runChecks', function(t) {
                 'carmen:center':[0,0]
             },
             geometry: { type: 'Polygon', coordinates: coords }
-        }), 12));
+        }), 12);
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks({
+    t.throws(() => {
+        indexdocs.runChecks({
             id:1,
             type: 'Feature',
             properties: {
@@ -369,11 +369,11 @@ tape('indexdocs.runChecks', function(t) {
                 'carmen:center':[0,0]
             },
             geometry: { type: 'MultiPolygon', coordinates: [[new Array(30e3)],[new Array(30e3)]] }
-        }, 12));
+        }, 12);
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
-    t.throws(function(t) {
-        t.equal(indexdocs.runChecks(rewind({
+    t.throws(() => {
+        indexdocs.runChecks(rewind({
             id:1,
             type: 'Feature',
             properties: {
@@ -387,7 +387,7 @@ tape('indexdocs.runChecks', function(t) {
                     coords
                 ]
             }
-        }), 12));
+        }), 12);
     }, /Polygons may not have more than 50k vertices. Simplify your polygons, or split the polygon into multiple parts on id:1/);
 
     t.equal(indexdocs.runChecks({
