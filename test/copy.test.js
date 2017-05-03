@@ -5,15 +5,14 @@ const docs = require('./fixtures/mem-docs.json');
 const test = require('tape');
 
 test('copy', (t) => {
-    var conf = {
+    const conf = {
         from: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, () => {}),
         to: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, () => {})
     };
-    var carmen = new Carmen(conf);
-    var zoom = 6;
+    const carmen = new Carmen(conf);
 
     t.test('update', (q) => {
-        index.update(conf.from, docs, { zoom: zoom }, (err) => {
+        index.update(conf.from, docs, { zoom: 6 }, (err) => {
             if (err) q.fail();
             index.store(conf.from, () => {
                 q.end();
@@ -36,7 +35,7 @@ test('copy', (t) => {
     t.test('copies', (q) => {
         carmen.copy(conf.from, conf.to, (err) => {
             q.ifError(err);
-            var memFixture = require('./fixtures/mem-' + conf.to._dictcache.properties.type + '.json');
+            const memFixture = require('./fixtures/mem-' + conf.to._dictcache.properties.type + '.json');
             q.deepEqual(JSON.stringify(conf.to.serialize()).length, JSON.stringify(memFixture).length);
             q.end();
         });

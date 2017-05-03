@@ -16,7 +16,7 @@ mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojso
 test('contextVector deflate', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -36,8 +36,8 @@ test('contextVector deflate', (t) => {
             }
         ]
     }), "data");
-    var buffer = zlib.deflateSync(vtile.getData());
-    var source = {
+    const buffer = zlib.deflateSync(vtile.getData());
+    let source = {
         getTile: (z, x, y, cb) => {
             return cb(null, buffer);
         },
@@ -78,7 +78,7 @@ test('contextVector deflate', (t) => {
 test('contextVector gzip', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -98,8 +98,8 @@ test('contextVector gzip', (t) => {
             }
         ]
     }), "data");
-    var buffer = zlib.gzipSync(vtile.getData());
-    var source = {
+    const buffer = zlib.gzipSync(vtile.getData());
+    let source = {
         getTile: (z, x, y, cb) => {
             return cb(null, buffer);
         },
@@ -140,7 +140,7 @@ test('contextVector gzip', (t) => {
 test('contextVector badbuffer', (t) => {
     context.getTile.cache.reset();
 
-    var source = {
+    let source = {
         getTile: (z,x,y,cb) => {
             return cb(null, new Buffer('lkzvjlkajsdf'));
         },
@@ -162,10 +162,10 @@ test('contextVector badbuffer', (t) => {
 test('contextVector empty VT buffer', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -187,10 +187,10 @@ test('contextVector empty VT buffer', (t) => {
 test('nearestPoints empty VT buffer', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -213,7 +213,7 @@ test('nearestPoints empty VT buffer', (t) => {
 test('nearestPoints scoreFilter', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -232,7 +232,7 @@ test('nearestPoints scoreFilter', (t) => {
 
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -253,8 +253,8 @@ test('nearestPoints scoreFilter', (t) => {
         context.nearestPoints(source, 0, 0, false, (err, data) => {
             t.ifError(err);
             t.equal(data.length, 2, 'got two features back');
-            for (var i = 0; i < 2; i++)
-                for (var j = 0; j < 2; j++)
+            for (let i = 0; i < 2; i++)
+                for (let j = 0; j < 2; j++)
                     t.equal(data[i][j], 0, 'coordinate ' + i + ',' + j + ' is zero');
             t.ok(data[0].hasOwnProperty('tmpid'), 'feature 0 has tmpid');
             t.ok(data[1].hasOwnProperty('tmpid'), 'feature 1 has tmpid');
@@ -275,7 +275,7 @@ test('nearestPoints scoreFilter', (t) => {
 test('contextVector ignores negative score', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -293,7 +293,7 @@ test('contextVector ignores negative score', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -316,7 +316,7 @@ test('contextVector ignores negative score', (t) => {
 test('contextVector only negative score', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -329,7 +329,7 @@ test('contextVector only negative score', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -352,7 +352,7 @@ test('contextVector only negative score', (t) => {
 test('contextVector matched negative score', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -365,7 +365,7 @@ test('contextVector matched negative score', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -388,7 +388,7 @@ test('contextVector matched negative score', (t) => {
 test('contextVector grabbed exclusive ID', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -406,7 +406,7 @@ test('contextVector grabbed exclusive ID', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -429,7 +429,7 @@ test('contextVector grabbed exclusive ID', (t) => {
 test('contextVector restricts distance', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     // o-----x <-- query
     // |\    |     the distance in this case is millions of miles
     // | \   |     (24364904ish)
@@ -449,7 +449,7 @@ test('contextVector restricts distance', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -478,7 +478,7 @@ test('contextVector restricts distance', (t) => {
     // |     |
     // +-----+
 
-    var geojson = {
+    let geojson = {
         "type": "FeatureCollection",
         "features": [
             {
@@ -493,11 +493,11 @@ test('contextVector restricts distance', (t) => {
             }
         ]
     };
-    var vtileA = new mapnik.VectorTile(0,0,0);
+    const vtileA = new mapnik.VectorTile(0,0,0);
     vtileA.addGeoJSON(JSON.stringify(geojson),"data");
 
     geojson.features.reverse();
-    var vtileB = new mapnik.VectorTile(0,0,0);
+    const vtileB = new mapnik.VectorTile(0,0,0);
     vtileB.addGeoJSON(JSON.stringify(geojson),"data");
 
     test('contextVector sorts ties A', (t) => {
@@ -505,7 +505,7 @@ test('contextVector restricts distance', (t) => {
 
         zlib.gzip(vtileA.getData(), (err, buffer) => {
             t.ifError(err);
-            var source = {
+            let source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -530,7 +530,7 @@ test('contextVector restricts distance', (t) => {
 
         zlib.gzip(vtileB.getData(), (err, buffer) => {
             t.ifError(err);
-            var source = {
+            let source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -555,7 +555,7 @@ test('contextVector restricts distance', (t) => {
 
         zlib.gzip(vtileB.getData(), (err, buffer) => {
             t.ifError(err);
-            var source = {
+            let source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -579,7 +579,7 @@ test('contextVector restricts distance', (t) => {
 test('contextVector caching', (t) => {
     context.getTile.cache.reset();
 
-    var vtile = new mapnik.VectorTile(0,0,0);
+    const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
         "type": "FeatureCollection",
         "features": [
@@ -592,7 +592,7 @@ test('contextVector caching', (t) => {
     }),"data");
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        var source = {
+        let source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -604,7 +604,7 @@ test('contextVector caching', (t) => {
             id: 'testA',
             idx: 0
         };
-        var hit, miss;
+        let hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
         context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
@@ -626,13 +626,13 @@ test('contextVector caching', (t) => {
 });
 
 test('Context eliminates correct properties', (t) => {
-    var conf = {
+    const conf = {
         country: new mem({ maxzoom:6 }, () => {}),
         region: new mem({maxzoom: 6 }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
-    var country = {
+    let country = {
         id: 1,
         properties: {
             'carmen:text': 'united states',
@@ -647,7 +647,7 @@ test('Context eliminates correct properties', (t) => {
             coordinates: [0,0]
         }
     };
-    var region = {
+    let region = {
         id: 2,
         properties: {
             'carmen:text': 'maine',
@@ -660,7 +660,7 @@ test('Context eliminates correct properties', (t) => {
         }
     };
 
-    var q = queue(1);
+    const q = queue(1);
     q.defer((cb) => { queueFeature(conf.country, country, cb); });
     q.defer((cb) => { queueFeature(conf.region, region, cb); });
     q.defer((cb) => { buildQueued(conf.country, cb); });
@@ -669,7 +669,7 @@ test('Context eliminates correct properties', (t) => {
         c._open(() => {
             context(c, [0, 0], { full: false }, (err, contexts) => {
                 t.ifError(err);
-                var contextObj = contexts.pop();
+                let contextObj = contexts.pop();
                 t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
                 contextObj = contexts.pop();
                 t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
