@@ -51,8 +51,8 @@ test('index - streaming interface', (t) => {
     t.test('open carmens', (t) => {
         var q = queue();
         Object.keys(files).forEach((key) => {
-            q.defer(function(key, callback) {
-                merge.getOutputConf(files[key], { maxzoom: 6, geocoder_languages: ['zh'] }, function(_oc) {
+            q.defer((key, callback) => {
+                merge.getOutputConf(files[key], { maxzoom: 6, geocoder_languages: ['zh'] }, (_oc) => {
                     confs[key] = {country: _oc.to};
                     carmens[key] = new Carmen(confs[key]);
                     callback();
@@ -136,9 +136,9 @@ test('index - streaming interface', (t) => {
     });
 
     t.test('ensure geocode of a term that occurs in both indexes produces the same results', (q) => {
-        carmens.C.geocode('Republic', {}, function(err, resultC) {
+        carmens.C.geocode('Republic', {}, (err, resultC) => {
             t.ifError(err, "error");
-            carmens.D.geocode('Republic', {}, function(err, resultD) {
+            carmens.D.geocode('Republic', {}, (err, resultD) => {
                 t.ifError(err, "error");
                 t.ok(de(resultC, resultD), 'geocoding "Republic" produces identical results in merged and complete index');
                 q.end();

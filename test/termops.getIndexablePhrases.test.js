@@ -40,7 +40,7 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
     freq[termops.encodeTerm(tokens[2])] = [100];
     freq[termops.encodeTerm(tokens[3])] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases(tokens, freq).map(function(p) {
+    t.deepEqual(termops.getIndexablePhrases(tokens, freq).map((p) => {
         return (p.relev) + '-1-' + p.text;
     }), [
         '1-1-jose de la casa',

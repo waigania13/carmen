@@ -157,9 +157,9 @@ test('index - streaming interface', (t) => {
     });
 
     t.test('ensure geocode of a term that occurs in both indexes produces the same results', (q) => {
-        carmenC.geocode('Republic', {}, function(err, resultC) {
+        carmenC.geocode('Republic', {}, (err, resultC) => {
             t.ifError(err, "error");
-            carmenD.geocode('Republic', {}, function(err, resultD) {
+            carmenD.geocode('Republic', {}, (err, resultD) => {
                 t.ifError(err, "error");
                 t.ok(de(resultC, resultD), 'geocoding "Republic" produces identical results in merged and complete index');
                 q.end();
@@ -177,10 +177,10 @@ test('index - streaming interface', (t) => {
         q.end();
     });
 
-    ["freq", "grid"].forEach(function(type) {
+    ["freq", "grid"].forEach((type) => {
         t.test('ensure merged index ' + type + ' and original ' + type + ' are 98 percent similar', (q) => {
             var stringify = (key) => {
-                return key[0] + "-" + (key[1] ? key[1].map(function(k) { return "" + k; }).sort().join("-") : "null");
+                return key[0] + "-" + (key[1] ? key[1].map((k) => { return "" + k; }).sort().join("-") : "null");
             }
             var cSet = new Set(carmenC.indexes.country._geocoder[type].list().map(stringify));
             var dSet = new Set(carmenD.indexes.country._geocoder[type].list().map(stringify));

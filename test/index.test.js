@@ -156,7 +156,7 @@ test('index.update freq', (t) => {
     });
     t.test('indexes doc with geometry and no carmen:center', (q) => {
         var doc = { id:1, type: 'Feature', properties: { 'carmen:text': 'main st' }, geometry:{ type:'Point', coordinates: [-75.598211,38.367333]}};
-        index.update(conf.to, [doc], { zoom: 6 }, function(err, res, too) {
+        index.update(conf.to, [doc], { zoom: 6 }, (err, res, too) => {
             q.ok(doc.properties['carmen:center'], 'carmen:center has been set');
             q.end();
         });
@@ -213,7 +213,7 @@ test('index', (t) => {
         var monotonic = true;
         var output = [];
         var iterator = conf.to.geocoderDataIterator('freq');
-        var next = function(err, n) {
+        var next = (err, n) => {
             q.ifError(err);
             if (!n.done) {
                 output.push(n.value.shard);

@@ -270,8 +270,8 @@ tape('indexdocs.standardize', (t) => {
         }, 6, {});
 
         q.deepEqual(res.properties['carmen:zxy'].length, 10000, 'truncates carmen:zxy to 10000');
-        central.forEach(function(cover) {
-            t.deepEqual(res.properties['carmen:zxy'].filter(function(zxy) { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
+        central.forEach((cover) => {
+            t.deepEqual(res.properties['carmen:zxy'].filter((zxy) => { return zxy === cover; }).length, 100, 'sort preserves covers closest to center: ' + cover);
         });
         q.end();
     });
@@ -345,7 +345,7 @@ tape('indexdocs.runChecks', (t) => {
         }, 12);
     }, /a number was found where a coordinate array should have been found: this needs to be nested more deeply on id:1/);
 
-    var coords = [Array.apply(null, Array(50001)).map(function(ele, i) {return [1.1 + 0.001 * i,1.1]})]
+    var coords = [Array.apply(null, Array(50001)).map((ele, i) => {return [1.1 + 0.001 * i,1.1]})]
     coords[0].push([1.1,1.1]);
 
     t.throws(() => {
