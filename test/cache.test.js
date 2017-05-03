@@ -1,81 +1,81 @@
-var Cache = require('../lib/util/cxxcache').MemoryCache;
-var RocksDBCache = require('../lib/util/cxxcache').RocksDBCache;
-var test = require('tape');
-var fs = require('fs');
+const Cache = require('../lib/util/cxxcache').MemoryCache;
+const RocksDBCache = require('../lib/util/cxxcache').RocksDBCache;
+const test = require('tape');
+const fs = require('fs');
 
-var tmpdir = require('os').tmpdir() + "/temp." + Math.random().toString(36).substr(2, 5);
+const tmpdir = require('os').tmpdir() + "/temp." + Math.random().toString(36).substr(2, 5);
 fs.mkdirSync(tmpdir);
-var tmpidx = 0;
-var tmpfile = function() { return tmpdir + "/" + (tmpidx++) + ".dat"; };
+let tmpidx = 0;
+const tmpfile = () => { return tmpdir + "/" + (tmpidx++) + ".dat"; };
 
-var sortedInverse = function(arr) { return [].concat(arr).sort(function(a, b) { return b - a; })};
+const sortedInverse = (arr) => { return [].concat(arr).sort((a, b) => { return b - a; })};
 
-test('#get', function(r) {
-    var cache = new Cache('a');
+test('#get', (t) => {
+    const cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    r.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
-    r.throws(function() { cache.get(); }, Error, 'throws on misuse');
-    r.end();
+    t.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
+    t.throws(function() { cache.get(); }, Error, 'throws on misuse');
+    t.end();
 });
 
-test('#list', function(s) {
-    var cache = new Cache('a');
+test('#list', (t) => {
+    const cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    s.deepEqual([ [ '5', null ] ], cache.list());
-    s.end();
+    t.deepEqual([ [ '5', null ] ], cache.list());
+    t.end();
 });
 
-test('#get', function(s) {
-    var cache = new Cache('a');
+test('#get', (t) => {
+    const cache = new Cache('a');
     cache.set('5', [0,1,2]);
-    s.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
-    s.equal(undefined, cache._get('9'));
-    s.end();
+    t.deepEqual(sortedInverse([0, 1, 2]), cache.get('5'));
+    t.equal(undefined, cache._get('9'));
+    t.end();
 });
 
-test('#pack', function(s) {
-    var cache = new Cache('a');
+test('#pack', (t) => {
+    const cache = new Cache('a');
     cache.set('5', [0,1,2]);
     //s.deepEqual(2065, cache.pack(34566).length);
     // set should replace data
     cache.set('5', [0,1,2,4]);
     //s.deepEqual(2066, cache.pack(34566).length);
     // throw on invalid grid
-    s.throws(cache.set.bind(null, 'grid', '5', []), 'cache.set throws on empty grid value');
+    t.throws(cache.set.bind(null, 'grid', '5', []), 'cache.set throws on empty grid value');
     // now test packing data created via load
-    var packer = new Cache('a');
-    var array = [];
+    const packer = new Cache('a');
+    const array = [];
     for (var i=0;i<10000;++i) {
         array.push(0);
     }
     packer.set('5', array);
-    var packed = tmpfile();
+    const packed = tmpfile();
     packer.pack(packed);
-    s.ok(new RocksDBCache('a', packed));
-    s.end();
+    t.ok(new RocksDBCache('a', packed));
+    t.end();
 });
 
-test('#load', function(s) {
-    var cache = new Cache('a');
-    s.equal('a', cache.id);
+test('#load', (t) => {
+    const cache = new Cache('a');
+    t.equal('a', cache.id);
 
-    s.equal(undefined, cache.get('5'));
-    s.deepEqual([], cache.list());
+    t.equal(undefined, cache.get('5'));
+    t.deepEqual([], cache.list());
 
     cache.set('5', [0,1,2]);
-    s.deepEqual(sortedInverse([0,1,2]), cache.get('5'));
-    s.deepEqual([ [ '5', null ] ], cache.list());
+    t.deepEqual(sortedInverse([0,1,2]), cache.get('5'));
+    t.deepEqual([ [ '5', null ] ], cache.list());
 
     cache.set('21', [5,6]);
-    s.deepEqual(sortedInverse([5,6]), cache.get('21'));
-    s.deepEqual([ [ '21', null ], [ '5', null ] ], cache.list(), 'keys in cache');
+    t.deepEqual(sortedInverse([5,6]), cache.get('21'));
+    t.deepEqual([ [ '21', null ], [ '5', null ] ], cache.list(), 'keys in cache');
 
     // cache A serializes data, cache B loads serialized data.
-    var pack = tmpfile();
+    const pack = tmpfile();
     cache.pack(pack);
-    var loader = new RocksDBCache('b', pack);
-    s.deepEqual(sortedInverse([6,5]), loader.get('21'));
-    s.deepEqual([ [ '21', null ], [ '5', null ] ], loader.list(), 'keys in cache');
-    s.end();
+    const loader = new RocksDBCache('b', pack);
+    t.deepEqual(sortedInverse([6,5]), loader.get('21'));
+    t.deepEqual([ [ '21', null ], [ '5', null ] ], loader.list(), 'keys in cache');
+    t.end();
 });
 
