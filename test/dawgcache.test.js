@@ -20,8 +20,8 @@ tape('dump/load', (t) => {
         t.ok(zdata.length < 200e3, 'gzipped dictcache < 200k');
         zlib.gunzip(zdata, (err, data) => {
             t.ifError(err);
-            var loaded = new DawgCache(data);
-            for (var i = 1; i <= 4; i++) {
+            let loaded = new DawgCache(data);
+            for (let i = 1; i <= 4; i++) {
                 t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
             }
             t.equal(loaded.hasPhrase("a5", false), false, 'not a5');

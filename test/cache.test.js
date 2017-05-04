@@ -45,7 +45,7 @@ test('#pack', (t) => {
     // now test packing data created via load
     const packer = new Cache('a');
     const array = [];
-    for (var i=0;i<10000;++i) {
+    for (let i=0;i<10000;++i) {
         array.push(0);
     }
     packer.set('5', array);
