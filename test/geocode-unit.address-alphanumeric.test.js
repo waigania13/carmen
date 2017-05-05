@@ -40,9 +40,66 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
+//Use addressnumber query position as a tiebreaker when applic.
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({maxzoom: 14, geocoder_address: 1}, function() {})
+    };
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
+            id:1,
+            properties: {
+                'carmen:text': 'WASHINGTON STREET',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['70', '72', '74']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('index address', (t) => {
+        let address = {
+            id:2,
+            properties: {
+                'carmen:text': 'WASHINGTON STREET',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': ['500', '502', '504']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0],[0,0],[0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+    tape('build queued features', (t) => {
+        var q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('test address index with double number', (t) => {
+        c.geocode('70 WASHINGTON STREET #501', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found: 70 WASHINGTON STREET');
+            t.equals(res.features[0].relevance, 0.49);
+            t.end();
+        });
+    });
+})();
+
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
     };
     const c = new Carmen(conf);
     tape('index alphanum address', (t) => {
