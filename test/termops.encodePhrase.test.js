@@ -1,86 +1,86 @@
-var termops = require('../lib/util/termops');
-var uniq = require('../lib/util/uniq');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const uniq = require('../lib/util/uniq');
+const test = require('tape');
 
-test('termops.encodePhrase clustering', function(assert) {
-    var sets = [
+test('termops.encodePhrase clustering', (t) => {
+    let sets = [
         ['apples', 'application', 'apply', 'appears', 'appomattox'],
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
         ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
     ];
-    sets.forEach(function(set) {
-        var encoded = set.map(function(text) { return termops.encodePhrase(text); });
-        assert.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
+    sets.forEach((set) => {
+        let encoded = set.map((text) => { return termops.encodePhrase(text); });
+        t.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
     });
-    assert.end();
+    t.end();
 });
 
-test('termops.encodePhrase', function(assert) {
-    var a;
+test('termops.encodePhrase', (t) => {
+    let a;
 
     a = termops.encodePhrase('main');
-    assert.deepEqual(a, 'main', 'main');
+    t.deepEqual(a, 'main', 'main');
 
     a = termops.encodePhrase('main', true);
-    assert.deepEqual(a, 'main', 'main (skip)');
+    t.deepEqual(a, 'main', 'main (skip)');
 
     a = termops.encodePhrase('main st');
-    assert.deepEqual(a, 'main st', 'main st');
+    t.deepEqual(a, 'main st', 'main st');
 
     a = termops.encodePhrase('main st', true);
-    assert.deepEqual(a, 'main st', 'main st (skip)');
+    t.deepEqual(a, 'main st', 'main st (skip)');
 
     a = termops.encodePhrase(['main','st']);
-    assert.deepEqual(a, 'main st', 'main st (array)');
+    t.deepEqual(a, 'main st', 'main st (array)');
 
     a = termops.encodePhrase('lazy dog');
-    assert.deepEqual(a, 'lazy dog', 'lazy dog')
+    t.deepEqual(a, 'lazy dog', 'lazy dog')
 
     a = termops.encodePhrase('lazy dog', true);
-    assert.deepEqual(a, 'lazy dog', 'lazy dog (skip)')
+    t.deepEqual(a, 'lazy dog', 'lazy dog (skip)')
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
-    assert.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase');
+    t.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase');
 
     a = termops.encodePhrase('the quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase (skip)');
+    t.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase (skip)');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
-    assert.deepEqual(a, '京都市', '京都市');
+    t.deepEqual(a, '京都市', '京都市');
 
     a = termops.encodePhrase('zjing du shi', true);
-    assert.deepEqual(a, 'zjing du shi', '京都市 (skip)');
+    t.deepEqual(a, 'zjing du shi', '京都市 (skip)');
 
     a = termops.encodePhrase('jing du shi');
-    assert.deepEqual(a, 'jing du shi', 'jing du shi != 京都市');
+    t.deepEqual(a, 'jing du shi', 'jing du shi != 京都市');
 
     // known examples of fnv1a phrase collisions
     // these will be datapoints for decolliding strategies elsewhere...
 
     // no longer a collision in 52-bit fnv1a
-    // assert.deepEqual(
+    // t.deepEqual(
     //     termops.encodePhrase('av francisco de aguirre # la serena'),
     //     termops.encodePhrase('# r ademar da silva neiva'),
     //     'known collisions: #1'
     // );
 
-    assert.end();
+    t.end();
 });
 
-test('termops.encodePhrase collisions', function(assert) {
-    var texts = 0;
-    var sample = 1e6;
-    var ids = {};
-    var collisions = [];
+test('termops.encodePhrase collisions', (t) => {
+    let texts = 0;
+    let sample = 1e6;
+    let ids = {};
+    let collisions = [];
     while (texts < sample) {
-        var text = Math.random().toString(36);
-        var id = termops.encodePhrase(text);
+        let text = Math.random().toString(36);
+        let id = termops.encodePhrase(text);
 
         if (id >= Math.pow(2,52)) {
-            assert.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
+            t.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
         } else if (id < 0) {
-            assert.fail('Phrase ID < 0: ' + text + ' ' + id);
+            t.fail('Phrase ID < 0: ' + text + ' ' + id);
         }
 
         if (ids[id] === text) {
@@ -92,9 +92,9 @@ test('termops.encodePhrase collisions', function(assert) {
         }
         texts++;
     }
-    var rate = (collisions.length/sample);
-    var thresh = 1/1e6;
-    assert.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
-    assert.end();
+    let rate = (collisions.length/sample);
+    let thresh = 1/1e6;
+    t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
+    t.end();
 });
 

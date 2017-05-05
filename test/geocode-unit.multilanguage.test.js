@@ -1,29 +1,29 @@
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var context = require('../lib/context');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const context = require('../lib/context');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         country: new mem({
             maxzoom:6,
             geocoder_name: 'country'
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom:6,
             geocoder_name: 'place',
             geocoder_format_es: '{place._name} {country._name}',
             geocoder_format_ja: '{country._name} {place._name}'
-        }, function() {})
+        }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
-    tape('index country', function(t) {
-        var country = {
+    tape('index country', (t) => {
+        let country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -45,8 +45,8 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
 
-    tape('index place', function(t) {
-        var place = {
+    tape('index place', (t) => {
+        let place = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -68,26 +68,26 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
 
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
 
-    tape('paris ?language=en,es,bogus', function(assert) {
-        c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, function(err, res) {
-            assert.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
-            assert.equal(err && err.code, 'EINVALID');
-            assert.end();
+    tape('paris ?language=en,es,bogus', (t) => {
+        c.geocode('paris', { limit_verify:1, language: 'en,es,bogus' }, (err, res) => {
+            t.equal(err && err.toString(), 'Error: \'bogus\' is not a valid language code');
+            t.equal(err && err.code, 'EINVALID');
+            t.end();
         });
     });
 
-    tape('paris ?language=en,es,ja', function(t) {
-        c.geocode('paris', { limit_verify:1, language: 'en,es,ja' }, function(err, res) {
+    tape('paris ?language=en,es,ja', (t) => {
+        c.geocode('paris', { limit_verify:1, language: 'en,es,ja' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].id, 'place.1');
 
@@ -123,16 +123,16 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('error handling ?language=20+', function(t) {
-        c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, function(err, res) {
+    tape('error handling ?language=20+', (t) => {
+        c.geocode('paris', { limit_verify:1, language: 'ab,af,ak,sq,am,ar,an,hy,as,av,ae,ay,az,ba,bm,eu,be,bn,bh,bi,bo,bs' }, (err, res) => {
             t.equal(err && err.toString(), 'Error: options.language should be a list of no more than 20 languages');
             t.equal(err && err.code, 'EINVALID');
             t.end();
         });
     });
 
-    tape('error handling ?language=en,en', function(t) {
-        c.geocode('paris', { limit_verify:1, language: 'en,en' }, function(err, res) {
+    tape('error handling ?language=en,en', (t) => {
+        c.geocode('paris', { limit_verify:1, language: 'en,en' }, (err, res) => {
             t.equal(err && err.toString(), 'Error: options.language should be a list of unique language codes');
             t.equal(err && err.code, 'EINVALID');
             t.end();
@@ -141,7 +141,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

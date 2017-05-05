@@ -1,26 +1,26 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    place: new mem(null, function() {}),
+const conf = {
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    place: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1
-    }, function() {}),
-    poi: new mem(null, function() {})
+    }, () => {}),
+    poi: new mem(null, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
-    var country = {
+tape('index country', (t) => {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'United States',
@@ -31,8 +31,8 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
-    var region = {
+tape('index region', (t) => {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'North Carolina',
@@ -43,8 +43,8 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index place', function(t) {
-    var place = {
+tape('index place', (t) => {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Winston-Salem',
@@ -55,8 +55,8 @@ tape('index place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index address', function(t) {
-    var address = {
+tape('index address', (t) => {
+    let address = {
         id:1,
         properties: {
             'carmen:text':'Log Cabin Ln',
@@ -72,8 +72,8 @@ tape('index address', function(t) {
     queueFeature(conf.address, address, t.end);
 });
 
-tape('index poi', function(t) {
-    var poi = {
+tape('index poi', (t) => {
+    let poi = {
         id:2,
         properties: {
             'carmen:text':'United States',
@@ -83,18 +83,18 @@ tape('index poi', function(t) {
     };
     queueFeature(conf.poi, poi, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('Winston-Salem North Carolina', function(t) {
-    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, function(err, res) {
+tape('Winston-Salem North Carolina', (t) => {
+    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{place} {region}`")
         t.equal(res.features[0].relevance, 1, "Expected ascending order doesn't lower relevance");
@@ -102,8 +102,8 @@ tape('Winston-Salem North Carolina', function(t) {
     });
 });
 
-tape('North Carolina Winston-Salem', function(t) {
-    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, function(err, res) {
+tape('North Carolina Winston-Salem', (t) => {
+    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
         t.equal(res.features[0].relevance, 0.99, "Unexpected descending order lowers relevance");
@@ -111,8 +111,8 @@ tape('North Carolina Winston-Salem', function(t) {
     });
 });
 
-tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
-    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, function(err, res) {
+tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
+    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
         t.equal(res.features[0].relevance, 0.7666666666666666, "Mixed-up order lowers relevance");
@@ -120,8 +120,8 @@ tape('Log Cabin Ln North Carolina Winston-Salem', function(t) {
     });
 });
 
-tape('No descending order POIs', function(t) {
-    c.geocode('North Carolina United States', {limit_verify: 2}, function(err, res) {
+tape('No descending order POIs', (t) => {
+    c.geocode('North Carolina United States', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
         t.deepEqual(res.features[0].id, "region.1", "First result matches expected order");
@@ -129,8 +129,8 @@ tape('No descending order POIs', function(t) {
     });
 });
 
-tape('Descending Gappy', function(t) {
-    c.geocode('United States Winston-Salem', {limit_verify: 2}, function(err, res) {
+tape('Descending Gappy', (t) => {
+    c.geocode('United States Winston-Salem', {limit_verify: 2}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
         t.deepEqual(res.features[0].id, "poi.2", "First result matches expected order");
@@ -138,7 +138,7 @@ tape('Descending Gappy', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

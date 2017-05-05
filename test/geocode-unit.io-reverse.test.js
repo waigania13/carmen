@@ -1,29 +1,29 @@
 // Unit tests for reverse geocoding IO. Confirms type filters restrict loading
 // tiles for excluded indexes.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
-var conf = {
-    country: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    region: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    place: new mem({ maxzoom:6, timeout:10 }, function() {}),
-    street: new mem({ maxzoom:6, timeout:10, geocoder_address:1 }, function() {})
+const conf = {
+    country: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    region: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    place: new mem({ maxzoom:6, timeout:10 }, () => {}),
+    street: new mem({ maxzoom:6, timeout:10, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('ready', function(assert) {
-    c._open(assert.end);
+tape('ready', (t) => {
+    c._open(t.end);
 });
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -33,7 +33,7 @@ tape('index country', function(t) {
         }
     }, t.end);
 });
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id:1,
         properties: {
@@ -43,7 +43,7 @@ tape('index region', function(t) {
         }
     }, t.end);
 });
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -53,7 +53,7 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('index street', function(t) {
+tape('index street', (t) => {
     queueFeature(conf.street, {
         id:1,
         properties: {
@@ -63,10 +63,10 @@ tape('index street', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
@@ -85,9 +85,9 @@ function resetLogs() {
     conf.street._original.logs.getTile = [];
 }
 
-tape('reverse 0,0', function(t) {
+tape('reverse 0,0', (t) => {
     resetLogs();
-    c.geocode('0,0', {}, function(err, res) {
+    c.geocode('0,0', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'river rd, springfield, ohio, us');
         t.deepEqual(c.indexes.country._original.logs.getGeocoderData, ['feature,1'], 'country: loads 1 feature');
@@ -102,9 +102,9 @@ tape('reverse 0,0', function(t) {
     });
 });
 
-tape('reverse 0,0, types=region', function(t) {
+tape('reverse 0,0, types=region', (t) => {
     resetLogs();
-    c.geocode('0,0', { types:['region'] }, function(err, res) {
+    c.geocode('0,0', { types:['region'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'ohio, us');
         t.deepEqual(c.indexes.country._original.logs.getGeocoderData, ['feature,1'], 'country: loads 1 feature');
@@ -119,7 +119,7 @@ tape('reverse 0,0, types=region', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

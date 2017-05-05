@@ -1,21 +1,21 @@
 // byId debug geocoding queries
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem(null, function() {}),
-    place: new mem(null, function() {})
+const conf = {
+    country: new mem(null, () => {}),
+    place: new mem(null, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -26,7 +26,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -36,18 +36,18 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('query byid', function(t) {
-    c.geocode('country.1', {}, function(err, res) {
+tape('query byid', (t) => {
+    c.geocode('country.1', {}, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'china', 'found by id');
@@ -56,8 +56,8 @@ tape('query byid', function(t) {
     });
 });
 
-tape('query byid', function(t) {
-    c.geocode('place.1', {}, function(err, res) {
+tape('query byid', (t) => {
+    c.geocode('place.1', {}, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].place_name, 'chicago', 'found by id');
@@ -66,7 +66,7 @@ tape('query byid', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

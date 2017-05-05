@@ -1,21 +1,21 @@
 
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var context = require('../lib/context');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const context = require('../lib/context');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, function() {}),
-        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, function() {})
+(() => {
+    const conf = {
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index country', function(t) {
-        var country = {
+    const c = new Carmen(conf);
+    tape('index country', (t) => {
+        let country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -33,8 +33,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('index region', function(t) {
-        var region = {
+    tape('index region', (t) => {
+        let region = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -52,45 +52,45 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.region, region, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
-    tape('kansas america', function(assert) {
-        c.geocode('kansas america', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'Kansas United States');
-            assert.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
-            assert.equal(res.features[0].matching_place_name, 'Kansas America');
-            assert.end();
+    tape('kansas america', (t) => {
+        c.geocode('kansas america', { limit_verify:1 }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Kansas United States');
+            t.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
+            t.equal(res.features[0].matching_place_name, 'Kansas America');
+            t.end();
         });
     });
-    tape('america', function(assert) {
-        c.geocode('america', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'United States');
-            assert.equal(res.features[0].matching_text, 'America');
-            assert.equal(res.features[0].matching_place_name, 'America');
-            assert.end();
+    tape('america', (t) => {
+        c.geocode('america', { limit_verify:1 }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'United States');
+            t.equal(res.features[0].matching_text, 'America');
+            t.equal(res.features[0].matching_place_name, 'America');
+            t.end();
         });
     });
-    tape('jayhawks', function(assert) {
-        c.geocode('jayhawks', { limit_verify:1 }, function(err, res) {
-            assert.ifError(err);
-            assert.equal(res.features[0].place_name, 'Kansas United States');
-            assert.equal(res.features[0].matching_text, 'Jayhawks');
-            assert.equal(res.features[0].matching_place_name, 'Jayhawks United States');
-            assert.end();
+    tape('jayhawks', (t) => {
+        c.geocode('jayhawks', { limit_verify:1 }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, 'Kansas United States');
+            t.equal(res.features[0].matching_text, 'Jayhawks');
+            t.equal(res.features[0].matching_place_name, 'Jayhawks United States');
+            t.end();
         });
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

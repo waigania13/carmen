@@ -1,28 +1,27 @@
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var index = require('../lib/index');
-var docs = require('./fixtures/mem-docs.json');
-var test = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const index = require('../lib/index');
+const docs = require('./fixtures/mem-docs.json');
+const test = require('tape');
 
-test('copy', function(t) {
-    var conf = {
-        from: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, function() {}),
-        to: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, function() {})
+test('copy', (t) => {
+    const conf = {
+        from: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, () => {}),
+        to: new mem({ maxzoom: 6, geocoder_languages: ['zh'] }, () => {})
     };
-    var carmen = new Carmen(conf);
-    var zoom = 6;
+    const carmen = new Carmen(conf);
 
-    t.test('update', function(q) {
-        index.update(conf.from, docs, { zoom: zoom }, function(err) {
+    t.test('update', (q) => {
+        index.update(conf.from, docs, { zoom: 6 }, (err) => {
             if (err) q.fail();
-            index.store(conf.from, function() {
+            index.store(conf.from, () => {
                 q.end();
             });
         });
     });
 
-    t.test('blank', function(q) {
-        carmen.analyze(conf.to, function(err, stats) {
+    t.test('blank', (q) => {
+        carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             q.deepEqual(stats, {
                 byRelev: { '0.4': 0, '0.6': 0, '0.8': 0, '1.0': 0 },
@@ -33,17 +32,17 @@ test('copy', function(t) {
         });
     });
 
-    t.test('copies', function(q) {
-        carmen.copy(conf.from, conf.to, function(err) {
+    t.test('copies', (q) => {
+        carmen.copy(conf.from, conf.to, (err) => {
             q.ifError(err);
-            var memFixture = require('./fixtures/mem-' + conf.to._dictcache.properties.type + '.json');
+            const memFixture = require('./fixtures/mem-' + conf.to._dictcache.properties.type + '.json');
             q.deepEqual(JSON.stringify(conf.to.serialize()).length, JSON.stringify(memFixture).length);
             q.end();
         });
     });
 
-    t.test('analyzes copy', function(q) {
-        carmen.analyze(conf.to, function(err, stats) {
+    t.test('analyzes copy', (q) => {
+        carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             q.deepEqual(require('./fixtures/mem-analyze.json'), stats);
             q.end();

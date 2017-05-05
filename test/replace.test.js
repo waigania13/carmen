@@ -1,7 +1,7 @@
-var token = require('../lib/util/token');
-var test = require('tape');
+const token = require('../lib/util/token');
+const test = require('tape');
 
-var tokens = token.createReplacer({
+let tokens = token.createReplacer({
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -201,38 +201,38 @@ var tokens = token.createReplacer({
     "San Francisco": "sf"
 });
 
-test('token replacement', function(q) {
+test('token replacement', (q) => {
     q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
     q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
     q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
     q.end();
 });
 
-test('replacer', function(q) {
+test('replacer', (q) => {
 
     // deepEqual doesn't compare regex objects intelligently / accurately
     // so we have to roll our own :-&
-    var rep = token.createReplacer({
+    let rep = token.createReplacer({
         'Road': 'Rd',
         'Street': 'St'
     });
-    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false]);
-    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Rd$2', '$1St$2']);
-    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
+    q.deepEqual(rep.map((r) => { return r.named; }), [false, false]);
+    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Rd$2', '$1St$2']);
+    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
 
     rep = token.createReplacer({
         'Maréchal': 'Mal',
         'Monsieur': 'M'
     });
-    q.deepEqual(rep.map(function(r) { return r.named; }), [false, false, false]);
-    q.deepEqual(rep.map(function(r) { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
-    q.deepEqual(rep.map(function(r) { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
+    q.deepEqual(rep.map((r) => { return r.named; }), [false, false, false]);
+    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
+    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
 
     q.end();
 });
 
-test('named/numbered group replacement', function(q) {
-    var tokens = token.createReplacer({
+test('named/numbered group replacement', (q) => {
+    let tokens = token.createReplacer({
         "abc": "xyz",
         "(1\\d+)": "@@@$1@@@",
         "(?<number>2\\d+)": "###${number}###"
@@ -243,8 +243,8 @@ test('named/numbered group replacement', function(q) {
     q.end();
 });
 
-test('throw on mixed name/num replacement groups', function(q) {
-    q.throws(function() {
+test('throw on mixed name/num replacement groups', (q) => {
+    q.throws(() => {
         token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
     });
     q.end();

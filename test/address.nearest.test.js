@@ -1,7 +1,7 @@
-var addressItp = require('../lib/pure/addressitp');
-var test = require('tape');
+const addressItp = require('../lib/pure/addressitp');
+const test = require('tape');
 
-test('nearest', function(t) {
+test('nearest', (t) => {
     t.deepEqual(addressItp.forward({
         properties: {
             'carmen:rangetype':'tiger',
@@ -61,30 +61,30 @@ test('nearest', function(t) {
     t.end();
 });
 
-test('nearest stability 1', function(assert) {
-    var a = addressItp.forward(require('./fixtures/range-feature-1a.json'), 25);
-    var b = addressItp.forward(require('./fixtures/range-feature-1b.json'), 25);
-    assert.deepEqual(a, b);
-    assert.deepEqual(a.omitted, undefined);
-    assert.end();
+test('nearest stability 1', (t) => {
+    let a = addressItp.forward(require('./fixtures/range-feature-1a.json'), 25);
+    let b = addressItp.forward(require('./fixtures/range-feature-1b.json'), 25);
+    t.deepEqual(a, b);
+    t.deepEqual(a.omitted, undefined);
+    t.end();
 });
 
-test('nearest stability 2', function(assert) {
-    var a = addressItp.forward(require('./fixtures/range-feature-3a.json'), 625);
-    var b = addressItp.forward(require('./fixtures/range-feature-3b.json'), 625);
-    assert.deepEqual(a, b);
-    assert.deepEqual(a.coordinates, [-103.368341,20.665601]);
-    assert.deepEqual(a.omitted, undefined);
-    assert.deepEqual(b.omitted, undefined);
-    assert.end();
+test('nearest stability 2', (t) => {
+    let a = addressItp.forward(require('./fixtures/range-feature-3a.json'), 625);
+    let b = addressItp.forward(require('./fixtures/range-feature-3b.json'), 625);
+    t.deepEqual(a, b);
+    t.deepEqual(a.coordinates, [-103.368341,20.665601]);
+    t.deepEqual(a.omitted, undefined);
+    t.deepEqual(b.omitted, undefined);
+    t.end();
 });
 
-test('nearest stability 3', function(assert) {
-    var a = addressItp.forward(require('./fixtures/range-feature-2a.json'), 100);
-    var b = addressItp.forward(require('./fixtures/range-feature-2b.json'), 100);
-    assert.deepEqual(a, b);
-    assert.deepEqual(a.omitted, undefined);
-    assert.deepEqual(b.omitted, undefined);
-    assert.end();
+test('nearest stability 3', (t) => {
+    let a = addressItp.forward(require('./fixtures/range-feature-2a.json'), 100);
+    let b = addressItp.forward(require('./fixtures/range-feature-2b.json'), 100);
+    t.deepEqual(a, b);
+    t.deepEqual(a.omitted, undefined);
+    t.deepEqual(b.omitted, undefined);
+    t.end();
 });
 

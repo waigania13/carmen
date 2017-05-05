@@ -1,19 +1,19 @@
 // Confirm that translations are not included in the autocomplete index
 
-var tape = require('tape');
-var Carmen = require('..');
-var cxxcache = require('../lib/util/cxxcache');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const cxxcache = require('../lib/util/cxxcache');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var runTests = function(mode) {
-    var conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, function() {}) };
-    var c = new Carmen(conf);
-    tape('index first region', function(t) {
+const runTests = (mode) => {
+    const conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, () => {}) };
+    const c = new Carmen(conf);
+    tape('index first region', (t) => {
         queueFeature(conf.region, {
             id:1,
             properties: {
@@ -25,7 +25,7 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
-    tape('index second region', function(t) {
+    tape('index second region', (t) => {
         queueFeature(conf.region, {
             id:2,
             properties: {
@@ -37,10 +37,10 @@ var runTests = function(mode) {
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -50,11 +50,11 @@ var runTests = function(mode) {
     if (mode == "lazy") {
         // on the second run through the tests, force carmen-cache to use lazy
         // instead of in-memory caching
-        tape('reload cache', function(t) {
-            var cache = c.byidx[0]._geocoder;
+        tape('reload cache', (t) => {
+            let cache = c.byidx[0]._geocoder;
 
-            ['freq', 'grid'].forEach(function(type) {
-                var rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
+            ['freq', 'grid'].forEach((type) => {
+                const rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
                 cache[type].pack(rocksdb);
                 cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb)
@@ -64,8 +64,8 @@ var runTests = function(mode) {
         });
     }
 
-    tape('de', function(t) {
-        c.geocode('de', {}, function(err, res) {
+    tape('de', (t) => {
+        c.geocode('de', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -78,8 +78,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: en)', function(t) {
-        c.geocode('de', {language: 'en'}, function(err, res) {
+    tape('de (language: en)', (t) => {
+        c.geocode('de', {language: 'en'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -92,8 +92,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: hu)', function(t) {
-        c.geocode('de', {language: 'hu'}, function(err, res) {
+    tape('de (language: hu)', (t) => {
+        c.geocode('de', {language: 'hu'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -107,8 +107,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('de (language: hu-HU)', function(t) {
-        c.geocode('de', {language: 'hu-HU'}, function(err, res) {
+    tape('de (language: hu-HU)', (t) => {
+        c.geocode('de', {language: 'hu-HU'}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -122,8 +122,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('delaware', function(t) {
-        c.geocode('delaware', {}, function(err, res) {
+    tape('delaware', (t) => {
+        c.geocode('delaware', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -131,8 +131,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('sou', function(t) {
-        c.geocode('sou', {}, function(err, res) {
+    tape('sou', (t) => {
+        c.geocode('sou', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');
@@ -140,8 +140,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('south carolina', function(t) {
-        c.geocode('south carolina', {}, function(err, res) {
+    tape('south carolina', (t) => {
+        c.geocode('south carolina', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');
@@ -149,8 +149,8 @@ var runTests = function(mode) {
             t.end();
         });
     });
-    tape('del karolina', function(t) {
-        c.geocode('del karolina', {}, function(err, res) {
+    tape('del karolina', (t) => {
+        c.geocode('del karolina', {}, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 1, '1 result');
             t.deepEqual(res.features[0].place_name, 'South Carolina', 'found: South Carolina');
@@ -164,8 +164,8 @@ var runTests = function(mode) {
 
 runTests("memory_cache");
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

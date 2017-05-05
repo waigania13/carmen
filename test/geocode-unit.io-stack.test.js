@@ -1,32 +1,32 @@
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Setup includes the api-mem `timeout` option to simulate asynchronous I/O.
-var conf = {
-    place1: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    place2: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    place3: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, function() {}),
-    street1: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {}),
-    street2: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {}),
-    street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, function() {})
+const conf = {
+    place1: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    place2: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    place3: new mem({ maxzoom:6, geocoder_name: 'place', timeout:10 }, () => {}),
+    street1: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {}),
+    street2: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {}),
+    street3: new mem({ maxzoom:6, geocoder_name: 'street', timeout:10, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('ready', function(assert) {
-    c._open(assert.end);
+tape('ready', (t) => {
+    c._open(t.end);
 });
 
-[1,2,3].forEach(function(i) {
-    tape('index place ' + i, function(t) {
+[1,2,3].forEach((i) => {
+    tape('index place ' + i, (t) => {
         queueFeature(conf['place'+i], {
             id:1,
             properties: {
@@ -36,7 +36,7 @@ tape('ready', function(assert) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:1,
             properties: {
@@ -46,7 +46,7 @@ tape('ready', function(assert) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:2,
             properties: {
@@ -56,7 +56,7 @@ tape('ready', function(assert) {
             }
         }, t.end);
     });
-    tape('index street ' + i, function(t) {
+    tape('index street ' + i, (t) => {
         queueFeature(conf['street'+i], {
             id:3,
             properties: {
@@ -66,10 +66,10 @@ tape('ready', function(assert) {
             }
         }, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
@@ -79,7 +79,7 @@ tape('ready', function(assert) {
 
 function reset() {
     context.getTile.cache.reset();
-    [1,2,3].forEach(function(i) {
+    [1,2,3].forEach((i) => {
         conf['place'+i]._original.logs.getGeocoderData = [];
         conf['place'+i]._original.logs.getTile = [];
         conf['street'+i]._original.logs.getGeocoderData = [];
@@ -87,9 +87,9 @@ function reset() {
     });
 }
 
-tape('winding river rd springfield', function(t) {
+tape('winding river rd springfield', (t) => {
     reset();
-    c.geocode('winding river rd  springfield', {}, function(err, res) {
+    c.geocode('winding river rd  springfield', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'winding river rd, springfield');
         t.deepEqual(c.indexes.place1._original.logs.getGeocoderData, [], 'place1: loads nothing');
@@ -101,9 +101,9 @@ tape('winding river rd springfield', function(t) {
     });
 });
 
-tape('springfield', function(t) {
+tape('springfield', (t) => {
     reset();
-    c.geocode('springfield', {}, function(err, res) {
+    c.geocode('springfield', {}, (err, res) => {
         t.ifError(err);
 
         t.deepEqual(res.features.length, 2);
@@ -121,9 +121,9 @@ tape('springfield', function(t) {
     });
 });
 
-tape('springfield, types=place', function(t) {
+tape('springfield, types=place', (t) => {
     reset();
-    c.geocode('springfield', { types:['place'] }, function(err, res) {
+    c.geocode('springfield', { types:['place'] }, (err, res) => {
         t.ifError(err);
 
         t.deepEqual(res.features.length, 1);
@@ -139,7 +139,7 @@ tape('springfield, types=place', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

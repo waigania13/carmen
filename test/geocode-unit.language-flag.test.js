@@ -1,31 +1,31 @@
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var context = require('../lib/context');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const context = require('../lib/context');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, function() {}),
+(() => {
+    const conf = {
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region',
             geocoder_format_ru: '{country._name}, {region._name}',
             geocoder_format_zh: '{country._name}{region._name}',
             geocoder_format_es: '{region._name} {region._name} {country._name}',
             geocoder_languages: ['zh', 'zh_Hant', 'eo', 'ru']
-        }, function() {}),
-        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, function() {}),
-        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, function() {})
+        }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, () => {}),
+        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
-    tape('index country', function(t) {
-        var country = {
+    tape('index country', (t) => {
+        let country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -46,8 +46,8 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
 
-    tape('index city', function(t) {
-        var place = {
+    tape('index city', (t) => {
+        let place = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -67,8 +67,8 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
 
-    tape('index region', function(t) {
-        var region = {
+    tape('index region', (t) => {
+        let region = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -91,8 +91,8 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.region, region, t.end);
     });
 
-    tape('index place2', function(t) {
-        var place = {
+    tape('index place2', (t) => {
+        let place = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -112,18 +112,18 @@ var addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place2, place, t.end);
     });
 
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
 
-    tape('russia => Russian Federation', function(t) {
-        c.geocode('russia', { limit_verify:1 }, function(err, res) {
+    tape('russia => Russian Federation', (t) => {
+        c.geocode('russia', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
@@ -132,8 +132,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Severo-Za ==> Northwestern Federal District', function(t) {
-        c.geocode('Severo-Za', { limit_verify:1 }, function(err, res) {
+    tape('Severo-Za ==> Northwestern Federal District', (t) => {
+        c.geocode('Severo-Za', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
             t.equal(res.features[0].id, 'region.1');
@@ -143,8 +143,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Rossiyskaya ==> Russian Federation', function(t) {
-        c.geocode('Rossiyskaya', { limit_verify:1 }, function(err, res) {
+    tape('Rossiyskaya ==> Russian Federation', (t) => {
+        c.geocode('Rossiyskaya', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
@@ -154,8 +154,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Rossiyskaya Federatsiya => Russian Federation', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1 }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Russian Federation', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
@@ -164,8 +164,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Rossiyskaya Federatsiya => Российская Федерация - {language: "ru"}', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'ru' }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Российская Федерация - {language: "ru"}', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'ru' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Российская Федерация');
             t.equal(res.features[0].id, 'country.1');
@@ -176,8 +176,8 @@ var addFeature = require('../lib/util/addfeature'),
 
 
     // test that guessing works right
-    tape('Rossiyskaya Federatsiya => Российская Федерация - {language: "ru-RU"}', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'ru-RU' }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Российская Федерация - {language: "ru-RU"}', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'ru-RU' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Российская Федерация');
             t.equal(res.features[0].id, 'country.1');
@@ -187,8 +187,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // 'fake' is not a valid language code
-    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "fake"}', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'fake' }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "fake"}', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'fake' }, (err, res) => {
             t.ok(err);
             t.equal(err.message, '\'fake\' is not a valid language code');
             t.notOk(res);
@@ -197,8 +197,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // no value for 'es'
-    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "es"}', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'es' }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "es"}', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'es' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
@@ -208,8 +208,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // no value for 'fr'
-    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "fr"}', function(t) {
-        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'fr' }, function(err, res) {
+    tape('Rossiyskaya Federatsiya => Russian Federation - {language: "fr"}', (t) => {
+        c.geocode('Rossiyskaya Federatsiya', { limit_verify:1, language: 'fr' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
@@ -219,8 +219,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // fallback to ru on az
-    tape('Rossiyskaya => Russian Federation - {language: "az"}', function(t) {
-        c.geocode('Russian Federation', { limit_verify:1, language: 'az' }, function(err, res) {
+    tape('Rossiyskaya => Russian Federation - {language: "az"}', (t) => {
+        c.geocode('Russian Federation', { limit_verify:1, language: 'az' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Российская Федерация');
             t.equal(res.features[0].id, 'country.1');
@@ -230,8 +230,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // fallback to ru on bg-nonexistent
-    tape('Rossiyskaya => Russian Federation - {language: "bg-nonexistent"}', function(t) {
-        c.geocode('Russian Federation', { limit_verify:1, language: 'bg-nonexistent' }, function(err, res) {
+    tape('Rossiyskaya => Russian Federation - {language: "bg-nonexistent"}', (t) => {
+        c.geocode('Russian Federation', { limit_verify:1, language: 'bg-nonexistent' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Российская Федерация');
             t.equal(res.features[0].id, 'country.1');
@@ -241,8 +241,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // also 'translate' the context when available
-    tape('St Petersburg => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', function(t) {
-        c.geocode('St Petersburg', { language: 'ru'}, function(err, res) {
+    tape('St Petersburg => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', (t) => {
+        c.geocode('St Petersburg', { language: 'ru'}, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
             t.equal(res.features[0].id, 'place.1');
@@ -255,8 +255,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // test when hitting multiple indexes
-    tape('St Petersburg, Russia => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', function(t) {
-        c.geocode('St Petersburg, Russia', { language: 'ru'}, function(err, res) {
+    tape('St Petersburg, Russia => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', (t) => {
+        c.geocode('St Petersburg, Russia', { language: 'ru'}, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
             t.equal(res.features[0].id, 'place.1');
@@ -269,8 +269,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // no value for 'fr'
-    tape('St Petersberg => Saint Petersburg - {language: "fr"}', function(t) {
-        c.geocode('St Petersburg', { limit_verify:1, language: 'fr' }, function(err, res) {
+    tape('St Petersberg => Saint Petersburg - {language: "fr"}', (t) => {
+        c.geocode('St Petersburg', { limit_verify:1, language: 'fr' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Saint Petersburg, Northwestern Federal District, Russian Federation');
             t.equal(res.features[0].id, 'place.1');
@@ -283,8 +283,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // custom response format template
-    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
-        c.geocode('Northwestern', { limit_verify:1, language: 'ru' }, function(err, res) {
+    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', (t) => {
+        c.geocode('Northwestern', { limit_verify:1, language: 'ru' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Российская Федерация, Северо-Западный федеральный округ');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -294,8 +294,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // custom response format template -- should guess both correct language and correct template
-    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru-RU"}', function(t) {
-        c.geocode('Northwestern', { limit_verify:1, language: 'ru-RU' }, function(err, res) {
+    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru-RU"}', (t) => {
+        c.geocode('Northwestern', { limit_verify:1, language: 'ru-RU' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Российская Федерация, Северо-Западный федеральный округ');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -306,8 +306,8 @@ var addFeature = require('../lib/util/addfeature'),
 
     // if the response and the context do not have values in the language queried,
     // but do have a template for that language, use the default template.
-    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
-        c.geocode('Northwestern', { limit_verify:1, language: 'es' }, function(err, res) {
+    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', (t) => {
+        c.geocode('Northwestern', { limit_verify:1, language: 'es' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -319,8 +319,8 @@ var addFeature = require('../lib/util/addfeature'),
     // if the first response does not have values in the language queried,
     // but does have a template for that language, and there is a value in that language
     // in the context, use the localized template.
-    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', function(t) {
-        c.geocode('Saint Petersburg', { limit_verify:1, language: 'eo' }, function(err, res) {
+    tape('Northwestern Federal District => Российская Федерация, Северо-Западный федеральный округ - {language: "ru"}', (t) => {
+        c.geocode('Saint Petersburg', { limit_verify:1, language: 'eo' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Russian Federation Saint Petersburg !!!!');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -329,8 +329,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('西北部联邦管区 => Russian Federation西北部联邦管区', function(t) {
-        c.geocode('西北部联邦管区', { limit_verify:1, language: 'zh' }, function(err, res) {
+    tape('西北部联邦管区 => Russian Federation西北部联邦管区', (t) => {
+        c.geocode('西北部联邦管区', { limit_verify:1, language: 'zh' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Russian Federation西北部联邦管区');
             t.deepEqual(res.features[0].id, 'region.1');
@@ -339,8 +339,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Shenzhen => Shenzhen, Northwestern Federal District, Russian Federation', function(t) {
-        c.geocode('Shenzhen', { limit_verify:1, language: 'en' }, function(err, res) {
+    tape('Shenzhen => Shenzhen, Northwestern Federal District, Russian Federation', (t) => {
+        c.geocode('Shenzhen', { limit_verify:1, language: 'en' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Shenzhen, Northwestern Federal District, Russian Federation');
             t.deepEqual(res.features[0].id, 'place.2');
@@ -349,8 +349,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('Shenzhen => Russian Federation西北部联邦管区深圳市', function(t) {
-        c.geocode('Shenzhen', { limit_verify:1, language: 'zh' }, function(err, res) {
+    tape('Shenzhen => Russian Federation西北部联邦管区深圳市', (t) => {
+        c.geocode('Shenzhen', { limit_verify:1, language: 'zh' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Russian Federation西北部联邦管区深圳市');
             t.deepEqual(res.features[0].id, 'place.2');
@@ -359,8 +359,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 => Saint Petersburg, Northwestern Federal District, Russian Federation', function(t) {
-        c.geocode('0,0', { limit_verify:1, language: 'en' }, function(err, res) {
+    tape('0,0 => Saint Petersburg, Northwestern Federal District, Russian Federation', (t) => {
+        c.geocode('0,0', { limit_verify:1, language: 'en' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Saint Petersburg, Northwestern Federal District, Russian Federation');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -371,8 +371,8 @@ var addFeature = require('../lib/util/addfeature'),
 
     // if the most granular result (St Petersburg) doesn't have a template for the language,
     // use the default. Templates can go from specific -> general but not the other way around.
-    tape('0,0 => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', function(t) {
-        c.geocode('0,0', { limit_verify:1, language: 'zh' }, function(err, res) {
+    tape('0,0 => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', (t) => {
+        c.geocode('0,0', { limit_verify:1, language: 'zh' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Saint Petersburg, 西北部联邦管区, Russian Federation');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -383,8 +383,8 @@ var addFeature = require('../lib/util/addfeature'),
 
     // if the most granular result (St Petersburg) doesn't have a template for the language,
     // use the default. Templates can go from specific -> general but not the other way around.
-    tape('Saint Petersburg => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', function(t) {
-        c.geocode('Saint Petersburg', { limit_verify:1, language: 'zh' }, function(err, res) {
+    tape('Saint Petersburg => Saint Petersburg, 西北部联邦管区, Russian Federation - {language: "zh"}', (t) => {
+        c.geocode('Saint Petersburg', { limit_verify:1, language: 'zh' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'Saint Petersburg, 西北部联邦管区, Russian Federation');
             t.deepEqual(res.features[0].id, 'place.1');
@@ -394,8 +394,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     // test robustness against case and punctuation in the exact-match and fallback subtag case
-    tape('Saint Petersburg => Saint Petersburg, 西北部聯邦管區, Russian Federation - {language: "(zh[-_][Hh]ant|zh[-_][Tt][Ww])"}', function(t) {
-        var done = 0;
+    tape('Saint Petersburg => Saint Petersburg, 西北部聯邦管區, Russian Federation - {language: "(zh[-_][Hh]ant|zh[-_][Tt][Ww])"}', (t) => {
+        let done = 0;
         [
             'zh_Hant',
             'zh-Hant',
@@ -405,8 +405,8 @@ var addFeature = require('../lib/util/addfeature'),
             'zh-TW',
             'zh_tw',
             'zh-tw'
-        ].forEach(function(language) {
-            c.geocode('Saint Petersburg', { limit_verify:1, language: language }, function(err, res) {
+        ].forEach((language) => {
+            c.geocode('Saint Petersburg', { limit_verify:1, language: language }, (err, res) => {
                 t.ifError(err);
                 t.deepEqual(res.features[0].context[0].text, '西北部聯邦管區');
                 t.deepEqual(res.features[0].context[0].language, 'zh-Hant');
@@ -418,8 +418,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 
     //Is not above 0.5 relev so should fail.
-    tape('fake blah blah => [fail]', function(t) {
-        c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
+    tape('fake blah blah => [fail]', (t) => {
+        c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.notOk(res.features[0]);
             t.end();
@@ -428,7 +428,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

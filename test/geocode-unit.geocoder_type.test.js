@@ -1,20 +1,20 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require("d3-queue").queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require("d3-queue").queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
-        address:    new mem({maxzoom: 12, geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12}, function() {})
+(() => {
+    const conf = {
+        address:    new mem({maxzoom: 12, geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -29,8 +29,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
-        var poi = {
+    tape('index poi', (t) => {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -44,18 +44,18 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
 
-    tape('query on address but still returns poi due to index order', function(t) {
-        c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
+    tape('query on address but still returns poi due to index order', (t) => {
+        c.geocode('-77.04312264919281,38.91041215085371', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
             t.equals(res.features[0].relevance, 1);
@@ -63,16 +63,16 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('query on address with type poi', function(t) {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
+    tape('query on address with type poi', (t) => {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank, fake street', 'found POI');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
-    tape('query on poi with type address', function(t) {
-        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
+    tape('query on poi with type address', (t) => {
+        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
             t.equals(res.features[0].relevance, 1);
@@ -81,14 +81,14 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
+(() => {
+    const conf = {
+        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -103,8 +103,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
-        var poi = {
+    tape('index poi', (t) => {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -118,41 +118,41 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
-    tape('address query returns address', function(t) {
-        c.geocode('-77.04312264919281,38.91041215085371', {}, function(err, res) {
+    tape('address query returns address', (t) => {
+        c.geocode('-77.04312264919281,38.91041215085371', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '100 fake street', 'found address');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
-    tape('poi query returns poi', function(t) {
-        c.geocode('-77.04441547393799,38.909427030614665', {}, function(err, res) {
+    tape('poi query returns poi', (t) => {
+        c.geocode('-77.04441547393799,38.909427030614665', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'big bank', 'found POI');
             t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
-    tape('query on address with type poi', function(t) {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, function(err, res) {
+    tape('query on address with type poi', (t) => {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'big bank')
             t.end();
         });
     });
-    tape('query on poi with type address', function(t) {
-        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, function(err, res) {
+    tape('query on poi with type address', (t) => {
+        c.geocode('-77.04441547393799,38.909427030614665', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, '100 fake street');
@@ -161,14 +161,14 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, function() {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, function() {})
+(() => {
+    const conf = {
+        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
+        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -183,8 +183,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index poi', function(t) {
-        var poi = {
+    tape('index poi', (t) => {
+        let poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -198,25 +198,25 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
-    tape('return poi if type filtering removes address', function(t) {
-        c.geocode('-77.04320579767227,38.910435109001334', { types: ['poi'] }, function(err, res) {
+    tape('return poi if type filtering removes address', (t) => {
+        c.geocode('-77.04320579767227,38.910435109001334', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, 'big bank');
             t.end();
         });
     });
-    tape('return address if type filtering removes poi', function(t) {
-        c.geocode('-77.04312264919281,38.91041215085371', { types: ['address'] }, function(err, res) {
+    tape('return address if type filtering removes poi', (t) => {
+        c.geocode('-77.04312264919281,38.91041215085371', { types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
             t.equals(res.features[0].place_name, '100 fake street');
@@ -225,13 +225,13 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        place:    new mem({maxzoom: 12}, function() {})
+(() => {
+    const conf = {
+        place:    new mem({maxzoom: 12}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index place', function(t) {
-        var place = {
+    const c = new Carmen(conf);
+    tape('index place', (t) => {
+        let place = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -255,8 +255,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index place', function(t) {
-        var place = {
+    tape('index place', (t) => {
+        let place = {
             id:2,
             type: 'Feature',
             properties:  {
@@ -280,17 +280,17 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
-    tape('Overlapping places return closest centroid', function(t) {
-        c.geocode('-77.0378065109253,38.909836107628074', {}, function(err, res) {
+    tape('Overlapping places return closest centroid', (t) => {
+        c.geocode('-77.0378065109253,38.909836107628074', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Logan Circle', 'found Logan Circle');
             t.equals(res.features[0].relevance, 1);
@@ -300,8 +300,8 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

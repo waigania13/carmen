@@ -1,23 +1,23 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    address : new mem({maxzoom: 6}, function() {}),
-    poi : new mem({maxzoom: 6}, function() {})
+const conf = {
+    address : new mem({maxzoom: 6}, () => {}),
+    poi : new mem({maxzoom: 6}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index address', function(t) {
-    var docs = [];
-    var address;
+tape('index address', (t) => {
+    let docs = [];
+    let address;
 
-    for (var i=0; i<1; i++) {
+    for (let i=0; i<1; i++) {
         address = {
             id:1,
             type: 'Feature',
@@ -32,7 +32,7 @@ tape('index address', function(t) {
         };
         docs.push(address);
     }
-    for (var j=2; j<=103; j++) {
+    for (let j=2; j<=103; j++) {
         address = {
             id:2,
             type: 'Feature',
@@ -50,11 +50,11 @@ tape('index address', function(t) {
     queueFeature(conf.address, docs, t.end);
 });
 
-tape('index pois', function(t) {
-    var docs = [];
-    var poi;
+tape('index pois', (t) => {
+    let docs = [];
+    let poi;
 
-    for (var k=103; k<=104; k++) {
+    for (let k=103; k<=104; k++) {
         poi = {
             id:3,
             type: 'Feature',
@@ -73,25 +73,25 @@ tape('index pois', function(t) {
     queueFeature(conf.poi, docs, t.end);
 });
 
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    let q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('Search for Starbucks', function(t) {
-    c.geocode('starbucks lake view', {autocomplete: false, limit_verify: 2}, function(err, res) {
+tape('Search for Starbucks', (t) => {
+    c.geocode('starbucks lake view', {autocomplete: false, limit_verify: 2}, (err, res) => {
         t.equal(res.features[0].relevance, 1, 'stacked relevance');
         t.equal(res.features.length, 2, 'two features returned');
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

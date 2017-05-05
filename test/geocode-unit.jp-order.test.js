@@ -1,22 +1,22 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    place: new mem(null, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, function() {})
+const conf = {
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    place: new mem(null, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
-    var country = {
+tape('index country', (t) => {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'Japan',
@@ -27,8 +27,8 @@ tape('index country', function(t) {
     queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
-    var region = {
+tape('index region', (t) => {
+    let region = {
         id:2,
         properties: {
             'carmen:text':'和歌山県',
@@ -39,8 +39,8 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index place 1', function(t) {
-    var place = {
+tape('index place 1', (t) => {
+    let place = {
         id:3,
         properties: {
             'carmen:text':'岩出市',
@@ -51,8 +51,8 @@ tape('index place 1', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index address 1', function(t) {
-    var address = {
+tape('index address 1', (t) => {
+    let address = {
         id:4,
         properties: {
             'carmen:text':'中黒',
@@ -67,26 +67,26 @@ tape('index address 1', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('Check order, 岩出市中黒632', function(t) {
-    c.geocode('岩出市中黒632', { limit_verify: 1}, function(err, res) {
+tape('Check order, 岩出市中黒632', (t) => {
+    c.geocode('岩出市中黒632', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1, "Descending order doesn't lower relevance");
         t.end();
     });
 });
 
-tape('Check order, 632 中黒 岩出市', function(t) {
-    c.geocode('632 中黒 岩出市', { limit_verify: 1}, function(err, res) {
+tape('Check order, 632 中黒 岩出市', (t) => {
+    c.geocode('632 中黒 岩出市', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
         t.equal(res.features[0].relevance, 0.99, "Unexpected ascending lowers relevance")
@@ -94,8 +94,8 @@ tape('Check order, 632 中黒 岩出市', function(t) {
     });
 });
 
-tape('Check order, 632 中黒 Japan 岩出市', function(t) {
-    c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, function(err, res) {
+tape('Check order, 632 中黒 Japan 岩出市', (t) => {
+    c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].address, '632', "Gets correct address");
         t.equal(res.features[0].relevance, 0.8223333333333333, "Mixed-up order lowers relevance")
@@ -103,7 +103,7 @@ tape('Check order, 632 中黒 Japan 岩出市', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

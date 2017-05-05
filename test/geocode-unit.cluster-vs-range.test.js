@@ -1,22 +1,22 @@
 // Test that cluster results are prioritized over itp results when
 // present and otherwise equal.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+const conf = {
+    addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
 };
-var c = new Carmen(conf);
-tape('index address', function(t) {
-    var address = {
+const c = new Carmen(conf);
+tape('index address', (t) => {
+    let address = {
         id:1,
         properties: {
             'carmen:text': 'fake street',
@@ -30,8 +30,8 @@ tape('index address', function(t) {
     };
     queueFeature(conf.address, address, t.end);
 });
-tape('index addressitp', function(t) {
-    var addressitp = {
+tape('index addressitp', (t) => {
+    let addressitp = {
         id:1,
         properties: {
             'carmen:text': 'fake street',
@@ -52,17 +52,17 @@ tape('index addressitp', function(t) {
     };
     queueFeature(conf.addressitp, addressitp, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
-tape('test address query with address range', function(t) {
-    c.geocode('100 fake street', { limit_verify: 2 }, function(err, res) {
+tape('test address query with address range', (t) => {
+    c.geocode('100 fake street', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 0.99);
@@ -71,8 +71,8 @@ tape('test address query with address range', function(t) {
 });
 
 //Reverse geocode will return a pt since it is futher down in the stack than itp
-tape('test reverse address query with address range', function(t) {
-    c.geocode('0,0', { limit_verify: 2 }, function(err, res) {
+tape('test reverse address query with address range', (t) => {
+    c.geocode('0,0', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
         t.equals(res.features[0].relevance, 1);
@@ -80,7 +80,7 @@ tape('test reverse address query with address range', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
