@@ -1,22 +1,22 @@
 // Alphanumeric and hyphenated housenumbers
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 //Make sure that capital letters are lowercased on indexing to match input token
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index alphanum address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index alphanum address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -28,10 +28,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test address index for alphanumerics', function(t) {
-        c.geocode('9B FAKE STREET', { limit_verify: 1 }, function(err, res) {
+    tape('test address index for alphanumerics', (t) => {
+        c.geocode('9B FAKE STREET', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -40,13 +40,13 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index alphanum address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index alphanum address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -58,10 +58,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test address index for alphanumerics', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test address index for alphanumerics', (t) => {
+        c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -70,13 +70,13 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -88,10 +88,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test address query with alphanumeric', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test address query with alphanumeric', (t) => {
+        c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -100,13 +100,13 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -120,10 +120,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test alphanumeric address query with address range', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test alphanumeric address query with address range', (t) => {
+        c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -132,8 +132,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('test alphanumeric address query with invalid address number', function(t) {
-        c.geocode('9bc fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test alphanumeric address query with invalid address number', (t) => {
+        c.geocode('9bc fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
             t.ok((res.features[0].relevance < 0.6), 'appropriate relevance (9bc token should not be matched)');
@@ -143,13 +143,13 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -163,10 +163,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test alphanumeric address query with address range', function(t) {
-        c.geocode('9b fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test alphanumeric address query with address range', (t) => {
+        c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
             t.equals(res.features[0].relevance, 0.99);
@@ -175,8 +175,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('test alphanumeric address query with invalid address number', function(t) {
-        c.geocode('9bc fake street', { limit_verify: 1 }, function(err, res) {
+    tape('test alphanumeric address query with invalid address number', (t) => {
+        c.geocode('9bc fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.ok(res.features[0].place_name, 'fake street', 'found fake street feature');
             t.ok((res.features[0].relevance < 0.6), 'appropriate relevance (9bc token should not be matched)');
@@ -186,14 +186,14 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-(function() {
-    var conf = {
-        postcode: new mem({maxzoom: 6 }, function() {}),
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        postcode: new mem({maxzoom: 6 }, () => {}),
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index fake UK address range', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index fake UK address range', (t) => {
+        let address = {
             id: 1,
             properties: {
                 'carmen:text':'B77',
@@ -209,8 +209,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.address, address, t.end);
     });
-    tape('index fake UK postcode', function(t) {
-        var postcode = {
+    tape('index fake UK postcode', (t) => {
+        let postcode = {
             id: 2,
             properties: {
                 'carmen:text': 'B77 1AB',
@@ -220,34 +220,34 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.postcode, postcode, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
-    tape('test UK postcode not getting confused w/ address range', function(t) {
-        c.geocode('B77 1AB', { limit_verify: 10 }, function(err, res) {
+    tape('test UK postcode not getting confused w/ address range', (t) => {
+        c.geocode('B77 1AB', { limit_verify: 10 }, (err, res) => {
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
             t.equals(res.features[0].relevance, 0.99);
             t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
-            var addressInResultSet = res.features.some(function(feature) { return feature.id.split('.')[0] === 'address' });
+            let addressInResultSet = res.features.some((feature) => { return feature.id.split('.')[0] === 'address' });
             t.ok(!addressInResultSet, 'result set does not include address feature');
             t.end();
         });
     });
 })();
 
-(function() {
-    var conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+(() => {
+    const conf = {
+        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index address', function(t) {
-        var address = {
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
             id:1,
             properties: {
                 'carmen:text':'beach street',
@@ -261,10 +261,10 @@ var addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, function() { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
-    tape('test hyphenated address query with address range', function(t) {
-        c.geocode('23-414 beach street', { limit_verify: 1 }, function(err, res) {
+    tape('test hyphenated address query with address range', (t) => {
+        c.geocode('23-414 beach street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
             t.equals(res.features[0].relevance, 0.99);
@@ -273,7 +273,7 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

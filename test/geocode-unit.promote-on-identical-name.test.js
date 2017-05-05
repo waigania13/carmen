@@ -2,26 +2,26 @@
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    district: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    poi: new mem({ maxzoom: 14 }, function() {})
+const conf = {
+    country: new mem({ maxzoom: 6 }, () => {}),
+    region: new mem({ maxzoom: 6 }, () => {}),
+    district: new mem({ maxzoom: 6 }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    poi: new mem({ maxzoom: 14 }, () => {})
 };
 
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf.country, {
         id:1,
         properties: {
@@ -59,7 +59,7 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
+tape('index region', (t) => {
     queueFeature(conf.region, {
         id: 2,
         properties: {
@@ -98,7 +98,7 @@ tape('index region', function(t) {
 });
 
 
-tape('index place', function(t) {
+tape('index place', (t) => {
     queueFeature(conf.place, {
         id: 3,
         properties: {
@@ -136,7 +136,7 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('index poi', function(t) {
+tape('index poi', (t) => {
     queueFeature(conf.poi, {
         id:4,
         properties: {
@@ -152,48 +152,48 @@ tape('index poi', function(t) {
     }, t.end);
 });
 
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('let\'s find new york', function(t) {
-    c.geocode('new york usa', {}, function(err, res) {
+tape('let\'s find new york', (t) => {
+    c.geocode('new york usa', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.3');
         t.equal(res.features[0].relevance, 1);
         t.end();
     });
 });
 
-tape('ensure POI cannot win', function(t) {
-    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, function(err, res) {
+tape('ensure POI cannot win', (t) => {
+    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, (err, res) => {
         t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 
 
-var conf2 = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+const conf2 = {
+    country: new mem({ maxzoom: 6 }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {})
 };
-var c2 = new Carmen(conf2);
+const c2 = new Carmen(conf2);
 
-tape('index country', function(t) {
+tape('index country', (t) => {
     queueFeature(conf2.country, {
         id: 10,
         properties: {
@@ -231,8 +231,8 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-['region', 'district', 'place'].forEach(function(f, i) {
-    tape('index ' + f, function(t) {
+['region', 'district', 'place'].forEach((f, i) => {
+    tape('index ' + f, (t) => {
         queueFeature(conf2[f], {
             id: i + 1,
             properties: {
@@ -270,24 +270,24 @@ tape('index country', function(t) {
         }, t.end);
     });
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf2).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf2).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf2[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('nonthaburi', function(t) {
-    c2.geocode('nonthaburi', {}, function(err, res) {
+tape('nonthaburi', (t) => {
+    c2.geocode('nonthaburi', {}, (err, res) => {
         t.equal(res.features[0].id.split('.')[0], 'place', 'lead feature is place');
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

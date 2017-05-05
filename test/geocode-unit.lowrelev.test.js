@@ -1,21 +1,21 @@
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem({ maxzoom:6 }, function() {})
+const conf = {
+    country: new mem({ maxzoom:6 }, () => {})
 };
-var c = new Carmen(conf);
-tape('index country', function(t) {
-    var country = {
+const c = new Carmen(conf);
+tape('index country', (t) => {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'czech republic',
@@ -25,8 +25,8 @@ tape('index country', function(t) {
     };
     queueFeature(conf.country, country, t.end);
 });
-tape('index country2', function(t) {
-    var country = {
+tape('index country2', (t) => {
+    let country = {
         id:2,
         properties: {
             'carmen:text':'fake country two',
@@ -36,17 +36,17 @@ tape('index country2', function(t) {
     };
     queueFeature(conf.country, country, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
-tape('czech => czech republic', function(t) {
-    c.geocode('czech', { limit_verify:1 }, function(err, res) {
+tape('czech => czech republic', (t) => {
+    c.geocode('czech', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'czech republic');
         t.deepEqual(res.features[0].id, 'country.1');
@@ -55,15 +55,15 @@ tape('czech => czech republic', function(t) {
 });
 
 //Is not above 0.5 relev so should fail.
-tape('fake blah blah => [fail]', function(t) {
-    c.geocode('fake blah blah', { limit_verify:1 }, function(err, res) {
+tape('fake blah blah => [fail]', (t) => {
+    c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.notOk(res.features[0]);
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

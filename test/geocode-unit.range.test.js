@@ -1,31 +1,31 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     region: new mem({
         maxzoom: 6,
         geocoder_stack: ['ca', 'us', 'mx']
-    }, function() {}),
+    }, () => {}),
     place: new mem({
         maxzoom: 6,
         geocoder_stack: ['ca', 'us']
-    }, function() {}),
+    }, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: true,
         geocoder_stack: ['us']
-    }, function() {})
+    }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index region', function(t) {
-    var region = {
+tape('index region', (t) => {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'Ontario',
@@ -38,8 +38,8 @@ tape('index region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index mx region', function(t) {
-    var region = {
+tape('index mx region', (t) => {
+    let region = {
         id:2,
         properties: {
             'carmen:text':'Veracruz',
@@ -52,8 +52,8 @@ tape('index mx region', function(t) {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index us place', function(t) {
-    var place = {
+tape('index us place', (t) => {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Springfield',
@@ -65,8 +65,8 @@ tape('index us place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index ca place', function(t) {
-    var place = {
+tape('index ca place', (t) => {
+    let place = {
         id:2,
         properties: {
             'carmen:text':'Punkeydoodles Corners',
@@ -79,8 +79,8 @@ tape('index ca place', function(t) {
     queueFeature(conf.place, place, t.end);
 });
 
-tape('index us address', function(t) {
-    var address = {
+tape('index us address', (t) => {
+    let address = {
         id:1,
         properties: {
             'carmen:text':'Evergreen Terrace',
@@ -98,42 +98,42 @@ tape('index us address', function(t) {
     queueFeature(conf.address, address, t.end);
 });
 
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('reverse - good stack, good type', function(t) {
-    c.geocode('8,-2', { stacks: ['ca'], types: ['place']  }, function(err, res) {
+tape('reverse - good stack, good type', (t) => {
+    c.geocode('8,-2', { stacks: ['ca'], types: ['place']  }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Punkeydoodles Corners, Ontario');
         t.end();
     });
 });
 
-tape('reverse - good stack, bad type, limit set', function(t) {
-    c.geocode('0,0', { stacks: ['mx'], types: ['place'], limit: 2 }, function(err, res) {
+tape('reverse - good stack, bad type, limit set', (t) => {
+    c.geocode('0,0', { stacks: ['mx'], types: ['place'], limit: 2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
         t.end();
     });
 });
 
-tape('reverse - bad stack, good type', function(t) {
-    c.geocode('0,0', { stacks: ['us'], types: ['region'] }, function(err, res) {
+tape('reverse - bad stack, good type', (t) => {
+    c.geocode('0,0', { stacks: ['us'], types: ['region'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 0, 'returns 0 results without error');
         t.end();
     });
 });
 
-tape('reverse - good stack, good type, limit set', function(t) {
-    c.geocode('0,0', { stacks: ['us'], types: ['place'], limit: 2 }, function(err, res) {
+tape('reverse - good stack, good type, limit set', (t) => {
+    c.geocode('0,0', { stacks: ['us'], types: ['place'], limit: 2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 feature returned');
         t.deepEqual(res.features[0].place_name, 'Springfield');
@@ -141,7 +141,7 @@ tape('reverse - good stack, good type, limit set', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

@@ -1,16 +1,16 @@
-var test = require('tape');
+const test = require('tape');
 
-var scoredist = require('../lib/util/proximity').scoredist;
+const scoredist = require('../lib/util/proximity').scoredist;
 
 function compare(a, b) {
     return scoredist(b.score, b.distance) - scoredist(a.score, a.distance);
 }
 
-test('scoredist', function(t) {
+test('scoredist', (t) => {
 
-    t.test('new york', function(t) {
+    t.test('new york', (t) => {
         // --query="new york" --proximity="-122.4234,37.7715"
-        var expected = [
+        let expected = [
             { text: 'New York,NY', distance: 2426.866703400975, score: 79161 },
             { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, score: 31104 },
             { text: 'New Yorker Buffalo Wings', distance: 0.6450163846417221, score: 3 },
@@ -20,9 +20,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('chicago near san francisco', function(t) {
+    t.test('chicago near san francisco', (t) => {
         // --query="chicago" --proximity="-122.4234,37.7715"
-        var expected = [
+        let expected = [
             { text: 'Chicago', distance: 1855.8900334142313, score: 16988 },
             { text: 'Chicago Title', distance: 0.14084037845690478, score: 2 }
         ];
@@ -30,9 +30,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('san near north sonoma county', function(t) {
+    t.test('san near north sonoma county', (t) => {
         // --query="san" --proximity="-123.0167,38.7471"
-        var expected = [
+        let expected = [
             { text: 'San Francisco', distance: 74.24466022598429, score: 8015 },
             { text: 'Santa Cruz', distance: 133.8263938095184, score: 587 },
             { text: 'São Paulo', distance: 6547.831697209755, score: 36433 },
@@ -42,9 +42,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('santa cruz near sonoma county', function(t) {
+    t.test('santa cruz near sonoma county', (t) => {
         // --query="santa cruz" --proximity="-123.0167,38.7471"
-        var expected = [
+        let expected = [
             { text: 'Santa Cruz', distance: 133.8263938095184, score: 587 },
             { text: 'Santa Cruz de Tenerife', distance: 5811.283048403849, score: 3456 }
         ];
@@ -52,9 +52,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('washington near baltimore', function(t) {
+    t.test('washington near baltimore', (t) => {
         // --query="washington" --proximity="-76.6035,39.3008"
-        var expected = [
+        let expected = [
             { text: 'District of Columbia,DC', distance: 34.81595024835296, score: 7429 },
             { text: 'Washington,WA', distance: 2256.6130314083157, score: 33373 }
         ];
@@ -62,9 +62,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('gilmour ave near guelph, on, canada', function(t) {
+    t.test('gilmour ave near guelph, on, canada', (t) => {
         // --query="gilmour ave" --proximity="-80.1617,43.4963"
-        var expected = [
+        let expected = [
             { text: 'Gilmour Ave, Runnymede, Toronto, M6P 3B5, Ontario, Canada, CA', distance: 36.12228253928214, score: 0 },
             { text: 'Gilmour Ave, Hillendale, Kingston, K7M 2Y8, Ontario, Canada, CA', distance: 188.29482550861198, score: 0 },
             { text: 'Gilmour Ave, Somerset, 15501, Pennsylvania, United States', distance: 246.29759329605977, score: 0 },
@@ -74,9 +74,9 @@ test('scoredist', function(t) {
         t.end();
     });
 
-    t.test('cambridge near guelph, on, canada', function(t) {
+    t.test('cambridge near guelph, on, canada', (t) => {
         // --query="cambridge" --proximity="-80.1617,43.4963"
-        var expected = [
+        let expected = [
             { text: 'Cambridge, N1R 6A9, Ontario, Canada, CA', distance: 10.73122383596493, score: 294 },
             { text: 'Cambridge, 02139, Massachusetts, United States', distance: 464.50390088754625, score: 986 },
             { text: 'Cambridgeshire, United Kingdom', distance: 3566.2969841802374, score: 2721 },
@@ -90,9 +90,9 @@ test('scoredist', function(t) {
 });
 
 // The radius of effect extends further at lower zooms
-test('zoom weighting', function(t) {
-    var score = 1000;
-    var distance = 100; //miles
+test('zoom weighting', (t) => {
+    let score = 1000;
+    let distance = 100; //miles
 
     t.deepEqual(scoredist(score, distance, 6), 3600, 'zoom 6');
     t.deepEqual(scoredist(score, distance, 8), 2800, 'zoom 8');

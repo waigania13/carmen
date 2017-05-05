@@ -1,9 +1,9 @@
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
 
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
@@ -12,12 +12,12 @@ var mem = require('../lib/api-mem');
                 "Apartments": "Apts",
                 "Village Post Office": "Vpo",
             }
-        }, function() {})
+        }, () => {})
     };
-    tape('test invalid tokens', function(t) {
-        t.throws(function() {
-            var c = new Carmen(conf);
-            t.assert(c);
+    tape('test invalid tokens', (t) => {
+        t.throws(() => {
+            const c = new Carmen(conf);
+            t.t(c);
         });
         t.end();
     });

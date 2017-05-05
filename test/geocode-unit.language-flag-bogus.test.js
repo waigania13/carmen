@@ -1,23 +1,23 @@
 //Ensure that results that have equal relev in phrasematch
 //are matched against the 0.5 relev bar instead of 0.75
 
-var tape = require('tape');
-var Carmen = require('..');
-var mem = require('../lib/api-mem');
-var context = require('../lib/context');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const mem = require('../lib/api-mem');
+const context = require('../lib/context');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'es'] }, function() {})
+(() => {
+    const conf = {
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'es'] }, () => {})
     };
-    var c = new Carmen(conf);
+    const c = new Carmen(conf);
 
-    tape('index country', function(t) {
-        var country = {
+    tape('index country', (t) => {
+        let country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -37,18 +37,18 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.country, country, t.end);
     });
-    tape('build queued features', function(t) {
-        var q = queue();
-        Object.keys(conf).forEach(function(c) {
-            q.defer(function(cb) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
                 buildQueued(conf[c], cb);
             });
         });
         q.awaitAll(t.end);
     });
 
-    tape('0,0 ?language=en', function(t) {
-        c.geocode('0,0', { language:'en', limit_verify:1 }, function(err, res) {
+    tape('0,0 ?language=en', (t) => {
+        c.geocode('0,0', { language:'en', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
             t.equal(res.features[0].id, 'country.1');
@@ -57,8 +57,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=es', function(t) {
-        c.geocode('0,0', { language:'es', limit_verify:1 }, function(err, res) {
+    tape('0,0 ?language=es', (t) => {
+        c.geocode('0,0', { language:'es', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
             t.equal(res.features[0].id, 'country.1');
@@ -67,8 +67,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=es-XX', function(t) {
-        c.geocode('0,0', { language:'es-XX', limit_verify:1 }, function(err, res) {
+    tape('0,0 ?language=es-XX', (t) => {
+        c.geocode('0,0', { language:'es-XX', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Estados Unidos');
             t.equal(res.features[0].id, 'country.1');
@@ -77,8 +77,8 @@ var addFeature = require('../lib/util/addfeature'),
         });
     });
 
-    tape('0,0 ?language=en-XX', function(t) {
-        c.geocode('0,0', { language:'en-XX', limit_verify:1 }, function(err, res) {
+    tape('0,0 ?language=en-XX', (t) => {
+        c.geocode('0,0', { language:'en-XX', limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'United States');
             t.equal(res.features[0].id, 'country.1');
@@ -89,7 +89,7 @@ var addFeature = require('../lib/util/addfeature'),
 
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

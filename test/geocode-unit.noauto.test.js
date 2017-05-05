@@ -1,20 +1,20 @@
 // Test score handling across indexes
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 // Confirm that disabling autocomplete works, and that in situations where an autocomplete
 // result scores highest, the winner changes depending on whether or not autocomplete is enabled
-(function() {
-    var conf = { place: new mem(null, function() {}) };
-    var c = new Carmen(conf);
-    tape('index first place', function(t) {
-        var place = {
+(() => {
+    const conf = { place: new mem(null, () => {}) };
+    const c = new Carmen(conf);
+    tape('index first place', (t) => {
+        let place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -25,8 +25,8 @@ var addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.place, place, t.end);
     });
-    tape('index second place', function(t) {
-        var place = {
+    tape('index second place', (t) => {
+        let place = {
             id:2,
             properties: {
                 'carmen:score': 10,
@@ -35,50 +35,50 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
-    tape('abc - with autocomplete', function(t) {
-        c.geocode('abc', { limit_verify:1 }, function(err, res) {
+    tape('abc - with autocomplete', (t) => {
+        c.geocode('abc', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abc with autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('abc - no autocomplete', function(t) {
-        c.geocode('abc', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('abc - no autocomplete', (t) => {
+        c.geocode('abc', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abc', 'abc wins for abc without autocomplete');
             t.deepEqual(res.features[0].id, 'place.2');
             t.end();
         });
     });
-    tape('abcde - with autocomplete', function(t) {
-        c.geocode('abcde', { limit_verify:1 }, function(err, res) {
+    tape('abcde - with autocomplete', (t) => {
+        c.geocode('abcde', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde with autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('abcde - no autocomplete', function(t) {
-        c.geocode('abcde', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('abcde - no autocomplete', (t) => {
+        c.geocode('abcde', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde without autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('ab - with autocomplete', function(t) {
-        c.geocode('ab', { limit_verify:1 }, function(err, res) {
+    tape('ab - with autocomplete', (t) => {
+        c.geocode('ab', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for ab with autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('ab - no autocomplete', function(t) {
-        c.geocode('ab', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('ab - no autocomplete', (t) => {
+        c.geocode('ab', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 0, 'ab matches nothing without autocomplete');
             t.end();
@@ -87,11 +87,11 @@ var addFeature = require('../lib/util/addfeature'),
 })();
 
 // test autocomplete where tokenization is implicated
-(function() {
-    var conf = { place: new mem(null, function() {}) };
-    var c = new Carmen(conf);
-    tape('index place', function(t) {
-        var place = {
+(() => {
+    const conf = { place: new mem(null, () => {}) };
+    const c = new Carmen(conf);
+    tape('index place', (t) => {
+        let place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -100,47 +100,47 @@ var addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, function() { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
     });
-    tape('place - with autocomplete', function(t) {
-        c.geocode('place', { limit_verify:1 }, function(err, res) {
+    tape('place - with autocomplete', (t) => {
+        c.geocode('place', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'place one', 'place matches with autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('place - no autocomplete', function(t) {
-        c.geocode('place', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('place - no autocomplete', (t) => {
+        c.geocode('place', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place matches nothing without autocomplete');
             t.end();
         });
     });
-    tape('one - with autocomplete', function(t) {
-        c.geocode('one', { limit_verify:1 }, function(err, res) {
+    tape('one - with autocomplete', (t) => {
+        c.geocode('one', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 0, 'one matches nothing with autocomplete');
             t.end();
         });
     });
-    tape('one - no autocomplete', function(t) {
-        c.geocode('one', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('one - no autocomplete', (t) => {
+        c.geocode('one', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 0, 'one matches nothing without autocomplete');
             t.end();
         });
     });
-    tape('place o - with autocomplete', function(t) {
-        c.geocode('place o', { limit_verify:1 }, function(err, res) {
+    tape('place o - with autocomplete', (t) => {
+        c.geocode('place o', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features[0].place_name, 'place one', 'abcde wins for abc with autocomplete');
             t.deepEqual(res.features[0].id, 'place.1');
             t.end();
         });
     });
-    tape('place o - no autocomplete', function(t) {
-        c.geocode('place o', { limit_verify:1, autocomplete: 0 }, function(err, res) {
+    tape('place o - no autocomplete', (t) => {
+        c.geocode('place o', { limit_verify:1, autocomplete: 0 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 0, 'place o matches nothing without autocomplete');
             t.end();
@@ -148,8 +148,8 @@ var addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

@@ -1,19 +1,19 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    place: new mem(null, function() {}),
+const conf = {
+    place: new mem(null, () => {}),
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index unicode place', function(t) {
-    var place = {
+tape('index unicode place', (t) => {
+    let place = {
         id: 1,
         properties: {
             'carmen:text': '京都市',
@@ -23,25 +23,25 @@ tape('index unicode place', function(t) {
     };
     queueFeature(conf.place, place, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('valid match', function(t) {
-    c.geocode('京都市', { limit_verify:1 }, function(err, res) {
+tape('valid match', (t) => {
+    c.geocode('京都市', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1);
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

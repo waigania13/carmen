@@ -1,28 +1,28 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
+const conf = {
     address: new mem({
         maxzoom:6,
         geocoder_type: 'address',
         geocoder_name: 'address'
-    }, function() {}),
+    }, () => {}),
     poi: new mem({
         maxzoom:6,
         geocoder_type: 'poi',
         geocoder_name: 'address',
         geocoder_reverse_mode: true
-    }, function() {})
+    }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('add POIs', function(assert) {
-    var poi = {
+tape('add POIs', (t) => {
+    let poi = {
         id: 1,
         type: 'Feature',
         properties: {
@@ -35,11 +35,11 @@ tape('add POIs', function(assert) {
             coordinates: [0,0]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
-    var poi = {
+tape('add POIs', (t) => {
+    let poi = {
         id: 2,
         type: 'Feature',
         properties: {
@@ -52,11 +52,11 @@ tape('add POIs', function(assert) {
             coordinates: [0.1,-0.1]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
-    var poi = {
+tape('add POIs', (t) => {
+    let poi = {
         id: 3,
         type: 'Feature',
         properties: {
@@ -70,11 +70,11 @@ tape('add POIs', function(assert) {
             coordinates: [1.005,1.005]
         }
     }
-    queueFeature(conf.poi, poi, assert.end);
+    queueFeature(conf.poi, poi, t.end);
 });
 
-tape('add POIs', function(assert) {
-    var poi = {
+tape('add POIs', (t) => {
+    let poi = {
         id: 4,
         type: 'Feature',
         properties: {
@@ -88,11 +88,11 @@ tape('add POIs', function(assert) {
             coordinates: [1.006,1.006]
         }
     }
-    queueFeature(conf.poi, poi, function() { buildQueued(conf.poi, assert.end) });
+    queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end) });
 });
 
-tape('add address', function(assert) {
-    var address = {
+tape('add address', (t) => {
+    let address= {
         id: 1,
         type: 'Feature',
         properties: {
@@ -107,43 +107,43 @@ tape('add address', function(assert) {
         }
     }
 
-    queueFeature(conf.address, address, function() { buildQueued(conf.address, assert.end) });
+    queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
 
 });
 
-tape('invalid', function(assert) {
-    c.geocode('0,0', {reverseMode: 'foo'}, function(err, res) {
-        assert.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
+tape('invalid', (t) => {
+    c.geocode('0,0', {reverseMode: 'foo'}, (err, res) => {
+        t.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('reverse distance threshold - close enough', function(assert) {
-    c.geocode('0.106,-0.106', {}, function(err, res) {
-        assert.deepEqual(res.features.length, 1, 'finds a feature when coords are off by .006');
+tape('reverse distance threshold - close enough', (t) => {
+    c.geocode('0.106,-0.106', {}, (err, res) => {
+        t.deepEqual(res.features.length, 1, 'finds a feature when coords are off by .006');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('reverse distance threshold - too far', function(assert) {
-    c.geocode('0.107,-0.107', {}, function(err, res) {
-        assert.deepEqual(res.features.length, 0, 'does not find a feature when coords are off by .007');
+tape('reverse distance threshold - too far', (t) => {
+    c.geocode('0.107,-0.107', {}, (err, res) => {
+        t.deepEqual(res.features.length, 0, 'does not find a feature when coords are off by .007');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('get the higher-scored, more distant feature first', function(assert) {
-    c.geocode('1.007, 1.007', {reverseMode: 'score'}, function(err, res) {
-        assert.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
+tape('get the higher-scored, more distant feature first', (t) => {
+    c.geocode('1.007, 1.007', {reverseMode: 'score'}, (err, res) => {
+        t.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
     });
 
-    assert.end();
+    t.end();
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

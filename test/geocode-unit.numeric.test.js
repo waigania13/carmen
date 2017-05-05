@@ -1,19 +1,19 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {
-    postcode: new mem({maxzoom: 6}, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {})
+const conf = {
+    postcode: new mem({maxzoom: 6}, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index', function(assert) {
+tape('index', (t) => {
     queueFeature(conf.postcode, {
         id:1,
         properties: {
@@ -21,10 +21,10 @@ tape('index', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
 
-tape('index', function(assert) {
+tape('index', (t) => {
     queueFeature(conf.postcode, {
         id:2,
         properties: {
@@ -32,10 +32,10 @@ tape('index', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
 
-tape('index address', function(assert) {
+tape('index address', (t) => {
     queueFeature(conf.address, {
         id:2,
         properties: {
@@ -49,21 +49,21 @@ tape('index address', function(assert) {
             type: 'MultiPoint',
             coordinates: [[0,0]]
         }
-    }, assert.end);
+    }, t.end);
 });
 
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
 
-tape('query', function(t) {
-    c.geocode('22209', { limit_verify: 2 }, function(err, res) {
+tape('query', (t) => {
+    c.geocode('22209', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         // 22209 does not win here until we have suggest vs final modes.
         t.equals(res.features[0].place_name, '22209', 'found 22209');
@@ -74,23 +74,23 @@ tape('query', function(t) {
     });
 });
 
-tape('indexes degen', function(t) {
-    c.geocode('222', { limit_verify: 1 }, function(err, res) {
+tape('indexes degen', (t) => {
+    c.geocode('222', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();
     });
 });
 
-tape('does index degens for non-numeric terms', function(t) {
-    c.geocode('22209 rest', { limit_verify: 2 }, function(err, res) {
+tape('does index degens for non-numeric terms', (t) => {
+    c.geocode('22209 rest', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '22209 restaurant', 'found 22209 restaurant');
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

@@ -1,8 +1,8 @@
-var dedupe = require('../lib/util/dedupe');
-var tape = require('tape');
+const dedupe = require('../lib/util/dedupe');
+const tape = require('tape');
 
-tape('dedup lowercase vs caps', function(assert) {
-    var features = [
+tape('dedup lowercase vs caps', (t) => {
+    let features = [
         {
             place_name: '20 main st',
             text: 'main st',
@@ -24,37 +24,35 @@ tape('dedup lowercase vs caps', function(assert) {
             }
         }
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0]
     ], 'dedupes by lowercase vs caps');
 
-    assert.end();
+    t.end();
 });
 
-tape('dedup - change relev order', function(assert) {
-    var dedup = dedupe(require('./fixtures/relev.json'));
+tape('dedup - change relev order', (t) => {
+    const dedup = dedupe(require('./fixtures/relev.json'));
 
 
-    assert.equals(dedup.length, 9)
+    t.equals(dedup.length, 9)
 
-    assert.equals(dedup[0].relevance, 0.7969999999999999);
-    assert.equals(dedup[1].relevance, 0.574);
-    assert.equals(dedup[2].relevance, 0.495);
-    assert.equals(dedup[3].relevance, 0.43233333333333335);
-    assert.equals(dedup[4].relevance, 0.3233333333333333);
-    assert.equals(dedup[5].relevance, 0.3233333333333333);
-    assert.equals(dedup[6].relevance, 0.3233333333333333);
-    assert.equals(dedup[7].relevance, 0.25666666666666665);
-    assert.equals(dedup[8].relevance, 0.25666666666666665);
+    t.equals(dedup[0].relevance, 0.7969999999999999);
+    t.equals(dedup[1].relevance, 0.574);
+    t.equals(dedup[2].relevance, 0.495);
+    t.equals(dedup[3].relevance, 0.43233333333333335);
+    t.equals(dedup[4].relevance, 0.3233333333333333);
+    t.equals(dedup[5].relevance, 0.3233333333333333);
+    t.equals(dedup[6].relevance, 0.3233333333333333);
+    t.equals(dedup[7].relevance, 0.25666666666666665);
+    t.equals(dedup[8].relevance, 0.25666666666666665);
 
-    assert.end();
+    t.end();
 
-}); 
+});
 
-tape('dedupe', function(assert) {
-    var features;
-
-    features = [
+tape('dedupe', (t) => {
+    let features = [
         {
             place_name: 'main st springfield',
             text: 'main st',
@@ -83,7 +81,7 @@ tape('dedupe', function(assert) {
             }
         },
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0],
         features[1]
     ], 'dedupes by place_name');
@@ -110,7 +108,7 @@ tape('dedupe', function(assert) {
             }
         },
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0],
         features[1],
     ], 'dupe identical addresses when dist >= 5km');
@@ -137,7 +135,7 @@ tape('dedupe', function(assert) {
             }
         },
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0]
     ], 'dedupes identical addresses when dist < 5km');
 
@@ -173,7 +171,7 @@ tape('dedupe', function(assert) {
             }
         }
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0]
     ], 'dedupes identical addresses + placenames when dist < 5km');
 
@@ -212,13 +210,13 @@ tape('dedupe', function(assert) {
             }
         },
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[2]
     ], 'dedupes identical addresses, prioritizes non-interpolated');
 
     // Reverse to make sure logic works in reverse order.
     features.reverse();
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0]
     ], 'dedupes identical addresses, prioritizes non-interpolated');
 
@@ -247,16 +245,16 @@ tape('dedupe', function(assert) {
             }
         },
     ];
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[1]
     ], 'dedupes identical addresses, prioritizes non-omitted');
 
     // Reverse to make sure logic works in reverse order.
     features.reverse();
-    assert.deepEqual(dedupe(features), [
+    t.deepEqual(dedupe(features), [
         features[0]
     ], 'dedupes identical addresses, prioritizes non-omitted');
 
-    assert.end();
+    t.end();
 });
 

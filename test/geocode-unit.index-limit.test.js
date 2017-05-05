@@ -1,23 +1,23 @@
 // Test that up to 128 indexes are supported.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature'),
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-var conf = {};
-for (var i = 0; i < 127; i++) {
-    conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, function() {});
+let conf = {};
+for (let i = 0; i < 127; i++) {
+    conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, () => {});
 }
-conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, function() {});
+conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, () => {});
 
-var c = new Carmen(conf);
-tape('index place', function(assert) {
-    assert.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
+const c = new Carmen(conf);
+tape('index place', (t) => {
+    t.deepEqual(Object.keys(conf).length, 128, '128 indexes configured');
     queueFeature(conf.place, {
         id:1,
         properties: {
@@ -25,27 +25,27 @@ tape('index place', function(assert) {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, assert.end);
+    }, t.end);
 });
-tape('build queued features', function(t) {
-    var q = queue();
-    Object.keys(conf).forEach(function(c) {
-        q.defer(function(cb) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
             buildQueued(conf[c], cb);
         });
     });
     q.awaitAll(t.end);
 });
-tape('query place', function(t) {
-    c.geocode('Chicago', { limit_verify: 1 }, function(err, res) {
+tape('query place', (t) => {
+    c.geocode('Chicago', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 0.99);
         t.end();
     });
 });
-tape('reverse place', function(t) {
-    c.geocode('0,0', { limit_verify: 1 }, function(err, res) {
+tape('reverse place', (t) => {
+    c.geocode('0,0', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
         t.equals(res.features[0].relevance, 1);
@@ -53,7 +53,7 @@ tape('reverse place', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
