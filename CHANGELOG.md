@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.2.0
+
+- Update tests to arrow functions, `let`, & `const`
+- Change sort behavior for tied addresses so first number is given slight boost
+
 ## 22.1.3
 
 - Update to mapnik `~3.6.0`
