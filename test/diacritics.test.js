@@ -8,6 +8,7 @@ tape('removeDiacritics', (t) => {
     t.equal(removeDiacritics("किसी वर्ण के मूल चिह्न के ऊपर, नीचे, अलग-बगल लगने"), "किसी वर्ण के मूल चिह्न के ऊपर, नीचे, अलग-बगल लगने", "nothing happens to Hindi text");
     t.equal(removeDiacritics("άΆέΈήΉίΊόΌύΎ αΑεΕηΗιΙοΟυΥ"), "αΑεΕηΗιΙοΟυΥ αΑεΕηΗιΙοΟυΥ", "greek diacritics are removed and other characters stay the same");
     t.equal(removeDiacritics("ўЎёЁѐЀґҐйЙ уУеЕеЕгГиИ"), "уУеЕеЕгГиИ уУеЕеЕгГиИ", "cyrillic diacritics are removed and other characters stay the same");
+    t.equal(removeDiacritics("يی ى"), "ىى ى", "arabic diacritics are removed and other characters stay the same");
 
     t.end();
 });
