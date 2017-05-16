@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.2.1
+
+- Collapsing variants of ARABIC LETTER YEH for uniform indexing
+
 ## 22.2.0
 
 - Update tests to arrow functions, `let`, & `const`
