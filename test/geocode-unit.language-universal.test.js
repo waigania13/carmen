@@ -18,8 +18,7 @@ tape('index Hron', (t) => {
         properties: {
             'carmen:text':'Hron',
             'carmen:text_en':'Hron',
-            'carmen:universal':'HO',
-            // 'carmen:text_universal':'HO',
+            'carmen:text_universal':'HO',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -33,8 +32,7 @@ tape('index Holdout', (t) => {
         properties: {
             'carmen:text':'Holdout',
             'carmen:text_en':'Holdout',
-            'carmen:universal':'HT',
-            // 'carmen:text_universal':'HT',
+            'carmen:text_universal':'HT',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -60,10 +58,10 @@ tape('Find features using default text', (t) => {
     });
 });
 
-tape.skip('Find feature using universal text', (t) => {
+tape('Find feature using universal text', (t) => {
     c.geocode('HT', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].text, 'HT', 'finds Holdout using the universal text');
+        t.equal(res.features[0].text, 'Holdout', 'finds Holdout using the universal text');
         t.end();
     });
 });
