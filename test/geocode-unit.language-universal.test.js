@@ -8,7 +8,8 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    region: new mem({ maxzoom: 6, geocoder_name: 'poi', geocoder_languages: ['en'] }, () => {})
+    // TODO: possibly handle `universal` differently, so we don't have to think of it as a language
+    region: new mem({ maxzoom: 6, geocoder_name: 'poi', geocoder_languages: ['en', 'universal'] }, () => {})
 };
 const c = new Carmen(conf);
 
@@ -54,14 +55,6 @@ tape('Find features using default text', (t) => {
     c.geocode('Hron', {limit_verify: 1}, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, 'Hron', 'finds Hron');
-        t.end();
-    });
-});
-
-tape('Find feature using universal text', (t) => {
-    c.geocode('HT', {limit_verify: 1}, (err, res) => {
-        t.ifError(err);
-        t.equal(res.features[0].text, 'Holdout', 'finds Holdout using the universal text');
         t.end();
     });
 });
