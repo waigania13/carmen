@@ -8,7 +8,7 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    region: new mem(null, () => {})
+    region: new mem({ maxzoom: 6, geocoder_name: 'poi', geocoder_languages: ['en'] }, () => {})
 };
 const c = new Carmen(conf);
 

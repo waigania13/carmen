@@ -40,48 +40,6 @@ tape('index Bai', (t) => {
         queueFeature(conf.poi, poi, t.end);
 });
 
-tape.skip('index Bait Shop', (t) => {
-    let poi = {
-        id:3,
-        properties: {
-            'carmen:text':'Bait Shop',
-            'carmen:text_en':'Bait Shop',
-            'carmen:text_es':'Tienda de Cebo',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-        queueFeature(conf.poi, poi, t.end);
-});
-
-tape.skip('index Bai Bai Birdie', (t) => {
-    let poi = {
-        id:4,
-        properties: {
-            'carmen:text':'Bai Bai Birdie',
-            'carmen:text_en':'Bai Bai Birdie',
-            'carmen:text_es':'Bai Bai Pajaro',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-        queueFeature(conf.poi, poi, t.end);
-});
-
-tape.skip('index Bail Bonds', (t) => {
-    let poi = {
-        id:5,
-        properties: {
-            'carmen:text':'Bail Bonds',
-            'carmen:text_en':'Bail Bonds',
-            'carmen:text_es':'Bail Bonds',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-        queueFeature(conf.poi, poi, t.end);
-});
-
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {
