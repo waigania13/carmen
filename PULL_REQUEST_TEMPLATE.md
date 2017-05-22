@@ -1,13 +1,10 @@
 ### Context
 <!-- Background, if needed to explain the issue -->
-
-
-### Fixes/Adds
 <!-- with link to relevant ticket(s) or short description -->
 
 
-### Summary
-- [ ] brief list of changes
+### Summary of Changes
+- [ ]
 
 
 ### Next Steps
