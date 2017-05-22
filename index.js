@@ -107,6 +107,7 @@ function Geocoder(indexes, options) {
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
+            source.indexing_replacer = token.createReplacer(info.geocoder_tokens||{}, true);
 
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');

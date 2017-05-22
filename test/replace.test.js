@@ -1,7 +1,7 @@
 const token = require('../lib/util/token');
 const test = require('tape');
 
-let tokens = token.createReplacer({
+let tokenList = {
     "First": "1st",
     "Second": "2nd",
     "Third": "3rd",
@@ -199,12 +199,40 @@ let tokens = token.createReplacer({
     "Walkway": "Wlky",
     "West": "W",
     "San Francisco": "sf"
-});
+};
+
+let tokens = token.createReplacer(tokenList);
+var tokensR = token.createReplacer(tokenList, true);
 
 test('token replacement', (q) => {
     q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
     q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
     q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
+
+    q.deepEqual(
+        token.enumerateTokenReplacements(tokens, 'fargo street northeast, san francisco'),
+        ['fargo', [' St', ' street'], '', [' NE,', ' northeast,'], '', [' sf', ' san francisco'], '']
+    );
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'main st street st st milwaukee lane ln wtf ln'), [
+        'main st',
+        [ ' St ', ' street ' ],
+        'st st milwaukee',
+        [ ' Ln ', ' lane ' ],
+        'ln wtf ln'
+    ]);
+    q.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
+        'main st',
+        [ ' St ', ' street ' ],
+        'st st milwaukee',
+        [ ' Ln ', ' lane ' ],
+        '',
+        [ 'ln ', 'Lane ' ],
+        'wtf',
+        [ ' ln', ' Lane' ],
+        ''
+    ]);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
     q.end();
 });
 
@@ -239,6 +267,9 @@ test('named/numbered group replacement', (q) => {
     });
     q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
     q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
+
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['', ['xyz ', 'abc '], '', ['@@@123@@@ ', '123 '], 'def']);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['', ['xyz ', 'abc '], '', ['###234### ', '234 '], 'def']);
 
     q.end();
 });

@@ -75,11 +75,13 @@ test('index.generateStats', (t) => {
     });
     // @TODO should 'main' in this case collapse down to 2?
     t.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
-        __COUNT__: [ 4 ],
+        __COUNT__: [ 8 ],
         __MAX__: [ 2 ],
-        main: [ 2 ],
+        main: [ 4 ],
         rd: [ 1 ],
-        st: [ 1 ]
+        st: [ 1 ],
+        street: [ 1 ],
+        road: [ 1 ]
     });
     t.end();
 });
