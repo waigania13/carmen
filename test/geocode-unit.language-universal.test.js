@@ -17,7 +17,7 @@ tape('index Hron', (t) => {
     let region = {
         id:1,
         properties: {
-            'carmen:text':'Hron',
+            'carmen:text':'Hron,Hronlandia',
             'carmen:text_en':'Hron',
             'carmen:text_universal':'HO',
             'carmen:zxy':['6/32/32'],
@@ -34,6 +34,19 @@ tape('index Holdout', (t) => {
             'carmen:text':'Holdout',
             'carmen:text_en':'Holdout',
             'carmen:text_universal':'HT',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    queueFeature(conf.region, region, t.end);
+});
+
+tape('index test', (t) => {
+    let region = {
+        id:3,
+        properties: {
+            'carmen:text':'test',
+            // 'carmen:text_universal':'test',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
