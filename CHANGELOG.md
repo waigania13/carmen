@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.2.2
+
+- Update carmen-cache
+
 ## 22.2.1
 
 - Collapsing variants of ARABIC LETTER YEH for uniform indexing
