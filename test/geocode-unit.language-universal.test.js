@@ -41,19 +41,6 @@ tape('index Holdout', (t) => {
     queueFeature(conf.region, region, t.end);
 });
 
-tape('index test', (t) => {
-    let region = {
-        id:3,
-        properties: {
-            'carmen:text':'test',
-            // 'carmen:text_universal':'test',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-    queueFeature(conf.region, region, t.end);
-});
-
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {
