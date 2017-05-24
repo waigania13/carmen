@@ -8,8 +8,8 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    // TODO: possibly handle `universal` differently, so we don't have to think of it as a language
-    region: new mem({ maxzoom: 6, geocoder_name: 'poi', geocoder_languages: ['en', 'universal'] }, () => {})
+    region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en'] }, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en'] }, () => {})
 };
 const c = new Carmen(conf);
 
@@ -39,6 +39,19 @@ tape('index Holdout', (t) => {
         }
     };
     queueFeature(conf.region, region, t.end);
+});
+
+tape('index Cerracs', (t) => {
+    let country = {
+        id:1,
+        properties: {
+            'carmen:text':'Wilderness',
+            'carmen:text_universal':'Cerracs',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    };
+    queueFeature(conf.country, country, t.end);
 });
 
 tape('build queued features', (t) => {
@@ -80,6 +93,14 @@ tape('Finds and ranks features using universal text with language codes', (t) =>
         t.ifError(err);
         t.equal(res.features.length, 2, 'finds both features even using a language code');
         t.equal(res.features[0].text, 'Hron', 'ranks complete match of universal text above autocompleted default text');
+        t.end();
+    });
+});
+
+tape('Find universal text feature using strict mode with another language', (t) => {
+    c.geocode('Cerracs', {languageMode: 'strict', language: 'en'}, (err, res) => {
+        t.ifError(err);
+        t.equal(res.features[0].text, 'Cerracs', 'finds Cerracs');
         t.end();
     });
 });
