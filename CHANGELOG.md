@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.3.0
+
+- Add `text_universal`, for text which can apply to all langauges
+
 ## 22.2.2
 
 - Update carmen-cache
