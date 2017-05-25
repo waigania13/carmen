@@ -18,7 +18,7 @@ const addFeature = require('../lib/util/addfeature'),
         let address1 = {
             id:1,
             properties: {
-                'carmen:text':'11 Austrasse',
+                'carmen:text':'Austrasse',
                 'carmen:center':[0,0]
             },
             geometry: {
@@ -32,7 +32,7 @@ const addFeature = require('../lib/util/addfeature'),
         let address2 = {
             id:2,
             properties: {
-                'carmen:text':'12 Austrasse',
+                'carmen:text':'Austrasse',
                 'carmen:center':[0,1]
             },
             geometry: {
@@ -43,7 +43,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address2, address2, () => { buildQueued(conf.address2, t.end) });
     });
     tape('test addresses with similar names close to each other', (t) => {
-        c1.geocode('0,1', { limit_verify: 4 }, (err, res) => {
+        c1.geocode('Austrasse', { limit_verify: 4 }, (err, res) => {
             t.ifError(err);
             console.log('r', res);
             t.end();
