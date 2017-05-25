@@ -5,5 +5,8 @@ machine:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test; sudo apt-get -y update; sudo apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
 test:
   override:
+    - rm -rf "./node_modules/@mapbox/carmen-cache"
+    - npm install @mapbox/carmen-cache --debug --loglevel=http --toolset=asan
+    - ./node_modules/@mapbox/carmen-cache/scripts/setup.sh --config local.env
     - npm run lint
-    - npm run coverage
+    - source local.env && export LD_PRELOAD=${MASON_LLVM_RT_PRELOAD} && npm run coverage
