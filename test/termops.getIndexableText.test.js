@@ -66,6 +66,22 @@ test('termops.getIndexableText', (t) => {
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'in the presence of translations, plain carmen:text has language "default" and translations are language-specific');
 
     replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'San Francisco Airport', 'carmen:text_universal': 'SFO' } };
+    texts = [
+        { languages: [ 'all' ], tokens: [ 'san', 'francisco', 'airport' ] },
+        { languages: [ 'all' ], tokens: [ 'sfo' ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'in the presence of universal text, plain carmen:text and text_universal both have language "all"');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'San Francisco Airport', 'carmen:text_universal': 'SFO', 'carmen:text_es': 'Aeropuerto de San Francisco' } };
+    texts = [
+        { languages: [ 'default' ], tokens: [ 'san', 'francisco', 'airport' ] },
+        { languages: [ 'all' ], tokens: [ 'sfo' ] },
+        { languages: [ 'es' ], tokens: [ 'aeropuerto', 'de', 'san', 'francisco' ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'universal text is always indexed across langauges');
+    replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'Latveria,Republic of Latveria' } };
     texts = [
         { languages: [ 'all' ], tokens: [ 'latveria' ] },
