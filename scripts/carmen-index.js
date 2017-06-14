@@ -39,9 +39,9 @@ if (argv.tokens) {
 }
 
 var reverseTokens = {};
-if (argv.reverseTokens) {
-    let rtFiles = argv.reverseTokens.split(',');
-    rtFiles.forEach((rtFile) => {
+if (argv.reverse_tokens) {
+    let rtFiles = argv.reverse_tokens.split(',');
+    rtFiles.forEach((file) => {
         let data = require(file);
         for (let key of Object.keys(data)) reverseTokens[key] = data[key];
     });
