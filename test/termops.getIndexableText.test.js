@@ -30,7 +30,7 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants');
 
-    replacer = token.createReplacer({'Street':'St', 'Lane':'Ln'}, true);
+    replacer = token.createReplacer({'Street':'St', 'Lane':'Ln'}, {includeUnambiguous: true});
 
     doc = { properties: { 'carmen:text': 'Main Street Lane' } };
     texts = [
@@ -60,7 +60,7 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'exclude variants -- too many permutations');
 
-    replacer = token.createReplacer({'Saint': 'St', 'Street':'St', 'Lane':'Ln'}, true);
+    replacer = token.createReplacer({'Saint': 'St', 'Street':'St', 'Lane':'Ln'}, {includeUnambiguous: true});
 
     doc = { properties: { 'carmen:text': 'Main Street St Lane' } };
     texts = [
@@ -70,6 +70,35 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'all' ], tokens: [ 'main', 'street', 'st', 'lane' ] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'don\'t expand st if it\'s ambiguous');
+
+    replacer = token.createReplacer({'Saint': 'St', 'Street':'St', 'Lane':'Ln'}, {
+        includeUnambiguous: true,
+        custom: {
+            'St': function() {
+                var full = arguments[arguments.length - 1];
+                var offset = arguments[arguments.length - 2];
+                var match = arguments[0];
+                var pre = full.slice(0, offset);
+                var post = full.slice(offset + match.length);
+
+                var out;
+                if (pre.trim() == "") out = arguments[1] + "saint" + arguments[2];
+                else if (post.trim() == "") out = arguments[1] + "street" + arguments[2];
+                else out = arguments[0];
+
+                return out;
+            }
+        }
+    });
+
+    doc = { properties: { 'carmen:text': 'st thomas st' } };
+    texts = [
+        { languages: [ 'all' ], tokens: [ 'st', 'thomas', 'st' ] },
+        { languages: [ 'all' ], tokens: [ 'st', 'thomas', 'street' ] },
+        { languages: [ 'all' ], tokens: [ 'saint', 'thomas', 'st' ] },
+        { languages: [ 'all' ], tokens: [ 'saint', 'thomas', 'street' ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include st if there\'s a custom reverse function');
 
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = { properties: { 'carmen:text': 'Avenue du dix-huitième régiment' } };

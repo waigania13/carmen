@@ -202,7 +202,29 @@ let tokenList = {
 };
 
 let tokens = token.createReplacer(tokenList);
-var tokensR = token.createReplacer(tokenList, true);
+var tokensR = token.createReplacer(tokenList, {includeUnambiguous: true});
+
+// this is a test function that returns "saint" if the match is at the beginning, "street"
+// if it's at the end, or "st" otherwise. In real life you'd want something smarter than this
+var tokensRC = token.createReplacer(tokenList, {
+    includeUnambiguous: true,
+    custom: {
+        'St': function() {
+            var full = arguments[arguments.length - 1];
+            var offset = arguments[arguments.length - 2];
+            var match = arguments[0];
+            var pre = full.slice(0, offset);
+            var post = full.slice(offset + match.length);
+
+            var out;
+            if (pre.trim() == "") out = arguments[1] + "saint" + arguments[2];
+            else if (post.trim() == "") out = arguments[1] + "street" + arguments[2];
+            else out = arguments[0];
+
+            return out;
+        }
+    }
+})
 
 test('token replacement', (q) => {
     q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
@@ -231,10 +253,35 @@ test('token replacement', (q) => {
         [ ' ln', ' Lane' ],
         ''
     ]);
+
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
     q.end();
 });
+
+test('custom reverse replacement', (q) => {
+    q.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), 'saint thomas st united states');
+    q.deepEqual(token.replaceToken(tokensRC, 'e first st').toLowerCase(), 'east first street');
+
+    q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
+        '',
+        [ 'st ', 'saint ' ],
+        'thomas',
+        [ ' st ' ],
+        'united states'
+    ]);
+    q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'e first st'), [
+        '',
+        [ 'East', 'e' ],
+        '',
+        [ ' 1st ', ' first ' ],
+        '',
+        [ 'st', 'street' ],
+        ''
+    ]);
+
+    q.end();
+})
 
 test('replacer', (q) => {
 
