@@ -198,7 +198,8 @@ let tokenList = {
     "Vista": "Vis",
     "Walkway": "Wlky",
     "West": "W",
-    "San Francisco": "sf"
+    "San Francisco": "sf",
+    "Rio": "R"
 };
 
 let tokens = token.createReplacer(tokenList);
@@ -291,9 +292,16 @@ test('replacer', (q) => {
         'Road': 'Rd',
         'Street': 'St'
     });
+    var WORD_BOUNDARY = "[\\s\\u2000-\\u206F\\u2E00-\\u2E7F\\\\'!\"#$%&()*+,\\-.\\/:;<=>?@\\[\\]^_`{|}~]";
     q.deepEqual(rep.map((r) => { return r.named; }), [false, false]);
     q.deepEqual(rep.map((r) => { return r.to; }), ['$1Rd$2', '$1St$2']);
-    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Road(\\W|$)/gi', '/(\\W|^)Street(\\W|$)/gi']);
+    q.deepEqual(
+        rep.map((r) => { return r.from.toString(); }),
+        [
+            '/(' + WORD_BOUNDARY + '|^)Road(' + WORD_BOUNDARY + '|$)/gi',
+            '/(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '|$)/gi'
+        ]
+    );
 
     rep = token.createReplacer({
         'Maréchal': 'Mal',
@@ -301,7 +309,14 @@ test('replacer', (q) => {
     });
     q.deepEqual(rep.map((r) => { return r.named; }), [false, false, false]);
     q.deepEqual(rep.map((r) => { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
-    q.deepEqual(rep.map((r) => { return r.from.toString(); }), ['/(\\W|^)Maréchal(\\W|$)/gi', '/(\\W|^)Marechal(\\W|$)/gi', '/(\\W|^)Monsieur(\\W|$)/gi']);
+    q.deepEqual(
+        rep.map((r) => { return r.from.toString(); }),
+        [
+            '/(' + WORD_BOUNDARY + '|^)Maréchal(' + WORD_BOUNDARY + '|$)/gi',
+            '/(' + WORD_BOUNDARY + '|^)Marechal(' + WORD_BOUNDARY + '|$)/gi',
+            '/(' + WORD_BOUNDARY + '|^)Monsieur(' + WORD_BOUNDARY + '|$)/gi'
+        ]
+    );
 
     q.end();
 });
@@ -325,5 +340,15 @@ test('throw on mixed name/num replacement groups', (q) => {
     q.throws(() => {
         token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
     });
+    q.end();
+});
+
+test('make sure word boundaries work right', function(q) {
+    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), 'R de Janeiro', "phrase-initial token");
+    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), 'de R Janeiro', "phrase-medial token");
+    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), 'de Janeiro R', "phrase-terminal token");
+    q.deepEqual(token.replaceToken(tokens, 'de-rio!Janeiro'), 'de-R!Janeiro', "punctuation-separated token");
+    q.deepEqual(token.replaceToken(tokens, 'deteriorate'), 'deteriorate', "word-medial token (doesn't replace)");
+    q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), 'Rua Oratório', "word-terminal token preceded by accented character (doesn't replace)");
     q.end();
 });
