@@ -199,7 +199,8 @@ let tokenList = {
     "Walkway": "Wlky",
     "West": "W",
     "San Francisco": "sf",
-    "Rio": "R"
+    "Rio": "R",
+    "S.": "S"
 };
 
 let tokens = token.createReplacer(tokenList);
