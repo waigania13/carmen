@@ -181,6 +181,28 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('test address index autocomplete + tokens (full)', (t) => {
+        c.geocode('main road', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+    tape('test address index autocomplete + tokens (abbrev)', (t) => {
+        c.geocode('main rd', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+    tape('test address index autocomplete + tokens (auto)', (t) => {
+        c.geocode('main roa', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
 })();
 
 (() => {

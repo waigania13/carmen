@@ -103,10 +103,12 @@ function Geocoder(indexes, options) {
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};
+            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens||{};
             source.geocoder_inherit_score = info.geocoder_inherit_score || false;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
+            source.indexing_replacer = token.createReplacer(info.geocoder_tokens||{}, {includeUnambiguous: true, custom: source.geocoder_inverse_tokens||{}});
 
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');

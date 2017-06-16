@@ -7,7 +7,7 @@ const tape = require('tape');
             'Street': 'st'
         }
         let tokenReplacer = tokenize.createReplacer(tokens)
-        let expected = [ { named: false, from: /(\W|^)Street(\W|$)/gi, to: '$1st$2' } ];
+        let expected = [ { named: false, from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)Street([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi, to: '$1st$2', inverse: false } ];
         t.deepEquals(tokenReplacer, expected, 'okay, created a regex')
         t.end();
     });
