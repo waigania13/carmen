@@ -1,5 +1,12 @@
 # Changelog
 
+## 22.4.0
+
+- Index multiple variations on token replacement to better support autocomplete of token-
+  replaced text, defaulting to indexing unambiguously reversible replacements
+- Add `custom_inverse_tokens` mechanism to allow specifying behavior in ambiguous cases
+- Fix a bunch of token-replacement-related bugs
+
 ## 22.3.0
 
 - Add `text_universal`, for text which can apply to all langauges
