@@ -6,7 +6,7 @@ const tmpdir = require('os').tmpdir();
 const bin = path.resolve(path.join(__dirname, '..', 'scripts'));
 
 const Carmen = require('../index.js');
-const MBTiles = require('mbtiles');
+const MBTiles = require('@mapbox/mbtiles');
 const rand = Math.random().toString(36).substr(2, 5);
 const tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 const tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
