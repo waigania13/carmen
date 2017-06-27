@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.4.1
+
+- Update Deps to @mapbox prefix where possible
+- `trim()` abbr after each tokenize.replaceToken call
+
 ## 22.4.0
 
 - Index multiple variations on token replacement to better support autocomplete of token-
