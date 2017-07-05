@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.4.2
+
+- :rocket: Allow function to be used as tokens file in scripts/carmen.js
+
 ## 22.4.1
 
 - Update Deps to @mapbox prefix where possible
