@@ -39,7 +39,7 @@ tape('indexdocs.loadDoc', (t) => {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = indexdocs.loadDoc(freq, patch, doc, null, zoom, token_replacer);
+    err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
     t.ok(typeof err !== 'number', 'no error');
 
     t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');

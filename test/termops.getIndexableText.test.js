@@ -129,7 +129,7 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'default' ], tokens: [ 'main', 'street' ] },
         { languages: [ 'es' ], tokens: [ 'el', 'main', 'street' ] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'in the presence of translations, plain carmen:text has language "default" and translations are language-specific');
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'in the presence of translations, plain carmen:text has language "default" and translations are language-specific');
 
     replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'San Francisco Airport', 'carmen:text_universal': 'SFO' } };
@@ -146,7 +146,7 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'all' ], tokens: [ 'sfo' ] },
         { languages: [ 'es' ], tokens: [ 'aeropuerto', 'de', 'san', 'francisco' ] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'universal text is always indexed across langauges');
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'universal text is always indexed across langauges');
     replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'Latveria,Republic of Latveria' } };
     texts = [
@@ -161,7 +161,7 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'default', 'en' ], tokens: [ 'new', 'york' ] },
         { languages: [ 'es' ], tokens: [ 'nueva', 'york' ] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'translations with phrase overlaps are properly grouped');
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'translations with phrase overlaps are properly grouped');
 
     t.end();
 });
