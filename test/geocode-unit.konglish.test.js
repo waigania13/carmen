@@ -38,6 +38,7 @@ const addFeature = require('../lib/util/addfeature'),
             properties: {
                 'carmen:center': [80,-10],
                 'carmen:text': 'San Francisco',
+                'carmen:text_es': 'San Francisco',
                 'carmen:score': 5
             },
             geometry: {
