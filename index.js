@@ -25,7 +25,12 @@ function Geocoder(indexes, options) {
     var q = queue(10);
 
     this.indexes = indexes;
-    this.replacer = token.createGlobalReplacer(options.tokens || {});
+
+    let globalTokens = options.tokens || {};
+    if (typeof globalTokens !== 'object') throw new Error('globalTokens must be an object');
+
+    this.replacer = token.createGlobalReplacer(globalTokens);
+
     this.globaltokens = options.tokens;
     this.byname = {};
     this.bytype = {};
