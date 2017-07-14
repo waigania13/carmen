@@ -10,6 +10,7 @@ const MBTiles = require('@mapbox/mbtiles');
 const rand = Math.random().toString(36).substr(2, 5);
 const tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 const tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
+const tmpindex3 = path.join(tmpdir, 'test-carmen-index3-' + rand + '.mbtiles');
 const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
@@ -23,6 +24,10 @@ tape('clean tmp index', (t) => {
         fs.unlinkSync(tmpindex2)
         fs.removeSync(tmpindex2.replace(".mbtiles", ".freq.rocksdb"));
         fs.removeSync(tmpindex2.replace(".mbtiles", ".grid.rocksdb"));
+
+        fs.unlinkSync(tmpindex3)
+        fs.removeSync(tmpindex3.replace(".mbtiles", ".freq.rocksdb"));
+        fs.removeSync(tmpindex3.replace(".mbtiles", ".grid.rocksdb"));
     } catch (err) {
         //File does not exist
     } finally {
@@ -98,6 +103,13 @@ tape('bin/carmen-index', (t) => {
 
 tape('bin/carmen-index', (t) => {
     exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --tokens="'+__dirname + '/fixtures/tokens.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.end();
+    });
+});
+
+tape('bin/carmen-index', (t) => {
+    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --tokens="'+__dirname + '/fixtures/tokens.js" --index="'+tmpindex3+'" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
         t.ifError(err);
         t.end();
     });
