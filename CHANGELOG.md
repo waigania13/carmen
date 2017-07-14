@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.4.3
+
+- Fix a problem with carmen-index.js in cases where the passed-in tokens file contains a function
+
 ## 22.4.2
 
 - :rocket: Allow function to be used as tokens file in scripts/carmen.js
