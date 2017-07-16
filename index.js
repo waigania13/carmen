@@ -147,6 +147,7 @@ function Geocoder(indexes, options) {
             lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
             lang.lang_map = {};
             lang.languages.forEach(function(l, idx) { lang.lang_map[l] = idx; });
+            lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
             source.lang = lang;
 
             // add byname index lookup

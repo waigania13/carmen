@@ -11,6 +11,7 @@ const addFeature = require('../lib/util/addfeature'),
 (() => {
     const conf = {
         place: new mem({ maxzoom: 6, geocoder_languages: ['en','ko'] }, () => {}),
+        neighborhood: new mem({ maxzoom: 6, geocoder_languages: [] }, () => {}),
     };
     const c = new Carmen(conf);
 
@@ -19,7 +20,6 @@ const addFeature = require('../lib/util/addfeature'),
             type: 'Feature',
             id: 1,
             properties: {
-                'carmen:center': [1,1],
                 'carmen:text': 'San Francisco',
                 'carmen:text_en': 'San Francisco',
                 'carmen:text_ko': '샌프란시스코',
@@ -36,7 +36,6 @@ const addFeature = require('../lib/util/addfeature'),
             type: 'Feature',
             id: 2,
             properties: {
-                'carmen:center': [80,-10],
                 'carmen:text': 'San Francisco',
                 'carmen:text_es': 'San Francisco',
                 'carmen:score': 5
@@ -44,6 +43,20 @@ const addFeature = require('../lib/util/addfeature'),
             geometry: {
                 type: 'Point',
                 coordinates: [80,-10]
+            }
+        }, t.end);
+    });
+    tape('index San Francisco (neighborhood)', (t) => {
+        queueFeature(conf.neighborhood, {
+            type: 'Feature',
+            id: 3,
+            properties: {
+                'carmen:text': 'San Francisco',
+                'carmen:score': 0
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [100,-20]
             }
         }, t.end);
     });
@@ -75,6 +88,7 @@ const addFeature = require('../lib/util/addfeature'),
 
     tape('query: San Francisco, language=ko', (t) => {
         c.geocode('San Francisco', { language: 'ko' }, (err, res) => {
+            console.warn(res.features[0]);
             t.equal('place.1', res.features[0].id, 'Finds SF, CA');
             t.equal('place.2', res.features[1].id, 'Finds SF, VE');
             t.ifError(err);
