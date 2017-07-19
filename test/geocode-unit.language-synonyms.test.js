@@ -29,6 +29,21 @@ const addFeature = require('../lib/util/addfeature'),
         };
         queueFeature(conf.poi, poi, t.end);
     });
+    tape('index poi1', (t) => {
+        let poi1 = {
+            id:1,
+            properties: {
+                'carmen:text': 'osu',
+                'carmen:center': [0,1],
+                'carmen:zxy':['6/32/32']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.poi, poi1, t.end);
+    });
 
     tape('build queued features', (t) => {
         const q = queue();
