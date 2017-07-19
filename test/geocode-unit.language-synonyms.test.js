@@ -31,15 +31,16 @@ const addFeature = require('../lib/util/addfeature'),
     });
     tape('index poi1', (t) => {
         let poi1 = {
-            id:1,
+            id:2,
             properties: {
                 'carmen:text': 'osu',
+                'carmen:text_en': null,
                 'carmen:center': [0,1],
                 'carmen:zxy':['6/32/32']
             },
             geometry: {
                 type: 'Point',
-                coordinates: [0,0]
+                coordinates: [1,0]
             }
         };
         queueFeature(conf.poi, poi1, t.end);
@@ -57,7 +58,7 @@ const addFeature = require('../lib/util/addfeature'),
 
     tape('Search for a poi', (t) => {
         c.geocode('OSU', { limit_verify: 1, indexes: true, language: 'en'}, (err, res) => {
-            console.log('res', res);
+            console.log('res', JSON.stringify(res, null, 4));
             t.ifError(err);
             t.deepEquals(res.indexes, [ 'poi']);
             t.end();
