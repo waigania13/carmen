@@ -1,5 +1,9 @@
 # Changelog
 
+## 22.4.4
+
+- Small improvements to language fallback behavior for Latvian, Lithuanian, Azerbaijani, and Estonian
+
 ## 22.4.3
 
 - Fix a problem with carmen-index.js in cases where the passed-in tokens file contains a function
