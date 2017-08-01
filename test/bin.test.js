@@ -206,14 +206,14 @@ tape('bin/carmen query wrong stacks', (t) => {
 tape('bin/carmen query language=es', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
+        t.equal(/0\.\d+ Brasil/.test(stdout), true, 'finds brasil');
         t.end();
     });
 });
 tape('bin/carmen query language=es,en', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es,en"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
+        t.equal(/0\.\d+ Brasil/.test(stdout), true, 'finds brasil');
         t.end();
     });
 });
