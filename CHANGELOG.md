@@ -1,5 +1,10 @@
 # Changelog
 
+## 22.5.0
+
+- Create `[W,S,E,N]` bboxes when feature geometry straddles the antimeridian
+- Optionally clip these `[W,S,E,N] bboxes at +/-179.9 degrees, to preserve backwards compatibility
+
 ## 22.4.4
 
 - Small improvements to language fallback behavior for Latvian, Lithuanian, Azerbaijani, and Estonian
