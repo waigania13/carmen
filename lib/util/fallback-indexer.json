@@ -1,0 +1,251 @@
+{
+  "ar": null,
+  "az": [
+    "tr"
+  ],
+  "ba": [
+    "sr"
+  ],
+  "bg": [
+    "mk",
+    "sr",
+    "ru"
+  ],
+  "bn": null,
+  "bs": [
+    "hr",
+    "sr",
+    "ru"
+  ],
+  "ca": [
+    "es",
+    "pt"
+  ],
+  "cs": [
+    "sk",
+    "it",
+    "pt"
+  ],
+  "da": [
+    "no",
+    "nb",
+    "sv",
+    "nl"
+  ],
+  "de": [
+    "sk",
+    "ro",
+    "nl"
+  ],
+  "el": [
+    "de",
+    "fr",
+    "it"
+  ],
+  "en": [
+    "es",
+    "fr",
+    "de"
+  ],
+  "es": [
+    "pt",
+    "fr",
+    "nl"
+  ],
+  "et": [
+    "fi"
+  ],
+  "fa": [
+    "az"
+  ],
+  "fi": [
+    "sv",
+    "nb",
+    "nl"
+  ],
+  "fr": [
+    "nl",
+    "ro",
+    "it",
+    "sk",
+    "pt"
+  ],
+  "gu": [
+    "hi",
+    "kn"
+  ],
+  "he": null,
+  "hi": [
+    "gu",
+    "kn"
+  ],
+  "hr": [
+    "bs",
+    "sr",
+    "it",
+    "es"
+  ],
+  "hu": [
+    "ro",
+    "de"
+  ],
+  "id": [
+    "ms",
+    "vi",
+    "sk",
+    "ro"
+  ],
+  "in": null,
+  "is": null,
+  "it": [
+    "ro",
+    "fr"
+  ],
+  "ja": null,
+  "ka": [
+    "ru"
+  ],
+  "kk": [
+    "ru"
+  ],
+  "kn": null,
+  "ko": null,
+  "lt": [
+    "lv"
+  ],
+  "lv": [
+    "lt"
+  ],
+  "mk": [
+    "bg",
+    "ru"
+  ],
+  "mn": [
+    "ru"
+  ],
+  "ms": [
+    "id",
+    "vi"
+  ],
+  "nb": [
+    "no",
+    "da",
+    "sv",
+    "nl"
+  ],
+  "nl": [
+    "fr"
+  ],
+  "no": [
+    "nb",
+    "da"
+  ],
+  "pl": [
+    "sk",
+    "nl",
+    "ro",
+    "hu"
+  ],
+  "pt": [
+    "es",
+    "it"
+  ],
+  "ro": null,
+  "ru": [
+    "kk"
+  ],
+  "si": null,
+  "sk": [
+    "cs"
+  ],
+  "sl": null,
+  "sq": null,
+  "sr": [
+    "bs",
+    "hr",
+    "ru"
+  ],
+  "sr_Cyrl": [
+    "sr",
+    "ru",
+    "sr_Latn",
+    "bs",
+    "hr"
+  ],
+  "sr_Latn": [
+    "hr",
+    "bs"
+  ],
+  "sr_BA": [
+    "sr_Latn",
+    "hr",
+    "bs"
+  ],
+  "sr_CS": [
+    "sr_Latn",
+    "hr",
+    "bs"
+  ],
+  "sr_ME": [
+    "sr_Latn",
+    "hr",
+    "bs"
+  ],
+  "sr_RS": [
+    "sr_Latn",
+    "hr",
+    "bs"
+  ],
+  "sv": null,
+  "ta": null,
+  "te": null,
+  "tg": [
+    "ru"
+  ],
+  "th": null,
+  "tl": null,
+  "tr": [
+    "pt",
+    "de",
+    "fr"
+  ],
+  "uk": [
+    "ru"
+  ],
+  "ur": null,
+  "uz": [
+    "ru"
+  ],
+  "vi": [
+    "ms",
+    "fr"
+  ],
+  "zh": [
+    "zh_Hans",
+    "zh_Hant"
+  ],
+  "zh_CN": [
+    "zh_Hans",
+    "zh",
+    "zh_Hant"
+  ],
+  "zh_Hans": [
+    "zh",
+    "zh_Hant"
+  ],
+  "zh_Hant": [
+    "zh",
+    "zh_Hans"
+  ],
+  "zh_HK": [
+    "zh_TW",
+    "zh_Hant",
+    "zh",
+    "zh_Hans"
+  ],
+  "zh_TW": [
+    "zh_Hant",
+    "zh",
+    "zh_Hans"
+  ]
+}
