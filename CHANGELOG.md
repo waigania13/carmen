@@ -1,5 +1,11 @@
 # Changelog
 
+## 23.0.0
+
+- Improves handling of cross-language queries against data with partial translation coverage.
+- Update handling of default text to no longer have preferential fallback treatment.
+- Split display and query fallback language definitions.
+
 ## 22.5.0
 
 - Create `[W,S,E,N]` bboxes when feature geometry straddles the antimeridian
