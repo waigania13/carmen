@@ -1,5 +1,9 @@
 # Changelog
 
+## 23.0.1
+
+- Packaging fix for carmen-cache.
+
 ## 23.0.0
 
 - Improves handling of cross-language queries against data with partial translation coverage.
