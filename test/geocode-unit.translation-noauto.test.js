@@ -73,7 +73,7 @@ const runTests = (mode) => {
 
             t.deepEqual(res.features[1].place_name, 'South Carolina', 'found: South Carolina (in second place)');
             t.deepEqual(res.features[1].id, 'region.1');
-            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'South Carolina has a relevance penalty vs. Delaware');
+            t.ok(res.features[0].relevance - res.features[1].relevance >= 0.05, 'South Carolina has a relevance penalty vs. Delaware');
 
             t.end();
         });
@@ -87,7 +87,7 @@ const runTests = (mode) => {
 
             t.deepEqual(res.features[1].place_name, 'South Carolina', 'found: South Carolina (in second place)');
             t.deepEqual(res.features[1].id, 'region.1');
-            t.ok(res.features[0].relevance - res.features[1].relevance >= .1, 'South Carolina has a relevance penalty vs. Delaware');
+            t.ok(res.features[0].relevance - res.features[1].relevance >= 0.05, 'South Carolina has a relevance penalty vs. Delaware');
 
             t.end();
         });

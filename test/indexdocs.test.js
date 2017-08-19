@@ -39,13 +39,13 @@ tape('indexdocs.loadDoc', (t) => {
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     // Indexes single doc.
-    err = indexdocs.loadDoc(freq, patch, doc, null, zoom, token_replacer);
+    err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
     t.ok(typeof err !== 'number', 'no error');
 
     t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'all' ], '1 language in patch.grid[0]');
-    t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('all').length, 2, '2 grids for language "all" in patch.grid[0]');
-    t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('all')[0]), {
+    t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'default' ], '1 language in patch.grid[0]');
+    t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('default').length, 2, '2 grids for language "all" in patch.grid[0]');
+    t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('default')[0]), {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
