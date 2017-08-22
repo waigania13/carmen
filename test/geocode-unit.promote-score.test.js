@@ -116,7 +116,7 @@ tape('build queued features', (t) => {
 tape('find georgia', (t) => {
     c.geocode('georgia', {}, (err, res) => {
         t.equal(res.features[0].id, 'region.1');
-        t.equal(res.features[0].relevance, 0.99);
+        t.equal(res.features[0].relevance, 1.00);
         t.end();
     });
 });

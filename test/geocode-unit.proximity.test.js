@@ -146,7 +146,7 @@ tape('forward country - single layer - limit', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -156,7 +156,7 @@ tape('forward country - proximity - single layer - limit', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.2', 'found country.2');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -166,7 +166,7 @@ tape('forward country - proximity - single layer - limit', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -176,7 +176,7 @@ tape('forward country - multi layer - limit', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province', 'found province');
         t.equals(res.features[0].id, 'country.3', 'found country.3');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -186,7 +186,7 @@ tape('forward country - single layer', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -196,7 +196,7 @@ tape('forward country - proximity - single layer', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.2', 'found country.2');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -206,7 +206,7 @@ tape('forward country - proximity - single layer', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -216,7 +216,7 @@ tape('forward country - multi layer', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province', 'found province');
         t.equals(res.features[0].id, 'country.3', 'found country.3');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
@@ -227,7 +227,7 @@ tape('forward country - scoredist wins', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province, country', 'found province');
         t.equals(res.features[0].id, 'province.1', 'found province.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });

@@ -113,7 +113,7 @@ tape('find nueva york, language=es', (t) => {
 tape('find nueva york, language=ca', (t) => {
     c.geocode('nueva york', { language: 'ca' }, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 0.99, "query has full relevance because 'nueva york' has no ca translation but es falls back");
+        t.equal(res.features[0].relevance, 1.00, "query has full relevance because 'nueva york' has no ca translation but es falls back");
         t.end();
     });
 });
@@ -211,7 +211,7 @@ tape('build queued features', (t) => {
 tape('find makkah', (t) => {
     c2.geocode('makkah', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 0.99);
+        t.equal(res.features[0].relevance, 1.00);
         t.end();
     });
 });

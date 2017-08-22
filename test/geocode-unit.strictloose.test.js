@@ -61,7 +61,7 @@ tape('albany australia', (t) => {
     c.geocode('albany australia', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'albany, western australia, australia');
-        t.deepEqual(res.features[0].relevance, 0.999);
+        t.deepEqual(res.features[0].relevance, 1.0);
         t.end();
     });
 });

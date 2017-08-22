@@ -8,8 +8,6 @@
         {
             "id": "place.1",
             "type": "Feature",
-            "text": "Toronto",
-            "place_name": "Toronto, Ontario, Canada",
             "place_type": [
                 "place"
             ],
@@ -292,6 +290,8 @@
                 "carmen:geomtype": 3,
                 "carmen:reverseMode": false
             },
+            "text": "Toronto",
+            "place_name": "Toronto, Ontario, Canada",
             "bbox": [
                 -40,
                 -40,
@@ -311,20 +311,18 @@
             },
             "context": [
                 {
-                    "text": "Ontario",
-                    "id": "region.1"
+                    "id": "region.1",
+                    "text": "Ontario"
                 },
                 {
-                    "text": "Canada",
-                    "id": "country.1"
+                    "id": "country.1",
+                    "text": "Canada"
                 }
             ]
         },
         {
             "id": "region.1",
             "type": "Feature",
-            "text": "Ontario",
-            "place_name": "Ontario, Canada",
             "place_type": [
                 "region"
             ],
@@ -604,6 +602,8 @@
                 "carmen:geomtype": 3,
                 "carmen:reverseMode": false
             },
+            "text": "Ontario",
+            "place_name": "Ontario, Canada",
             "bbox": [
                 -40,
                 -40,
@@ -623,16 +623,14 @@
             },
             "context": [
                 {
-                    "text": "Canada",
-                    "id": "country.1"
+                    "id": "country.1",
+                    "text": "Canada"
                 }
             ]
         },
         {
             "id": "country.1",
             "type": "Feature",
-            "text": "Canada",
-            "place_name": "Canada",
             "place_type": [
                 "country"
             ],
@@ -912,6 +910,8 @@
                 "carmen:geomtype": 3,
                 "carmen:reverseMode": false
             },
+            "text": "Canada",
+            "place_name": "Canada",
             "bbox": [
                 -40,
                 -40,
