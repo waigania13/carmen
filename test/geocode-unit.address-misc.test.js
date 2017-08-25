@@ -111,7 +111,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('3 Grundarstræti', null, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '3 Grundarstræti', 'Matched ITP');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });

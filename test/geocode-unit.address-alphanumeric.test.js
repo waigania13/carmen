@@ -34,7 +34,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9B FAKE STREET', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });
@@ -91,7 +91,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('70 WASHINGTON STREET #501', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found: 70 WASHINGTON STREET');
-            t.equals(res.features[0].relevance, 0.49);
+            t.equals(res.features[0].relevance, 0.50);
             t.end();
         });
     });
@@ -121,7 +121,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });
@@ -151,7 +151,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });
@@ -183,7 +183,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.equals(res.features[0].address, '9b', 'address number is 9b');
             t.end();
         });
@@ -226,7 +226,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.equals(res.features[0].address, '9b', 'address number is 9b');
             t.end();
         });
@@ -289,7 +289,7 @@ const addFeature = require('../lib/util/addfeature'),
     tape('test UK postcode not getting confused w/ address range', (t) => {
         c.geocode('B77 1AB', { limit_verify: 10 }, (err, res) => {
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
             let addressInResultSet = res.features.some((feature) => { return feature.id.split('.')[0] === 'address' });
             t.ok(!addressInResultSet, 'result set does not include address feature');
@@ -324,7 +324,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('23-414 beach street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '23-414 beach street', 'found 23-414 beach street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });

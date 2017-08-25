@@ -65,7 +65,7 @@ tape('test address query with address range', (t) => {
     c.geocode('100 fake street', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, '100 fake street', 'found 100 fake street');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
