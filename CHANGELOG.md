@@ -1,5 +1,17 @@
 # Changelog
 
+## 23.0.3
+
+- Make maskAddress a bit smarter by looking at both the coverText and query to determine if
+  it's about to reuse a housenum that was really originally interpreted as a street.
+  (https://github.com/mapbox/carmen/pull/648)
+- Fix a bug that could let indexer-only token replacers leak into runtime replacers
+  (https://github.com/mapbox/carmen/pull/649)
+
+## 23.0.2
+
+- Remove stacky bonus and gappy penalty (https://github.com/mapbox/carmen/pull/647)
+
 ## 23.0.1
 
 - Packaging fix for carmen-cache.
