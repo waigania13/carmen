@@ -120,6 +120,7 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'default' ], tokens: ['1##', 'main', 'street' ] },
         { languages: [ 'default' ], tokens: ['##', 'main', 'street' ] },
         { languages: [ 'default' ], tokens: ['#', 'main', 'street' ] },
+        { languages: [ 'default' ], tokens: ['main', 'street' ] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
