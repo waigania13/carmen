@@ -55,7 +55,7 @@ test('termops.getIndexableText', (t) => {
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants 3');
 
     texts = [
-        { languages: [ 'all' ], tokens: [ 'main', 'st', 'ln', 'ln' ], variants: [
+        { languages: [ 'default' ], tokens: [ 'main', 'st', 'ln', 'ln' ], variants: [
             [ 'main', 'st', 'ln', 'lane' ],
             [ 'main', 'st', 'lane', 'ln' ],
             [ 'main', 'st', 'lane', 'lane' ],
@@ -136,6 +136,43 @@ test('termops.getIndexableText', (t) => {
         { languages: [ 'default' ], tokens: ['main', 'street' ] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
+
+    replacer = token.createReplacer({'street': 'st'});
+    doc = {
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:addressnumber': [[1, 10, 100, 200]]
+        }
+    };
+    texts = [
+        { languages: [ 'default' ], tokens: [ '2##', 'main', 'st' ] },
+        { languages: [ 'default' ], tokens: [ '1##', 'main', 'st' ] },
+        { languages: [ 'default' ], tokens: [ '##', 'main', 'st' ] },
+        { languages: [ 'default' ], tokens: [ '#', 'main', 'st' ] },
+        { languages: [ 'default' ], tokens: [ 'main', 'st' ] },
+        { languages: [ 'default' ], tokens: [ '2##', 'main', 'street' ] },
+        { languages: [ 'default' ], tokens: [ '1##', 'main', 'street' ] },
+        { languages: [ 'default' ], tokens: [ '##', 'main', 'street' ] },
+        { languages: [ 'default' ], tokens: [ '#', 'main', 'street' ] },
+        { languages: [ 'default' ], tokens: [ 'main', 'street' ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
+
+    replacer = token.createReplacer({'street': 'st'});
+    doc = {
+        properties: {
+            'carmen:text':'Main Street',
+            'carmen:addressnumber': [[1, 10, 100, 200]]
+        }
+    };
+    texts = [
+        { languages: [ 'default' ], tokens: [ '2##', 'main', 'st' ], variants: [ [ '2##', 'main', 'street' ] ] },
+        { languages: [ 'default' ], tokens: [ '1##', 'main', 'st' ], variants: [ [ '1##', 'main', 'street' ] ] },
+        { languages: [ 'default' ], tokens: [ '##', 'main', 'st' ], variants: [ [ '##', 'main', 'street' ] ] },
+        { languages: [ 'default' ], tokens: [ '#', 'main', 'st' ], variants: [ [ '#', 'main', 'street' ] ] },
+        { languages: [ 'default' ], tokens: [ 'main', 'st' ], variants: [ [ 'main', 'street' ] ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [],  doc, true), texts, 'with range and marked variants');
 
     replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'Main Street', 'carmen:text_es': 'El Main Street' } };
