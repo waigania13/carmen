@@ -54,6 +54,19 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants 3');
 
+    texts = [
+        { languages: [ 'all' ], tokens: [ 'main', 'st', 'ln', 'ln' ], variants: [
+            [ 'main', 'st', 'ln', 'lane' ],
+            [ 'main', 'st', 'lane', 'ln' ],
+            [ 'main', 'st', 'lane', 'lane' ],
+            [ 'main', 'street', 'ln', 'ln' ],
+            [ 'main', 'street', 'ln', 'lane' ],
+            [ 'main', 'street', 'lane', 'ln' ],
+            [ 'main', 'street', 'lane', 'lane' ]
+        ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'include variants 3 with marked variants');
+
     doc = { properties: { 'carmen:text': 'Main Street St Lane Ln' } };
     texts = [
         { languages: [ 'all' ], tokens: [ 'main', 'st', 'st', 'ln', 'ln' ] }

@@ -149,6 +149,12 @@ function Geocoder(indexes, options) {
             lang.languages.forEach(function(l, idx) { lang.lang_map[l] = idx; });
             source.lang = lang;
 
+            // decide whether to use the text normalization cache
+            source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
+            if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
+                source._dictcache.loadNormalizationCache(data.norm);
+            }
+
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];
             this.byname[name].push(source);
@@ -257,6 +263,7 @@ function Geocoder(indexes, options) {
                 var filename = source.getBaseFilename();
                 props.freq = filename + '.freq.rocksdb';
                 props.grid = filename + '.grid.rocksdb';
+                props.norm = filename + '.norm.rocksdb';
                 callback(null, props);
             });
         });
