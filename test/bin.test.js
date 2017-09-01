@@ -118,7 +118,7 @@ tape('bin/carmen-index', (t) => {
 tape('bin/carmen DEBUG', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Canada/.test(stdout), true, 'finds canada');
+        t.equal(/\d+\.\d+ Canada/.test(stdout), true, 'finds canada');
         t.ok(stdout.indexOf('PhraseMatch\n-----------') !== -1, 'debug phrase match');
         t.ok(stdout.indexOf('SpatialMatch\n------------') !== -1, 'debug spatial');
         t.ok(stdout.indexOf('spatialmatch position: 0') !== -1, 'debug spatial');
@@ -145,7 +145,7 @@ tape('bin/carmen version', (t) => {
 tape('bin/carmen query', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
         t.end();
     });
 });
@@ -179,7 +179,7 @@ tape('bin/carmen query w/ stats', (t) => {
 tape('bin/carmen query w/ global tokens', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --tokens="'+__dirname + '/fixtures/tokens.json"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Canada/.test(stdout), true, 'finds canada');
+        t.equal(/\d+\.\d+ Canada/.test(stdout), true, 'finds canada');
         t.end();
     });
 });
@@ -187,7 +187,7 @@ tape('bin/carmen query w/ global tokens', (t) => {
 tape('bin/carmen query types', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --types="test-carmen-index-' + rand + '"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brazil/.test(stdout), true, 'finds brazil');
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
         t.end();
     });
 });
@@ -206,14 +206,14 @@ tape('bin/carmen query wrong stacks', (t) => {
 tape('bin/carmen query language=es', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
+        t.equal(/\d+\.\d+ Brasil/.test(stdout), true, 'finds brasil');
         t.end();
     });
 });
 tape('bin/carmen query language=es,en', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --language="es,en"', (err, stdout, stderr) => {
         t.ifError(err);
-        t.equal(/0\.99 Brasil/.test(stdout), true, 'finds brasil');
+        t.equal(/\d+\.\d+ Brasil/.test(stdout), true, 'finds brasil');
         t.end();
     });
 });

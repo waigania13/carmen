@@ -1,5 +1,40 @@
 # Changelog
 
+## 23.0.4
+
+- Fix indexing of address text without house numbers to be weighted consistently
+
+## 23.0.3
+
+- Make maskAddress a bit smarter by looking at both the coverText and query to determine if
+  it's about to reuse a housenum that was really originally interpreted as a street.
+  (https://github.com/mapbox/carmen/pull/648)
+- Fix a bug that could let indexer-only token replacers leak into runtime replacers
+  (https://github.com/mapbox/carmen/pull/649)
+
+## 23.0.2
+
+- Remove stacky bonus and gappy penalty (https://github.com/mapbox/carmen/pull/647)
+
+## 23.0.1
+
+- Packaging fix for carmen-cache.
+
+## 23.0.0
+
+- Improves handling of cross-language queries against data with partial translation coverage.
+- Update handling of default text to no longer have preferential fallback treatment.
+- Split display and query fallback language definitions.
+
+## 22.5.0
+
+- Create `[W,S,E,N]` bboxes when feature geometry straddles the antimeridian
+- Optionally clip these `[W,S,E,N] bboxes at +/-179.9 degrees, to preserve backwards compatibility
+
+## 22.4.4
+
+- Small improvements to language fallback behavior for Latvian, Lithuanian, Azerbaijani, and Estonian
+
 ## 22.4.3
 
 - Fix a problem with carmen-index.js in cases where the passed-in tokens file contains a function

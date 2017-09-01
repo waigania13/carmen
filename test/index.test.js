@@ -317,8 +317,8 @@ test('index phrase collection', (t) => {
     function afterUpdate(err) {
         t.ifError(err);
         let id1 = termops.encodePhrase('a');
-        t.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), null] ], '1 phrase');
-        t.deepEqual(conf.test._geocoder.grid.get(id1), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
+        t.deepEqual(conf.test._geocoder.grid.list(), [ [id1.toString(), [0]] ], '1 phrase');
+        t.deepEqual(conf.test._geocoder.grid.get(id1, [0]), [ 6755949230424066, 6755949230424065 ], 'grid has 2 zxy+feature ids');
         t.end();
     }
 });

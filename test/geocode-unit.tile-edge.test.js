@@ -30,7 +30,7 @@ tape('forward between tiles', (t) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'test', 'found feature');
         t.equals(res.features[0].id, 'test.1', 'found feature');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });

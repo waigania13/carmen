@@ -3,6 +3,9 @@ machine:
     version: 6
   pre:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test; sudo apt-get -y update; sudo apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
+dependencies:
+  pre:
+    - npm install -g npm
 test:
   override:
     - npm run lint

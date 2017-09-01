@@ -1,10 +1,7 @@
 {
-  "ar": [
-    "en"
-  ],
+  "ar": null,
   "az": [
-    "en",
-    "ru"
+    "tr"
   ],
   "ba": [
     "sr"
@@ -12,12 +9,9 @@
   "bg": [
     "mk",
     "sr",
-    "ru",
-    "en"
+    "ru"
   ],
-  "bn": [
-    "en"
-  ],
+  "bn": null,
   "bs": [
     "hr",
     "sr",
@@ -25,30 +19,25 @@
   ],
   "ca": [
     "es",
-    "pt",
-    "en"
+    "pt"
   ],
   "cs": [
     "sk",
     "it",
-    "pt",
-    "en"
+    "pt"
   ],
   "da": [
     "no",
     "nb",
     "sv",
-    "nl",
-    "en"
+    "nl"
   ],
   "de": [
     "sk",
     "ro",
-    "nl",
-    "en"
+    "nl"
   ],
   "el": [
-    "en",
     "de",
     "fr",
     "it"
@@ -61,13 +50,10 @@
   "es": [
     "pt",
     "fr",
-    "nl",
-    "en"
+    "nl"
   ],
   "et": [
-    "fi",
-    "en",
-    "ru"
+    "fi"
   ],
   "fa": [
     "az"
@@ -75,80 +61,60 @@
   "fi": [
     "sv",
     "nb",
-    "nl",
-    "en"
+    "nl"
   ],
   "fr": [
     "nl",
     "ro",
     "it",
     "sk",
-    "pt",
-    "en"
+    "pt"
   ],
   "gu": [
     "hi",
-    "kn",
-    "en"
+    "kn"
   ],
-  "he": [
-    "en"
-  ],
+  "he": null,
   "hi": [
     "gu",
-    "kn",
-    "en"
+    "kn"
   ],
   "hr": [
     "bs",
     "sr",
     "it",
-    "es",
-    "en"
+    "es"
   ],
   "hu": [
     "ro",
-    "en",
     "de"
   ],
   "id": [
     "ms",
     "vi",
     "sk",
-    "ro",
-    "en"
+    "ro"
   ],
-  "in": [
-    "en"
-  ],
-  "is": [
-    "en"
-  ],
+  "in": null,
+  "is": null,
   "it": [
     "ro",
-    "fr",
-    "en"
+    "fr"
   ],
   "ja": null,
   "ka": [
-    "ru",
-    "en"
+    "ru"
   ],
   "kk": [
     "ru"
   ],
-  "kn": [
-    "en"
-  ],
+  "kn": null,
   "ko": null,
   "lt": [
-    "lv",
-    "ru",
-    "pl"
+    "lv"
   ],
   "lv": [
-    "en",
-    "ru"
+    "lt"
   ],
   "mk": [
     "bg",
@@ -158,7 +124,6 @@
     "ru"
   ],
   "ms": [
-    "en",
     "id",
     "vi"
   ],
@@ -169,8 +134,7 @@
     "nl"
   ],
   "nl": [
-    "fr",
-    "en"
+    "fr"
   ],
   "no": [
     "nb",
@@ -180,32 +144,22 @@
     "sk",
     "nl",
     "ro",
-    "en",
     "hu"
   ],
   "pt": [
     "es",
     "it"
   ],
-  "ro": [
-    "en"
-  ],
+  "ro": null,
   "ru": [
     "kk"
   ],
-  "si": [
-    "en"
-  ],
+  "si": null,
   "sk": [
-    "cs",
-    "en"
+    "cs"
   ],
-  "sl": [
-    "en"
-  ],
-  "sq": [
-    "en"
-  ],
+  "sl": null,
+  "sq": null,
   "sr": [
     "bs",
     "hr",
@@ -242,43 +196,29 @@
     "hr",
     "bs"
   ],
-  "sv": [
-    "en"
-  ],
-  "ta": [
-    "en"
-  ],
-  "te": [
-    "en"
-  ],
+  "sv": null,
+  "ta": null,
+  "te": null,
   "tg": [
     "ru"
   ],
-  "th": [
-    "en"
-  ],
-  "tl": [
-    "en"
-  ],
+  "th": null,
+  "tl": null,
   "tr": [
     "pt",
     "de",
-    "fr",
-    "en"
+    "fr"
   ],
   "uk": [
     "ru"
   ],
-  "ur": [
-    "en"
-  ],
+  "ur": null,
   "uz": [
     "ru"
   ],
   "vi": [
     "ms",
-    "fr",
-    "en"
+    "fr"
   ],
   "zh": [
     "zh_Hans",

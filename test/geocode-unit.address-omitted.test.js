@@ -34,7 +34,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9 fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9 fake street', 'found 9 fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });
@@ -70,7 +70,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('102 fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '102 fake street', 'found 102 fake street');
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });

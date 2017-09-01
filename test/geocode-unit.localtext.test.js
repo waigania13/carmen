@@ -94,7 +94,7 @@ tape('Российская => Russian Federation (autocomplete without language 
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.ok(res.features[0].relevance < .8, 'Relevance penalty was applied for out-of-language match');
+        t.ok(res.features[0].relevance <= .9, 'Relevance penalty was applied for out-of-language match');
         t.deepEqual(res.features[0].id, 'country.2');
         t.deepEqual(res.features[0].id, 'country.2');
         t.end();
@@ -119,7 +119,7 @@ tape('Российская => Российская Федерация (autocompl
         t.ifError(err);
         t.deepEqual(res.features.length, 1, '1 result');
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
-        t.ok(res.features[0].relevance < .8, 'Relevance penalty was applied for out-of-language match');
+        t.ok(res.features[0].relevance <= .9, 'Relevance penalty was applied for out-of-language match');
         t.deepEqual(res.features[0].place_name_ru, 'Российская Федерация');
         t.deepEqual(res.features[0].id, 'country.2');
         t.end();

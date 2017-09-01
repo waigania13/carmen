@@ -33,7 +33,7 @@ const addFeature = require('../lib/util/addfeature'),
     tape('test address index for relev', (t) => {
         c.geocode('fake st', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'token replacement test, fake st');
+            t.equals(res.features[0].relevance, 1.00, 'token replacement test, fake st');
             t.end();
         });
     });
@@ -66,14 +66,14 @@ const addFeature = require('../lib/util/addfeature'),
     tape('test address index for relev', (t) => {
         c.geocode('avenue du 18e régiment', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'avenue du 18e');
+            t.equals(res.features[0].relevance, 1.00, 'avenue du 18e');
             t.end();
         });
     });
     tape('test address index for relev', (t) => {
         c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'avenue du dix-huitième régiment');
+            t.equals(res.features[0].relevance, 1.00, 'avenue du dix-huitième régiment');
             t.end();
         });
     });
@@ -105,7 +105,7 @@ const addFeature = require('../lib/util/addfeature'),
     tape('test token replacement', (t) => {
         c.geocode('qabc', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'token regex numbered group test, qabc => qcba');
+            t.equals(res.features[0].relevance, 1.00, 'token regex numbered group test, qabc => qcba');
             t.end();
         });
     });
@@ -342,21 +342,21 @@ const addFeature = require('../lib/util/addfeature'),
     tape('test token replacement', (t) => {
         c.geocode('Talstrasse', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
         c.geocode('Talstr ', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
         c.geocode('Tal str ', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99, 'token replacement for str -> strasse');
+            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
