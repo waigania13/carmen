@@ -1,5 +1,9 @@
 # Changelog
 
+## 23.0.4
+
+- Fix indexing of address text without house numbers to be weighted consistently
+
 ## 23.0.3
 
 - Make maskAddress a bit smarter by looking at both the coverText and query to determine if
