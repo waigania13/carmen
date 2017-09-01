@@ -113,6 +113,24 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include st if there\'s a custom reverse function');
 
+    replacer = token.createReplacer({'Saint': 'St', 'Street':'St', 'Lane':'Ln'}, {
+        includeUnambiguous: true,
+        custom: {
+            'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
+            'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
+            'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'},
+        }
+    });
+    doc = { properties: { 'carmen:text': 'Äpfelstrüdeln Strasse' } };
+    texts = [
+        { languages: [ 'default' ], tokens: [ 'äpfelstrüdeln', 'strasse' ] },
+        { languages: [ 'default' ], tokens: [ 'äpfelstruedeln', 'strasse' ] },
+        { languages: [ 'default' ], tokens: [ 'aepfelstrüdeln', 'strasse' ] },
+        { languages: [ 'default' ], tokens: [ 'aepfelstruedeln', 'strasse' ] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'support custom reverse functions that can skip word boundaries');
+
+
     replacer = token.createReplacer({'dix-huitième':'18e'});
     doc = { properties: { 'carmen:text': 'Avenue du dix-huitième régiment' } };
     texts = [
