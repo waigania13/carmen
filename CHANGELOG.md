@@ -1,5 +1,10 @@
 # Changelog
 
+## 23.0.5
+
+- Fix proximity issue via upstream fix in carmen-cache
+- Tune proximity settings to weight local results more heavily
+
 ## 23.0.4
 
 - Fix indexing of address text without house numbers to be weighted consistently
