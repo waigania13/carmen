@@ -92,12 +92,12 @@ test('scoredist', (t) => {
 // The radius of effect extends further at lower zooms
 test('zoom weighting', (t) => {
     let score = 1000;
-    let distance = 100; //miles
+    let distance = 30; //miles
 
-    t.deepEqual(scoredist(score, distance, 6), 3600, 'zoom 6');
-    t.deepEqual(scoredist(score, distance, 8), 2800, 'zoom 8');
-    t.deepEqual(scoredist(score, distance, 10), 2000, 'zoom 10');
-    t.deepEqual(scoredist(score, distance, 12), 1200, 'zoom 12');
-    t.deepEqual(scoredist(score, distance, 14), 400, 'zoom 14');
+    t.deepEqual(scoredist(score, distance, 6, 40), 84027.7778, 'zoom 6');
+    t.deepEqual(scoredist(score, distance, 8, 40), 79719.3878, 'zoom 8');
+    t.deepEqual(scoredist(score, distance, 10, 40), 72250, 'zoom 10');
+    t.deepEqual(scoredist(score, distance, 12, 40), 56250, 'zoom 12');
+    t.deepEqual(scoredist(score, distance, 14, 40), 6250, 'zoom 14');
     t.end();
 });
