@@ -244,25 +244,35 @@ test('token replacement', (q) => {
 
     q.deepEqual(
         token.enumerateTokenReplacements(tokens, 'fargo street northeast, san francisco'),
-        ['fargo', [' St', ' street'], '', [' NE,', ' northeast,'], '', [' sf', ' san francisco'], '']
+        [
+            'fargo St NE, sf',
+            'fargo St NE, san francisco',
+            'fargo street NE, sf', 'fargo street NE, san francisco',
+            'fargo St northeast, sf',
+            'fargo St northeast, san francisco',
+            'fargo street northeast, sf',
+            'fargo street northeast, san francisco'
+        ]
     );
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'main st street st st milwaukee lane ln wtf ln'), [
-        'main st',
-        [ ' St ', ' street ' ],
-        'st st milwaukee',
-        [ ' Ln ', ' lane ' ],
-        'ln wtf ln'
+        'main st St st st milwaukee Ln ln wtf ln',
+        'main st street st st milwaukee Ln ln wtf ln',
+        'main st St st st milwaukee lane ln wtf ln',
+        'main st street st st milwaukee lane ln wtf ln'
     ]);
     q.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
-        'main st',
-        [ ' St ', ' street ' ],
-        'st st milwaukee',
-        [ ' Ln ', ' lane ' ],
-        '',
-        [ 'ln ', 'Lane ' ],
-        'wtf',
-        [ ' ln', ' Lane' ],
-        ''
+        'main st St st st milwaukee Ln ln wtf ln',
+        'main st St st st milwaukee Ln ln wtf Lane',
+        'main st St st st milwaukee Lane ln wtf Lane',
+        'main st St st st milwaukee Lane Lane wtf Lane',
+        'main st street st st milwaukee Ln ln wtf ln',
+        'main st street st st milwaukee Ln ln wtf Lane',
+        'main st street st st milwaukee Lane ln wtf Lane',
+        'main st street st st milwaukee Lane Lane wtf Lane',
+        'main st St st st milwaukee lane ln wtf ln',
+        'main st St st st milwaukee lane Lane wtf ln',
+        'main st street st st milwaukee lane ln wtf ln',
+        'main st street st st milwaukee lane Lane wtf ln'
     ]);
 
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
@@ -275,20 +285,18 @@ test('custom reverse replacement', (q) => {
     q.deepEqual(token.replaceToken(tokensRC, 'e first st').toLowerCase(), 'east first street');
 
     q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
-        '',
-        [ 'st ', 'saint ' ],
-        'thomas',
-        [ ' st ' ],
-        'united states'
+        'st thomas st united states',
+        'saint thomas st united states'
     ]);
     q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'e first st'), [
-        '',
-        [ 'e', 'East' ],
-        '',
-        [ ' 1st ', ' first ' ],
-        '',
-        [ 'st', 'street' ],
-        ''
+        'e 1st st',
+        'e 1st street',
+        'East 1st st',
+        'East 1st street',
+        'e first st',
+        'e first street',
+        'East first st',
+        'East first street'
     ]);
 
     q.end();
@@ -340,8 +348,8 @@ test('named/numbered group replacement', (q) => {
     q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
     q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
 
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['', ['xyz ', 'abc '], '', ['@@@123@@@ ', '123 '], 'def']);
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['', ['xyz ', 'abc '], '', ['###234### ', '234 '], 'def']);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), [ 'xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def' ]);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), [ 'xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def' ]);
 
     q.end();
 });
