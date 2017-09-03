@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/2b04d5ddeb3ca7b895f3e6b52e6ba48025aad26a",
+    "@mapbox/carmen-cache": "https://github.com/mapbox/carmen-cache/tarball/0bbeaf0742b64541c0d1ceface3a50b64b9c53b2",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.9.0",
@@ -24,7 +24,7 @@
     "@turf/line-distance": "^4.0.1",
     "@turf/point-on-surface": "^4.0.1",
     "d3-queue": "3.0.x",
-    "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/caf01693a06186f16d354e753e73243270a048fe",
+    "dawg-cache": "https://github.com/mapbox/dawg-cache/tarball/21366ab741711210ad9578bf67cdedbb17fcc399",
     "err-code": "^1.1.2",
     "fs-extra": "^2.1.2",
     "geojson-rewind": "^0.2.0",
