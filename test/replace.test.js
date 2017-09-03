@@ -370,3 +370,20 @@ test('make sure word boundaries work right', function(q) {
     q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), 'Rua Oratório', "word-terminal token preceded by accented character (doesn't replace)");
     q.end();
 });
+
+test('test skipDiacritics and skipBoundaries flags', function(q) {
+    let replacer = token.createReplacer({
+        'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
+        'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
+        'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
+    }, {includeUnambiguous: true});
+    q.deepEqual(replacer, [
+        { named: false, from: /ä/gi, to: 'ae', inverse: false },
+        { named: false, from: /ö/gi, to: 'oe', inverse: false },
+        { named: false, from: /ü/gi, to: 'ue', inverse: false },
+        { named: false, from: /ae/gi, to: 'ä', inverse: true },
+        { named: false, from: /oe/gi, to: 'ö', inverse: true },
+        { named: false, from: /ue/gi, to: 'ü', inverse: true }
+    ], 'forward and reverse replacers get created for complex objects');
+    q.end();
+});

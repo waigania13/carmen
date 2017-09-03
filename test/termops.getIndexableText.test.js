@@ -206,3 +206,26 @@ test('termops.getIndexableText', (t) => {
     t.end();
 });
 
+test('replacer/globalReplacer interaction', function(t) {
+    let replacer = token.createReplacer({
+        'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
+        'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
+        'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
+    }, {includeUnambiguous: true});
+    let globalReplacer = token.createGlobalReplacer({
+        '(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)(.+)(strasse|str|straße)(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)': ' $1 str '
+    });
+
+    var withUmlaut = termops.getIndexableText(replacer, globalReplacer, { properties: { 'carmen:text': 'Phönixstraße' } });
+    var withOe = termops.getIndexableText(replacer, globalReplacer, { properties: { 'carmen:text': 'Phoenixstraße' } });
+
+    t.deepEqual(withUmlaut, withOe, "umlaut and oe versions get treated the same way");
+    t.deepEqual(withUmlaut, [
+        { tokens: [ 'phoenix', 'str' ], languages: [ 'default' ] },
+        { tokens: [ 'phönix', 'str' ], languages: [ 'default' ] },
+        { tokens: [ 'phoenixstraße' ], languages: [ 'default' ] },
+        { tokens: [ 'phönixstraße' ], languages: [ 'default' ] }
+    ], 'all variants are generated');
+
+    t.end();
+});
