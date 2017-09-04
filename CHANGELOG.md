@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.0.0
+
+- Optionally support a greater number of token-replacement permutations efficiently
+
 ## 23.0.5
 
 - Fix proximity issue via upstream fix in carmen-cache
