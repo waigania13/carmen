@@ -209,7 +209,110 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: {'strasse':'str'}
+            geocoder_tokens: {
+                "Road": "Rd",
+                "Street": "St"
+            },
+            use_normalization_cache: true
+        }, () => {})
+    };
+    const opts = {
+        tokens: {
+            'Suite [0-9]+': '',
+            'Lot [0-9]+': ''
+        }
+    }
+    const c = new Carmen(conf, opts);
+    tape('set opts', (t) => {
+        addFeature.setOptions(opts);
+        t.end();
+    });
+    tape('geocoder token test', (t) => {
+        let address = {
+            id:1,
+            properties: {
+                'carmen:text':'fake street',
+                'carmen:zxy':['6/32/32'],
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+    tape('geocoder token test', (t) => {
+        let address = {
+            id:2,
+            properties: {
+                'carmen:text':'main road lot 42 suite 432',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: "Point",
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+    });
+    tape('unset opts', (t) => {
+        addFeature.setOptions({});
+        t.end();
+    });
+    tape('test address index for relev', (t) => {
+        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'fake street');
+            t.end();
+        });
+    });
+    tape('test address index for relev', (t) => {
+        c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+
+    tape('test address index autocomplete + tokens (full)', (t) => {
+        c.geocode('main road', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+    tape('test address index autocomplete + tokens (abbrev)', (t) => {
+        c.geocode('main rd', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+    tape('test address index autocomplete + tokens (auto)', (t) => {
+        c.geocode('main roa', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+    tape('test address index autocomplete + tokens (auto)', (t) => {
+        c.geocode('main road', { limit_verify: 1, autocomplete: false }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
+            t.end();
+        });
+    });
+})();
+
+(() => {
+    const conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_tokens: {'strasse':'str'},
+            use_normalization_cache: true
         }, () => {})
     };
     const opts = {
@@ -259,10 +362,88 @@ const addFeature = require('../lib/util/addfeature'),
         });
     });
     tape('test token replacement', (t) => {
+        c.geocode('Talst ', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', (t) => {
+        c.geocode('Tal st ', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
+            t.end();
+        });
+    });
+    tape('test token replacement', (t) => {
         c.geocode('Talstrassesomthing', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
             t.end();
+        });
+    });
+    tape('unset opts', (t) => {
+        addFeature.setOptions({});
+        t.end();
+    });
+})();
+
+// Tests dawg text normalizer token replacement (ä/ö/ü) functionally
+(() => {
+    // Index-specific tokens
+    const conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_tokens: {
+                'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
+                'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
+                'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
+            },
+            use_normalization_cache: true
+        }, () => {})
+    };
+    // Global tokens
+    const opts = {
+        tokens: {
+            '\\b(.+)(strasse|str|straße)\\b': '$1 str'
+        }
+    };
+    const c = new Carmen(conf, opts);
+    tape('set opts', (t) => {
+        addFeature.setOptions(opts);
+        t.end();
+    });
+    tape('geocoder token test', (t) => {
+        let address = {
+            id:1,
+            properties: {
+                'carmen:text':'Phoenixstraße',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+    });
+    [
+        'phönixstraße',
+        'phönixstrasse',
+        'phoenixstraße',
+        'phoenixstrasse',
+        'phö',
+        'phönixstraß',
+        'phönixstras',
+        'phoe',
+        'phoenixstraß',
+        'phoenixstras',
+    ].forEach((query) => {
+        tape(`finds by ${query}`, (t) => {
+            c.geocode(query, { limit_verify: 1 }, (err, res) => {
+                t.equals(res.features[0].place_name, 'Phoenixstraße');
+                t.end();
+            });
         });
     });
     tape('unset opts', (t) => {
