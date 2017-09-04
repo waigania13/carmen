@@ -388,6 +388,70 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
+// Tests dawg text normalizer token replacement (ä/ö/ü) functionally
+(() => {
+    // Index-specific tokens
+    const conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_tokens: {
+                'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
+                'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
+                'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
+            },
+            use_normalization_cache: true
+        }, () => {})
+    };
+    // Global tokens
+    const opts = {
+        tokens: {
+            '\\b(.+)(strasse|str|straße)\\b': '$1 str'
+        }
+    };
+    const c = new Carmen(conf, opts);
+    tape('set opts', (t) => {
+        addFeature.setOptions(opts);
+        t.end();
+    });
+    tape('geocoder token test', (t) => {
+        let address = {
+            id:1,
+            properties: {
+                'carmen:text':'Phoenixstraße',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+    });
+    [
+        'phönixstraße',
+        'phönixstrasse',
+        'phoenixstraße',
+        'phoenixstrasse',
+        'phö',
+        'phönixstraß',
+        'phönixstras',
+        'phoe',
+        'phoenixstraß',
+        'phoenixstras',
+    ].forEach((query) => {
+        tape(`finds by ${query}`, (t) => {
+            c.geocode(query, { limit_verify: 1 }, (err, res) => {
+                t.equals(res.features[0].place_name, 'Phoenixstraße');
+                t.end();
+            });
+        });
+    });
+    tape('unset opts', (t) => {
+        addFeature.setOptions({});
+        t.end();
+    });
+})();
+
 tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
