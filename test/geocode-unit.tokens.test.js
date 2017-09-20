@@ -481,16 +481,18 @@ const addFeature = require('../lib/util/addfeature'),
         'bürbarg',
         'buerbarg'
     ].forEach((query) => {
-        tape(`finds by ${query}`, (t) => {
-            c.geocode(query, {}, (err, res) => {
-                if (query == "burbarg") {
-                    t.equals(res.features.length, 2);
-                    t.deepEqual(res.features.map((x) => { return x.place_name; }).sort(), ['Burbarg', 'Bürbarg']);
-                } else {
-                    t.equals(res.features.length, 1);
-                    t.equals(res.features[0].place_name, 'Bürbarg');
-                }
-                t.end();
+        [true, false].forEach((autocomplete) => {
+            tape(`finds by ${query} with autocomplete = ${autocomplete}`, (t) => {
+                c.geocode(query, { autocomplete: autocomplete }, (err, res) => {
+                    if (query == "burbarg") {
+                        t.equals(res.features.length, 2);
+                        t.deepEqual(res.features.map((x) => { return x.place_name; }).sort(), ['Burbarg', 'Bürbarg']);
+                    } else {
+                        t.equals(res.features.length, 1);
+                        t.equals(res.features[0].place_name, 'Bürbarg');
+                    }
+                    t.end();
+                });
             });
         });
     });
