@@ -18,11 +18,11 @@ test('termops.getHousenumRangeV3', (t) => {
 
     t.deepEqual(getHousenumRangeV3({
         properties: { 'carmen:addressnumber': [[ 0, 10000000000 ]] }
-    }), ['#','10#########'], 'carmen:addressnumber => [0,10000000000]');
+    }), ['#','1##########'], 'carmen:addressnumber => [0,10000000000]');
 
     t.deepEqual(getHousenumRangeV3({
         properties: { 'carmen:addressnumber': [[ 5, 10, 1, 13, 3100, 3101, 3503 ]] }
-    }), ['#','##','31##','35##'], 'carmen:addressnumber => [1,13,3100,3101,3503]');
+    }), ['#','##','3###'], 'carmen:addressnumber => [1,13,3100,3101,3503]');
 
     t.deepEqual(getHousenumRangeV3({
         properties: { 'carmen:addressnumber': [[ '5a', '10b', '1c', '13d' ]] }
@@ -91,7 +91,7 @@ test('termops.getHousenumRangeV3', (t) => {
         geometry: {
             geometries: [1]
         }
-    }), ['#', '##','10##','11##','12##'], 'complex case A');
+    }), ['#', '##','1###'], 'complex case A');
 
     t.deepEqual(getHousenumRangeV3({
         properties: {
@@ -102,7 +102,7 @@ test('termops.getHousenumRangeV3', (t) => {
         geometry: {
             geometries: [1]
         }
-    }), ['#', '##','1##','10##','2##', '3##', '4##', '5##', '6##', '7##', '8##', '9##'], 'complex case B');
+    }), ['#', '##','1##','1###','2##', '3##', '4##', '5##', '6##', '7##', '8##', '9##'], 'complex case B');
 
     t.end();
 });
