@@ -1,22 +1,24 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem({maxzoom: 6, geocoder_name:'country'}, function() {}),
-    region: new mem({maxzoom: 6, geocoder_name:'region'}, function() {}),
-    postcode: new mem({maxzoom: 6, geocoder_name:'postcode'}, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, function() {}),
+const conf = {
+    country: new mem({maxzoom: 6, geocoder_name:'country'}, () => {}),
+    region: new mem({maxzoom: 6, geocoder_name:'region'}, () => {}),
+    postcode: new mem({maxzoom: 6, geocoder_name:'postcode'}, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {}),
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index address (noise)', function(t) {
-    var q = queue(1);
-    for (var i = 1; i < 20; i++) q.defer(function(i, done) {
-        var address = {
+tape('index address (noise)', (t) => {
+    const q = queue(1);
+    for (let i = 1; i < 20; i++) q.defer((i, done) => {
+        let address = {
             id:i,
             properties: {
                 'carmen:text': 'Austria St',
@@ -29,13 +31,13 @@ tape('index address (noise)', function(t) {
                 coordinates: [[i,0]]
             }
         };
-        addFeature(conf.address, address, done);
+        queueFeature(conf.address, address, done);
     }, i);
     q.awaitAll(t.end);
 });
 
-tape('index country', function(t) {
-    addFeature(conf.country, {
+tape('index country', (t) => {
+    queueFeature(conf.country, {
         id:1,
         properties: {
             'carmen:text':'Austria',
@@ -45,8 +47,8 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index postcode', function(t) {
-    addFeature(conf.postcode, {
+tape('index postcode', (t) => {
+    queueFeature(conf.postcode, {
         id:1,
         properties: {
             'carmen:text':'2000',
@@ -55,17 +57,25 @@ tape('index postcode', function(t) {
         }
     }, t.end);
 });
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
-tape('test address', function(t) {
-    c.geocode('2000 Austria', { limit_verify: 5 }, function(err, res) {
+tape('test address', (t) => {
+    c.geocode('2000 Austria', { limit_verify: 5 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].id, 'postcode.1');
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
-

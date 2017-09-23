@@ -1,19 +1,22 @@
 // Unit tests for backy stacking of features ("lessingstrasse 50825 koln vs lessingstrasse koln 50825")
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    postcode: new mem(null, function() {}),
-    city: new mem(null, function() {}),
-    street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
+const conf = {
+    postcode: new mem(null, () => {}),
+    city: new mem(null, () => {}),
+    street: new mem({ maxzoom:6, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
-tape('index postcode', function(t) {
-    var doc = {
+const c = new Carmen(conf);
+tape('index postcode', (t) => {
+    let doc = {
         id:1,
         properties: {
             'carmen:text': '50825',
@@ -21,10 +24,10 @@ tape('index postcode', function(t) {
             'carmen:center': [0,0]
         }
     };
-    addFeature(conf.postcode, doc, t.end);
+    queueFeature(conf.postcode, doc, t.end);
 });
-tape('index city', function(t) {
-    var city = {
+tape('index city', (t) => {
+    let city = {
         id:1,
         properties: {
             'carmen:text':'koln',
@@ -32,10 +35,10 @@ tape('index city', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
-tape('index street 1', function(t) {
-    var street = {
+tape('index street 1', (t) => {
+    let street = {
         id:1,
         properties: {
             'carmen:text': 'lessingstrasse',
@@ -43,10 +46,10 @@ tape('index street 1', function(t) {
             'carmen:center': [0,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
-tape('index street 2', function(t) {
-    var street = {
+tape('index street 2', (t) => {
+    let street = {
         id:2,
         properties: {
             'carmen:text': 'lessingstrasse',
@@ -54,10 +57,19 @@ tape('index street 2', function(t) {
             'carmen:center': [360/64+0.001,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
-tape('lessingstrasse koln 50825', function(t) {
-    c.geocode('lessingstrasse koln 50825', { limit_verify:1 }, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+tape('lessingstrasse koln 50825', (t) => {
+    c.geocode('lessingstrasse koln 50825', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'lessingstrasse, koln, 50825');
         t.deepEqual(res.features[0].id, 'street.1');
@@ -65,8 +77,8 @@ tape('lessingstrasse koln 50825', function(t) {
         t.end();
     });
 });
-tape('lessingstrasse 50825 koln', function(t) {
-    c.geocode('lessingstrasse 50825 koln', { limit_verify:1 }, function(err, res) {
+tape('lessingstrasse 50825 koln', (t) => {
+    c.geocode('lessingstrasse 50825 koln', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'lessingstrasse, koln, 50825');
         t.deepEqual(res.features[0].id, 'street.1');
@@ -75,8 +87,7 @@ tape('lessingstrasse 50825 koln', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
-

@@ -8,8 +8,6 @@
         {
             "id": "place.1",
             "type": "Feature",
-            "text": "Toronto",
-            "place_name": "Toronto, Ontario, Canada",
             "place_type": [
                 "place"
             ],
@@ -289,8 +287,11 @@
                 "carmen:extid": "place.1",
                 "carmen:tmpid": 67108865,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3
+                "carmen:geomtype": 3,
+                "carmen:reverseMode": false
             },
+            "text": "Toronto",
+            "place_name": "Toronto, Ontario, Canada",
             "bbox": [
                 -40,
                 -40,
@@ -310,20 +311,18 @@
             },
             "context": [
                 {
-                    "text": "Ontario",
-                    "id": "region.1"
+                    "id": "region.1",
+                    "text": "Ontario"
                 },
                 {
-                    "text": "Canada",
-                    "id": "country.1"
+                    "id": "country.1",
+                    "text": "Canada"
                 }
             ]
         },
         {
             "id": "region.1",
             "type": "Feature",
-            "text": "Ontario",
-            "place_name": "Ontario, Canada",
             "place_type": [
                 "region"
             ],
@@ -600,8 +599,11 @@
                 "carmen:extid": "region.1",
                 "carmen:tmpid": 33554433,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3
+                "carmen:geomtype": 3,
+                "carmen:reverseMode": false
             },
+            "text": "Ontario",
+            "place_name": "Ontario, Canada",
             "bbox": [
                 -40,
                 -40,
@@ -621,16 +623,14 @@
             },
             "context": [
                 {
-                    "text": "Canada",
-                    "id": "country.1"
+                    "id": "country.1",
+                    "text": "Canada"
                 }
             ]
         },
         {
             "id": "country.1",
             "type": "Feature",
-            "text": "Canada",
-            "place_name": "Canada",
             "place_type": [
                 "country"
             ],
@@ -907,8 +907,11 @@
                 "carmen:extid": "country.1",
                 "carmen:tmpid": 1,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3
+                "carmen:geomtype": 3,
+                "carmen:reverseMode": false
             },
+            "text": "Canada",
+            "place_name": "Canada",
             "bbox": [
                 -40,
                 -40,

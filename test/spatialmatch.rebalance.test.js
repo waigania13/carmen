@@ -1,10 +1,10 @@
-var rebalance = require('../lib/spatialmatch.js').rebalance;
-var Phrasematch = require('../lib/phrasematch').Phrasematch;
-var test = require('tape');
+const rebalance = require('../lib/spatialmatch.js').rebalance;
+const Phrasematch = require('../lib/phrasematch').Phrasematch;
+const test = require('tape');
 
-test('rebalance, no garbage', function(assert) {
-    var query = ['100','main','st','12345','seattle','washington'];
-    var stack = [
+test('rebalance, no garbage', (t) => {
+    let query = ['100','main','st','12345','seattle','washington'];
+    let stack = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['seattle'], 0.16666666666666666, 16, null, null, null, null),
@@ -13,19 +13,19 @@ test('rebalance, no garbage', function(assert) {
 
     stack.relev = 1;
 
-    var rebalanced = rebalance(query, stack);
-    assert.equal(rebalanced.relev, 1, 'relev = 1');
-    assert.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalanced[2].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalanced[3].weight, 0.25, 'weight = 0.25');
-    assert.end();
+    let rebalanced = rebalance(query, stack);
+    t.equal(rebalanced.relev, 1, 'relev = 1');
+    t.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalanced[2].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalanced[3].weight, 0.25, 'weight = 0.25');
+    t.end();
 });
 
-test('rebalance, with garbage', function(assert) {
-    var query = ['100','main','st','12345','seattle','washington'];
+test('rebalance, with garbage', (t) => {
+    let query = ['100','main','st','12345','seattle','washington'];
 
-    var stack = [
+    let stack = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['washington'], 0.16666666666666666, 32, null, null, null, null),
@@ -33,18 +33,18 @@ test('rebalance, with garbage', function(assert) {
 
     stack.relev = 0.8333333333333333;
 
-    var rebalanced = rebalance(query, stack);
-    assert.equal(rebalanced.relev, 0.75, 'relev = 0.75');
-    assert.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalanced[2].weight, 0.25, 'weight = 0.25');
-    assert.end();
+    let rebalanced = rebalance(query, stack);
+    t.equal(rebalanced.relev, 0.75, 'relev = 0.75');
+    t.equal(rebalanced[0].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalanced[1].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalanced[2].weight, 0.25, 'weight = 0.25');
+    t.end();
 });
 
-test('rebalance copies', function(assert) {
-    var query = ['100','main','st','12345','seattle','washington'];
+test('rebalance copies', (t) => {
+    let query = ['100','main','st','12345','seattle','washington'];
 
-    var stackA = [
+    let stackA = [
         new Phrasematch(['1##','main','st'], 0.5, 7, null, null, null, null),
         new Phrasematch(['12345'], 0.16666666666666666, 8, null, null, null, null),
         new Phrasematch(['seattle'], 0.16666666666666666, 16, null, null, null, null),
@@ -53,24 +53,24 @@ test('rebalance copies', function(assert) {
 
     stackA.relev = 1;
 
-    var stackB = [];
+    let stackB = [];
     stackB[0] = stackA[0];
 
-    var rebalancedA = rebalance(query, stackA);
-    var rebalancedB = rebalance(query, stackB);
+    let rebalancedA = rebalance(query, stackA);
+    let rebalancedB = rebalance(query, stackB);
 
     // Assert that the subqueries in rebalancedA are not affected by
     // the rebalance done to rebalancedB.
-    assert.equal(rebalancedA.relev, 1, 'relev = 1');
-    assert.equal(rebalancedA[0].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalancedA[1].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalancedA[2].weight, 0.25, 'weight = 0.25');
-    assert.equal(rebalancedA[3].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalancedA.relev, 1, 'relev = 1');
+    t.equal(rebalancedA[0].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalancedA[1].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalancedA[2].weight, 0.25, 'weight = 0.25');
+    t.equal(rebalancedA[3].weight, 0.25, 'weight = 0.25');
 
     // Vice versa.
-    assert.equal(rebalancedB.relev, 0.50, 'relev = 0.50');
-    assert.equal(rebalancedB[0].weight, 0.50, 'weight = 0.50');
+    t.equal(rebalancedB.relev, 0.50, 'relev = 0.50');
+    t.equal(rebalancedB[0].weight, 0.50, 'weight = 0.50');
 
-    assert.end();
+    t.end();
 });
 

@@ -3,7 +3,6 @@
 [Mapnik vector tile](https://github.com/mapbox/mapnik-vector-tile)-based geocoder with support for swappable data sources.
 This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
-[![Build Status](https://travis-ci.org/mapbox/carmen.svg?branch=master)](https://travis-ci.org/mapbox/carmen)
 [![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
 
 
@@ -66,10 +65,11 @@ geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to m
 geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
 geocoder_type           | Optional + advanced. A string to be used instead the config index id/key. Omission of this falls back to geocoder_name and then to the id.
 geocoder_types          | Optional + advanced. An array of type strings. Only necessary for indexes that include multitype features.
-geocoder_version        | Required. Should be set to **6** for carmen@v11.x. Index versions <= 1 can be used for reverse geocoding but not forward.
+geocoder_version        | Required. Should be set to **7** for carmen@rocksdb. Index versions <= 1 can be used for reverse geocoding but not forward.
 geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message cache. Defaults uptream to 65536 (maximum number of possible shards).
 geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indicate the expected ordering of address components for an index. Defaults to `ascending`.
 geocoder_inherit_score  | Optional + advanced. Set to `true` if features from this index should appear above other identically (ish) named parent features that are part of its context (e.g. promote New York (city) promoted above New York (state)). Defaults to `false`.
+geocoder_universal_text | Optional + advanced. Set to `true` if features from this index should be considered language agnostic (e.g. postcodes). They will bypass the `languageMode=strict` flag and the `carmen:text` field will be treated as compatible with any language. Defaults to `false`.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 
@@ -98,8 +98,10 @@ as part of the `options` object:
   output. Defaults to false.
 - `stats` - boolean. If true, the carmen stats object will be returned as part
   of the results.
-- `language` - ISO country code. If `carmen:text_{lc}` and/or `geocoder_format_{lc}`
-  are available on a features, response will be returned in that language and
+- `language` - One or more ISO 639-1 codes, separated by commas to be displayed.
+  Only the first language code is used when prioritizing forward geocode results
+  to be matched. If `carmen:text_{lc}` and/or `geocoder_format_{lc}` are
+  available on a features, response will be returned in that language and
   appropriately formatted.
 - `languageMode` - string. If set to `"strict"` the returned features will be
   filtered to only those with text matching the language specified by the
@@ -116,10 +118,6 @@ be passed to `pointer` or omitted.
 
 Analyze index relations for a given source. Generates stats on degenerate terms,
 term => phrase relations, etc.
-
-### wipe(source, callback)
-
-Clear all geocoding indexes on a source.
 
 ### copy(from, to, callback)
 

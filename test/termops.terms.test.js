@@ -1,8 +1,8 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const test = require('tape');
 
-test('terms - tokenizes and hashes values', function(assert) {
-    assert.deepEqual(termops.terms(['foo','bar']), [ 2952770666596324, 3473082963449669 ]);
-    assert.end();
+test('terms - tokenizes and hashes values', (t) => {
+    t.deepEqual(termops.terms(['foo','bar']), [ 'foo', 'bar' ]);
+    t.end();
 });
 

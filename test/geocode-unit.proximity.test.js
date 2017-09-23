@@ -1,19 +1,22 @@
 //Proximity flag
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    country: new mem({maxzoom: 1}, function() {}),
-    province: new mem({maxzoom: 6}, function() {})
+const conf = {
+    country: new mem({maxzoom: 1}, () => {}),
+    province: new mem({maxzoom: 6}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
-    var country = {
+tape('index country', (t) => {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'country',
@@ -21,10 +24,10 @@ tape('index country', function(t) {
             'carmen:center':[-100,60]
         }
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
-tape('index country', function(t) {
-    var country = {
+tape('index country', (t) => {
+    let country = {
         id:2,
         properties: {
             'carmen:text':'country',
@@ -32,12 +35,12 @@ tape('index country', function(t) {
             'carmen:center':[-60,-20]
         }
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
 
 //Across layers
-tape('index province', function(t) {
-    var province = {
+tape('index province', (t) => {
+    let province = {
         id:1,
         properties: {
             'carmen:text':'province',
@@ -45,10 +48,10 @@ tape('index province', function(t) {
             'carmen:center':[-80,40]
         }
     };
-    addFeature(conf.province, province, t.end);
+    queueFeature(conf.province, province, t.end);
 });
-tape('index province', function(t) {
-    var country = {
+tape('index province', (t) => {
+    let country = {
         id:3,
         properties: {
             'carmen:text':'province',
@@ -56,10 +59,10 @@ tape('index province', function(t) {
             'carmen:center':[145,70]
         }
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
-tape('index province', function(t) {
-    var province = {
+tape('index province', (t) => {
+    let province = {
         id:2,
         properties: {
             'carmen:text':'fakeprov',
@@ -67,10 +70,10 @@ tape('index province', function(t) {
             'carmen:center':[-100,60]
         }
     };
-    addFeature(conf.province, province, t.end);
+    queueFeature(conf.province, province, t.end);
 });
-tape('index province', function(t) {
-    var province = {
+tape('index province', (t) => {
+    let province = {
         id:3,
         properties: {
             'carmen:text':'fakeprov',
@@ -78,151 +81,160 @@ tape('index province', function(t) {
             'carmen:center':[-60,-20]
         }
     };
-    addFeature(conf.province, province, t.end);
+    queueFeature(conf.province, province, t.end);
+});
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
 });
 
-tape('error: invalid options.proximity type', function(t) {
-    c.geocode('province', { proximity: 'adsf' }, function(err, res) {
+tape('error: invalid options.proximity type', (t) => {
+    c.geocode('province', { proximity: 'adsf' }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity must be an array in the form [lon, lat]');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('error: invalid options.proximity length', function(t) {
-    c.geocode('province', { proximity: [0,0,0] }, function(err, res) {
+tape('error: invalid options.proximity length', (t) => {
+    c.geocode('province', { proximity: [0,0,0] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity must be an array in the form [lon, lat]');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('error: invalid options.proximity[0] type', function(t) {
-    c.geocode('province', { proximity: [{},0] }, function(err, res) {
+tape('error: invalid options.proximity[0] type', (t) => {
+    c.geocode('province', { proximity: [{},0] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity lon value must be a number between -180 and 180');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('error: invalid options.proximity[0] value', function(t) {
-    c.geocode('province', { proximity: [-181,0] }, function(err, res) {
+tape('error: invalid options.proximity[0] value', (t) => {
+    c.geocode('province', { proximity: [-181,0] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity lon value must be a number between -180 and 180');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('error: invalid options.proximity[1] type', function(t) {
-    c.geocode('province', { proximity: [0,{}] }, function(err, res) {
+tape('error: invalid options.proximity[1] type', (t) => {
+    c.geocode('province', { proximity: [0,{}] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity lat value must be a number between -90 and 90');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('error: invalid options.proximity[1] value', function(t) {
-    c.geocode('province', { proximity: [0,-91] }, function(err, res) {
+tape('error: invalid options.proximity[1] value', (t) => {
+    c.geocode('province', { proximity: [0,-91] }, (err, res) => {
         t.equal(err && err.toString(), 'Error: Proximity lat value must be a number between -90 and 90');
         t.equal(err && err.code, 'EINVALID');
         t.end();
     });
 });
 
-tape('forward country - single layer - limit', function(t) {
-    c.geocode('country', { limit_verify: 1, }, function(err, res) {
+tape('forward country - single layer - limit', (t) => {
+    c.geocode('country', { limit_verify: 1, }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - proximity - single layer - limit', function(t) {
-    c.geocode('country', { limit_verify: 1, proximity: [-60,-20] }, function(err, res) {
+tape('forward country - proximity - single layer - limit', (t) => {
+    c.geocode('country', { limit_verify: 1, proximity: [-60,-20] }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.2', 'found country.2');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - proximity - single layer - limit', function(t) {
-    c.geocode('country', { limit_verify: 1, proximity: [-100,60] }, function(err, res) {
+tape('forward country - proximity - single layer - limit', (t) => {
+    c.geocode('country', { limit_verify: 1, proximity: [-100,60] }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - multi layer - limit', function(t) {
-    c.geocode('province', { limit_verify: 1, }, function(err, res) {
+tape('forward country - multi layer - limit', (t) => {
+    c.geocode('province', { limit_verify: 1, }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province', 'found province');
         t.equals(res.features[0].id, 'country.3', 'found country.3');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - single layer', function(t) {
-    c.geocode('country', { }, function(err, res) {
+tape('forward country - single layer', (t) => {
+    c.geocode('country', { }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - proximity - single layer', function(t) {
-    c.geocode('country', { proximity: [-60,-20] }, function(err, res) {
+tape('forward country - proximity - single layer', (t) => {
+    c.geocode('country', { proximity: [-60,-20] }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.2', 'found country.2');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - proximity - single layer', function(t) {
-    c.geocode('country', { proximity: [-100,60] }, function(err, res) {
+tape('forward country - proximity - single layer', (t) => {
+    c.geocode('country', { proximity: [-100,60] }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'country', 'found country');
         t.equals(res.features[0].id, 'country.1', 'found country.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('forward country - multi layer', function(t) {
-    c.geocode('province', { }, function(err, res) {
+tape('forward country - multi layer', (t) => {
+    c.geocode('province', { }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province', 'found province');
         t.equals(res.features[0].id, 'country.3', 'found country.3');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
 // Ignores idx hierarchy -- scoredist trumps all
-tape('forward country - scoredist wins', function(t) {
-    c.geocode('province', { proximity: [-80,40] }, function(err, res) {
+tape('forward country - scoredist wins', (t) => {
+    c.geocode('province', { proximity: [-80,40] }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'province, country', 'found province');
         t.equals(res.features[0].id, 'province.1', 'found province.1');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
 // Test proximity with multi-part query
-tape('forward province - multilayer', function(t) {
-    c.geocode('fakeprov country', { proximity: [-100,60], limit_verify:1 }, function(err, res) {
+tape('forward province - multilayer', (t) => {
+    c.geocode('fakeprov country', { proximity: [-100,60], limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'fakeprov, country', 'found province');
         t.equals(res.features[0].id, 'province.2', 'found province.2');
@@ -232,8 +244,8 @@ tape('forward province - multilayer', function(t) {
 });
 
 // Test proximity with multi-part query
-tape('forward province - multilayer', function(t) {
-    c.geocode('fakeprov country', { proximity: [-60,-20], limit_verify:1 }, function(err, res) {
+tape('forward province - multilayer', (t) => {
+    c.geocode('fakeprov country', { proximity: [-60,-20], limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'fakeprov, country', 'found province');
         t.equals(res.features[0].id, 'province.3', 'found province.3');
@@ -242,8 +254,8 @@ tape('forward province - multilayer', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

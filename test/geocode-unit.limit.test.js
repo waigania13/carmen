@@ -1,24 +1,26 @@
 // Test geocoder_tokens
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var queue = require('d3-queue').queue;
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         country: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         place: new mem({
             maxzoom: 6
-        }, function() {})
+        }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index country', function(t) {
-        addFeature(conf.country, {
+    const c = new Carmen(conf);
+    tape('index country', (t) => {
+        queueFeature(conf.country, {
             id: 1,
             properties: {
                 'carmen:text':'United States',
@@ -27,10 +29,10 @@ var addFeature = require('../lib/util/addfeature');
             }
         }, t.end);
     });
-    tape('index place', function(t) {
-        var q = queue(1);
-        for (var i = 1; i < 21; i++) q.defer(function(i, done) {
-            addFeature(conf.place, {
+    tape('index place', (t) => {
+        const q = queue(1);
+        for (let i = 1; i < 21; i++) q.defer((i, done) => {
+            queueFeature(conf.place, {
                 id:i,
                 properties: {
                     'carmen:text':'place ' + i,
@@ -45,8 +47,18 @@ var addFeature = require('../lib/util/addfeature');
         q.awaitAll(t.end);
     });
 
-    tape('default response is 5 features (forward)', function(t) {
-        c.geocode('place', {  }, function(err, res) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('default response is 5 features (forward)', (t) => {
+        c.geocode('place', {  }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 5, 'returns 5 results');
             t.equal(res.features[0].place_name, 'place 11, United States');
@@ -57,16 +69,16 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    tape('limit 1 result (forward)', function(t) {
-        c.geocode('place', { limit: 1 }, function(err, res) {
+    tape('limit 1 result (forward)', (t) => {
+        c.geocode('place', { limit: 1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 1, 'returns 1 result');
             t.equal(res.features[0].place_name, 'place 11, United States');
             t.end();
         });
     });
-    tape('limit 10 results (forward)', function(t) {
-        c.geocode('place', { limit: 10 }, function(err, res) {
+    tape('limit 10 results (forward)', (t) => {
+        c.geocode('place', { limit: 10 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 10, 'returns 10 results');
             t.equal(res.features[0].place_name, 'place 11, United States');
@@ -82,8 +94,8 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    tape('limit 11 results (forward)', function(t) {
-        c.geocode('place', { limit: 11 }, function(err, res) {
+    tape('limit 11 results (forward)', (t) => {
+        c.geocode('place', { limit: 11 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 10, 'hard limit of 10');
             t.equal(res.features[0].place_name, 'place 11, United States');
@@ -101,26 +113,26 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_name: 'address',
             geocoder_type: 'address',
             geocoder_address: true
-        }, function() {}),
+        }, () => {}),
         poi: new mem({
             maxzoom: 12,
             geocoder_name: 'poi',
             geocoder_type: 'poi'
-        }, function() {})
+        }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index place', function(t) {
-        addFeature(conf.place, {
+    const c = new Carmen(conf);
+    tape('index place', (t) => {
+        queueFeature(conf.place, {
             id: 1,
             properties: {
                 'carmen:text':'west virginia',
@@ -130,7 +142,7 @@ var addFeature = require('../lib/util/addfeature');
         }, t.end);
     });
 
-    var coords = [
+    let coords = [
         [-79.37663912773132,38.83417524443351],
         [-79.37698781490326,38.83414599360498],
         [-79.37705218791960,38.83398302448309],
@@ -143,10 +155,10 @@ var addFeature = require('../lib/util/addfeature');
         [-79.37780320644379,38.83375319560010]
     ]
 
-    tape('index poi', function(t) {
-        var q = queue(1);
-        for (var i = 1; i < 6; i++) q.defer(function(i, done) {
-            addFeature(conf.poi, {
+    tape('index poi', (t) => {
+        const q = queue(1);
+        for (let i = 1; i < 6; i++) q.defer((i, done) => {
+            queueFeature(conf.poi, {
                 id:i,
                 properties: {
                     'carmen:text':'seneca rocks ' + i,
@@ -161,8 +173,8 @@ var addFeature = require('../lib/util/addfeature');
         q.awaitAll(t.end);
     });
 
-    tape('index address', function(t) {
-        addFeature(conf.address, {
+    tape('index address', (t) => {
+        queueFeature(conf.address, {
             id: 1,
             properties: {
                 'carmen:addressnumber': [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
@@ -176,8 +188,18 @@ var addFeature = require('../lib/util/addfeature');
         }, t.end);
     });
 
-    tape('default response is 1 features (reverse)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { }, function(err, res) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('default response is 1 features (reverse)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 3, 'returns 1 result of 3 context');
             t.equal(res.features[0].place_name, 'seneca rocks 5, main road, west virginia');
@@ -186,21 +208,21 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    tape('Limit only works with type (reverse)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 2 }, function(err, res) {
+    tape('Limit only works with type (reverse)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 2 }, (err, res) => {
             t.ok(err);
             t.end();
         });
     });
-    tape('limit 2 results (reverse)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 2, types: ['poi'] }, function(err, res) {
+    tape('limit 2 results (reverse)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 2, types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 2, 'returns 2 results');
             t.end();
         });
     });
-    tape('limit 5 results (reverse)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['poi'] }, function(err, res) {
+    tape('limit 5 results (reverse)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'seneca rocks 5, main road, west virginia');
             t.equal(res.features[1].place_name, 'seneca rocks 2, main road, west virginia');
@@ -211,8 +233,8 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    tape('limit 6 results (reverse)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 6, types: ['poi'] }, function(err, res) {
+    tape('limit 6 results (reverse)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 6, types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'seneca rocks 5, main road, west virginia');
             t.equal(res.features[1].place_name, 'seneca rocks 2, main road, west virginia');
@@ -223,8 +245,8 @@ var addFeature = require('../lib/util/addfeature');
             t.end();
         });
     });
-    tape('limit 5 results (address)', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
+    tape('limit 5 results (address)', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '5 main road, west virginia');
             t.equal(res.features[1].place_name, '6 main road, west virginia');
@@ -237,25 +259,25 @@ var addFeature = require('../lib/util/addfeature');
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 //Handle addressclusters
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_address: 1
-        }, function() {})
+        }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index place', function(t) {
-        addFeature(conf.place, {
+    const c = new Carmen(conf);
+    tape('index place', (t) => {
+        queueFeature(conf.place, {
             id: 1,
             properties: {
                 'carmen:text':'west virginia',
@@ -265,8 +287,8 @@ tape('teardown', function(assert) {
         }, t.end);
     });
 
-    tape('index address', function(t) {
-        addFeature(conf.address, {
+    tape('index address', (t) => {
+        queueFeature(conf.address, {
             id:1,
             properties: {
                 'carmen:text':'main street',
@@ -293,8 +315,18 @@ tape('teardown', function(assert) {
         }, t.end);
     });
 
-    tape('Reverse Cluster', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, function(err, res) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('Reverse Cluster', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 5, types: ['address'] }, (err, res) => {
             t.equal(res.features[0].place_name, '5 main street, west virginia');
             t.equal(res.features[1].place_name, '6 main street, west virginia');
             t.equal(res.features[2].place_name, '2 main street, west virginia');
@@ -307,25 +339,25 @@ tape('teardown', function(assert) {
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 //Handle ITP lines
-(function() {
-    var conf = {
+(() => {
+    const conf = {
         place: new mem({
             maxzoom: 6
-        }, function() {}),
+        }, () => {}),
         address: new mem({
             maxzoom: 12,
             geocoder_address: 1
-        }, function() {})
+        }, () => {})
     };
-    var c = new Carmen(conf);
-    tape('index place', function(t) {
-        addFeature(conf.place, {
+    const c = new Carmen(conf);
+    tape('index place', (t) => {
+        queueFeature(conf.place, {
             id: 1,
             properties: {
                 'carmen:text':'west virginia',
@@ -335,8 +367,8 @@ tape('teardown', function(assert) {
         }, t.end);
     });
 
-    tape('index address', function(t) {
-        addFeature(conf.address, {
+    tape('index address', (t) => {
+        queueFeature(conf.address, {
             id:1,
             properties: {
                 'carmen:text':'main street',
@@ -361,8 +393,18 @@ tape('teardown', function(assert) {
         }, t.end);
     });
 
-    tape('Reverse ITP', function(t) {
-        c.geocode('-79.37745451927184,38.83420867393712', { limit: 3, types: ['address'] }, function(err, res) {
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('Reverse ITP', (t) => {
+        c.geocode('-79.37745451927184,38.83420867393712', { limit: 3, types: ['address'] }, (err, res) => {
             t.equal(res.features[0].place_name, '13 main street, west virginia');
             t.equal(res.features[1].place_name, '10 main street, west virginia');
             t.equal(res.features[2].place_name, '6 main street, west virginia');
@@ -373,7 +415,7 @@ tape('teardown', function(assert) {
     });
 })();
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

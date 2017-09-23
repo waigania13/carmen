@@ -1,22 +1,25 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 // Tests New York (place), New York (region), USA (country)
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
-var conf = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+const conf = {
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
 };
 
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
-    addFeature(conf.country, {
+tape('index country', (t) => {
+    queueFeature(conf.country, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -37,8 +40,8 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
-    addFeature(conf.region, {
+tape('index region', (t) => {
+    queueFeature(conf.region, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -59,8 +62,8 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
-    addFeature(conf.place, {
+tape('index place', (t) => {
+    queueFeature(conf.place, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -81,39 +84,57 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('find new york', function(t) {
-    c.geocode('new york usa', {}, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+
+tape('find new york', (t) => {
+    c.geocode('new york usa', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
         t.equal(res.features[0].relevance, 1);
         t.end();
     });
 });
 
-tape('find nueva york, language=es', function(t) {
-    c.geocode('nueva york usa', { language: 'es' }, function(err, res) {
+tape('find nueva york, language=es', (t) => {
+    c.geocode('nueva york usa', { language: 'es' }, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 1);
+        t.equal(res.features[0].relevance, 0.95, "query has penalty applied because 'usa' has no es translation");
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('find nueva york, language=ca', (t) => {
+    c.geocode('nueva york', { language: 'ca' }, (err, res) => {
+        t.equal(res.features[0].id, 'place.1');
+        t.equal(res.features[0].relevance, 1.00, "query has full relevance because 'nueva york' has no ca translation but es falls back");
+        t.end();
+    });
+});
+
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 
 // Simulate a case where carmen:text has a discrepancy but carmen:text_en
 // allows a text match to occur.
-var conf2 = {
-    country: new mem({ maxzoom: 6 }, function() {}),
-    region: new mem({ maxzoom: 6 }, function() {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, function() {})
+const conf2 = {
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
 };
 
-var c2 = new Carmen(conf2);
+const c2 = new Carmen(conf2);
 
-tape('index country', function(t) {
-    addFeature(conf2.country, {
+tape('index country', (t) => {
+    queueFeature(conf2.country, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -133,8 +154,8 @@ tape('index country', function(t) {
     }, t.end);
 });
 
-tape('index region', function(t) {
-    addFeature(conf2.region, {
+tape('index region', (t) => {
+    queueFeature(conf2.region, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -155,8 +176,8 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
-    addFeature(conf2.place, {
+tape('index place', (t) => {
+    queueFeature(conf2.place, {
         id: 1,
         properties: {
             'carmen:center': [0,0],
@@ -177,16 +198,26 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('find makkah', function(t) {
-    c2.geocode('makkah', {}, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf2).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf2[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+
+tape('find makkah', (t) => {
+    c2.geocode('makkah', {}, (err, res) => {
         t.equal(res.features[0].id, 'place.1');
-        t.equal(res.features[0].relevance, 0.99);
+        t.equal(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

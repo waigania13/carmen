@@ -7,12 +7,10 @@
         {
             "id": "place.1",
             "type": "Feature",
-            "text": "Toronto",
-            "place_name": "Toronto, Ontario, Canada",
             "place_type": [
                 "place"
             ],
-            "relevance": 0.99,
+            "relevance": 1,
             "properties": {
                 "wikidata": "Q172",
                 "carmen:text": "Toronto",
@@ -294,8 +292,8 @@
                     "relev": 1,
                     "covers": [
                         {
-                            "x": 25,
-                            "y": 25,
+                            "x": 39,
+                            "y": 39,
                             "relev": 1,
                             "id": 1,
                             "idx": 2,
@@ -304,14 +302,24 @@
                             "score": 1,
                             "scoredist": 1,
                             "scorefactor": 1,
+                            "matches_language": true,
+                            "prefix": true,
                             "mask": 1,
-                            "text": "toronto"
+                            "text": "toronto",
+                            "zoom": 6
                         }
                     ]
                 },
                 "carmen:geocoder_address_order": "ascending",
-                "carmen:scoredist": 1
+                "carmen:zoom": 6,
+                "carmen:scoredist": 1,
+                "carmen:matches_language": true,
+                "carmen:prefix": true,
+                "carmen:query_text": "toronto",
+                "carmen:idx": 2
             },
+            "text": "Toronto",
+            "place_name": "Toronto, Ontario, Canada",
             "bbox": [
                 -40,
                 -40,
@@ -331,12 +339,12 @@
             },
             "context": [
                 {
-                    "text": "Ontario",
-                    "id": "region.1"
+                    "id": "region.1",
+                    "text": "Ontario"
                 },
                 {
-                    "text": "Canada",
-                    "id": "country.1"
+                    "id": "country.1",
+                    "text": "Canada"
                 }
             ]
         }

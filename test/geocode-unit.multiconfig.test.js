@@ -1,26 +1,29 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var country =new mem(null, function() {});
-var region = new mem(null, function() {});
-var place = new mem(null, function() {});
-var confA = {
+const country =new mem(null, () => {});
+const region = new mem(null, () => {});
+const place = new mem(null, () => {});
+const confA = {
     country: country,
     place: place
 };
-var confB = {
+const confB = {
     country: country,
     region: region,
     place: place
 };
-var pre = new Carmen(confA);
+const pre = new Carmen(confA);
 
-tape('index province', function(t) {
+tape('index province', (t) => {
     t.ok(pre);
-    addFeature(confA.country, {
+    queueFeature(confA.country, {
         id:1,
         properties: {
             'carmen:text':'america',
@@ -29,8 +32,8 @@ tape('index province', function(t) {
         }
     }, t.end);
 });
-tape('index place', function(t) {
-    addFeature(confA.place, {
+tape('index place', (t) => {
+    queueFeature(confA.place, {
         id:1,
         properties: {
             'carmen:text':'chicago',
@@ -39,18 +42,32 @@ tape('index place', function(t) {
         }
     }, t.end);
 });
-tape('chicago (conf a)', function(t) {
-    var a = new Carmen(confA);
-    a.geocode('chicago', {}, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(confA).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(confA[c], cb);
+        });
+    });
+    Object.keys(confB).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(confB[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+tape('chicago (conf a)', (t) => {
+    const a = new Carmen(confA);
+    a.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
         t.deepEqual(res.features[0].id, 'place.1');
         t.end();
     });
 });
-tape('chicago (conf b)', function(t) {
-    var b = new Carmen(confB);
-    b.geocode('chicago', {}, function(err, res) {
+tape('chicago (conf b)', (t) => {
+    const b = new Carmen(confB);
+    b.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'chicago, america');
         t.deepEqual(res.features[0].id, 'place.1');
@@ -58,8 +75,7 @@ tape('chicago (conf b)', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
-

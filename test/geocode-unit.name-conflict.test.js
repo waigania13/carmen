@@ -1,32 +1,34 @@
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
-var queue = require('d3-queue').queue;
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
+const queue = require('d3-queue').queue;
 
-var conf = {
-    country: new mem(null, function() {}),
-    region: new mem(null, function() {}),
-    postcode: new mem(null, function() {}),
-    place: new mem(null, function() {}),
-    neighborhood: new mem(null, function() {}),
+const conf = {
+    country: new mem(null, () => {}),
+    region: new mem(null, () => {}),
+    postcode: new mem(null, () => {}),
+    place: new mem(null, () => {}),
+    neighborhood: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_name: 'address',
         geocoder_type: 'address',
         geocoder_address: 1
-    }, function() {}),
+    }, () => {}),
     poi: new mem({
         maxzoom:6,
         geocoder_name: 'address',
         geocoder_type: 'poi'
-    }, function() {})
+    }, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index country', function(t) {
-    var country = {
+tape('index country', (t) => {
+    let country = {
         id:1,
         properties: {
             'carmen:text':'Canada',
@@ -34,11 +36,11 @@ tape('index country', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.country, country, t.end);
+    queueFeature(conf.country, country, t.end);
 });
 
-tape('index region', function(t) {
-    var region = {
+tape('index region', (t) => {
+    let region = {
         id:1,
         properties: {
             'carmen:text':'Newfoundland and Labrador',
@@ -46,11 +48,11 @@ tape('index region', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.region, region, t.end);
+    queueFeature(conf.region, region, t.end);
 });
 
-tape('index postcode', function(t) {
-    var postcode = {
+tape('index postcode', (t) => {
+    let postcode = {
         id:1,
         properties: {
             'carmen:text':'A1N 4Y1',
@@ -58,11 +60,11 @@ tape('index postcode', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.postcode, postcode, t.end);
+    queueFeature(conf.postcode, postcode, t.end);
 });
 
-tape('index place', function(t) {
-    var place = {
+tape('index place', (t) => {
+    let place = {
         id:1,
         properties: {
             'carmen:text':'Mount Pearl',
@@ -70,11 +72,11 @@ tape('index place', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.place, place, t.end);
+    queueFeature(conf.place, place, t.end);
 });
 
-tape('index neighborhood', function(t) {
-    var neighborhood = {
+tape('index neighborhood', (t) => {
+    let neighborhood = {
         id:1,
         properties: {
             'carmen:text':'Waterford Valley',
@@ -82,13 +84,13 @@ tape('index neighborhood', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.neighborhood, neighborhood, t.end);
+    queueFeature(conf.neighborhood, neighborhood, t.end);
 });
 
-tape('index poi', function(t) {
-    var q = queue(1);
-    for (var i = 1; i < 20; i++) q.defer(function(i, done) {
-        addFeature(conf.poi, {
+tape('index poi', (t) => {
+    const q = queue(1);
+    for (let i = 1; i < 20; i++) q.defer((i, done) => {
+        queueFeature(conf.poi, {
             id:i,
             properties: {
                 'carmen:text':'Canada Post ' + i + 'a',
@@ -99,16 +101,25 @@ tape('index poi', function(t) {
     }, i);
     q.awaitAll(t.end);
 });
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
-tape('Descending Gappy', function(t) {
-    c.geocode('Waterford Valley Canada', {}, function(err, res) {
+tape('Descending Gappy', (t) => {
+    c.geocode('Waterford Valley Canada', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].id, "neighborhood.1");
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });

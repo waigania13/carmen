@@ -1,72 +1,88 @@
-var termops = require('../lib/util/termops');
-var test = require('tape');
+const termops = require('../lib/util/termops');
+const uniq = require('../lib/util/uniq');
+const test = require('tape');
 
-test('termops.encodePhrase', function(assert) {
-    var a;
+test('termops.encodePhrase clustering', (t) => {
+    let sets = [
+        ['apples', 'application', 'apply', 'appears', 'appomattox'],
+        ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
+        ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
+    ];
+    sets.forEach((set) => {
+        let encoded = set.map((text) => { return termops.encodePhrase(text); });
+        t.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
+    });
+    t.end();
+});
+
+test('termops.encodePhrase', (t) => {
+    let a;
 
     a = termops.encodePhrase('main');
-    assert.deepEqual(a, 3839096397287855, 'main');
-    assert.deepEqual(a % 2, 1, 'main = non-degen');
+    t.deepEqual(a, 'main', 'main');
 
     a = termops.encodePhrase('main', true);
-    assert.deepEqual(a, 3839096397287854, 'main (degen)');
-    assert.deepEqual(a % 2, 0, 'main = degen');
+    t.deepEqual(a, 'main', 'main (skip)');
 
     a = termops.encodePhrase('main st');
-    assert.deepEqual(a, 3316517807337717, 'main st');
-    assert.deepEqual(a % 2, 1, 'main st = non-degen');
+    t.deepEqual(a, 'main st', 'main st');
 
-    // prev as token array
+    a = termops.encodePhrase('main st', true);
+    t.deepEqual(a, 'main st', 'main st (skip)');
+
     a = termops.encodePhrase(['main','st']);
-    assert.deepEqual(a, 3316517807337717, 'main st');
-    assert.deepEqual(a % 2, 1, 'main st = non-degen');
+    t.deepEqual(a, 'main st', 'main st (array)');
 
     a = termops.encodePhrase('lazy dog');
-    assert.deepEqual(a, 918725323723147, 'lazy dog')
-    assert.deepEqual(a % 2, 1, 'lazy dog = non-degen');
+    t.deepEqual(a, 'lazy dog', 'lazy dog')
 
-    a = termops.encodePhrase('lazy dog', 1);
-    assert.deepEqual(a, 918725323723146, 'lazy dog (degen)')
-    assert.deepEqual(a % 2, 0, 'lazy dog = degen');
+    a = termops.encodePhrase('lazy dog', true);
+    t.deepEqual(a, 'lazy dog', 'lazy dog (skip)')
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
-    assert.deepEqual(a, 1502021879633229, 'long phrase');
-    assert.deepEqual(a % 2, 1, 'long phrase = non-degen');
+    t.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase');
 
-    a = termops.encodePhrase('The quick brown fox jumps over the lazy dog', true);
-    assert.deepEqual(a, 1502021879633228, 'long phrase (degen)');
-    assert.deepEqual(a % 2, 0, 'long phrase = degen');
+    a = termops.encodePhrase('the quick brown fox jumps over the lazy dog', true);
+    t.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase (skip)');
 
     // unicode vs unidecoded
     a = termops.encodePhrase('京都市');
-    assert.deepEqual(a, 2426043232375397, '京都市');
-    assert.deepEqual(a % 2, 1, '京都市 = non-degen');
+    t.deepEqual(a, '京都市', '京都市');
+
+    a = termops.encodePhrase('zjing du shi', true);
+    t.deepEqual(a, 'zjing du shi', '京都市 (skip)');
 
     a = termops.encodePhrase('jing du shi');
-    assert.deepEqual(a, 1681411770334213, 'jing du shi = 京都市');
-    assert.deepEqual(a % 2, 1, 'jing du shi = non-degen');
+    t.deepEqual(a, 'jing du shi', 'jing du shi != 京都市');
 
     // known examples of fnv1a phrase collisions
     // these will be datapoints for decolliding strategies elsewhere...
 
     // no longer a collision in 52-bit fnv1a
-    // assert.deepEqual(
+    // t.deepEqual(
     //     termops.encodePhrase('av francisco de aguirre # la serena'),
     //     termops.encodePhrase('# r ademar da silva neiva'),
     //     'known collisions: #1'
     // );
 
-    assert.end();
+    t.end();
 });
 
-test('termops.encodePhrase collisions', function(assert) {
-    var texts = 0;
-    var sample = 1e6;
-    var ids = {};
-    var collisions = [];
+test('termops.encodePhrase collisions', (t) => {
+    let texts = 0;
+    let sample = 1e6;
+    let ids = {};
+    let collisions = [];
     while (texts < sample) {
-        var text = Math.random().toString(36);
-        var id = termops.encodePhrase(text);
+        let text = Math.random().toString(36);
+        let id = termops.encodePhrase(text);
+
+        if (id >= Math.pow(2,52)) {
+            t.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
+        } else if (id < 0) {
+            t.fail('Phrase ID < 0: ' + text + ' ' + id);
+        }
+
         if (ids[id] === text) {
             continue;
         } else if (ids[id]) {
@@ -76,9 +92,9 @@ test('termops.encodePhrase collisions', function(assert) {
         }
         texts++;
     }
-    var rate = (collisions.length/sample);
-    var thresh = 1/1e6;
-    assert.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
-    assert.end();
+    let rate = (collisions.length/sample);
+    let thresh = 1/1e6;
+    t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
+    t.end();
 });
 

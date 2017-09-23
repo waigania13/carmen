@@ -1,5 +1,192 @@
 # Changelog
 
+## 24.1.1
+
+- Support correct forward geocoding over address clusters that contain multiple entries
+  for the same address number.
+
+## 24.1.0
+
+- Allow for greater flexibility in the token replacement representation introduced in 24.0.0
+
+## 24.0.0
+
+- Optionally support a greater number of token-replacement permutations efficiently
+
+## 23.0.5
+
+- Fix proximity issue via upstream fix in carmen-cache
+- Tune proximity settings to weight local results more heavily
+
+## 23.0.4
+
+- Fix indexing of address text without house numbers to be weighted consistently
+
+## 23.0.3
+
+- Make maskAddress a bit smarter by looking at both the coverText and query to determine if
+  it's about to reuse a housenum that was really originally interpreted as a street.
+  (https://github.com/mapbox/carmen/pull/648)
+- Fix a bug that could let indexer-only token replacers leak into runtime replacers
+  (https://github.com/mapbox/carmen/pull/649)
+
+## 23.0.2
+
+- Remove stacky bonus and gappy penalty (https://github.com/mapbox/carmen/pull/647)
+
+## 23.0.1
+
+- Packaging fix for carmen-cache.
+
+## 23.0.0
+
+- Improves handling of cross-language queries against data with partial translation coverage.
+- Update handling of default text to no longer have preferential fallback treatment.
+- Split display and query fallback language definitions.
+
+## 22.5.0
+
+- Create `[W,S,E,N]` bboxes when feature geometry straddles the antimeridian
+- Optionally clip these `[W,S,E,N] bboxes at +/-179.9 degrees, to preserve backwards compatibility
+
+## 22.4.4
+
+- Small improvements to language fallback behavior for Latvian, Lithuanian, Azerbaijani, and Estonian
+
+## 22.4.3
+
+- Fix a problem with carmen-index.js in cases where the passed-in tokens file contains a function
+
+## 22.4.2
+
+- :rocket: Allow function to be used as tokens file in scripts/carmen.js
+
+## 22.4.1
+
+- Update Deps to @mapbox prefix where possible
+- `trim()` abbr after each tokenize.replaceToken call
+
+## 22.4.0
+
+- Index multiple variations on token replacement to better support autocomplete of token-
+  replaced text, defaulting to indexing unambiguously reversible replacements
+- Add `custom_inverse_tokens` mechanism to allow specifying behavior in ambiguous cases
+- Fix a bunch of token-replacement-related bugs
+
+## 22.3.0
+
+- Add `text_universal`, for text which can apply to all langauges
+
+## 22.2.2
+
+- Update carmen-cache
+
+## 22.2.1
+
+- Collapsing variants of ARABIC LETTER YEH for uniform indexing
+
+## 22.2.0
+
+- Update tests to arrow functions, `let`, & `const`
+- Change sort behavior for tied addresses so first number is given slight boost
+
+## 22.1.3
+
+- Update to mapnik `~3.6.0`
+
+## 22.1.2
+
+- Handle situations in which an ID shard contains multiple features from the same tile
+
+## 22.1.1
+
+- Fix a few cases where `matching_text` and `matching_place_name` properties were not set as expected.
+
+## 22.1.0
+
+- Add support for multiple languages to be specified in the `language` option and multiple language output formatting.
+
+## 22.0.0
+
+- Drop support for node `4.x.x`
+- Support centered around `6.10.2`
+- Update dependancies to support 6.x.
+
+## 21.0.2
+
+- Fix a bug where `indexes` weren't returned for an idGeocode
+
+## 21.0.1
+
+- Fix a bug in string sorting affecting some strings with mixed complex scripts after the unidecode removal.
+
+## 21.0.0
+
+- Update carmen-cache to v0.18.0, which stores per-language metadata in the grid cache, and adapt carmen accordingly, to allow proper supported of multilingual autocomplete, and language-weighted results.
+- Drop unidecode altogether, and replace it with a much slimmer diacritical mark folder, such that most non-ASCII text is now indexed as-is, improving multilingual accuracy.
+
+## 20.2.1
+
+- Fix a bug that in certain situations allows features with a null value in their `carmen:center` property to pass validation
+
+## 20.2.0
+
+- PT addresses are now returned over ITP addresses only if they fall within a set distance
+
+## 20.1.3
+- Fix a bug in package.json
+
+## 20.1.2
+- Fix an issue introduced by the switch to RocksDB, in which numeric tokens would match address numbers before features with numeric text (such as postcodes)
+
+## 20.1.1
+- add English as a fallback language for Arabic and tests to confirm this behaviour.
+
+## 20.1.0
+
+- add `reverseMode` parameter. When set to `score`, a feature's score will be considered when sorting
+the results of a reverse query. Defaults to `distance`.
+
+## 20.0.0
+- Update to carmen-cache@0.17.0, a major revision which eliminates cache sharding and moves the underlying storage mechanism to one backed by [RocksDB](http://rocksdb.org/)
+- Adapt carmen to this new cache layer by eliminating logic around on-the-fly loading and storing of grid and frequency data, which is now delegated to RocksDB
+- Change phrase IDs to strings, allowing elimination of degen indexing in favor of ID prefix scans in carmen-cache
+
+## 19.0.3
+- Add a `digraphic` array of languages known to use multiple scripts, for more rigorous filtering in `languageMode: strict`
+
+## 19.0.2
+- Add additional Serbian fallabcks
+- Add an `equivalent.json` mapping of allowed equivalent languages
+- Allow equivalent languages to pass the `languageMode: strict` filter
+
+## 19.0.1
+- Add `sr_Latn` fallback for `sr_BA`, `sr_CS`, `sr_ME`, and `sr_RS` language codes
+
+## 19.0.0
+
+- Remove code/support for version 0 legacy features
+- Adds index-level option `geocoder_universal_text` for allowing features in an index to be considered language-agnostic/compatible with any requested language when using `languageMode=strict`
+
+## 18.2.0
+
+- Improve proximity distance calculation for polygon features.
+- Update to carmen-cache@0.16.5.
+
+## 18.1.4
+
+- Update to carmen-cache@0.16.4.
+
+## 18.1.3
+
+- Add support for IL style addresses: `43N134 Woodward Ave.`
+- Revert spatialmatch stack truncation from 18.1.2
+- Update to carmen-cache@0.16.3 with additional `coalesce()` performance optimizations
+
+## 18.1.2
+
+- Spatialmatch the top 4 most specific features of each subquery stack as a performance optimization/safeguard against massive `coalesce()` jobs
+
 ## 18.1.1
 
 - Optimizations to runtime query and indexing operations

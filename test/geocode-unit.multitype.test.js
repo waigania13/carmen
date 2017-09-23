@@ -1,20 +1,23 @@
 // Test multitype behavior
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    region: new mem({maxzoom:6, geocoder_types:['region','place']}, function() {}),
-    place: new mem({maxzoom:6}, function() {}),
-    poi: new mem({maxzoom:6}, function() {})
+const conf = {
+    region: new mem({maxzoom:6, geocoder_types:['region','place']}, () => {}),
+    place: new mem({maxzoom:6}, () => {}),
+    poi: new mem({maxzoom:6}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index region', function(t) {
-    addFeature(conf.region, {
+tape('index region', (t) => {
+    queueFeature(conf.region, {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -34,8 +37,8 @@ tape('index region', function(t) {
     }, t.end);
 });
 
-tape('index place', function(t) {
-    addFeature(conf.place, {
+tape('index place', (t) => {
+    queueFeature(conf.place, {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -54,8 +57,8 @@ tape('index place', function(t) {
     }, t.end);
 });
 
-tape('index poi', function(t) {
-    addFeature(conf.poi, {
+tape('index poi', (t) => {
+    queueFeature(conf.poi, {
         id:1,
         geometry: {
             type: 'Point',
@@ -67,142 +70,150 @@ tape('index poi', function(t) {
         }
     }, t.end);
 });
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
 
-tape('multitype reverse', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: cafe, libertador, caracas');
-    assert.comment('note:   returns full context, no shifts');
-    c.geocode('0,0', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context, [{
+tape('multitype reverse', (t) => {
+    t.comment('query:  0,0');
+    t.comment('result: cafe, libertador, caracas');
+    t.comment('note:   returns full context, no shifts');
+    c.geocode('0,0', {}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
+        t.deepEqual(res.features[0].id, 'poi.1');
+        t.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
             id: 'region.1',
             text: 'caracas'
         }]);
-        assert.end();
+        t.end();
     });
 });
 
-tape('multitype reverse, types=poi', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: cafe, libertador, caracas');
-    assert.comment('note:   returns full context, no shifts');
-    c.geocode('0,0', {types:['poi']}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context, [{
+tape('multitype reverse, types=poi', (t) => {
+    t.comment('query:  0,0');
+    t.comment('result: cafe, libertador, caracas');
+    t.comment('note:   returns full context, no shifts');
+    c.geocode('0,0', {types:['poi']}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
+        t.deepEqual(res.features[0].id, 'poi.1');
+        t.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
             id: 'region.1',
             text: 'caracas'
         }]);
-        assert.end();
+        t.end();
     });
 });
 
-tape('multitype reverse, types=place', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: liberatador, caracas');
-    assert.comment('note:   returns libertador, caracas, no shift');
-    c.geocode('0,0', {types:['place']}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.end();
+tape('multitype reverse, types=place', (t) => {
+    t.comment('query:  0,0');
+    t.comment('result: liberatador, caracas');
+    t.comment('note:   returns libertador, caracas, no shift');
+    c.geocode('0,0', {types:['place']}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'libertador, caracas');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.end();
     });
 });
 
-tape('multitype reverse, types=region', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: caracas');
-    assert.comment('note:   returns caracas, no shift');
-    c.geocode('0,0', {types:['region']}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'caracas');
-        assert.deepEqual(res.features[0].id, 'region.1');
-        assert.end();
+tape('multitype reverse, types=region', (t) => {
+    t.comment('query:  0,0');
+    t.comment('result: caracas');
+    t.comment('note:   returns caracas, no shift');
+    c.geocode('0,0', {types:['region']}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'caracas');
+        t.deepEqual(res.features[0].id, 'region.1');
+        t.end();
     });
 });
 
-tape('multitype reverse, types=place,region', function(assert) {
-    assert.comment('query:  0,0');
-    assert.comment('result: libertador, caracas');
-    assert.comment('note:   returns libertador, caracas, no shift');
-    c.geocode('0,0', {types:['place','region']}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.end();
+tape('multitype reverse, types=place,region', (t) => {
+    t.comment('query:  0,0');
+    t.comment('result: libertador, caracas');
+    t.comment('note:   returns libertador, caracas, no shift');
+    c.geocode('0,0', {types:['place','region']}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'libertador, caracas');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.end();
     });
 });
 
-tape('multitype forward, q=cafe', function(assert) {
-    assert.comment('query:  cafe');
-    assert.comment('result: cafe, libertador, caracas');
-    assert.comment('note:   returns full context, no shifts');
-    c.geocode('cafe', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'poi.1');
-        assert.deepEqual(res.features[0].context, [{
+tape('multitype forward, q=cafe', (t) => {
+    t.comment('query:  cafe');
+    t.comment('result: cafe, libertador, caracas');
+    t.comment('note:   returns full context, no shifts');
+    c.geocode('cafe', {}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'cafe, libertador, caracas');
+        t.deepEqual(res.features[0].id, 'poi.1');
+        t.deepEqual(res.features[0].context, [{
             id: 'place.1',
             text: 'libertador'
         }, {
             id: 'region.1',
             text: 'caracas'
         }]);
-        assert.end();
+        t.end();
     });
 });
 
-tape('multitype forward, q=libertador', function(assert) {
-    assert.comment('query:  libertador');
-    assert.comment('result: libertador, caracas');
-    assert.comment('note:   returns full context, no shifts');
-    c.geocode('libertador', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'libertador, caracas');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.deepEqual(res.features[0].context, [{
+tape('multitype forward, q=libertador', (t) => {
+    t.comment('query:  libertador');
+    t.comment('result: libertador, caracas');
+    t.comment('note:   returns full context, no shifts');
+    c.geocode('libertador', {}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'libertador, caracas');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.deepEqual(res.features[0].context, [{
             id: 'region.1',
             text: 'caracas'
         }]);
-        assert.end();
+        t.end();
     });
 });
 
-tape('multitype forward, q=caracas', function(assert) {
-    assert.comment('query:  caracas');
-    assert.comment('result: caracas');
-    assert.comment('note:   returns caracas with shift');
-    c.geocode('caracas', {}, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'caracas');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.end();
+tape('multitype forward, q=caracas', (t) => {
+    t.comment('query:  caracas');
+    t.comment('result: caracas');
+    t.comment('note:   returns caracas with shift');
+    c.geocode('caracas', {}, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'caracas');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.end();
     });
 });
 
-tape('multitype forward, q=caracas, types=place', function(assert) {
-    assert.comment('query:  caracas');
-    assert.comment('result: caracas');
-    assert.comment('note:   returns caracas with shift');
-    c.geocode('caracas', { types: ['place'] }, function(err, res) {
-        assert.ifError(err);
-        assert.deepEqual(res.features[0].place_name, 'caracas');
-        assert.deepEqual(res.features[0].id, 'place.1');
-        assert.end();
+tape('multitype forward, q=caracas, types=place', (t) => {
+    t.comment('query:  caracas');
+    t.comment('result: caracas');
+    t.comment('note:   returns caracas with shift');
+    c.geocode('caracas', { types: ['place'] }, (err, res) => {
+        t.ifError(err);
+        t.deepEqual(res.features[0].place_name, 'caracas');
+        t.deepEqual(res.features[0].id, 'place.1');
+        t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
-

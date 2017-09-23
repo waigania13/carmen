@@ -1,10 +1,13 @@
 // Unit tests for gappy stacking of features ("west st new york")
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
 // limit_verify 1 implies that the correct result must be the very top
 // result prior to context verification. It means even with a long list
@@ -14,14 +17,14 @@ var addFeature = require('../lib/util/addfeature');
 // verification (e.g. new york (city) vs new york (province)) that is sorted
 // into the correct order after context verification occurs.
 
-var conf = {
-    province: new mem(null, function() {}),
-    city: new mem(null, function() {}),
-    street: new mem({ maxzoom:6, geocoder_address:1 }, function() {})
+const conf = {
+    province: new mem(null, () => {}),
+    city: new mem(null, () => {}),
+    street: new mem({ maxzoom:6, geocoder_address:1 }, () => {})
 };
-var c = new Carmen(conf);
-tape('index province', function(t) {
-    var province = {
+const c = new Carmen(conf);
+tape('index province', (t) => {
+    let province = {
         id:1,
         properties: {
             'carmen:text':'new york, ny',
@@ -29,10 +32,10 @@ tape('index province', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.province, province, t.end);
+    queueFeature(conf.province, province, t.end);
 });
-tape('index city 1', function(t) {
-    var city = {
+tape('index city 1', (t) => {
+    let city = {
         id:1,
         properties: {
             'carmen:text':'new york, ny',
@@ -40,10 +43,10 @@ tape('index city 1', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
-tape('index city 2', function(t) {
-    var city = {
+tape('index city 2', (t) => {
+    let city = {
         id:2,
         properties: {
             'carmen:text':'tonawanda',
@@ -51,10 +54,10 @@ tape('index city 2', function(t) {
             'carmen:center':[14.0625, -2.8079929095776683]
         }
     };
-    addFeature(conf.city, city, t.end);
+    queueFeature(conf.city, city, t.end);
 });
-tape('index street 1', function(t) {
-    var street = {
+tape('index street 1', (t) => {
+    let street = {
         id:1,
         properties: {
             'carmen:text':'west st',
@@ -62,10 +65,10 @@ tape('index street 1', function(t) {
             'carmen:center':[0,0]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
-tape('index street 2', function(t) {
-    var street = {
+tape('index street 2', (t) => {
+    let street = {
         id:2,
         properties: {
             'carmen:text':'west st',
@@ -73,48 +76,57 @@ tape('index street 2', function(t) {
             'carmen:center':[14.0625, -2.8079929095776683]
         }
     };
-    addFeature(conf.street, street, t.end);
+    queueFeature(conf.street, street, t.end);
 });
-tape('west st, tonawanda, ny', function(t) {
-    c.geocode('west st tonawanda ny', { limit_verify:1 }, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+tape('west st, tonawanda, ny', (t) => {
+    c.geocode('west st tonawanda ny', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, tonawanda, new york');
         t.end();
     });
 });
-tape('west st, new york, ny', function(t) {
-    c.geocode('west st new york ny', { limit_verify:1 }, function(err, res) {
+tape('west st, new york, ny', (t) => {
+    c.geocode('west st new york ny', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'west st, new york, new york');
         t.end();
     });
 });
-tape('new york', function(t) {
-    c.geocode('new york', { limit_verify:1 }, function(err, res) {
+tape('new york', (t) => {
+    c.geocode('new york', { limit_verify:1 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york');
         t.deepEqual(res.features[0].id, 'province.1');
         t.end();
     });
 });
-tape('new york new york', function(t) {
-    c.geocode('new york new york', { limit_verify:2 }, function(err, res) {
+tape('new york new york', (t) => {
+    c.geocode('new york new york', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');
         t.end();
     });
 });
-tape('ny ny', function(t) {
-    c.geocode('ny ny', { limit_verify:2 }, function(err, res) {
+tape('ny ny', (t) => {
+    c.geocode('ny ny', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');
         t.end();
     });
 });
-tape('new york ny', function(t) {
-    c.geocode('new york ny', { limit_verify:2 }, function(err, res) {
+tape('new york ny', (t) => {
+    c.geocode('new york ny', { limit_verify:2 }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'new york, new york');
         t.deepEqual(res.features[0].id, 'city.1');
@@ -122,8 +134,7 @@ tape('new york ny', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
-

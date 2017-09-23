@@ -1,18 +1,20 @@
 // Test that a feature at a tile's edge can be found.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    test: new mem({maxzoom:14}, function() {})
+const conf = {
+    test: new mem({maxzoom:14}, () => {})
 };
-var c = new Carmen(conf);
+const c = new Carmen(conf);
 
-tape('index test', function(t) {
-    var feature = {
+tape('index test', (t) => {
+    let feature = {
         id:1,
         properties: {
             'carmen:text':'test',
@@ -20,21 +22,21 @@ tape('index test', function(t) {
             'carmen:center':[-2.17405858745506,53.4619151830114]
         }
     };
-    addFeature(conf.test, feature, t.end);
+    queueFeature(conf.test, feature, () => { buildQueued(conf.test, t.end) });
 });
 
-tape('forward between tiles', function(t) {
-    c.geocode('test', { limit_verify: 1, }, function(err, res) {
+tape('forward between tiles', (t) => {
+    c.geocode('test', { limit_verify: 1, }, (err, res) => {
         t.ifError(err);
         t.equals(res.features[0].place_name, 'test', 'found feature');
         t.equals(res.features[0].id, 'test.1', 'found feature');
-        t.equals(res.features[0].relevance, 0.99);
+        t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

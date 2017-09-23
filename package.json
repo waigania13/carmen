@@ -1,55 +1,56 @@
 {
   "name": "@mapbox/carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "18.1.1",
+  "version": "24.1.1",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
-  "license": "BSD",
+  "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "0.16.2",
-    "@mapbox/geojsonhint": "^1.2.0",
+    "@mapbox/carmen-cache": "0.20.0",
+    "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
+    "@mapbox/mbtiles": "^0.9.0",
     "@mapbox/sphericalmercator": "~1.0.1",
+    "@mapbox/tile-cover": "^3.0.2",
     "@mapbox/tilebelt": "1.0.x",
-    "@turf/bbox": "^3.7.3",
-    "@turf/bearing": "^3.7.3",
-    "@turf/center": "^3.7.3",
-    "@turf/destination": "^3.7.3",
-    "@turf/distance": "^3.7.3",
-    "@turf/helpers": "^3.7.3",
-    "@turf/line-distance": "^3.7.3",
-    "@turf/point-on-surface": "^3.7.3",
+    "@mapbox/tilelive": "^5.12.6",
+    "@turf/bbox": "^4.0.1",
+    "@turf/bbox-clip": "^4.6.0",
+    "@turf/bearing": "^4.0.1",
+    "@turf/center": "^4.0.1",
+    "@turf/destination": "^4.0.1",
+    "@turf/distance": "^4.0.1",
+    "@turf/helpers": "^4.0.1",
+    "@turf/line-distance": "^4.0.1",
+    "@turf/point-on-surface": "^4.0.1",
     "d3-queue": "3.0.x",
-    "dawg-cache": "0.3.1",
-    "err-code": "1.1.1",
-    "mapnik": "~3.5.12",
+    "dawg-cache": "0.5.0",
+    "err-code": "^1.1.2",
+    "fs-extra": "^2.1.2",
+    "geojson-rewind": "^0.2.0",
+    "iter-tools": "1.3.0",
+    "mapnik": "~3.6.0",
     "minimist": "1.2.0",
     "model-un": "0.0.3",
-    "murmur": "0.0.2",
     "split": "1.0.0",
-    "tile-cover": "3.0.x",
-    "tilelive": "5.12.x",
-    "unidecode-cxx": "0.0.2",
     "xregexp": "3.1.1"
   },
   "devDependencies": {
-    "eslint": "3.14.0",
-    "retire": "1.2.11",
-    "bytes": "2.4.0",
-    "tape": "4.6.3",
-    "mbtiles": "~0.9.0",
-    "tilelive-s3": "~4.1.1",
-    "istanbul": "^0.4.0",
+    "benchmark": "^2.1.4",
+    "bytes": "^2.5.0",
+    "combined-stream": "~1.0.5",
     "coveralls": "^2.11.4",
-    "benchmark": "2.1.3",
-    "deep-equal": "1.0.1"
+    "deep-equal": "1.0.1",
+    "eslint": "^3.19.0",
+    "istanbul": "^0.4.0",
+    "retire": "^1.2.12",
+    "tape": "4.6.3"
   },
   "bin": {
     "carmen": "./scripts/carmen.js",
     "carmen-analyze": "./scripts/carmen-analyze.js",
     "carmen-copy": "./scripts/carmen-copy.js",
-    "carmen-index": "./scripts/carmen-index.js",
-    "carmen-degenize": "./scripts/carmen-degenize.js"
+    "carmen-index": "./scripts/carmen-index.js"
   },
   "main": "./index.js",
   "scripts": {
@@ -98,13 +99,17 @@
       "no-undef": 2,
       "block-scoped-var": 2
     },
+    "ecmaFeatures": {
+      "forOf": true
+    },
     "env": {
-      "node": true
+      "node": true,
+      "es6": true
     },
     "globals": {}
   },
   "engines": {
-    "node": "4.x.x"
+    "node": "6.x.x"
   },
   "repository": {
     "type": "git",

@@ -1,19 +1,19 @@
-var context = require('../lib/context');
-var tape = require('tape');
+const context = require('../lib/context');
+const tape = require('tape');
 
-tape('context.stackFeatures noop', function(assert) {
-    assert.deepEqual(context.stackFeatures({}, [], {}), [], '0 features => []');
-    assert.end();
+tape('context.stackFeatures noop', (t) => {
+    t.deepEqual(context.stackFeatures({}, [], {}), [], '0 features => []');
+    t.end();
 });
 
-tape('context.stackFeatures simple', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures simple', (t) => {
+    const geocoderStub = {
         indexes: {
             country: { type:'country' },
             region: { type:'region' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['country'],
@@ -26,17 +26,17 @@ tape('context.stackFeatures simple', function(assert) {
             'carmen:extid': 'region.1'
         }
     }];
-    assert.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked');
-    assert.end();
+    t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked');
+    t.end();
 });
 
-tape('context.stackFeatures type bump', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures type bump', (t) => {
+    const geocoderStub = {
         indexes: {
             country: { type:'country' },
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['country'],
@@ -49,18 +49,18 @@ tape('context.stackFeatures type bump', function(assert) {
             'carmen:extid': 'country.2'
         }
     }];
-    assert.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[0]], '1 feature stacked, 1 bumped');
-    assert.end();
+    t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[0]], '1 feature stacked, 1 bumped');
+    t.end();
 });
 
-tape('context.stackFeatures conflict', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures conflict', (t) => {
+    const geocoderStub = {
         indexes: {
             place: { type:'place' },
             address: { type:'address' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
@@ -80,18 +80,18 @@ tape('context.stackFeatures conflict', function(assert) {
             'carmen:extid': 'poi.1'
         }
     }];
-    assert.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked, 1 bumped');
-    assert.end();
+    t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked, 1 bumped');
+    t.end();
 });
 
-tape('context.stackFeatures conflict, dist tiebreak', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures conflict, dist tiebreak', (t) => {
+    const geocoderStub = {
         indexes: {
             place: { type:'place' },
             address: { type:'address' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
@@ -113,39 +113,39 @@ tape('context.stackFeatures conflict, dist tiebreak', function(assert) {
             'carmen:vtquerydist': 1
         }
     }];
-    assert.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[2], loaded[0]], '2 features stacked, 1 bumped, conflict priorities nearest feature');
-    assert.end();
+    t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[2], loaded[0]], '2 features stacked, 1 bumped, conflict priorities nearest feature');
+    t.end();
 });
 
-tape('context.stackFeatures multitype', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures multitype', (t) => {
+    const geocoderStub = {
         indexes: {
             region: { type:'region' },
             place: { type:'place' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
             'carmen:extid': 'region.1'
         }
     }];
-    var stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
-    assert.deepEqual(stacked, [loaded[0]], '1 feature stacked, promoted');
-    assert.deepEqual(stacked[0].properties['carmen:extid'], 'place.1', 'alters extid');
-    assert.end();
+    const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
+    t.deepEqual(stacked, [loaded[0]], '1 feature stacked, promoted');
+    t.deepEqual(stacked[0].properties['carmen:extid'], 'place.1', 'alters extid');
+    t.end();
 });
 
-tape('context.stackFeatures multitype, gap', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures multitype, gap', (t) => {
+    const geocoderStub = {
         indexes: {
             region: { type:'region' },
             place: { type:'place' },
             poi: { type:'poi' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
@@ -158,22 +158,22 @@ tape('context.stackFeatures multitype, gap', function(assert) {
             'carmen:extid': 'poi.1'
         }
     }];
-    var stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
-    assert.deepEqual(stacked, [loaded[1],loaded[0]], '2 features stacked, 1 promoted');
-    assert.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
-    assert.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
-    assert.end();
+    const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
+    t.deepEqual(stacked, [loaded[1],loaded[0]], '2 features stacked, 1 promoted');
+    t.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
+    t.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
+    t.end();
 });
 
-tape('context.stackFeatures multitype, nogap', function(assert) {
-    var geocoderStub = {
+tape('context.stackFeatures multitype, nogap', (t) => {
+    const geocoderStub = {
         indexes: {
             region: { type:'region' },
             place: { type:'place' },
             poi: { type:'poi' }
         }
     };
-    var loaded = [{
+    const loaded = [{
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
@@ -194,11 +194,11 @@ tape('context.stackFeatures multitype, nogap', function(assert) {
             'carmen:extid': 'poi.1'
         }
     }];
-    var stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
-    assert.deepEqual(stacked, [loaded[2],loaded[1],loaded[0]], '3 features stacked');
-    assert.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
-    assert.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
-    assert.deepEqual(stacked[2].properties['carmen:extid'], 'region.1');
-    assert.end();
+    const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
+    t.deepEqual(stacked, [loaded[2],loaded[1],loaded[0]], '3 features stacked');
+    t.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
+    t.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
+    t.deepEqual(stacked[2].properties['carmen:extid'], 'region.1');
+    t.end();
 });
 

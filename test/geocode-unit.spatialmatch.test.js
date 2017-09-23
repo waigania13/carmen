@@ -2,19 +2,22 @@
 // is used, disallowing a lower scoring cell from overwriting a previous
 // entry.
 
-var tape = require('tape');
-var Carmen = require('..');
-var context = require('../lib/context');
-var mem = require('../lib/api-mem');
-var addFeature = require('../lib/util/addfeature');
+const tape = require('tape');
+const Carmen = require('..');
+const context = require('../lib/context');
+const mem = require('../lib/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../lib/util/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
 
-var conf = {
-    place: new mem({maxzoom: 6}, function() {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+const conf = {
+    place: new mem({maxzoom: 6}, () => {}),
+    address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
 };
-var c = new Carmen(conf);
-tape('index place', function(t) {
-    var feature = {
+const c = new Carmen(conf);
+tape('index place', (t) => {
+    let feature = {
         id:1,
         properties: {
             'carmen:text':'fakecity',
@@ -22,10 +25,10 @@ tape('index place', function(t) {
             'carmen:center':[0,0],
         }
     };
-    addFeature(conf.place, feature, t.end);
+    queueFeature(conf.place, feature, t.end);
 });
-tape('index matching address', function(t) {
-    var feature = {
+tape('index matching address', (t) => {
+    let feature = {
         id:2,
         properties: {
             'carmen:text':'fake street',
@@ -38,10 +41,10 @@ tape('index matching address', function(t) {
             coordinates: [[0,0]]
         }
     };
-    addFeature(conf.address, feature, t.end);
+    queueFeature(conf.address, feature, t.end);
 });
-tape('index other address', function(t) {
-    var feature = {
+tape('index other address', (t) => {
+    let feature = {
         id:3,
         properties: {
             'carmen:text':'fake street',
@@ -54,10 +57,19 @@ tape('index other address', function(t) {
             coordinates: [[0,0]]
         }
     };
-    addFeature(conf.address, feature, t.end);
+    queueFeature(conf.address, feature, t.end);
 });
-tape('test spatialmatch relev', function(t) {
-    c.geocode('1 fake street fakecity', { limit_verify: 1 }, function(err, res) {
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+tape('test spatialmatch relev', (t) => {
+    c.geocode('1 fake street fakecity', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.equals(res.features[0].relevance, 1);
@@ -66,8 +78,8 @@ tape('test spatialmatch relev', function(t) {
     });
 });
 
-tape('teardown', function(assert) {
+tape('teardown', (t) => {
     context.getTile.cache.reset();
-    assert.end();
+    t.end();
 });
 

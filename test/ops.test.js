@@ -1,8 +1,8 @@
-var ops = require('../lib/util/ops');
-var test = require('tape');
+const ops = require('../lib/util/ops');
+const test = require('tape');
 
-test('ops#toFeature', function(t) {
-    var feat = [{
+test('ops#toFeature', (t) => {
+    let feat = [{
         properties: {
             "carmen:center": [-99.392855, 63.004759],
             "carmen:text": "Canada, CA",
@@ -125,7 +125,7 @@ test('ops#toFeature', function(t) {
     }], "{address._number} {address.name}, {place._name}").place_name, 'Andor', 'Just place');
 
     //This stack used for the next series of tests
-    var fullStack = [{
+    let fullStack = [{
         properties: {
             "carmen:center": [-99.392855,63.004759],
             "carmen:text": "Fake Street",
@@ -181,14 +181,17 @@ test('ops#toFeature', function(t) {
         }
     }];
     feat._relevance = 1;
-    t.deepEqual(ops.toFeature(feat, {}, 'ru'), {
+    t.deepEqual(ops.toFeature(feat, {}, ['ru']), {
         id: 'place.1',
         type: 'Feature',
         text: 'Торонто',
+        text_ru: 'Торонто',
         place_name: 'Торонто',
+        place_name_ru: 'Торонто',
         place_type: ['place'],
         relevance: 1,
         language: 'ru',
+        language_ru: 'ru',
         center: [ 0, 0 ],
         properties: {
             wikidata: 'Q172'
@@ -217,14 +220,17 @@ test('ops#toFeature', function(t) {
         }
     }];
     feat._relevance = 0.5;
-    t.deepEqual(ops.toFeature(feat, {}, 'ru', null, true), {
+    t.deepEqual(ops.toFeature(feat, {}, ['ru'], null, true), {
         id: 'place.1',
         type: 'Feature',
         text: 'Торонто',
+        text_ru: 'Торонто',
         place_name: 'Торонто',
+        place_name_ru: 'Торонто',
         place_type: ['place'],
         relevance: 0.5,
         language: 'ru',
+        language_ru: 'ru',
         center: [ 0, 0 ],
         properties: feat[0].properties,
         geometry: {
@@ -236,8 +242,8 @@ test('ops#toFeature', function(t) {
     t.end();
 });
 
-test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
-    var context, feature;
+test('ops#toFeature + no formatter + languageMode=strict', (t) => {
+    let context, feature;
 
     context = [{
         properties: {
@@ -267,24 +273,24 @@ test('ops#toFeature + no formatter + languageMode=strict', function(assert) {
         }
     }];
 
-    feature = ops.toFeature(context, {}, 'en', 'strict', true);
-    assert.deepEqual(feature.place_name, 'Chicago, Illinois, United States');
-    assert.deepEqual(feature.context, [
-        { id: 'region.1', language: 'en', text: 'Illinois' },
-        { id: 'country.1', language: 'en', text: 'United States' }
+    feature = ops.toFeature(context, {}, ['en'], 'strict', true);
+    t.deepEqual(feature.place_name, 'Chicago, Illinois, United States');
+    t.deepEqual(feature.context, [
+        { id: 'region.1', language: 'en', language_en: 'en', text: 'Illinois', text_en: 'Illinois' },
+        { id: 'country.1', language: 'en', language_en: 'en', text: 'United States', text_en: 'United States' }
     ]);
 
-    feature = ops.toFeature(context, {}, 'zh', 'strict', true);
-    assert.deepEqual(feature.place_name, '芝加哥, 美国');
-    assert.deepEqual(feature.context, [
-        { id: 'country.1', language: 'zh', text: '美国' }
+    feature = ops.toFeature(context, {}, ['zh'], 'strict', true);
+    t.deepEqual(feature.place_name, '芝加哥, 美国');
+    t.deepEqual(feature.context, [
+        { id: 'country.1', language: 'zh', language_zh: 'zh', text: '美国', text_zh: '美国' }
     ]);
 
-    assert.end()
+    t.end()
 });
 
-test('ops#toFeature + formatter + languageMode=strict', function(assert) {
-    var context, feature;
+test('ops#toFeature + formatter + languageMode=strict', (t) => {
+    let context, feature;
 
     context = [{
         properties: {
@@ -317,22 +323,22 @@ test('ops#toFeature + formatter + languageMode=strict', function(assert) {
     feature = ops.toFeature(context, {
         en: '{place._name}, {country._name}',
         zh: '{country._name}{place._name}'
-    }, 'en', 'strict', true);
-    assert.deepEqual(feature.place_name, 'Chicago, United States');
-    assert.deepEqual(feature.context, [
-        { id: 'region.1', language: 'en', text: 'Illinois' },
-        { id: 'country.1', language: 'en', text: 'United States' }
+    }, ['en'], 'strict', true);
+    t.deepEqual(feature.place_name, 'Chicago, United States');
+    t.deepEqual(feature.context, [
+        { id: 'region.1', language: 'en', language_en: 'en', text: 'Illinois', text_en: 'Illinois' },
+        { id: 'country.1', language: 'en', language_en: 'en', text: 'United States', text_en: 'United States' }
     ]);
 
     feature = ops.toFeature(context, {
         en: '{place._name}, {country._name}',
         zh: '{country._name}{place._name}'
-    }, 'zh', 'strict', true);
-    assert.deepEqual(feature.place_name, '美国芝加哥');
-    assert.deepEqual(feature.context, [
-        { id: 'country.1', language: 'zh', text: '美国' }
+    }, ['zh'], 'strict', true);
+    t.deepEqual(feature.place_name, '美国芝加哥');
+    t.deepEqual(feature.context, [
+        { id: 'country.1', language: 'zh', language_zh: 'zh', text: '美国', text_zh: '美国' }
     ]);
 
-    assert.end()
+    t.end()
 });
 
