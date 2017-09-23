@@ -35,8 +35,7 @@ function setup(cb) {
                         'carmen:text': text,
                         'carmen:center': [lon, lat]
                     },
-                    geometry: { type:'Point', coordinates:[lon,lat] },
-                    bbox: []
+                    geometry: { type:'Point', coordinates:[lon,lat] }
                 });
             }
             return memo;
