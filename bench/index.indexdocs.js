@@ -40,16 +40,22 @@ function benchmark(cb) {
     const customDocs = fs.readFileSync(filepath, 'utf8').split('\n').filter(Boolean).map(JSON.parse);
     const geocoder = new Carmen({ source: new mem({maxzoom: 6, geocoder_address:1 }, () => {}) });
     const options = { zoom: 14 };
+/*
     suite.add(`index ${filepath}`, {
       'defer': true,
       'fn': function(deferred) {
+*/
+console.time('HERE');
         indexdocs(customDocs, geocoder.indexes.source, options, function(err, res) {
           if (err) throw err;
-          deferred.resolve();
+console.timeEnd('HERE');
+//          deferred.resolve();
         });
+/*
       }
     });
     suite.run({'async': true});
+*/
     return;
   }
 
