@@ -10,6 +10,7 @@ const mem = require('../lib/api-mem');
 const geocoder = new Carmen({ source: new mem({maxzoom: 6, geocoder_address:1 }, () => {}) });
 const options = { zoom: 6 };
 const pointDocs = [];
+const geocoder_tokens = require('./fixtures/geocoder-tokens.json');
 
 for (var i = 0; i < 500; i++) {
   pointDocs.push(pointDoc);
@@ -38,24 +39,18 @@ function benchmark(cb) {
     const fs = require('fs');
     const filepath = process.argv[2];
     const customDocs = fs.readFileSync(filepath, 'utf8').split('\n').filter(Boolean).map(JSON.parse);
-    const geocoder = new Carmen({ source: new mem({maxzoom: 6, geocoder_address:1 }, () => {}) });
+    const geocoder = new Carmen({ source: new mem({maxzoom: 6, geocoder_address:1, geocoder_tokens:geocoder_tokens }, () => {}) });
     const options = { zoom: 14 };
-/*
     suite.add(`index ${filepath}`, {
       'defer': true,
       'fn': function(deferred) {
-*/
-console.time('HERE');
         indexdocs(customDocs, geocoder.indexes.source, options, function(err, res) {
           if (err) throw err;
-console.timeEnd('HERE');
-//          deferred.resolve();
+          deferred.resolve();
         });
-/*
       }
     });
     suite.run({'async': true});
-*/
     return;
   }
 
