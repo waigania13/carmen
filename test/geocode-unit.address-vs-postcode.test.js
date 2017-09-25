@@ -120,6 +120,14 @@ const addFeature = require('../lib/util/addfeature'),
         });
     });
 
+    tape('Search', (assert) => {
+        c.geocode('0216', {}, (err, res) => {
+            assert.ifError(err);
+            assert.deepEqual(res.features[0].place_name, '02169, Quincy, Massachusetts', 'should match autocomplete to a postcode');
+            assert.end();
+        });
+    });
+
 })();
 
 
