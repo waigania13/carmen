@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.1.3
+
+- Fix indexing of `universal_text` when the value is shared with another language
+
 ## 24.1.2
 
 - Disable autocomplete on an address's numerical token when the token is moved to the beginning of the query string.
