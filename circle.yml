@@ -2,7 +2,9 @@ machine:
   node:
     version: 6
   pre:
-  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test; sudo apt-get -y update; sudo apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
+  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test; sudo apt-get -y update; sudo apt-get -y install yarn libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
 dependencies:
   pre:
     - yarn install
