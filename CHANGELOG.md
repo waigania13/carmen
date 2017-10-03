@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.1.5
+
+- Indexing performance improvements via optimizations to token replacement.
+
 ## 24.1.4
 
 - Switch to `yarn` for tests and migrate package-lock to yarn.lock
