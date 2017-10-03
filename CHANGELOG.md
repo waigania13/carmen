@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.1.6
+
+- add carmen-merge to package.json.s
+
 ## 24.1.5
 
 - Indexing performance improvements via optimizations to token replacement.
