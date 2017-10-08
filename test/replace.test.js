@@ -265,7 +265,7 @@ test('token replacement', (q) => {
         'main st St st st milwaukee lane ln wtf ln',
         'main st street st st milwaukee lane ln wtf ln'
     ]);
-/*
+
     q.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
         'main st St st st milwaukee Ln ln wtf ln',
         'main st St st st milwaukee Ln ln wtf Lane',
@@ -280,7 +280,6 @@ test('token replacement', (q) => {
         'main st street st st milwaukee lane ln wtf ln',
         'main st street st st milwaukee lane Lane wtf ln'
     ]);
-*/
 
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
@@ -298,8 +297,7 @@ test('token replacement', (q) => {
         'uber': 'üb',
         'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'},
     });
-    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),[ 'ueb cat', 'üb cat', 'uber cat' ], 'hits all permutations');
-
+    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),[ 'üb cat', 'uber cat' ], 'does not cascade replacements');
 
     q.end();
 });
