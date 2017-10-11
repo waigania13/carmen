@@ -291,3 +291,112 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
+
+const conf3 = {
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_prevent_inherit: true }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
+    district: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {})
+};
+const c3 = new Carmen(conf3);
+
+tape('index country', (t) => {
+    queueFeature(conf3.country, {
+        id: 10,
+        properties: {
+            'carmen:score': 10,
+            'carmen:text':'Mexico',
+            'carmen:text_fr':'Mexico',
+            'carmen:geocoder_stack':'mx'
+        },
+        "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [
+                        99.90966796875,
+                        13.325484885597936
+                    ],
+                    [
+                        99.90966796875,
+                        14.381476281951624
+                    ],
+                    [
+                        101.1236572265625,
+                        14.381476281951624
+                    ],
+                    [
+                        101.1236572265625,
+                        13.325484885597936
+                    ],
+                    [
+                        99.90966796875,
+                        13.325484885597936
+                    ]
+                ]
+            ]
+        }
+    }, t.end);
+});
+
+['region', 'district', 'place'].forEach((f, i) => {
+    tape('index ' + f, (t) => {
+        queueFeature(conf3[f], {
+            id: i + 1,
+            properties: {
+                'carmen:score': 5 - i,
+                'carmen:text':'Mexico City',
+                'carmen:text_fr':'Mexico',
+                'carmen:geocoder_stack':'mx'
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            100.49571990966797,
+                            13.843746953264152
+                        ],
+                        [
+                            100.49571990966797,
+                            13.878746052885328
+                        ],
+                        [
+                            100.52970886230467,
+                            13.878746052885328
+                        ],
+                        [
+                            100.52970886230467,
+                            13.843746953264152
+                        ],
+                        [
+                            100.49571990966797,
+                            13.843746953264152
+                        ]
+                    ]
+                ]
+            }
+        }, t.end);
+    });
+});
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf3).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf3[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+
+tape('mexico', (t) => {
+    c3.geocode('mexico', {}, (err, res) => {
+        t.equal(res.features[0].id.split('.')[0], 'country', 'lead feature is country');
+        t.end();
+    });
+});
+
+tape('teardown', (t) => {
+    context.getTile.cache.reset();
+    t.end();
+});

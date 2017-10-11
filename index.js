@@ -110,6 +110,7 @@ function Geocoder(indexes, options) {
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.geocoder_inverse_tokens = options.geocoder_inverse_tokens||{};
             source.geocoder_inherit_score = info.geocoder_inherit_score || false;
+            source.geocoder_disallow_inherit = info.geocoder_disallow_inherit || false;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
