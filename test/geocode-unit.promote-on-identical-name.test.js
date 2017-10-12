@@ -293,10 +293,10 @@ tape('teardown', (t) => {
 });
 
 const conf3 = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_prevent_inherit: true }, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_disallow_inherit: true }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
     district: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_inherit_score: true}, () => {})
 };
 const c3 = new Carmen(conf3);
 
@@ -339,7 +339,7 @@ tape('index country', (t) => {
     }, t.end);
 });
 
-['region', 'district', 'place'].forEach((f, i) => {
+['place'].forEach((f, i) => {
     tape('index ' + f, (t) => {
         queueFeature(conf3[f], {
             id: i + 1,
