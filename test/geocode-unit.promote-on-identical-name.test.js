@@ -304,7 +304,7 @@ tape('index country', (t) => {
     queueFeature(conf3.country, {
         id: 10,
         properties: {
-            'carmen:score': 10,
+            'carmen:score': 20,
             'carmen:text':'Mexico',
             'carmen:text_fr':'Mexico',
             'carmen:geocoder_stack':'mx'
@@ -339,7 +339,7 @@ tape('index country', (t) => {
     }, t.end);
 });
 
-['place'].forEach((f, i) => {
+['place','district','region'].forEach((f, i) => {
     tape('index ' + f, (t) => {
         queueFeature(conf3[f], {
             id: i + 1,
