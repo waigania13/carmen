@@ -104,13 +104,12 @@ function Geocoder(indexes, options) {
                     source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
                 }
             });
-
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens||{};
             source.geocoder_inverse_tokens = options.geocoder_inverse_tokens||{};
-            source.geocoder_inherit_score = info.geocoder_inherit_score || false;
-            source.geocoder_disallow_inherit = info.geocoder_disallow_inherit || false;
+            source.geocoder_squishy_inherit = info.geocoder_squishy_inherit || false;
+            source.geocoder_squishy_bestow = info.hasOwnProperty('geocoder_squishy_bestow') ? info.geocoder_squishy_bestow : true;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
             source.token_replacer = token.createReplacer(info.geocoder_tokens||{});

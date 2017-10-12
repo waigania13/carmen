@@ -13,7 +13,7 @@ const addFeature = require('../lib/util/addfeature'),
 const conf = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_squishy_inherit: true }, () => {})
 };
 
 const c = new Carmen(conf);
@@ -128,7 +128,7 @@ tape('teardown', (t) => {
 const conf2 = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_inherit_score: true }, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es'], geocoder_squishy_inherit: true }, () => {})
 };
 
 const c2 = new Carmen(conf2);

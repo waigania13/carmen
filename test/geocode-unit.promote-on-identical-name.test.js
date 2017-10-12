@@ -15,7 +15,7 @@ const conf = {
     country: new mem({ maxzoom: 6 }, () => {}),
     region: new mem({ maxzoom: 6 }, () => {}),
     district: new mem({ maxzoom: 6 }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_squishy_inherit: true }, () => {}),
     poi: new mem({ maxzoom: 14 }, () => {})
 };
 
@@ -187,9 +187,9 @@ tape('teardown', (t) => {
 
 const conf2 = {
     country: new mem({ maxzoom: 6 }, () => {}),
-    region: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
-    district: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {})
+    region: new mem({ maxzoom: 6, geocoder_squishy_inherit: true }, () => {}),
+    district: new mem({ maxzoom: 6, geocoder_squishy_inherit: true }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_squishy_inherit: true }, () => {})
 };
 const c2 = new Carmen(conf2);
 
@@ -293,10 +293,10 @@ tape('teardown', (t) => {
 });
 
 const conf3 = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_disallow_inherit: true }, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_squishy_bestow: false }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
     district: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_inherit_score: true}, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_squishy_inherit: true}, () => {})
 };
 const c3 = new Carmen(conf3);
 
