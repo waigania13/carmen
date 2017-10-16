@@ -1,5 +1,18 @@
 # Changelog
 
+## 24.1.9
+
+- Fix memory issue introduced in 24.1.1 by limiting the number of duplicate address
+  numbers considered per address cluster to 10.
+
+## 24.1.8
+
+- Fix typo in carmen-merge bin script from 24.1.7
+
+## 24.1.7
+
+- Add carmen-merge script to `bin` in package.json
+
 ## 24.1.6
 
 - add carmen-merge to package.json.s
