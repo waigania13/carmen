@@ -275,12 +275,3 @@ tape('query: Christ the Redeemer', (t) => {
         t.end();
     });
 });
-
-tape('removedchar', (assert) => {
-    let charless = termops.removedchar('this has a space');
-    let result = charless.indexOf(' ');
-    assert.deepEqual(charless, 'thishasaspace', 'result and missed character are the same')
-    assert.deepEqual(result, -1, 'dawg-cache removes a char');
-    assert.end();
-});
-
