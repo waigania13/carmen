@@ -175,10 +175,13 @@ tape('create', (t) => {
 
 tape('dump/load', (t) => {
     const dict = new DawgCache();
+    console.log('***** dict: ',dict);
     dict.setText("a1");
     dict.setText("a2");
     dict.setText("a3");
     dict.setText("a4");
+    
+    console.log('***** dict: ',dict);
 
     zlib.gzip(dict.dump(), (err, zdata) => {
         t.ifError(err);
@@ -187,10 +190,10 @@ tape('dump/load', (t) => {
             t.ifError(err);
             let loaded = new DawgCache(data);
             for (let i = 1; i <= 4; i++) {
+                console.log(`** thing${i}: `,loaded.hasPhrase("a" + i, false));
                 t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
             }
             t.equal(loaded.hasPhrase("a5", false), false, 'not a5');
-
             t.equal(loaded.hasPhrase("a", false), false, 'not a');
             t.equal(loaded.hasPhrase("a", true), true, 'has a as degen');
 
