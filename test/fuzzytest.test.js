@@ -2,16 +2,18 @@ const tape = require('tape');
 const zlib = require('zlib');
 const DawgCache = require('../lib/util/dawg');
 const termops = require('../lib/util/termops');
-
-const tape = require('tape');
 const Carmen = require('..');
-// const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
+// const context = require('../lib/context');
+
+
+// be able to add a specific feature
 const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
+// create basic outline for a feature to be searched
 const conf = {
     country: new mem({
         maxzoom: 6,
@@ -34,6 +36,8 @@ const conf = {
         geocoder_languages: ['en'],
     }, () => {}),
 };
+
+
 const c = new Carmen(conf);
 tape('index Wall St', (t) => {
     let street = {
