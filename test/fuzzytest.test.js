@@ -39,6 +39,8 @@ const conf = {
 
 
 const c = new Carmen(conf);
+
+// create feature to be searched for country, city, street, and landmark
 tape('index Wall St', (t) => {
     let street = {
         "id":1,
@@ -152,6 +154,8 @@ tape('index Brazil', (t) => {
     };
     queueFeature(conf.country, country, t.end);
 });
+
+// queue features built
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {
@@ -162,6 +166,7 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
+// create and load DawgCache
 tape('create', (t) => {
     const dict = new DawgCache();
     t.ok(dict, "dawg created")
@@ -194,6 +199,7 @@ tape('dump/load', (t) => {
     });
 });
 
+// check dawg cache
 tape('invalid data', (t) => {
     const dict = new DawgCache();
     t.throws(() => { dict.setText(""); });
@@ -207,6 +213,7 @@ tape('query for "wall st new york"', (assert) => {
     });
 });
 
+// query in carmen
 tape('query for "wallst new york"', (assert) => {
     c.geocode('wallst new york', { limit_verify:1 }, (err, res) => {
         assert.equal(res.features.length > 0, true, 'query for "wallst new york" returns any feature');
@@ -250,6 +257,7 @@ tape('test index contents for grid/christtheredeemer', (assert) => {
     assert.equal(Array.from(conf.landmark._geocoder.grid.list())[0][0], 'christtheredeemer', 'test index contents for christ the redeemer');
     assert.end();
 });
+
 //language flag test to trigger during getMatchingText();
 tape('query: Wall St', (t) => {
     c.geocode('Wall St', { language: 'ar'}, (err, res) => {
