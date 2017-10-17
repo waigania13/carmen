@@ -39,6 +39,8 @@ const conf = {
 
 
 const c = new Carmen(conf);
+
+// create feature to be searched for country, city, street, and landmark
 tape('index Wall St', (t) => {
     let street = {
         "id":1,
@@ -152,6 +154,8 @@ tape('index Brazil', (t) => {
     };
     queueFeature(conf.country, country, t.end);
 });
+
+// queue features built
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {
@@ -162,18 +166,20 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
+// create and load DawgCache
 tape('create', (t) => {
     const dict = new DawgCache();
     t.ok(dict, "dawg created")
     t.end();
 });
 
-tape('dump/load', (t) => {
+tape('dump/load DawgCache', (t) => {
     const dict = new DawgCache();
     dict.setText("a1");
     dict.setText("a2");
     dict.setText("a3");
     dict.setText("a4");
+
 
     zlib.gzip(dict.dump(), (err, zdata) => {
         t.ifError(err);
@@ -186,7 +192,6 @@ tape('dump/load', (t) => {
                 t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
             }
             t.equal(loaded.hasPhrase("a45", false, true), false, 'not a45');
-
             t.equal(loaded.hasPhrase("a", false), false, 'not a');
             t.equal(loaded.hasPhrase("a", true), true, 'has a as degen');
 
@@ -195,12 +200,25 @@ tape('dump/load', (t) => {
     });
 });
 
+// check dawg cache
 tape('invalid data', (t) => {
     const dict = new DawgCache();
     t.throws(() => { dict.setText(""); });
     t.end();
 });
 
+// index contents
+tape('test index contents for new york', (assert) => {
+    assert.equal(Array.from(conf.city._dictcache)[0], 'new york', 'test index contents for new york');
+    assert.end();
+});
+
+tape('test index contents for wallst', (assert) => {
+    assert.equal(Array.from(conf.street._dictcache)[0], 'wallst', 'test index contents for wallst');
+    assert.end();
+});
+
+// query in carmen
 tape('query for "wall st new york"', (assert) => {
     c.geocode('wall st new york', { limit_verify:1 }, (err, res) => {
         assert.deepEqual(res.features[0].place_name, 'Wall St, New York', 'query for "wall st new york" returns "Wall St"');
@@ -216,26 +234,6 @@ tape('query for "wallst new york"', (assert) => {
     });
 });
 
-tape('test index contents for newyork', (assert) => {
-    assert.equal(Array.from(conf.city._dictcache)[0], 'newyork', 'test index contents for newyork');
-    assert.end();
-});
-
-tape('test index contents for wallst', (assert) => {
-    assert.equal(Array.from(conf.street._dictcache)[0], 'wallst', 'test index contents for wallst');
-    assert.end();
-});
-
-tape('test index contents for grid/newyork', (assert) => {
-    assert.equal(Array.from(conf.city._geocoder.grid.list())[0][0], 'newyork', 'test index contents for newyork');
-    assert.end();
-});
-
-tape('test index contents for grid/wallst', (assert) => {
-    assert.equal(Array.from(conf.street._geocoder.grid.list())[0][0], 'wallst', 'test index contents for wallst');
-    assert.end();
-});
-
 //landmark search with geocoder_address = 0
 tape('query for "christ the redeemer, brazil"', (assert) => {
     c.geocode('christ the redeemer brazil', { limit_verify:1 }, (err, res) => {
@@ -247,12 +245,9 @@ tape('test index contents for dict/christtheredeemer', (assert) => {
     assert.equal(Array.from(conf.landmark._dictcache)[0], 'christtheredeemer', 'test index contents for christ the redeemer');
     assert.end();
 });
-tape('test index contents for grid/christtheredeemer', (assert) => {
-    assert.equal(Array.from(conf.landmark._geocoder.grid.list())[0][0], 'christtheredeemer', 'test index contents for christ the redeemer');
-    assert.end();
-});
+
 //language flag test to trigger during getMatchingText();
-tape('query: Wall St', (t) => {
+tape('language fallback query: Wall St', (t) => {
     c.geocode('Wall St', { language: 'ar'}, (err, res) => {
         t.equal('Wall St', res.features[0].text, 'Fallback to English');
         t.equal('en', res.features[0].language, 'Language returned is English');
@@ -260,7 +255,7 @@ tape('query: Wall St', (t) => {
         t.end();
     });
 });
-tape('query: Christ the Redeemer', (t) => {
+tape('language fallback query: Christ the Redeemer', (t) => {
     c.geocode('Christ the Redeemer', { language: 'ar'}, (err, res) => {
         t.equal('Christ the Redeemer', res.features[0].text, 'Fallback to English');
         t.equal('en', res.features[0].language, 'Language returned is English');
