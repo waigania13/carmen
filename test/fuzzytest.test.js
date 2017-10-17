@@ -180,7 +180,7 @@ tape('dump/load', (t) => {
     dict.setText("a2");
     dict.setText("a3");
     dict.setText("a4");
-    
+
     console.log('***** dict: ',dict);
 
     zlib.gzip(dict.dump(), (err, zdata) => {
@@ -235,16 +235,6 @@ tape('test index contents for wallst', (assert) => {
     assert.end();
 });
 
-tape('test index contents for grid/newyork', (assert) => {
-    assert.equal(Array.from(conf.city._geocoder.grid.list())[0][0], 'newyork', 'test index contents for newyork');
-    assert.end();
-});
-
-tape('test index contents for grid/wallst', (assert) => {
-    assert.equal(Array.from(conf.street._geocoder.grid.list())[0][0], 'wallst', 'test index contents for wallst');
-    assert.end();
-});
-
 //landmark search with geocoder_address = 0
 tape('query for "christ the redeemer, brazil"', (assert) => {
     c.geocode('christ the redeemer brazil', { limit_verify:1 }, (err, res) => {
@@ -254,10 +244,6 @@ tape('query for "christ the redeemer, brazil"', (assert) => {
 });
 tape('test index contents for dict/christtheredeemer', (assert) => {
     assert.equal(Array.from(conf.landmark._dictcache)[0], 'christtheredeemer', 'test index contents for christ the redeemer');
-    assert.end();
-});
-tape('test index contents for grid/christtheredeemer', (assert) => {
-    assert.equal(Array.from(conf.landmark._geocoder.grid.list())[0][0], 'christtheredeemer', 'test index contents for christ the redeemer');
     assert.end();
 });
 
