@@ -173,15 +173,13 @@ tape('create', (t) => {
     t.end();
 });
 
-tape('dump/load', (t) => {
+tape('dump/load DawgCache', (t) => {
     const dict = new DawgCache();
-    console.log('***** dict: ',dict);
     dict.setText("a1");
     dict.setText("a2");
     dict.setText("a3");
     dict.setText("a4");
 
-    console.log('***** dict: ',dict);
 
     zlib.gzip(dict.dump(), (err, zdata) => {
         t.ifError(err);
@@ -191,7 +189,7 @@ tape('dump/load', (t) => {
             let loaded = new DawgCache(data);
             for (let i = 1; i <= 4; i++) {
                 console.log(`** thing${i}: `,loaded.hasPhrase("a" + i, false));
-                t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
+                t.equal(loaded.hasPhrase("a" + i, false), { exact_match: true, final: true, text: 'a1' });
             }
             t.equal(loaded.hasPhrase("a5", false), false, 'not a5');
             t.equal(loaded.hasPhrase("a", false), false, 'not a');
@@ -209,6 +207,18 @@ tape('invalid data', (t) => {
     t.end();
 });
 
+// index contents
+tape('test index contents for new york', (assert) => {
+    assert.equal(Array.from(conf.city._dictcache)[0], 'new york', 'test index contents for new york');
+    assert.end();
+});
+
+tape('test index contents for wallst', (assert) => {
+    assert.equal(Array.from(conf.street._dictcache)[0], 'wallst', 'test index contents for wallst');
+    assert.end();
+});
+
+// query in carmen
 tape('query for "wall st new york"', (assert) => {
     c.geocode('wall st new york', { limit_verify:1 }, (err, res) => {
         assert.deepEqual(res.features[0].place_name, 'Wall St, New York', 'query for "wall st new york" returns "Wall St"');
@@ -216,23 +226,12 @@ tape('query for "wall st new york"', (assert) => {
     });
 });
 
-// query in carmen
 tape('query for "wallst new york"', (assert) => {
     c.geocode('wallst new york', { limit_verify:1 }, (err, res) => {
         assert.equal(res.features.length > 0, true, 'query for "wallst new york" returns any feature');
         assert.deepEqual(res.features[0].place_name, 'Wall St, New York', 'query for "wallst new york" returns "Wall St"');
         assert.end();
     });
-});
-
-tape('test index contents for newyork', (assert) => {
-    assert.equal(Array.from(conf.city._dictcache)[0], 'newyork', 'test index contents for newyork');
-    assert.end();
-});
-
-tape('test index contents for wallst', (assert) => {
-    assert.equal(Array.from(conf.street._dictcache)[0], 'wallst', 'test index contents for wallst');
-    assert.end();
 });
 
 //landmark search with geocoder_address = 0
@@ -248,7 +247,7 @@ tape('test index contents for dict/christtheredeemer', (assert) => {
 });
 
 //language flag test to trigger during getMatchingText();
-tape('query: Wall St', (t) => {
+tape('language fallback query: Wall St', (t) => {
     c.geocode('Wall St', { language: 'ar'}, (err, res) => {
         t.equal('Wall St', res.features[0].text, 'Fallback to English');
         t.equal('en', res.features[0].language, 'Language returned is English');
@@ -256,7 +255,7 @@ tape('query: Wall St', (t) => {
         t.end();
     });
 });
-tape('query: Christ the Redeemer', (t) => {
+tape('language fallback query: Christ the Redeemer', (t) => {
     c.geocode('Christ the Redeemer', { language: 'ar'}, (err, res) => {
         t.equal('Christ the Redeemer', res.features[0].text, 'Fallback to English');
         t.equal('en', res.features[0].language, 'Language returned is English');
