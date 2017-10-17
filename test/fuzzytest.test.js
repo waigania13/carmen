@@ -182,6 +182,7 @@ tape('dump/load', (t) => {
             t.ifError(err);
             let loaded = new DawgCache(data);
             for (let i = 1; i <= 4; i++) {
+                console.log(loaded.hasPhrase("a1"));
                 t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
             }
             t.equal(loaded.hasPhrase("a5", false), false, 'not a5');
@@ -268,11 +269,11 @@ tape('query: Christ the Redeemer', (t) => {
     });
 });
 
-tape('removedchar', (assert) => {
-    let charless = termops.removedchar('this has a space');
-    let result = charless.indexOf(' ');
-    assert.deepEqual(charless, 'thishasaspace', 'result and missed character are the same')
-    assert.deepEqual(result, -1, 'dawg-cache removes a char');
-    assert.end();
-});
+// tape('removedchar', (assert) => {
+//     let charless = termops.removedchar('this has a space');
+//     let result = charless.indexOf(' ');
+//     assert.deepEqual(charless, 'thishasaspace', 'result and missed character are the same')
+//     assert.deepEqual(result, -1, 'dawg-cache removes a char');
+//     assert.end();
+// });
 
