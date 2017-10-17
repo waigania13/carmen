@@ -185,7 +185,7 @@ tape('dump/load', (t) => {
                 console.log(loaded.hasPhrase("a1"));
                 t.equal(loaded.hasPhrase("a" + i, false), true, 'has a' + i);
             }
-            t.equal(loaded.hasPhrase("a5", false), false, 'not a5');
+            t.equal(loaded.hasPhrase("a45", false, true), false, 'not a45');
 
             t.equal(loaded.hasPhrase("a", false), false, 'not a');
             t.equal(loaded.hasPhrase("a", true), true, 'has a as degen');
@@ -268,12 +268,3 @@ tape('query: Christ the Redeemer', (t) => {
         t.end();
     });
 });
-
-// tape('removedchar', (assert) => {
-//     let charless = termops.removedchar('this has a space');
-//     let result = charless.indexOf(' ');
-//     assert.deepEqual(charless, 'thishasaspace', 'result and missed character are the same')
-//     assert.deepEqual(result, -1, 'dawg-cache removes a char');
-//     assert.end();
-// });
-
