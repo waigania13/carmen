@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.1.10
+
+- Update to turf@5.x.x
+
 ## 24.1.9
 
 - Fix memory issue introduced in 24.1.1 by limiting the number of duplicate address
