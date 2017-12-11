@@ -154,6 +154,9 @@ function Geocoder(indexes, options) {
 
             // decide whether to use the text normalization cache
             source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
+            console.log('[carmen/index.js 156] info.use_normalization_cache: ', info.use_normalization_cache);
+            console.log('[carmen/index.js 156] source.use_normalization_cache: ', source.use_normalization_cache);
+
             if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
                 source._dictcache.loadNormalizationCache(data.norm);
             }
