@@ -764,6 +764,18 @@ es6-iterator@2.0.0:
     es5-ext "^0.10.7"
     es6-symbol "3"
 
+"es6-native-map@https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz":
+  version "4.0.2"
+  resolved "https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz#140a1c647ea45c0f43bd139a2e6a3b0291c11ee8"
+  dependencies:
+    nan "^2.3.3"
+
+"es6-native-set@https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz":
+  version "3.6.0"
+  resolved "https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz#c3f43c79ccb120bac2aa50b577bdadc622de6ac3"
+  dependencies:
+    nan "^2.1.0"
+
 es6-promise@^3.0.2:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-3.3.1.tgz#a08cdde84ccdbf34d027a1451bc91d4bcd28a613"
@@ -1650,6 +1662,10 @@ mute-stream@0.0.7:
 nan@*, nan@~2.7.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
+
+nan@^2.1.0, nan@^2.3.3:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
 nan@~2.5.0, nan@~2.5.1:
   version "2.5.1"
