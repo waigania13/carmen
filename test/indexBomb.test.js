@@ -19,42 +19,44 @@ tape('indexdocs.loadDoc', (t) => {
     tokens = ['main', 'st'];
     zoom = 12;
     doc = {
-        "type":"Feature",
-        "properties":{
+        type:"Feature",
+        properties:{
             "carmen:text":"Rue Paul",
             "carmen:addressnumber":[
                 null,
                 ["2","3","4","5","6","8","10"]
             ],
             "carmen:rangetype":"tiger",
-            "carmen:parityl":[
-                ["O"],
-                null
-            ],
-            "carmen:lfromhn":[
-                [11],
-                null
-            ],
-            "carmen:ltohn":[
-                [1],
-                null
-            ],
-            "carmen:parityr":[
-                ["E"],
-                null
-            ],
-            "carmen:rfromhn":[
-                [20],
-                null
-            ],
-            "carmen:rtohn":[
-                [0],
-                null
-            ],
+            // "carmen:parityl":[
+            //     ["O"],
+            //     null
+            // ],
+            // "carmen:lfromhn":[
+            //     [11],
+            //     null
+            // ],
+            // "carmen:ltohn":[
+            //     [1],
+            //     null
+            // ],
+            // "carmen:parityr":[
+            //     ["E"],
+            //     null
+            // ],
+            // "carmen:rfromhn":[
+            //     [20],
+            //     null
+            // ],
+            // "carmen:rtohn":[
+            //     [0],
+            //     null
+            // ],
             "carmen:geocoder_stack":"fr",
-            "carmen:center":[1.556204,47.27494]
+            "carmen:center":[1.556204,47.27494],
+            'carmen:zxy': ['6/32/32', '6/33/33'],
+            'carmen:score': 100
         },
-        "geometry":{
+        geometry:{
             "type":"GeometryCollection",
             "geometries":[
                 {"type":"MultiLineString",
@@ -80,7 +82,7 @@ tape('indexdocs.loadDoc', (t) => {
                 }
             ]
         },
-        "debug":[
+        debug:[
             {
                 "type":"featurecollection",
                 "features":[
