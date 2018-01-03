@@ -2,7 +2,7 @@ var tape = require('tape');
 var routablePoint = require('../lib/pure/routablepoint.js');
 
 tape('call routablePoint with valid inputs', function(assert) {
-    var point = [1.11, 1.1];
+    var point = [1.111, 1.11];
     var feature = {
         type: "Feature",
         properties: {
@@ -76,8 +76,8 @@ tape('call routablePoint with valid inputs', function(assert) {
      * - -   - -
      */
     assert.deepEquals(
-        routablePoint([1.13, 1.115], feature),
-        [1.13, 1.1],
+        routablePoint([1.113, 1.115], feature),
+        [1.113, 1.11],
         "Point in between linestring coords should return midpoint between coords on linestring"
     );
 
