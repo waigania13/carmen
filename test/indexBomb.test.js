@@ -121,7 +121,7 @@ tape('indexdocs.loadDoc', (t) => {
                     }
                 ]
             }],
-            "id":1599299539
+        id:1
         };
 
     freq["__COUNT__"] = [101];
@@ -132,8 +132,7 @@ tape('indexdocs.loadDoc', (t) => {
     // Indexes single doc.
     err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
     t.ok(typeof err !== 'number', 'no error');
-
-    t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
+    t.deepEqual(Object.keys(patch.grid).length, 3, '3 patch.grid entries'); //
     t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), [ 'default' ], '1 language in patch.grid[0]');
     t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('default').length, 2, '2 grids for language "all" in patch.grid[0]');
     t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('default')[0]), {
@@ -145,7 +144,7 @@ tape('indexdocs.loadDoc', (t) => {
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);
-    t.deepEqual(patch.text, ['main st', 'main']);
+    t.deepEqual(patch.text, [ '## rue paul', 'rue paul', '# rue paul' ]);
 
     t.end();
 });
