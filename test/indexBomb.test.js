@@ -16,7 +16,7 @@ tape('indexdocs.loadDoc', (t) => {
 
     patch = { grid:{}, docs:[], text:[] };
     freq = {};
-    tokens = ['main', 'st'];
+    tokens = ['rue', 'paul'];
     zoom = 12;
     doc = {
         type:"Feature",
