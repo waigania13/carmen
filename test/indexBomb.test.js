@@ -4,6 +4,7 @@ const tape = require('tape');
 const termops = require('../lib/util/termops.js');
 const token = require('../lib/util/token.js');
 const rewind = require('geojson-rewind');
+const addrTransform = require('../lib/util/feature.js').addrTransform;
 
 tape('indexdocs.loadDoc', (t) => {
     let token_replacer = token.createReplacer({});
@@ -27,30 +28,30 @@ tape('indexdocs.loadDoc', (t) => {
                 ["2","3","4","5","6","8","10"]
             ],
             "carmen:rangetype":"tiger",
-            // "carmen:parityl":[
-            //     ["O"],
-            //     null
-            // ],
-            // "carmen:lfromhn":[
-            //     [11],
-            //     null
-            // ],
-            // "carmen:ltohn":[
-            //     [1],
-            //     null
-            // ],
-            // "carmen:parityr":[
-            //     ["E"],
-            //     null
-            // ],
-            // "carmen:rfromhn":[
-            //     [20],
-            //     null
-            // ],
-            // "carmen:rtohn":[
-            //     [0],
-            //     null
-            // ],
+            "carmen:parityl":[
+                ["O"],
+                null
+            ],
+            "carmen:lfromhn":[
+                [11],
+                null
+            ],
+            "carmen:ltohn":[
+                [1],
+                null
+            ],
+            "carmen:parityr":[
+                ["E"],
+                null
+            ],
+            "carmen:rfromhn":[
+                [20],
+                null
+            ],
+            "carmen:rtohn":[
+                [0],
+                null
+            ],
             "carmen:geocoder_stack":"fr",
             "carmen:center":[1.556204,47.27494],
             'carmen:zxy': ['6/32/32', '6/33/33'],
@@ -124,10 +125,10 @@ tape('indexdocs.loadDoc', (t) => {
         id:1
         };
 
-    freq["__COUNT__"] = [101];
-    freq["__MAX__"] = [200];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
+    freq["__COUNT__"] = [0];
+    freq["__MAX__"] = [0];
+
+    doc = addrTransform(doc);
 
     // Indexes single doc.
     err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
@@ -144,7 +145,7 @@ tape('indexdocs.loadDoc', (t) => {
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);
-    t.deepEqual(patch.text, [ '## rue paul', 'rue paul', '# rue paul' ]);
+    t.deepEqual(patch.text,  [ '## rue paul', 'rue paul', '# rue paul' ]);
 
     t.end();
 });
