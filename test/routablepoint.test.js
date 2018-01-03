@@ -7,8 +7,6 @@ tape('call routablePoint with valid inputs', function(assert) {
         type: "Feature",
         properties: {
             "carmen:addressnumber": [null, ["110", "112", "114"]],
-            "carmen:text": "Main street",
-            "carmen:geocoder_stack": "us",
             "carmen:center": [1.111, 1.113]
         },
         geometry: {
@@ -83,6 +81,9 @@ tape('call routablePoint with valid inputs', function(assert) {
 
     assert.end();
 });
+
+
+
 
 /**
  * TODO: Test non-straight linestring
