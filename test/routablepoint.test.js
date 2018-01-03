@@ -27,7 +27,7 @@ tape('call routablePoint with valid inputs', function(assert) {
                 },
                 {
                     type: "MultiPoint",
-                    coordinates: [[1.11, 1.111], [1.113, 1.111], [1.115, 1.111]]
+                    coordinates: [[1.111, 1.111], [1.113, 1.111], [1.115, 1.111]]
                 }
             ]
         },
@@ -93,6 +93,7 @@ tape('call routablePoint with valid inputs', function(assert) {
  * TODO: Test invalid inputs
  * TODO: Test not interpolated feature?
  * TODO: Integration tests for reverse geocoding?
+ * TODO: Test cases crossing dateline
  */
 
 
