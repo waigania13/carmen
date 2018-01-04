@@ -22,7 +22,7 @@ const addFeature = require('../lib/util/addfeature'),
             properties: {
                 'carmen:text': 'fake street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [null, ['9','10','7']]
+                'carmen:addressnumber': [null, ['9','11','13']]
             },
             geometry: {
                 type: "GeometryCollection",
@@ -48,9 +48,13 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
 
-    tape('Search for us style address, return with german formatting', (t) => {
-        c.geocode('9 fake street', { limit_verify: 1 }, (err, res) => {
+    tape('Search for interpolated address and return routable point', (t) => {
+        c.geocode('9 fake street', { limit_verify: 1, debug: true, full: true }, (err, res) => {
             t.ifError(err);
+            // routable_point property exists, ok
+            console.warn('res', res);
+            // console.warn('geometry', res.features[0].geometry);
+            t.ok(res.features[0].routable_point, 'routable_point exists');
             t.end();
         });
     });
