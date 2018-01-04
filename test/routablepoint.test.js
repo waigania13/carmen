@@ -50,8 +50,8 @@ tape('call routablePoint with valid inputs', function(assert) {
 
     assert.deepEquals(
         routablePoint(point, featureNoLinestring),
-        [],
-        "Features with no linestrings should return empty array"
+        null,
+        "Features with no linestrings should return null"
     );
 
     /**
