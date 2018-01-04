@@ -9,8 +9,25 @@ const tape = require('tape');
 const token = require('../lib/util/token.js');
 const rewind = require('geojson-rewind');
 const addrTransform = require('../lib/util/feature.js').addrTransform;
+const histogram = require('ascii-histogram');
 
 let token_replacer = token.createReplacer({});
+
+let results = {
+    '3000': 0,
+    '1000': 0,
+    '500': 0,
+    '100': 0,
+    '10': 0
+};
+
+let samples = {
+    '3000': null,
+    '1000': null,
+    '500': null,
+    '100': null,
+    '10': null
+};
 
 process.stdin
     .pipe(split())
@@ -42,9 +59,37 @@ process.stdin
         // Indexes single doc.
         err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
 
-        if (patch.text.length > 1000) {
-            // console.log(patch.text);
-            console.log(patch.text.length);
-        }
-
-    });
+        // generate histogram
+        if (patch.text.length > 3000) {
+            results['3000']++;
+            if (samples['3000'] == null) {
+                samples['3000'] = patch.text;
+            }
+        } else if (patch.text.length > 1000) {
+            results['1000']++;
+            if (samples['1000'] == null) {
+                samples['1000'] = patch.text;
+            }
+        } else if (patch.text.length > 500) {
+            results['500']++;
+            if (samples['500'] == null) {
+                samples['500'] = patch.text;
+            }
+        } else if (patch.text.length > 100) {
+            results['100']++;
+            if (samples['100'] == null) {
+                samples['100'] = patch.text;
+            }
+        } else if (patch.text.length > 10) {
+            results['10']++;
+            if (samples['10'] == null) {
+                samples['10'] = patch.text;
+            }
+        };
+    })
+    .on('exit', (code) => {
+        console.log("results");
+        console.log(histogram(results.count, { bar: '=', width: 20, sort: true }));
+        console.log();
+        console.log(results);
+    })
