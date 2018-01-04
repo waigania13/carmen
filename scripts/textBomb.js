@@ -16,7 +16,6 @@ process.stdin
     .pipe(split())
     .on('data', function(element) {
         if (!element) {
-            console.log("element is null");
             return;
         }
         // console.log(element);
