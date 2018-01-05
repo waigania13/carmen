@@ -10,6 +10,23 @@ const token = require('../lib/util/token.js');
 const rewind = require('geojson-rewind');
 const addrTransform = require('../lib/util/feature.js').addrTransform;
 const histogram = require('ascii-histogram');
+const GEOJSON = process.argv[2];
+
+const fs = require('fs');
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+const ldj = require('ldjson-stream');
+
+if (!cc) {
+  console.log(`
+  Usage: flag large features found within a geojson
+
+  # Generate histogram of large features within geojson file for <cc> <rc>
+
+  # Generate samples for each bucket found within the geojson
+`);
+  process.exit(1);
+}
 
 let token_replacer = token.createReplacer({});
 
@@ -29,19 +46,22 @@ let samples = {
     '10': null
 };
 
-process.stdin
-    .pipe(split())
-    .on('data', function(element) {
+s3.getObject({ Bucket: 'mapbox-places', Key: `snapshots/${GEOJSON}` })
+  .createReadStream()
+  .pipe(ldj.parse())
+  .pipe(split())
+  .on('data', function(element) {
+
         if (!element) {
             return;
         }
-        // console.log(element);
 
         let patch;
         let freq;
         let zoom;
         let doc;
         let err;
+        let filePath;
 
         patch = { grid:{}, docs:[], text:[] };
         freq = {};
@@ -86,6 +106,8 @@ process.stdin
                 samples['10'] = patch.text;
             }
         };
+        fs.writeFileSync(`${__dirname}/${filePath}`, JSON.stringify(feature));
+        console.log(`ok - wrote ${filePath}`);
     })
     .on('end', () => {
         console.log("textBomb analysis results");
