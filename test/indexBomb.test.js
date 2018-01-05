@@ -1,15 +1,15 @@
 const indexdocs = require('../lib/indexer/indexdocs.js');
 const grid = require('../lib/util/grid.js');
 const tape = require('tape');
-const termops = require('../lib/util/termops.js');
+// const termops = require('../lib/util/termops.js');
 const token = require('../lib/util/token.js');
-const rewind = require('geojson-rewind');
+// const rewind = require('geojson-rewind');
 const addrTransform = require('../lib/util/feature.js').addrTransform;
 
 tape('indexdocs.loadDoc', (t) => {
     let token_replacer = token.createReplacer({});
     let patch;
-    let tokens;
+    // let tokens;
     let freq;
     let zoom;
     let doc;
@@ -20,109 +20,109 @@ tape('indexdocs.loadDoc', (t) => {
     tokens = ['rue', 'paul'];
     zoom = 12;
     doc = {
-        type:"Feature",
-        properties:{
-            "carmen:text":"Rue Paul",
-            "carmen:addressnumber":[
-                null,
-                ["2","3","4","5","6","8","10"]
-            ],
-            "carmen:rangetype":"tiger",
-            "carmen:parityl":[
-                ["O"],
-                null
-            ],
-            "carmen:lfromhn":[
-                [11],
-                null
-            ],
-            "carmen:ltohn":[
-                [1],
-                null
-            ],
-            "carmen:parityr":[
-                ["E"],
-                null
-            ],
-            "carmen:rfromhn":[
-                [20],
-                null
-            ],
-            "carmen:rtohn":[
-                [0],
-                null
-            ],
-            "carmen:geocoder_stack":"fr",
-            "carmen:center":[1.556204,47.27494],
-            'carmen:zxy': ['6/32/32', '6/33/33'],
-            'carmen:score': 100
-        },
-        geometry:{
-            "type":"GeometryCollection",
-            "geometries":[
-                {"type":"MultiLineString",
-                "coordinates":[
-                    [
-                        [1.556727,47.274879],
-                        [1.556037,47.274981],
-                        [1.555809,47.274992]
-                    ]
-                ]
+            type:"Feature",
+            properties:{
+                    "carmen:text":"Rue Paul",
+                    "carmen:addressnumber":[
+                        null,
+                        ["2","3","4","5","6","8","10"]
+                    ],
+                    "carmen:rangetype":"tiger",
+                    "carmen:parityl":[
+                        ["O"],
+                        null
+                    ],
+                    "carmen:lfromhn":[
+                        [11],
+                        null
+                    ],
+                    "carmen:ltohn":[
+                        [1],
+                        null
+                    ],
+                    "carmen:parityr":[
+                        ["E"],
+                        null
+                    ],
+                    "carmen:rfromhn":[
+                        [20],
+                        null
+                    ],
+                    "carmen:rtohn":[
+                        [0],
+                        null
+                    ],
+                    "carmen:geocoder_stack":"fr",
+                    "carmen:center":[1.556204,47.27494],
+                    'carmen:zxy': ['6/32/32', '6/33/33'],
+                    'carmen:score': 100
             },
-            {
-                "type":"MultiPoint",
-                "coordinates":[
-                    [1.55587,47.275018],
-                    [1.556204,47.27494],
-                    [1.556075,47.274995],
-                    [1.556458,47.274905],
-                    [1.556211,47.274976],
-                    [1.556399,47.27498],
-                    [1.556455,47.274935]
+            geometry:{
+                    "type":"GeometryCollection",
+                    "geometries":[
+                        {"type":"MultiLineString",
+                        "coordinates":[
+                            [
+                                [1.556727,47.274879],
+                                [1.556037,47.274981],
+                                [1.555809,47.274992]
+                            ]
+                        ]
+                    },
+                    {
+                        "type":"MultiPoint",
+                        "coordinates":[
+                            [1.55587,47.275018],
+                            [1.556204,47.27494],
+                            [1.556075,47.274995],
+                            [1.556458,47.274905],
+                            [1.556211,47.274976],
+                            [1.556399,47.27498],
+                            [1.556455,47.274935]
+                            ]
+                        }
                     ]
-                }
-            ]
-        },
-        debug:[
-            {
-                "type":"featurecollection",
-                "features":[
-                    {
-                        "type":"Feature",
-                        "properties":{"start":true,"left":true},
+            },
+            debug:[
+                {
+                    "type":"featurecollection",
+                    "features":[
+                        {
+                            "type":"Feature",
+                            "properties":{"start":true,"left":true},
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[1.556458,47.274905]
+                            }
+                        },
+                        {
+                            "type":"Feature",
+                            "properties":{"end":true,"left":true},
+                            "geometry":{
+                                "type":"Point",
+                                "coordinates":[1.556204,47.27494]
+                            }
+                        },
+                        {
+                            "type":"Feature",
+                            "properties":{"start":true,"right":true
+                        },
                         "geometry":{
                             "type":"Point",
-                            "coordinates":[1.556458,47.274905]
-                        }
-                    },
-                    {
+                            "coordinates":[1.556455,47.274935]
+                            }
+                        },
+                        {
                         "type":"Feature",
-                        "properties":{"end":true,"left":true},
+                        "properties":{"end":true,"right":true},
                         "geometry":{
                             "type":"Point",
-                            "coordinates":[1.556204,47.27494]
+                            "coordinates":[1.55587,47.275018]
+                            }
                         }
-                    },
-                    {
-                        "type":"Feature",
-                        "properties":{"start":true,"right":true
-                    },
-                    "geometry":{
-                        "type":"Point",
-                        "coordinates":[1.556455,47.274935]
-                        }
-                    },
-                    {
-                    "type":"Feature",
-                    "properties":{"end":true,"right":true},
-                    "geometry":{
-                        "type":"Point",
-                        "coordinates":[1.55587,47.275018]
-                        }
-                    }
-                ]
-            }],
-        id:1
+                    ]
+                }],
+            id:1
         };
 
     freq["__COUNT__"] = [0];

@@ -87,9 +87,9 @@ process.stdin
             }
         };
     })
-    .on('exit', (code) => {
-        console.log("results");
-        console.log(histogram(results.count, { bar: '=', width: 20, sort: true }));
+    .on('end', () => {
+        console.log("textBomb analysis results");
+        console.log(histogram(results, { bar: '=', width: 20, sort: true }));
         console.log();
-        console.log(results);
+        console.log(samples);
     })
