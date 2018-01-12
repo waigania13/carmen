@@ -10,11 +10,10 @@ const token = require('../lib/util/token.js');
 const rewind = require('geojson-rewind');
 const addrTransform = require('../lib/util/feature.js').addrTransform;
 const histogram = require('ascii-histogram');
-const fs = require('fs');
 const AWS = require('aws-sdk');
-const s3 = new AWS.S3();
 const ldj = require('ldjson-stream');
-const GEOJSON = process.argv[2];
+const s3 = new AWS.S3();
+const GEOJSON = process.argv[0];
 
 if (!GEOJSON) {
   console.log(`
