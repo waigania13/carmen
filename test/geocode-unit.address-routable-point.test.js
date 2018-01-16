@@ -19,7 +19,7 @@ const addFeature = require('../lib/util/addfeature'),
             id:1,
             properties: {
                 'carmen:text': 'fake street',
-                'carmen:center': [0,0],
+                'carmen:center': [0,0], // not used
                 'carmen:addressnumber': [null, ['9','11','13']]
             },
             geometry: {
@@ -49,7 +49,7 @@ const addFeature = require('../lib/util/addfeature'),
     tape('Search for interpolated address and return routable point', (t) => {
         c.geocode('9 fake street', { limit_verify: 1, debug: true, full: true }, (err, res) => {
             t.ifError(err);
-            t.ok(res.features[0].routable_point, 'routable_point exists');
+            t.deepEquals(res.features[0].routable_point, [1.111, 1.11], 'routable_point is set to correct value');
             t.end();
         });
     });
