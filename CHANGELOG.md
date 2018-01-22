@@ -1,5 +1,9 @@
 # Changelog
 
+## 24.2.2
+
+- Fix a bug with validating `--bbox` flag in scripts/carmen.js
+
 ## 24.2.1
 
 - Add `geocoder_stack` filter to phrasematch, to skip unneeded inxdexes earlier when
