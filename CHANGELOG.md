@@ -1,5 +1,15 @@
 # Changelog
 
+## 24.2.2
+
+- Fix a bug with validating `--bbox` flag in scripts/carmen.js
+
+## 24.2.1
+
+- Add `geocoder_stack` filter to phrasematch, to skip unneeded inxdexes earlier when
+  using the `country` query param
+- Hard fail when indexing features with more than 10 synonyms
+
 ## 24.1.12
 
 - Fix a bug with validating type filters on geocodes.
