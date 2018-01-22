@@ -217,6 +217,19 @@ tape('bin/carmen query language=es,en', (t) => {
         t.end();
     });
 });
+tape('bin/carmen query bbox', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465,9.830,21.913"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+tape('bin/carmen query invalid bbox', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465"', (err, stdout, stderr) => {
+        t.ok(err, 'bbox must be minX,minY,maxX,maxY');
+        t.end();
+    });
+});
 tape('bin/carmen-copy noargs', (t) => {
     exec(bin + '/carmen-copy.js', (err, stdout, stderr) => {
         t.equal(1, err.code);
