@@ -75,13 +75,13 @@ if (argv.proximity) {
 }
 
 if (argv.bbox) {
-    if (argv.bbox.split(',') !== 4)
+    if (argv.bbox.split(',').length !== 4)
         throw new Error("bbox must be minX,minY,maxX,maxY");
     argv.bbox = [
-        Number(argv.proximity.split(',')[0]),
-        Number(argv.proximity.split(',')[1]),
-        Number(argv.proximity.split(',')[2]),
-        Number(argv.proximity.split(',')[3])
+        Number(argv.bbox.split(',')[0]),
+        Number(argv.bbox.split(',')[1]),
+        Number(argv.bbox.split(',')[2]),
+        Number(argv.bbox.split(',')[3])
     ];
 }
 
