@@ -37,6 +37,25 @@ tape.test('token#concatenated single token', t => {
     t.end();
 });
 
+tape.test('token#concatenated single token - diacritics', t => {
+    let tokens = {
+        '([a-z]+)vägen': {
+            'text': '$1v'
+        }
+    }
+    let tokenReplacer = tokenize.createReplacer(tokens)
+    let expected = [
+        { from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)([a-z]+)vägen([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi, inverse: false, named: false, to: '$1$2v$3' },
+        { from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)([a-z]+)vagen([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi, inverse: false, named: false, to: '$1$2v$3' }
+    ]
+
+    t.deepEquals(tokenReplacer, expected, 'created a regex')
+
+    t.equals(tokenize.replaceToken(tokenReplacer, 'Samuelsvägen'), 'Samuelsv', 'replaced token');
+    t.equals(tokenize.replaceToken(tokenReplacer, 'Samuelsvagen'), 'Samuelsv', 'replaced token');
+    t.end();
+});
+
 tape.test('token#test global tokens - talstrasse', (t) => {
     let tokens = {
         '\\b(.+)(strasse|str|straße)\\b': "$1 str"
