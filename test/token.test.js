@@ -20,9 +20,7 @@ tape.test('token#street=>st', t => {
 
 tape.test('token#concatenated single token', t => {
     let tokens = {
-        '([a-z]+)gatan': {
-            'text': '$1g'
-        }
+        '([a-z]+)gatan': '$1g'
     }
     let tokenReplacer = tokenize.createReplacer(tokens)
     let expected = [ { from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)([a-z]+)gatan([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi, inverse: false, named: false, to: '$1$2g$3' } ];
