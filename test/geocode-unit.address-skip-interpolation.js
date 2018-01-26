@@ -17,19 +17,19 @@ const addFeature = require('../lib/util/addfeature'),
             properties: {
                 'carmen:text': 'fake street',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['100', '101', '102', '104', '106', '5000']
+                'carmen:addressnumber': ['100', '101', '102', '106', '104', '5000']
             },
             geometry: {
                 type: 'MultiPoint',
                 //this is wrong will change
-                coordinates: [[0,0],[0,0],[0,0],[0,0],[0,0]]
+                coordinates: [[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
             }
         };
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     });
     tape('test address index', (t) => {
         //check if the address is not interpolised
-        });
+        t.end();
     });
 })();
 
@@ -45,7 +45,7 @@ const addFeature = require('../lib/util/addfeature'),
             properties: {
                 'carmen:text': 'WASHINGTON STREET',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['70', '100', '130', '160']
+                'carmen:addressnumber': ['70', '100a', '130', '160']
             },
             geometry: {
                 type: 'MultiPoint',
@@ -57,5 +57,6 @@ const addFeature = require('../lib/util/addfeature'),
     }); 
     tape('test address index with a believable range ', (t) => {
         //should interpolize
+        t.end();
     });
 })();
