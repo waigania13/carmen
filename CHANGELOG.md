@@ -1,5 +1,9 @@
 # Changelog
 
+## v24.2.4
+
+- Improve tokenize script
+
 ## v24.2.3
 
 - Fix bug with where capture groups would be incorrectly numbered when using a token with a diacritic and a capture group
