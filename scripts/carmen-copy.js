@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var argv = process.argv;
-var Carmen = require('../index.js');
-var f = argv[2];
-var t = argv[3];
+const fs = require('fs');
+const path = require('path');
+const argv = process.argv;
+const Carmen = require('../index.js');
+const f = argv[2];
+const t = argv[3];
 
 if (!f || !t) {
     console.log('Usage: carmen-copy.js <from> <to>');
     process.exit(1);
 }
 
-var conf = {};
+const conf = {};
 
 try {
     conf.from = Carmen.auto(f);
@@ -29,10 +29,10 @@ try {
 
 console.log('Copying %s => %s', f, t);
 
-var carmen = new Carmen(conf);
-carmen.copy(conf.from, conf.to, function(err) {
+const carmen = new Carmen(conf);
+carmen.copy(conf.from, conf.to, err => {
     if (err) throw err;
-    conf.to.stopWriting(function(err) {
+    conf.to.stopWriting(err => {
         if (err) throw err;
         console.log('Done.');
         process.exit(0);
