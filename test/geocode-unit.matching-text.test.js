@@ -92,7 +92,7 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 14, geocoder_name: 'address', geocoder_address: 1, geocoder_format: '{address._number} {address._name}' }, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._number} {address._name}' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -120,20 +120,20 @@ const buildQueued = addFeature.buildQueued;
         q.awaitAll(t.end);
     });
     tape('US Highway 123', (t) => {
-        c.geocode('43 US Highway 123', { limit_verify:1 }, (err, res) => {
+        c.geocode('43 US Highway 123', {}, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].place_name, 'Kansas United States');
-            t.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
-            t.equal(res.features[0].matching_place_name, 'Kansas America');
+            t.equal(res.features[0].place_name, '43 US Highway 123');
+            t.equal(res.features[0].matching_text, undefined);
+            t.equal(res.features[0].matching_place_name, undefined);
             t.end();
         });
     });
     tape('43 Main St East', (t) => {
-        c.geocode('america', { limit_verify:1 }, (err, res) => {
+        c.geocode('43 Main St East', {}, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].place_name, 'United States');
-            t.equal(res.features[0].matching_text, 'America');
-            t.equal(res.features[0].matching_place_name, 'America');
+            t.equal(res.features[0].place_name, '43 US Highway 123');
+            t.equal(res.features[0].matching_text, 'Main St East');
+            t.equal(res.features[0].matching_place_name, '43 Main St East');
             t.end();
         });
     });
