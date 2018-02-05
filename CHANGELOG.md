@@ -1,5 +1,9 @@
 # Changelog
 
+## v24.2.5
+
+- Add support for maching_place_name output on address features
+
 ## v24.2.4
 
 - Improve tokenize script
