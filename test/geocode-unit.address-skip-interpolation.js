@@ -439,7 +439,6 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-/*
 //address range that increases in progression
 (() => {
     const conf = {
@@ -448,23 +447,29 @@ const addFeature = require('../lib/util/addfeature'),
     const c = new Carmen(conf);
     tape('index address', (t) => {
         let address = {
-            id:1,
-            properties: {
-                'carmen:text': 'WASHINGTON STREET',
-                'carmen:center': [0,0],
-                'carmen:addressnumber': ['70', '100a', '130', '160']
-            },
-            geometry: {
-                type: 'MultiPoint',
-                //change
-                coordinates: [[0,0],[0,0],[0,0], [0,0]]
-            }
+            "id":1,
+            "properties":{
+                "carmen:text":"WASHINGTON STREET",
+                "carmen:center":[0,0],
+                "carmen:addressnumber":[null,["70","100a","130","160"]]
+           },
+           "geometry":{  
+              "type":"GeometryCollection",
+              "geometries":[
+              {
+                "type":"MultiLineString",
+                    "coordinates":[[[0,0],[0,0],[0,0],[0,0]]]
+                 },
+                 {
+                    "type":"MultiPoint",
+                    "coordinates":[[0,0],[0,0],[0,0],[0,0]]
+                 }
+              ]
+           }
         };
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
     }); 
     tape('test address index with a believable range ', (t) => {
-        //should interpolize
         t.end();
     });
 })();
-*/  
