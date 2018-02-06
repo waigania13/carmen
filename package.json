@@ -38,12 +38,14 @@
     "xregexp": "3.1.1"
   },
   "devDependencies": {
+    "@mapbox/eslint-config-geocoding": "^1.0.0",
     "benchmark": "^2.1.4",
     "bytes": "^2.5.0",
     "combined-stream": "~1.0.5",
     "coveralls": "^2.11.4",
     "deep-equal": "1.0.1",
-    "eslint": "^4.11.0",
+    "eslint": "^4.17.0",
+    "eslint-plugin-node": "^5.2.1",
     "istanbul": "^0.4.0",
     "retire": "^1.2.12",
     "tape": "4.6.3"
