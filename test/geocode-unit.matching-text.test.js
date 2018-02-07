@@ -1,12 +1,12 @@
-
 const tape = require('tape');
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
 const context = require('../lib/context');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const addFeature = require('../lib/util/addfeature');
+
+const queueFeature = addFeature.queueFeature;
+const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
@@ -85,6 +85,55 @@ const addFeature = require('../lib/util/addfeature'),
             t.equal(res.features[0].place_name, 'Kansas United States');
             t.equal(res.features[0].matching_text, 'Jayhawks');
             t.equal(res.features[0].matching_place_name, 'Jayhawks United States');
+            t.end();
+        });
+    });
+})();
+
+(() => {
+    const conf = {
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._number} {address._name}' }, () => {})
+    };
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        let address = {
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32'],
+                'carmen:text': 'US Highway 123,Main St East',
+                'carmen:addressnumber': [43, 32, 243]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0], [0,0], [0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer(cb => { buildQueued(conf[c], cb); });
+        });
+        q.awaitAll(t.end);
+    });
+    tape('US Highway 123', (t) => {
+        c.geocode('43 US Highway 123', {}, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '43 US Highway 123');
+            t.equal(res.features[0].matching_text, undefined);
+            t.equal(res.features[0].matching_place_name, undefined);
+            t.end();
+        });
+    });
+    tape('43 Main St East', (t) => {
+        c.geocode('43 Main St East', {}, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '43 US Highway 123');
+            t.equal(res.features[0].matching_text, 'Main St East');
+            t.equal(res.features[0].matching_place_name, '43 Main St East');
             t.end();
         });
     });
