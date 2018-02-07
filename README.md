@@ -5,10 +5,11 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 [![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
 
-
 ## Depends
 
-- Node v4.2.x
+- Node v6.x.x
+- [mapbox/dawg-cache](https://github.com/mapbox/dawg-cache)
+- [mapbox/carmen-cache](https://github.com/mapbox/carmen-cache)
 
 ## Install
 
@@ -254,11 +255,4 @@ Unfortunately, the carmen codebase is more complex than this explanation.
 1. There's more code cleanup, organization, and documentation to do.
 2. Indexes are *sharded*, designed for *updates* and hot-swapping with other indexes. This means algorithmic code is sometimes interrupted by lazy loading and other I/O.
 3. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it extremely challenging to identify the semantic equivalents in the middle of a geocode.
-
-------
-
-## Dev notes
-
-
-
 
