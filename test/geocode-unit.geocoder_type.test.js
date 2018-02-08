@@ -1,20 +1,21 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const queue = require("d3-queue").queue;
+const queue = require('d3-queue').queue;
 const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        address:    new mem({maxzoom: 12, geocoder_address: 1}, () => {}),
-        poi:        new mem({maxzoom: 12}, () => {})
+        address:    new mem({ maxzoom: 12, geocoder_address: 1 }, () => {}),
+        poi:        new mem({ maxzoom: 12 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -30,7 +31,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        let poi = {
+        const poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -83,12 +84,12 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
+        address:    new mem({ maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1 }, () => {}),
+        poi:        new mem({ maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -104,7 +105,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        let poi = {
+        const poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -147,7 +148,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('-77.04312264919281,38.91041215085371', { types: ['poi'] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 1);
-            t.equals(res.features[0].place_name, 'big bank')
+            t.equals(res.features[0].place_name, 'big bank');
             t.end();
         });
     });
@@ -163,12 +164,12 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address:    new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1}, () => {}),
-        poi:        new mem({maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
+        address:    new mem({ maxzoom: 12, geocoder_name: 'address', geocoder_type: 'address', geocoder_address: 1 }, () => {}),
+        poi:        new mem({ maxzoom: 12, geocoder_name: 'address', geocoder_type: 'poi' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -184,7 +185,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index poi', (t) => {
-        let poi = {
+        const poi = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -227,11 +228,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        place:    new mem({maxzoom: 12}, () => {})
+        place:    new mem({ maxzoom: 12 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             type: 'Feature',
             properties:  {
@@ -239,7 +240,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center': [-77.03463077545165,38.90976931970528]
             },
             geometry: {
-                type: "Polygon",
+                type: 'Polygon',
                 coordinates: [[[
                     -77.0387077331543, 38.90803281165565
                 ],[
@@ -256,7 +257,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:2,
             type: 'Feature',
             properties:  {
@@ -264,7 +265,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center': [-77.04342842102051,38.90963574367117]
             },
             geometry: {
-                type: "Polygon",
+                type: 'Polygon',
                 coordinates: [[[
                     -77.0387077331543, 38.90803281165565
                 ],[
