@@ -1,24 +1,23 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    country: new mem({maxzoom: 6, geocoder_name:'country'}, () => {}),
-    region: new mem({maxzoom: 6, geocoder_name:'region'}, () => {}),
-    postcode: new mem({maxzoom: 6, geocoder_name:'postcode'}, () => {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_name:'country' }, () => {}),
+    region: new mem({ maxzoom: 6, geocoder_name:'region' }, () => {}),
+    postcode: new mem({ maxzoom: 6, geocoder_name:'postcode' }, () => {}),
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {}),
 };
 const c = new Carmen(conf);
 
 tape('index address (noise)', (t) => {
     const q = queue(1);
     for (let i = 1; i < 20; i++) q.defer((i, done) => {
-        let address = {
+        const address = {
             id:i,
             properties: {
                 'carmen:text': 'Austria St',
@@ -42,7 +41,7 @@ tape('index country', (t) => {
         properties: {
             'carmen:text':'Austria',
             'carmen:zxy':['6/33/32'],
-            'carmen:center':[360/64+0.001,0]
+            'carmen:center':[360 / 64 + 0.001,0]
         }
     }, t.end);
 });
@@ -53,7 +52,7 @@ tape('index postcode', (t) => {
         properties: {
             'carmen:text':'2000',
             'carmen:zxy':['6/33/32'],
-            'carmen:center':[360/64+0.001,0]
+            'carmen:center':[360 / 64 + 0.001,0]
         }
     }, t.end);
 });

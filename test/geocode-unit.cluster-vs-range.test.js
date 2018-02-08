@@ -1,22 +1,21 @@
 // Test that cluster results are prioritized over itp results when
 // present and otherwise equal.
+'use strict';
 
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    addressitp: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
+    addressitp: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {}),
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {})
 };
 const c = new Carmen(conf);
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text': 'fake street',
@@ -31,7 +30,7 @@ tape('index address', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 tape('index addressitp', (t) => {
-    let addressitp = {
+    const addressitp = {
         id:1,
         properties: {
             'carmen:text': 'fake street',
@@ -70,7 +69,7 @@ tape('test address query with address range', (t) => {
     });
 });
 
-//Reverse geocode will return a pt since it is futher down in the stack than itp
+// Reverse geocode will return a pt since it is futher down in the stack than itp
 tape('test reverse address query with address range', (t) => {
     c.geocode('0,0', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);

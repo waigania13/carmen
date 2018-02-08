@@ -1,13 +1,12 @@
 // Unit tests for backy stacking of features ("lessingstrasse 50825 koln vs lessingstrasse koln 50825")
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     postcode: new mem(null, () => {}),
@@ -16,7 +15,7 @@ const conf = {
 };
 const c = new Carmen(conf);
 tape('index postcode', (t) => {
-    let doc = {
+    const doc = {
         id:1,
         properties: {
             'carmen:text': '50825',
@@ -27,7 +26,7 @@ tape('index postcode', (t) => {
     queueFeature(conf.postcode, doc, t.end);
 });
 tape('index city', (t) => {
-    let city = {
+    const city = {
         id:1,
         properties: {
             'carmen:text':'koln',
@@ -38,7 +37,7 @@ tape('index city', (t) => {
     queueFeature(conf.city, city, t.end);
 });
 tape('index street 1', (t) => {
-    let street = {
+    const street = {
         id:1,
         properties: {
             'carmen:text': 'lessingstrasse',
@@ -49,12 +48,12 @@ tape('index street 1', (t) => {
     queueFeature(conf.street, street, t.end);
 });
 tape('index street 2', (t) => {
-    let street = {
+    const street = {
         id:2,
         properties: {
             'carmen:text': 'lessingstrasse',
             'carmen:zxy': ['6/33/32'],
-            'carmen:center': [360/64+0.001,0]
+            'carmen:center': [360 / 64 + 0.001,0]
         }
     };
     queueFeature(conf.street, street, t.end);

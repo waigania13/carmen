@@ -1,10 +1,9 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     address: new mem({
@@ -22,7 +21,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('add POIs', (t) => {
-    let poi = {
+    const poi = {
         id: 1,
         type: 'Feature',
         properties: {
@@ -34,12 +33,12 @@ tape('add POIs', (t) => {
             type: 'Point',
             coordinates: [0,0]
         }
-    }
+    };
     queueFeature(conf.poi, poi, t.end);
 });
 
 tape('add POIs', (t) => {
-    let poi = {
+    const poi = {
         id: 2,
         type: 'Feature',
         properties: {
@@ -51,12 +50,12 @@ tape('add POIs', (t) => {
             type: 'Point',
             coordinates: [0.1,-0.1]
         }
-    }
+    };
     queueFeature(conf.poi, poi, t.end);
 });
 
 tape('add POIs', (t) => {
-    let poi = {
+    const poi = {
         id: 3,
         type: 'Feature',
         properties: {
@@ -69,12 +68,12 @@ tape('add POIs', (t) => {
             type: 'Point',
             coordinates: [1.005,1.005]
         }
-    }
+    };
     queueFeature(conf.poi, poi, t.end);
 });
 
 tape('add POIs', (t) => {
-    let poi = {
+    const poi = {
         id: 4,
         type: 'Feature',
         properties: {
@@ -87,12 +86,12 @@ tape('add POIs', (t) => {
             type: 'Point',
             coordinates: [1.006,1.006]
         }
-    }
-    queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end) });
+    };
+    queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end); });
 });
 
 tape('add address', (t) => {
-    let address= {
+    const address = {
         id: 1,
         type: 'Feature',
         properties: {
@@ -105,14 +104,14 @@ tape('add address', (t) => {
             type: 'Point',
             coordinates: [1.006,1.006]
         }
-    }
+    };
 
-    queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+    queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
 
 });
 
 tape('invalid', (t) => {
-    c.geocode('0,0', {reverseMode: 'foo'}, (err, res) => {
+    c.geocode('0,0', { reverseMode: 'foo' }, (err, res) => {
         t.deepEqual(err && err.toString(), 'Error: foo is not a valid reverseMode. Must be one of: score, distance');
     });
 
@@ -136,7 +135,7 @@ tape('reverse distance threshold - too far', (t) => {
 });
 
 tape('get the higher-scored, more distant feature first', (t) => {
-    c.geocode('1.007, 1.007', {reverseMode: 'score'}, (err, res) => {
+    c.geocode('1.007, 1.007', { reverseMode: 'score' }, (err, res) => {
         t.deepEqual(res.features[0].id, 'poi.3', 'higher-scored feature comes back first');
     });
 

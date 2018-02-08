@@ -1,3 +1,4 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const test = require('tape');
 
@@ -37,10 +38,10 @@ test('tokenizes lonlat', (t) => {
     t.deepEqual(termops.tokenize('14th 15th', true), ['14th','15th']);
 
     // ParseFloat can think a string is a reverse query as `9 Street` is a valid Float - enforce numeric input
-    t.deepEqual(termops.tokenize('9 rue Alphonse Penaud Paris, 75020 France', true), [ '9', 'rue', 'alphonse', 'penaud', 'paris', '75020', 'france' ]);
-    t.deepEqual(termops.tokenize('9 a, 10 b', true), [ '9', 'a', '10', 'b' ]);
-    t.deepEqual(termops.tokenize('9 a, 10', true), [ '9', 'a', '10' ]);
-    t.deepEqual(termops.tokenize('9,10 b', true), [ '9', '10', 'b']);
+    t.deepEqual(termops.tokenize('9 rue Alphonse Penaud Paris, 75020 France', true), ['9', 'rue', 'alphonse', 'penaud', 'paris', '75020', 'france']);
+    t.deepEqual(termops.tokenize('9 a, 10 b', true), ['9', 'a', '10', 'b']);
+    t.deepEqual(termops.tokenize('9 a, 10', true), ['9', 'a', '10']);
+    t.deepEqual(termops.tokenize('9,10 b', true), ['9', '10', 'b']);
 
     t.end();
 });

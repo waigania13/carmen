@@ -1,21 +1,20 @@
-//Ensure that results that have equal relev in phrasematch
-//are matched against the 0.5 relev bar instead of 0.75
+// Ensure that results that have equal relev in phrasematch
+// are matched against the 0.5 relev bar instead of 0.75
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     country: new mem({ maxzoom:6 }, () => {})
 };
 const c = new Carmen(conf);
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'czech republic',
@@ -26,7 +25,7 @@ tape('index country', (t) => {
     queueFeature(conf.country, country, t.end);
 });
 tape('index country2', (t) => {
-    let country = {
+    const country = {
         id:2,
         properties: {
             'carmen:text':'fake country two',
@@ -54,7 +53,7 @@ tape('czech => czech republic', (t) => {
     });
 });
 
-//Is not above 0.5 relev so should fail.
+// Is not above 0.5 relev so should fail.
 tape('fake blah blah => [fail]', (t) => {
     c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
         t.ifError(err);

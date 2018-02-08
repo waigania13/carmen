@@ -2,14 +2,13 @@
 // identically-named features should reverse the gappy penalty and
 // instead prioritize the highest-index feature
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     country: new mem({ maxzoom: 6 }, () => {}),
@@ -29,9 +28,9 @@ tape('index country', (t) => {
             'carmen:text':'usa',
             'carmen:geocoder_stack':'us'
         },
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
                 [
                     [
                         -126.5625,
@@ -67,9 +66,9 @@ tape('index region', (t) => {
             'carmen:text':'new york,ny',
             'carmen:geocoder_stack':'us'
         },
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
                 [
                     [
                         -80.96923828125,
@@ -106,9 +105,9 @@ tape('index place', (t) => {
             'carmen:text':'new york,nyc',
             'carmen:geocoder_stack':'us'
         },
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
                 [
                     [
                         -74.05265808105469,
@@ -146,7 +145,7 @@ tape('index poi', (t) => {
             'carmen:geocoder_stack':'us'
         },
         geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: [-73.9666, 40.7811]
         }
     }, t.end);
@@ -171,7 +170,7 @@ tape('let\'s find new york', (t) => {
 });
 
 tape('ensure POI cannot win', (t) => {
-    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country']}, (err, res) => {
+    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country'] }, (err, res) => {
         t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
         t.end();
@@ -201,9 +200,9 @@ tape('index country', (t) => {
             'carmen:text':'Thailand',
             'carmen:geocoder_stack':'th'
         },
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
                 [
                     [
                         99.90966796875,
@@ -240,9 +239,9 @@ tape('index country', (t) => {
                 'carmen:text': 'Nonthaburi',
                 'carmen:geocoder_stack': 'th'
             },
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
+            'geometry': {
+                'type': 'Polygon',
+                'coordinates': [
                     [
                         [
                             100.49571990966797,
