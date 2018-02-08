@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -14,7 +15,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index Hron', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'Hron,Hronlandia',
@@ -28,7 +29,7 @@ tape('index Hron', (t) => {
 });
 
 tape('index Holdout', (t) => {
-    let region = {
+    const region = {
         id:2,
         properties: {
             'carmen:text':'Holdout',
@@ -42,7 +43,7 @@ tape('index Holdout', (t) => {
 });
 
 tape('index Cerracs', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'Wilderness',
@@ -55,7 +56,7 @@ tape('index Cerracs', (t) => {
 });
 
 tape('index USA', (t) => {
-    let country = {
+    const country = {
         id:2,
         properties: {
             'carmen:text':'United States',
@@ -70,7 +71,7 @@ tape('index USA', (t) => {
 });
 
 tape('index Usak', (t) => {
-    let region = {
+    const region = {
         id:3,
         properties: {
             'carmen:text':'Usak',
@@ -94,7 +95,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Find features using default text', (t) => {
-    c.geocode('Hron', {limit_verify: 1}, (err, res) => {
+    c.geocode('Hron', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, 'Hron', 'finds Hron');
         t.end();
@@ -102,7 +103,7 @@ tape('Find features using default text', (t) => {
 });
 
 tape('Find feature using language code', (t) => {
-    c.geocode('Holdout', {limit_verify: 1, language: 'en'}, (err, res) => {
+    c.geocode('Holdout', { limit_verify: 1, language: 'en' }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, 'Holdout', 'finds Holdout using a language code');
         t.end();
@@ -118,7 +119,7 @@ tape('Find features using universal text', (t) => {
 });
 
 tape('Finds and ranks features using universal text with language codes', (t) => {
-    c.geocode('HO', {language: 'en'}, (err, res) => {
+    c.geocode('HO', { language: 'en' }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, 'finds both features even using a language code');
         t.equal(res.features[0].text, 'Hron', 'ranks complete match of universal text above autocompleted default text');
@@ -127,15 +128,15 @@ tape('Finds and ranks features using universal text with language codes', (t) =>
 });
 
 tape('Find universal text feature using strict mode with another language', (t) => {
-    c.geocode('Cerracs', {languageMode: 'strict', language: 'en'}, (err, res) => {
+    c.geocode('Cerracs', { languageMode: 'strict', language: 'en' }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, 'Cerracs', 'finds Cerracs');
         t.end();
     });
 });
 
-tape ('Find USA', (t)=> {
-    c.geocode('usa', {language: 'en'}, (err, res) => {
+tape('Find USA', (t)=> {
+    c.geocode('usa', { language: 'en' }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].id, 'country.2', 'finds USA feature first');
         t.equal(res.features[0].relevance, 1, 'first feature has relevance of 1');
