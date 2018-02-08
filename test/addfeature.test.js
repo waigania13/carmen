@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -8,16 +9,16 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    address : new mem({maxzoom: 6}, () => {}),
-    poi : new mem({maxzoom: 6}, () => {})
+    address : new mem({ maxzoom: 6 }, () => {}),
+    poi : new mem({ maxzoom: 6 }, () => {})
 };
 const c = new Carmen(conf);
 
 tape('index address', (t) => {
-    let docs = [];
+    const docs = [];
     let address;
 
-    for (let i=0; i<1; i++) {
+    for (let i = 0; i < 1; i++) {
         address = {
             id:1,
             type: 'Feature',
@@ -32,7 +33,7 @@ tape('index address', (t) => {
         };
         docs.push(address);
     }
-    for (let j=2; j<=103; j++) {
+    for (let j = 2; j <= 103; j++) {
         address = {
             id:2,
             type: 'Feature',
@@ -51,10 +52,10 @@ tape('index address', (t) => {
 });
 
 tape('index pois', (t) => {
-    let docs = [];
+    const docs = [];
     let poi;
 
-    for (let k=103; k<=104; k++) {
+    for (let k = 103; k <= 104; k++) {
         poi = {
             id:3,
             type: 'Feature',
@@ -74,7 +75,7 @@ tape('index pois', (t) => {
 });
 
 tape('build queued features', (t) => {
-    let q = queue();
+    const q = queue();
     Object.keys(conf).forEach((c) => {
         q.defer((cb) => {
             buildQueued(conf[c], cb);
@@ -84,7 +85,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Search for Starbucks', (t) => {
-    c.geocode('starbucks lake view', {autocomplete: false, limit_verify: 2}, (err, res) => {
+    c.geocode('starbucks lake view', { autocomplete: false, limit_verify: 2 }, (err, res) => {
         t.equal(res.features[0].relevance, 1, 'stacked relevance');
         t.equal(res.features.length, 2, 'two features returned');
         t.end();
