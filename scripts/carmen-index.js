@@ -1,14 +1,14 @@
-#!/usr/bin/env node
+'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var argv = process.argv;
-var Carmen = require('../index.js');
-var argv = require('minimist')(process.argv, {
-    string: [ 'version', 'config', 'index', 'tokens', 'inverse_tokens' ],
-    boolean: [ 'help' ]
+const fs = require('fs');
+const path = require('path');
+let argv = process.argv;
+const Carmen = require('../index.js');
+argv = require('minimist')(process.argv, {
+    string: ['version', 'config', 'index', 'tokens', 'inverse_tokens'],
+    boolean: ['help']
 });
-var settings = require('../package.json');
+const settings = require('../package.json');
 
 function help() {
     console.log('carmen-copy.js --config=<path> --index=<path> [options]');
@@ -18,7 +18,7 @@ function help() {
     console.log('  --config="<path>"       path to JSON document with index settings');
     console.log('  --tokens=<tokens.json>  Load global token file');
     console.log('  --index="<path>"        Tilelive path to output index to');
-    console.log('  --inverse_tokens="<path.js>[<path2.js>,...]"')
+    console.log('  --inverse_tokens="<path.js>[<path2.js>,...]"');
     console.log('      Paths to JS files with functions for guessing token reversal');
     process.exit(0);
 }
@@ -26,37 +26,37 @@ function help() {
 if (argv.help) help();
 
 if (argv.version) {
-    console.log('carmen@'+settings.version);
+    console.log('carmen@' + settings.version);
     process.exit(0);
 }
 
 if (!argv.config) help();
 if (!argv.index) throw new Error('--index argument required');
 
-var tokens = {};
+let tokens = {};
 if (argv.tokens) {
     tokens = require(path.resolve(argv.tokens));
-    if (typeof tokens === "function") {
+    if (typeof tokens === 'function') {
         tokens = tokens();
     }
 }
 
-var inverseTokens = {};
+const inverseTokens = {};
 if (argv.inverse_tokens) {
-    let rtFiles = argv.inverse_tokens.split(',');
+    const rtFiles = argv.inverse_tokens.split(',');
     rtFiles.forEach((file) => {
-        let data = require(file);
-        for (let key of Object.keys(data)) inverseTokens[key] = data[key];
+        const data = require(file);
+        for (const key of Object.keys(data)) inverseTokens[key] = data[key];
     });
 }
 
-var conf;
-var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
+let conf;
+const config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 
-var freqPath = argv.index.replace('.mbtiles', '.freq.rocksdb');
-var gridPath = argv.index.replace('.mbtiles', '.grid.rocksdb');
+const freqPath = argv.index.replace('.mbtiles', '.freq.rocksdb');
+const gridPath = argv.index.replace('.mbtiles', '.grid.rocksdb');
 
-argv.index = Carmen.auto(argv.index, function() {
+argv.index = Carmen.auto(argv.index, () => {
     conf = {
         to: argv.index
     };
@@ -78,14 +78,14 @@ function index(err) {
 
     config.tokens = tokens;
 
-    var carmen = new Carmen(conf, {
+    const carmen = new Carmen(conf, {
         tokens: tokens,
         geocoder_inverse_tokens: inverseTokens
     });
     config.output = process.stdout;
 
-    var last = +new Date;
-    carmen.on('index', function(num) {
+    let last = +new Date;
+    carmen.on('index', (num) => {
         console.error('Indexed %s docs @ %s/s', num, Math.floor(num * 1000 / (+new Date - last)));
         last = +new Date;
     });
@@ -93,8 +93,8 @@ function index(err) {
     conf.to.freqPath = freqPath;
     conf.to.gridPath = gridPath;
 
-    carmen.on('open', function() {
-        carmen.index(process.stdin, conf.to, config, function(err) {
+    carmen.on('open', () => {
+        carmen.index(process.stdin, conf.to, config, (err) => {
             if (err) throw err;
         });
     });
