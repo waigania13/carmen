@@ -182,9 +182,3 @@ carmen.geocode(argv.query, {
 
     process.exit(0);
 });
-
-function rpad(str, len) {
-    if (typeof str !== 'string') str = str.toString();
-    while (str.length < len) str = str + ' ';
-    return str;
-}
