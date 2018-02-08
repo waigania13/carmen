@@ -1,3 +1,4 @@
+'use strict';
 // Alphanumeric and hyphenated housenumbers
 
 const tape = require('tape');
@@ -9,14 +10,14 @@ const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-//Make sure that capital letters are lowercased on indexing to match input token
+// Make sure that capital letters are lowercased on indexing to match input token
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index alphanum address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -28,7 +29,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for alphanumerics', (t) => {
         c.geocode('9B FAKE STREET', { limit_verify: 1 }, (err, res) => {
@@ -40,14 +41,14 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//Use addressnumber query position as a tiebreaker when applic.
+// Use addressnumber query position as a tiebreaker when applic.
 (() => {
     const conf = {
-        address: new mem({maxzoom: 14, geocoder_address: 1}, function() {})
+        address: new mem({ maxzoom: 14, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'WASHINGTON STREET',
@@ -63,7 +64,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:2,
             properties: {
                 'carmen:text': 'WASHINGTON STREET',
@@ -78,7 +79,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('build queued features', (t) => {
-        var q = queue();
+        const q = queue();
         Object.keys(conf).forEach((c) => {
             q.defer((cb) => {
                 buildQueued(conf[c], cb);
@@ -99,11 +100,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, function() {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index alphanum address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -115,7 +116,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for alphanumerics', (t) => {
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
@@ -129,11 +130,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -145,7 +146,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address query with alphanumeric', (t) => {
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
@@ -159,17 +160,17 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
                 'carmen:center':[0,0],
                 'carmen:rangetype':'tiger',
-                'carmen:lfromhn': 0, //Input is numeric
+                'carmen:lfromhn': 0, // Input is numeric
                 'carmen:ltohn': 100,
             },
             geometry: {
@@ -177,7 +178,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test alphanumeric address query with address range', (t) => {
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
@@ -202,11 +203,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -220,7 +221,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test alphanumeric address query with address range', (t) => {
         c.geocode('9b fake street', { limit_verify: 1 }, (err, res) => {
@@ -245,12 +246,12 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        postcode: new mem({maxzoom: 6 }, () => {}),
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        postcode: new mem({ maxzoom: 6 }, () => {}),
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index fake UK address range', (t) => {
-        let address = {
+        const address = {
             id: 1,
             properties: {
                 'carmen:text':'B77',
@@ -267,7 +268,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('index fake UK postcode', (t) => {
-        let postcode = {
+        const postcode = {
             id: 2,
             properties: {
                 'carmen:text': 'B77 1AB',
@@ -291,7 +292,7 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].place_name, 'B77 1AB', 'found feature \'B77 1AB\'');
             t.equals(res.features[0].relevance, 1.00);
             t.equals(res.features[0].id.split('.')[0], 'postcode', 'feature is from layer postcode');
-            let addressInResultSet = res.features.some((feature) => { return feature.id.split('.')[0] === 'address' });
+            const addressInResultSet = res.features.some((feature) => { return feature.id.split('.')[0] === 'address'; });
             t.ok(!addressInResultSet, 'result set does not include address feature');
             t.end();
         });
@@ -300,11 +301,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'beach street',
@@ -318,7 +319,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates:[[0,0],[0,100]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test hyphenated address query with address range', (t) => {
         c.geocode('23-414 beach street', { limit_verify: 1 }, (err, res) => {
