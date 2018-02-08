@@ -1,3 +1,4 @@
+'use strict';
 const grid = require('../lib/util/grid');
 const test = require('tape');
 
@@ -43,8 +44,8 @@ test('grid', (t) => {
     t.deepEqual(decoded, { id: 1, x:1, y:1, relev: 1, score: 7 }, 'truncates score > 7');
 
     // fuzz
-    let relevs = [0.4, 0.6, 0.8, 1.0];
-    let scores = [0, 1, 2, 3, 4, 5, 6, 7];
+    const relevs = [0.4, 0.6, 0.8, 1.0];
+    const scores = [0, 1, 2, 3, 4, 5, 6, 7];
     let pass = true;
     for (let i = 0; i < 1000; i++) {
         data = {

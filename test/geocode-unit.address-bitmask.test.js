@@ -1,4 +1,5 @@
-//Test bitmask based address determination (See lib/verifymatch)
+'use strict';
+// Test bitmask based address determination (See lib/verifymatch)
 
 const tape = require('tape');
 const Carmen = require('..');
@@ -10,11 +11,11 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {})
 };
 const c = new Carmen(conf);
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text': '1 test street',
@@ -29,7 +30,7 @@ tape('index address', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:2,
         properties: {
             'carmen:text': 'baker street',
@@ -44,7 +45,7 @@ tape('index address', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:3,
         properties: {
             'carmen:text': '15th street',

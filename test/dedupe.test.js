@@ -1,8 +1,9 @@
+'use strict';
 const dedupe = require('../lib/util/dedupe');
 const tape = require('tape');
 
 tape('dedup lowercase vs caps', (t) => {
-    let features = [
+    const features = [
         {
             place_name: '20 main st',
             text: 'main st',
@@ -35,7 +36,7 @@ tape('dedup - change relev order', (t) => {
     const dedup = dedupe(require('./fixtures/relev.json'));
 
 
-    t.equals(dedup.length, 9)
+    t.equals(dedup.length, 9);
 
     t.equals(dedup[0].relevance, 0.7969999999999999);
     t.equals(dedup[1].relevance, 0.574);

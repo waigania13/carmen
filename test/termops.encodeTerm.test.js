@@ -1,3 +1,4 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const test = require('tape');
 
@@ -12,12 +13,12 @@ test('termops.encodeTerm', (t) => {
 
 test('termops.encodeTerm collisions', (t) => {
     let texts = 0;
-    let sample = 1e6;
-    let ids = {};
-    let collisions = [];
+    const sample = 1e6;
+    const ids = {};
+    const collisions = [];
     while (texts < sample) {
-        let text = Math.random().toString(36);
-        let id = termops.encodeTerm(text);
+        const text = Math.random().toString(36);
+        const id = termops.encodeTerm(text);
         if (ids[id] === text) {
             continue;
         } else if (ids[id]) {
@@ -27,9 +28,9 @@ test('termops.encodeTerm collisions', (t) => {
         }
         texts++;
     }
-    let rate = (collisions.length/sample);
-    let thresh = 1/1e6;
-    t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
+    const rate = (collisions.length / sample);
+    const thresh = 1 / 1e6;
+    t.equal(rate < thresh, true, 'Collision rate ' + (rate * 100).toFixed(4) + '% < ' + (thresh * 100).toFixed(4) + '%');
     t.end();
 });
 

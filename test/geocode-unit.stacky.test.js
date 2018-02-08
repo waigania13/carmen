@@ -1,3 +1,4 @@
+'use strict';
 // Tests Windsor CT (city) vs Windsor Ct (street name)
 // Windsor CT should win via stacky bonus.
 
@@ -18,7 +19,7 @@ const conf = {
 };
 const c = new Carmen(conf);
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:1,
         properties: {
             'carmen:text':'connecticut, court',
@@ -29,7 +30,7 @@ tape('index province', (t) => {
     queueFeature(conf.province, province, t.end);
 });
 tape('index city', (t) => {
-    let city = {
+    const city = {
         id:1,
         properties: {
             'carmen:text':'windsor',
@@ -40,12 +41,12 @@ tape('index city', (t) => {
     queueFeature(conf.city, city, t.end);
 });
 tape('index street', (t) => {
-    let street = {
+    const street = {
         id:1,
         properties: {
             'carmen:text':'windsor court',
             'carmen:zxy':['6/34/32'],
-            'carmen:center':[360/32,0]
+            'carmen:center':[360 / 32,0]
         }
     };
     queueFeature(conf.street, street, t.end);

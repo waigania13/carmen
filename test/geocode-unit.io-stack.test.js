@@ -1,3 +1,4 @@
+'use strict';
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.
 
@@ -27,7 +28,7 @@ tape('ready', (t) => {
 
 [1,2,3].forEach((i) => {
     tape('index place ' + i, (t) => {
-        queueFeature(conf['place'+i], {
+        queueFeature(conf['place' + i], {
             id:1,
             properties: {
                 'carmen:text':'springfield',
@@ -37,7 +38,7 @@ tape('ready', (t) => {
         }, t.end);
     });
     tape('index street ' + i, (t) => {
-        queueFeature(conf['street'+i], {
+        queueFeature(conf['street' + i], {
             id:1,
             properties: {
                 'carmen:text':'winding river rd',
@@ -47,7 +48,7 @@ tape('ready', (t) => {
         }, t.end);
     });
     tape('index street ' + i, (t) => {
-        queueFeature(conf['street'+i], {
+        queueFeature(conf['street' + i], {
             id:2,
             properties: {
                 'carmen:text':'river rd',
@@ -57,7 +58,7 @@ tape('ready', (t) => {
         }, t.end);
     });
     tape('index street ' + i, (t) => {
-        queueFeature(conf['street'+i], {
+        queueFeature(conf['street' + i], {
             id:3,
             properties: {
                 'carmen:text':'springfield st',
@@ -80,10 +81,10 @@ tape('ready', (t) => {
 function reset() {
     context.getTile.cache.reset();
     [1,2,3].forEach((i) => {
-        conf['place'+i]._original.logs.getGeocoderData = [];
-        conf['place'+i]._original.logs.getTile = [];
-        conf['street'+i]._original.logs.getGeocoderData = [];
-        conf['street'+i]._original.logs.getTile = [];
+        conf['place' + i]._original.logs.getGeocoderData = [];
+        conf['place' + i]._original.logs.getTile = [];
+        conf['street' + i]._original.logs.getGeocoderData = [];
+        conf['street' + i]._original.logs.getTile = [];
     });
 }
 

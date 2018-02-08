@@ -1,3 +1,4 @@
+'use strict';
 // spatialmatch test to ensure the highest relev for a stacked zxy cell
 // is used, disallowing a lower scoring cell from overwriting a previous
 // entry.
@@ -12,12 +13,12 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    place: new mem({maxzoom: 6}, () => {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+    place: new mem({ maxzoom: 6 }, () => {}),
+    address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
 };
 const c = new Carmen(conf);
 tape('index place', (t) => {
-    let feature = {
+    const feature = {
         id:1,
         properties: {
             'carmen:text':'fakecity',
@@ -28,7 +29,7 @@ tape('index place', (t) => {
     queueFeature(conf.place, feature, t.end);
 });
 tape('index matching address', (t) => {
-    let feature = {
+    const feature = {
         id:2,
         properties: {
             'carmen:text':'fake street',
@@ -44,7 +45,7 @@ tape('index matching address', (t) => {
     queueFeature(conf.address, feature, t.end);
 });
 tape('index other address', (t) => {
-    let feature = {
+    const feature = {
         id:3,
         properties: {
             'carmen:text':'fake street',

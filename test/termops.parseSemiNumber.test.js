@@ -1,3 +1,4 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const test = require('tape');
 

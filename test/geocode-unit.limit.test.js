@@ -1,3 +1,4 @@
+'use strict';
 // Test geocoder_tokens
 
 const tape = require('tape');
@@ -39,7 +40,7 @@ const addFeature = require('../lib/util/addfeature'),
                     'carmen:center': [0,0],
                 },
                 geometry: {
-                    type: "Point",
+                    type: 'Point',
                     coordinates: [0,0]
                 }
             }, done);
@@ -142,7 +143,7 @@ const addFeature = require('../lib/util/addfeature'),
         }, t.end);
     });
 
-    let coords = [
+    const coords = [
         [-79.37663912773132,38.83417524443351],
         [-79.37698781490326,38.83414599360498],
         [-79.37705218791960,38.83398302448309],
@@ -153,7 +154,7 @@ const addFeature = require('../lib/util/addfeature'),
         [-79.37737405300139,38.83381587627815],
         [-79.37737941741943,38.83361111919213],
         [-79.37780320644379,38.83375319560010]
-    ]
+    ];
 
     tape('index poi', (t) => {
         const q = queue(1);
@@ -162,11 +163,11 @@ const addFeature = require('../lib/util/addfeature'),
                 id:i,
                 properties: {
                     'carmen:text':'seneca rocks ' + i,
-                    'carmen:center': coords[i-1],
+                    'carmen:center': coords[i - 1],
                 },
                 geometry: {
-                    type: "Point",
-                    coordinates: coords[i-1]
+                    type: 'Point',
+                    coordinates: coords[i - 1]
                 }
             }, done);
         }, i);
@@ -177,7 +178,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, {
             id: 1,
             properties: {
-                'carmen:addressnumber': [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+                'carmen:addressnumber': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 'carmen:text':'main road',
                 'carmen:center': coords[0],
             },
@@ -264,7 +265,7 @@ tape('teardown', (t) => {
     t.end();
 });
 
-//Handle addressclusters
+// Handle addressclusters
 (() => {
     const conf = {
         place: new mem({
@@ -298,7 +299,7 @@ tape('teardown', (t) => {
                 ]
             },
             geometry: {
-                type: "MultiPoint",
+                type: 'MultiPoint',
                 coordinates: [
                     [-79.37663912773132,38.83417524443351],
                     [-79.37698781490326,38.83414599360498],
@@ -344,7 +345,7 @@ tape('teardown', (t) => {
     t.end();
 });
 
-//Handle ITP lines
+// Handle ITP lines
 (() => {
     const conf = {
         place: new mem({
@@ -382,7 +383,7 @@ tape('teardown', (t) => {
                 'carmen:ltohn':   ['4','8','12','16']
             },
             geometry: {
-                type: "MultiLineString",
+                type: 'MultiLineString',
                 coordinates: [
                     [[-79.378382563591,38.83475190117003],[-79.37798023223877,38.83472265057851]],
                     [[-79.37795341014862,38.83472265057851],[-79.37729358673094,38.834651613377574]],
