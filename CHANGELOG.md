@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.2.6
+- Reduces index size by dropping interpolation for addresss clusters that have a wide address number range
+
 ## v24.2.5
 
 - Add support for maching_place_name output on address features
