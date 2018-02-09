@@ -3,8 +3,6 @@
 [Mapnik vector tile](https://github.com/mapbox/mapnik-vector-tile)-based geocoder with support for swappable data sources.
 This is an implementation of some of the concepts of [Error-Correcting Geocoding](http://arxiv.org/abs/1102.3306) by [Dennis Luxen](http://algo2.iti.kit.edu/english/luxen.php).
 
-[![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
-
 ## Depends
 
 - Node v6.x.x
@@ -17,164 +15,29 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 Carmen no longer ships with any default or sample data. Sample data will be provided in a future release.
 
-## Usage
+## API
 
-Geocoding is a specialized kind of search. Search solutions always have two basic high-level elements:
+For a simplified example of using the carmen API, see [the `example` folder]('./example') in this repository.
 
-- **Documents:** Small chunks of information, each describing something important in the world. Relevant documents are returned in response to users' queries.
-- **Queries:** User-submitted requests to recieve documents. Queries are meant to express the user's interest in a subset of documents, which are returned to them, ranked by their relevance.
+For more detail about specific elements of the API (and how to use them directly), see the [API Docs](./docs/api/README.md).
 
-In the common case of web search, the documents are webpages, and the queries are short strings of key words entered into a query interface like DuckDuckGo.
-
-[diagram of web search]
-
-In geocoding the documents contain information about aspects of the physical world, including their location, shape, and any names that human beings have bestowed upon them. When querying those documents, the user wants to recieve results that describe a particular location. This is called a **FORWARD** search.
-
-[diagram of forward search]
-
-One thing that makes geocoding a special type of search is that, because the documents are describe locations in the real world, an earthbound user is always standing at a point that is described by one or many documents. That's why it's also possible to do a **REVERSE** search.
-
-[diagram of reverse search]
-
-Carmen is a library that does two things:
-
-1. Processes collections of documents (geojson Features) into efficient indexes.
-2. Provides and interface for submitting both forward and reverse queries to those indexes.
-
-### Initialize geocoder
-
-To instantiate a new geocoder, you'll need to pass an index configuration object, which maps from index names to carmen source objects. Carmen source objects must satisfy the requirements of the tilelive [`Tilesource`](https://github.com/mapbox/tilelive/blob/master/API.md) API. An easy way to get
-started is to use [`MemSource`]('./lib/api-mem.js'). Let's set up a geocoder that has address, place and point-of-interest (POI) indexes:
-
-```javascript
-const MemSource = require('carmen/lib/api-mem');
-const indexes = {
-    address : new mem({maxzoom: 6}, () => {}),
-    place : new mem({maxzoom: 6}, () => {}),
-    poi :  new mem({maxzoom: 6}, () => {})
-};
-const carmen = new Carmen(indexes);
-```
-
-### Add documents to indexes
-
-Our documents are GeoJSON features. Expand these to see the full features used in the example:
-
-<details>
-<summary>Address: San Diego Avenue, Jenkintown, PA</summary>
-
-```javascript
-sd_address = {
-    'id': 1,
-    'type': 'Feature',
-    'properties': {
-        'carmen:text': 'San Diego Avenue',
-        'carmen:center': [-75.095875, 40.085907]
-    },
-    'geometry': {
-        type: 'Point',
-        [-75.095875, 40.085907]
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>Place: San Diego, CA</summary>
-
-```javascript
-sd_place = {
-    'type': 'Feature',
-    'properties': {
-        'carmen:text': 'San Diego',
-        'carmen:center': [-117.148, 32.7311]
-    },
-    'geometry': {
-      'type': 'Polygon',
-      'coordinates': [
-          [
-            [
-              -117.35595703124999,
-              32.55607364492026
-            ],
-            [
-              -116.90277099609374,
-              32.55607364492026
-            ],
-            [
-              -116.90277099609374,
-              33.07658322673801
-            ],
-            [
-              -117.35595703124999,
-              33.07658322673801
-            ],
-            [
-              -117.35595703124999,
-              32.55607364492026
-            ]
-          ]
-      ]
-    }
-}
-```
-
-</details>
-
-<details>
-<summary>POI: San Diego Model Railroad Museum</summary>
-
-</details>
-
-We can add them to indexes using the `addFeature` module. To queue documents for indexing, call `queueFeature`.
-
-```javascript
-const addFeature = require('../lib/util/addfeature');
-
-
-addFeature.queueFeature(indexes.address, sd_address);
-addFeature.queueFeature(indexes.place, sd_place);
-addFeature.queueFeature(indexes.poi, sd_poi);
-```
-
-To build the indexes, use `buildQueued`:
-
-```javascript
-const queue = require('d3-queue').queue;
-
-let q = queue();
-Object.keys(indexes).forEach((i) => {
-    q.defer((cb) => {
-	addFeature.buildQueued(indexes[i], cb);
-    });
-});
-q.awaitAll(t.end);
-```
-
-### Querying indexes
-
-results: https://github.com/mapbox/carmen/blob/master/carmen-geojson.md
-
-### Command-line scripts
+## Command-line scripts
 Carmen comes with command line utilities that also act as examples of API usage.
 
 To query the default indexes:
 
-    ./scripts/carmen.js --query="new york"
+    ./scripts/carmen-index.js --query="new york"
 
 To analyze an index:
 
     ./scripts/carmen-analyze.js tiles/01-ne.country.mbtiles
 
-## API
-
-For more detail about specific elements of the API (and how to use them directly), see the [API Docs](./docs/api/README.md).
-
 ## Data Sources
 
 TODO: General description of vector tiles
+
 TODO: links to related specs
+
 TODO: link to [./docs/data-sources.md]() for more detail and examples
 
 ## How does carmen work?
