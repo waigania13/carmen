@@ -19,23 +19,23 @@ Each `CarmenSource` is a tilelive API source that has additional geocoder
 methods (see **Carmen Source API** below). In addition following
 `tilelive#getInfo` keys affect how Carmen source objects operate.
 
-attribute               | description
-------------------------|------------
-maxzoom                 | The assumed zoom level of the zxy geocoder grid index.
-geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer to query for context operations. Defaults to the first layer found in a vector source.
-geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) queries. Defaults to 0.
-geocoder_format         | Optional. A string containing how to format the resulting `place_name` field. Ie: `{address._number} {address._name} {place._name}` where `address`/`place` are the extid of a given index and `_name`/`_number` are internal carmen designators to replace with the first text value from `carmen:text` & the matched address. This string can also map to string properties on the geojson. ie `{extid.title}` would be replace with `feature.properties.title` for the indexed GeoJSON for the given extid. By adding multiple `geocoder_format` keys with a language tag (e.g. `geocoder_format_zh`), multiple formats can be supported and engaged by using a `language` flag. See `test/geocoder-unit.address-format.test.js` for more examples.
-geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution when indexing. Defaults to 0.
-geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations can be grouped. No default.
-geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to replace in input queries. e.g. 'Streets' => 'St'.
-geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allowing multiple indexes to be treated as a single "logical" index.
-geocoder_type           | Optional + advanced. A string to be used instead the config index id/key. Omission of this falls back to geocoder_name and then to the id.
-geocoder_types          | Optional + advanced. An array of type strings. Only necessary for indexes that include multitype features.
-geocoder_version        | Required. Should be set to **7** for carmen@rocksdb. Index versions <= 1 can be used for reverse geocoding but not forward.
-geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message cache. Defaults uptream to 65536 (maximum number of possible shards).
-geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indicate the expected ordering of address components for an index. Defaults to `ascending`.
-geocoder_inherit_score  | Optional + advanced. Set to `true` if features from this index should appear above other identically (ish) named parent features that are part of its context (e.g. promote New York (city) promoted above New York (state)). Defaults to `false`.
-geocoder_universal_text | Optional + advanced. Set to `true` if features from this index should be considered language agnostic (e.g. postcodes). They will bypass the `languageMode=strict` flag and the `carmen:text` field will be treated as compatible with any language. Defaults to `false`.
+| attribute               | description                                                                            |
+|-------------------------|----------------------------------------------------------------------------------------|
+| maxzoom                 | The assumed zoom level of the zxy geocoder grid index.                                 |
+| geocoder_layer          | Optional. A string in the form `layer.field`. `layer` is used to determine what layer  | to query for context operations. Defaults to the first layer found in a vector source.
+| geocoder_address        | Optional. A flag (0/1) to indicate that an index can geocode address (house numbers) q | ueries. Defaults to 0.
+| geocoder_format         | Optional. A string containing how to format the resulting `place_name` field. Ie: `{ad | dress._number} {address._name} {place._name}` where `address`/`place` are the extid of a given index and `_name`/`_number` are internal carmen designators to replace with the first text value from `carmen:text` & the matched address. This string can also map to string properties on the geojson. ie `{extid.title}` would be replace with `feature.properties.title` for the indexed GeoJSON for the given extid. By adding multiple `geocoder_format` keys with a language tag (e.g. `geocoder_format_zh`), multiple formats can be supported and engaged by using a `language` flag. See `test/geocoder-unit.address-format.test.js` for more examples.
+| geocoder_resolution     | Optional. Integer bonus against maxzoom used to increase the grid index resolution whe | n indexing. Defaults to 0.
+| geocoder_group          | Optional + advanced. For indexes that share the exact same tile source, IO operations  | can be grouped. No default.
+| geocoder_tokens         | Optional + advanced. An object with a 1:1 from => to mapping of token strings to repla | ce in input queries. e.g. 'Streets' => 'St'.
+| geocoder_name           | Optional + advanced. A string to use instead of the provided config index id/key allow | ing multiple indexes to be treated as a single "logical" index.
+| geocoder_type           | Optional + advanced. A string to be used instead the config index id/key. Omission of  | this falls back to geocoder_name and then to the id.
+| geocoder_types          | Optional + advanced. An array of type strings. Only necessary for indexes that include | multitype features.
+| geocoder_version        | Required. Should be set to **7** for carmen@rocksdb. Index versions <= 1 can be used f | or reverse geocoding but not forward.
+| geocoder_cachesize      | Optional + advanced. Maximum number of shards to allow in the `carmen-cache` message c | ache. Defaults uptream to 65536 (maximum number of possible shards).
+| geocoder_address_order  | Optional + advanced. A string that can be set to `ascending` or `descending` to indica | te the expected ordering of address components for an index. Defaults to `ascending`.
+| geocoder_inherit_score  | Optional + advanced. Set to `true` if features from this index should appear above oth | er identically (ish) named parent features that are part of its context (e.g. promote New York (city) promoted above New York (state)). Defaults to `false`.
+| geocoder_universal_text | Optional + advanced. Set to `true` if features from this index should be considered la | nguage agnostic (e.g. postcodes). They will bypass the `languageMode=strict` flag and the `carmen:text` field will be treated as compatible with any language. Defaults to `false`.
 
 *Note: The sum of maxzoom + geocoder_resolution must be no greater than 14.*
 
