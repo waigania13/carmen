@@ -2,13 +2,12 @@
 // skip indexing but may still be rendered to a vector tile. Tests that
 // these features miss loading but noop gracefully.
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueVT = addFeature.queueVT,
-    buildQueued = addFeature.buildQueued;
+const { queueVT, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     a: new mem(null, () => {}),
@@ -22,7 +21,7 @@ tape('index', (t) => {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, () => { buildQueued(conf.a, t.end) });
+    }, () => { buildQueued(conf.a, t.end); });
 });
 tape('reverse geocode', (t) => {
     c.geocode('0,0', { limit_verify:1 }, (err, res) => {

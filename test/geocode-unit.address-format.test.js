@@ -1,3 +1,4 @@
+'use strict';
 // Ensures that relev takes into house number into consideration
 // Also ensure relev is applied to US & Non-US Style addresses
 
@@ -13,11 +14,11 @@ const addFeature = require('../lib/util/addfeature'),
 // Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}'}, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -29,7 +30,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
     tape('Search for germany style address', (t) => {
@@ -53,13 +54,13 @@ const addFeature = require('../lib/util/addfeature'),
 // + return place_name as germany style address (address number follows name)
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6,  geocoder_address:1,
+        address: new mem({ maxzoom: 6,  geocoder_address:1,
             geocoder_format_de: '{address._name} {address._number} {place._name}, {region._name} {postcode._name}, {country._name}',
-            geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, () => {}),
+            geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -71,7 +72,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
     tape('Search for germany style address - with language tag but no german vaue', (t) => {
@@ -107,19 +108,19 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//Test geocoder_address formatting for multiple layers
+// Test geocoder_address formatting for multiple layers
 (() => {
     const conf = {
         country: new mem({ maxzoom:6,  geocoder_format: '{country._name}' }, () => {}),
-        region: new mem({maxzoom: 6,   geocoder_format: '{region._name}, {country._name}' }, () => {}),
-        postcode: new mem({maxzoom: 6, geocoder_format: '{region._name}, {postcode._name}, {country._name}' }, () => {}),
-        place: new mem({maxzoom: 6,    geocoder_format: '{place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
-        address: new mem({maxzoom: 6,  geocoder_address: 1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, () => {}),
-        poi: new mem({maxzoom: 6,      geocoder_format: '{poi._name}, {address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, () => {}),
+        region: new mem({ maxzoom: 6,   geocoder_format: '{region._name}, {country._name}' }, () => {}),
+        postcode: new mem({ maxzoom: 6, geocoder_format: '{region._name}, {postcode._name}, {country._name}' }, () => {}),
+        place: new mem({ maxzoom: 6,    geocoder_format: '{place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address: 1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        poi: new mem({ maxzoom: 6,      geocoder_format: '{poi._name}, {address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             id:1,
             properties: {
                 'carmen:text': 'united states',
@@ -135,7 +136,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index region', (t) => {
-        let region = {
+        const region = {
             id:1,
             properties: {
                 'carmen:text': 'maine',
@@ -151,7 +152,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:text': 'springfield',
@@ -167,7 +168,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index postcode', (t) => {
-        let postcode = {
+        const postcode = {
             id:1,
             properties: {
                 'carmen:text': '12345',
@@ -183,7 +184,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -199,7 +200,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index poi', (t) => {
-        let poi = {
+        const poi = {
             id:1,
             properties: {
                 'carmen:text': 'moes tavern',
@@ -232,7 +233,7 @@ const addFeature = require('../lib/util/addfeature'),
     tape('Search for an address without a number (multiple layers)', (t) => {
         c.geocode('fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res,  {"type":"FeatureCollection","query":["fake","street"],"features":[{"id":"address.1","type":"Feature","text":"fake street","place_name":"fake street springfield, maine 12345, united states","relevance":1.0,"place_type": ['address'],"properties":{},"center":[0,0],"geometry":{"type":"GeometryCollection","geometries":[{"type":"MultiPoint","coordinates":[[0,0],[0,0],[0,0]]}]},"context":[{"id":"place.1","text":"springfield"},{"id":"postcode.1","text":"12345"},{"id":"region.1","text":"maine"},{"id":"country.1","text":"united states"}]}]});
+            t.deepEquals(res,  { 'type':'FeatureCollection','query':['fake','street'],'features':[{ 'id':'address.1','type':'Feature','text':'fake street','place_name':'fake street springfield, maine 12345, united states','relevance':1.0,'place_type': ['address'],'properties':{},'center':[0,0],'geometry':{ 'type':'GeometryCollection','geometries':[{ 'type':'MultiPoint','coordinates':[[0,0],[0,0],[0,0]] }] },'context':[{ 'id':'place.1','text':'springfield' },{ 'id':'postcode.1','text':'12345' },{ 'id':'region.1','text':'maine' },{ 'id':'country.1','text':'united states' }] }] });
             t.end();
         });
     });
@@ -254,11 +255,11 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6, geocoder_address: 1}, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -270,7 +271,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [[0,0],[0,0],[0,0]]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
     tape('test address index for US relev', (t) => {
@@ -309,14 +310,14 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//If the layer does not have geocoder_address do not take house number into account
+// If the layer does not have geocoder_address do not take house number into account
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6}, () => {})
+        address: new mem({ maxzoom: 6 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -328,7 +329,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for relev', (t) => {
         c.geocode('9 fake street', { limit_verify: 1 }, (err, res) => {
@@ -342,12 +343,12 @@ const addFeature = require('../lib/util/addfeature'),
 // Test to make sure cases of custom subproperties are accounted for
 (() => {
     const conf = {
-        place: new mem({maxzoom: 6,  geocoder_format: '{place._name}'}, () => {}),
-        kitten: new mem({maxzoom: 6,  geocoder_format: '{kitten._name} {kitten.version} {kitten.color}, {place._name}'}, () => {}),
+        place: new mem({ maxzoom: 6,  geocoder_format: '{place._name}' }, () => {}),
+        kitten: new mem({ maxzoom: 6,  geocoder_format: '{kitten._name} {kitten.version} {kitten.color}, {place._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:text': 'springfield',
@@ -362,7 +363,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index kitten', (t) => {
-        let kitten = {
+        const kitten = {
             id:1,
             properties: {
                 'carmen:text': 'snowball',

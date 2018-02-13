@@ -1,24 +1,23 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 // Test that geocoder returns index names for context
 (() => {
     const conf = {
         country: new mem({ maxzoom:6 }, () => {}),
-        region: new mem({maxzoom: 6 }, () => {}),
-        postcode: new mem({maxzoom: 6 }, () => {}),
-        place: new mem({maxzoom: 6 }, () => {}),
-        address: new mem({maxzoom: 6 }, () => {})
+        region: new mem({ maxzoom: 6 }, () => {}),
+        postcode: new mem({ maxzoom: 6 }, () => {}),
+        place: new mem({ maxzoom: 6 }, () => {}),
+        address: new mem({ maxzoom: 6 }, () => {})
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             id:1,
             properties: {
                 'carmen:text': 'united states',
@@ -34,7 +33,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index region', (t) => {
-        let region = {
+        const region = {
             id:1,
             properties: {
                 'carmen:text': 'maine',
@@ -50,7 +49,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:text': 'springfield',
@@ -66,7 +65,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index postcode', (t) => {
-        let postcode = {
+        const postcode = {
             id:1,
             properties: {
                 'carmen:text': '12345',
@@ -82,7 +81,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -109,21 +108,21 @@ const addFeature = require('../lib/util/addfeature'),
     tape('Search for an address & check indexes', (t) => {
         c.geocode('9 fake street', { limit_verify: 1, indexes: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
+            t.deepEquals(res.indexes, ['address', 'place', 'postcode', 'region', 'country']);
             t.end();
         });
     });
     tape('Search for an id & check indexes', (t) => {
         c.geocode('address.1', { indexes: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.indexes, [ 'address' ]);
+            t.deepEquals(res.indexes, ['address']);
             t.end();
         });
     });
     tape('Search for a point & check indexes', (t) => {
         c.geocode('0,0', { limit_verify: 1, indexes: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.indexes, [ 'address', 'place', 'postcode', 'region', 'country' ]);
+            t.deepEquals(res.indexes, ['address', 'place', 'postcode', 'region', 'country']);
             t.end();
         });
     });

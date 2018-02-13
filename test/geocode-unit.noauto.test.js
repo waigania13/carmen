@@ -1,12 +1,11 @@
 // Test score handling across indexes
+'use strict';
 
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 // Confirm that disabling autocomplete works, and that in situations where an autocomplete
 // result scores highest, the winner changes depending on whether or not autocomplete is enabled
@@ -14,7 +13,7 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = { place: new mem(null, () => {}) };
     const c = new Carmen(conf);
     tape('index first place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -26,7 +25,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index second place', (t) => {
-        let place = {
+        const place = {
             id:2,
             properties: {
                 'carmen:score': 10,
@@ -35,7 +34,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end); });
     });
     tape('abc - with autocomplete', (t) => {
         c.geocode('abc', { limit_verify:1 }, (err, res) => {
@@ -91,7 +90,7 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = { place: new mem(null, () => {}) };
     const c = new Carmen(conf);
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -100,7 +99,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end); });
     });
     tape('place - with autocomplete', (t) => {
         c.geocode('place', { limit_verify:1 }, (err, res) => {

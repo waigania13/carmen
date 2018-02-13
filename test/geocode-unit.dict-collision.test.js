@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -13,7 +14,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index unicode place', (t) => {
-    let place = {
+    const place = {
         id: 1,
         properties: {
             'carmen:text': '京都市',

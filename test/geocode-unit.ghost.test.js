@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -15,7 +16,7 @@ const addFeature = require('../lib/util/addfeature'),
     };
     const c = new Carmen(conf);
     tape('index region', (t) => {
-        let region = {
+        const region = {
             id:1,
             properties: {
                 'carmen:text':'Outer Rim',
@@ -27,7 +28,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index city 1', (t) => {
-        let city = {
+        const city = {
             id:2,
             properties: {
                 'carmen:text':'Mos Eisley',
@@ -40,7 +41,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index city 2', (t) => {
-        let city = {
+        const city = {
             id:3,
             properties: {
                 'carmen:text':'Tatooine',
@@ -53,7 +54,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index neighborhood', (t) => {
-        let neighborhood = {
+        const neighborhood = {
             id:5,
             properties: {
                 'carmen:text':'Mos Eisley',
@@ -66,7 +67,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index poi', (t) => {
-        let poi = {
+        const poi = {
             id:5,
             properties: {
                 'carmen:text':'Tatooine Community College',

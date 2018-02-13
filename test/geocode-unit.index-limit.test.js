@@ -1,3 +1,4 @@
+'use strict';
 // Test that up to 128 indexes are supported.
 
 const tape = require('tape');
@@ -9,11 +10,11 @@ const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-let conf = {};
+const conf = {};
 for (let i = 0; i < 127; i++) {
-    conf['country' + i] = new mem({maxzoom: 6, geocoder_name:'country'}, () => {});
+    conf['country' + i] = new mem({ maxzoom: 6, geocoder_name:'country' }, () => {});
 }
-conf['place'] = new mem({maxzoom: 6, geocoder_name:'place'}, () => {});
+conf['place'] = new mem({ maxzoom: 6, geocoder_name:'place' }, () => {});
 
 const c = new Carmen(conf);
 tape('index place', (t) => {

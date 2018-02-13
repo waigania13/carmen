@@ -1,20 +1,19 @@
 // Test score handling across indexes
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 // Confirms that you can forward search a ghost feature and that a scored featre will always win
 (() => {
     const conf = { place: new mem(null, () => {}) };
     const c = new Carmen(conf);
     tape('index place', (t) => {
-        let place = {
+        const place = {
             id:1,
             properties: {
                 'carmen:score': 100,
@@ -26,7 +25,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index ghost place', (t) => {
-        let place = {
+        const place = {
             id:2,
             properties: {
                 'carmen:score': -1,
@@ -38,7 +37,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index zip+4', (t) => {
-        let place = {
+        const place = {
             id:3,
             properties: {
                 'carmen:score': -1,
@@ -50,7 +49,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index zip', (t) => {
-        let place = {
+        const place = {
             id:4,
             properties: {
                 'carmen:score': 100,
@@ -62,7 +61,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.place, place, t.end);
     });
     tape('index ghost zip', (t) => {
-        let place = {
+        const place = {
             id:5,
             properties: {
                 'carmen:score': -1,
@@ -71,7 +70,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end) });
+        queueFeature(conf.place, place, () => { buildQueued(conf.place, t.end); });
     });
     tape('fairfax', (t) => {
         c.geocode('fairfax', { limit_verify:1 }, (err, res) => {
@@ -119,7 +118,7 @@ const addFeature = require('../lib/util/addfeature'),
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             id:1,
             properties: {
                 'carmen:text':'china',
@@ -130,23 +129,23 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
     tape('index province', (t) => {
-        let province = {
+        const province = {
             id:1,
             properties: {
                 'carmen:text':'china',
                 'carmen:zxy':['6/34/32'],
-                'carmen:center':[360/64*2,0]
+                'carmen:center':[360 / 64 * 2,0]
             }
         };
         queueFeature(conf.province, province, t.end);
     });
     tape('index city', (t) => {
-        let city = {
+        const city = {
             id:1,
             properties: {
                 'carmen:text':'china',
                 'carmen:zxy':['6/36/32'],
-                'carmen:center':[360/64*4,0]
+                'carmen:center':[360 / 64 * 4,0]
             }
         };
         queueFeature(conf.city, city, t.end);
@@ -180,7 +179,7 @@ const addFeature = require('../lib/util/addfeature'),
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             id:1,
             properties: {
                 'carmen:score': 5,
@@ -192,25 +191,25 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.country, country, t.end);
     });
     tape('index province', (t) => {
-        let province = {
+        const province = {
             id:2,
             properties: {
                 'carmen:score': 10,
                 'carmen:text':'china',
                 'carmen:zxy':['6/34/32'],
-                'carmen:center':[360/64 * 2,0]
+                'carmen:center':[360 / 64 * 2,0]
             }
         };
         queueFeature(conf.province, province, t.end);
     });
     tape('index city', (t) => {
-        let city = {
+        const city = {
             id:3,
             properties: {
                 'carmen:score': 6,
                 'carmen:text':'china',
                 'carmen:zxy':['6/36/32'],
-                'carmen:center':[360/64 * 4,0]
+                'carmen:center':[360 / 64 * 4,0]
             }
         };
         queueFeature(conf.city, city, t.end);
@@ -251,7 +250,7 @@ const addFeature = require('../lib/util/addfeature'),
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             id:1,
             properties: {
                 'carmen:score': 5,
@@ -260,13 +259,13 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0]
             }
         };
-        queueFeature(conf.country, country, () => { buildQueued(conf.country, t.end) });
+        queueFeature(conf.country, country, () => { buildQueued(conf.country, t.end); });
     });
 
     tape('query by id', (t) => {
         c.geocode('country.1', null, (err, res) => {
             t.ifError(err);
-            t.deepEqual(res.features[0].relevance, 1, "relevance is 1");
+            t.deepEqual(res.features[0].relevance, 1, 'relevance is 1');
             t.deepEqual(res.features.length, 1);
             t.end();
         });

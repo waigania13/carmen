@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -16,7 +17,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -38,7 +39,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         geometry: {
             type: 'Polygon',
@@ -60,7 +61,7 @@ tape('index region', (t) => {
 });
 
 tape('index place', (t) => {
-    let place = {
+    const place = {
         id:1,
         geometry: {
             type: 'Polygon',

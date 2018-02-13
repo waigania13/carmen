@@ -1,20 +1,21 @@
 /* eslint no-process-exit: "off" */
+'use strict';
 
-var EventEmitter = require('events').EventEmitter,
-    queue = require('d3-queue').queue,
-    fs = require('fs'),
-    crypto = require('crypto');
+const EventEmitter = require('events').EventEmitter;
+const queue = require('d3-queue').queue;
+const fs = require('fs');
+const crypto = require('crypto');
 
-var dawgcache = require('./lib/util/dawg');
-var cxxcache = require('./lib/util/cxxcache'),
-    getContext = require('./lib/context'),
-    loader = require('./lib/loader'),
-    geocode = require('./lib/geocode'),
-    analyze = require('./lib/analyze'),
-    token = require('./lib/util/token'),
-    copy = require('./lib/copy'),
-    index = require('./lib/index'),
-    merge = require('./lib/merge');
+const dawgcache = require('./lib/util/dawg');
+const cxxcache = require('./lib/util/cxxcache');
+const getContext = require('./lib/context');
+const loader = require('./lib/loader');
+const geocode = require('./lib/geocode');
+const analyze = require('./lib/analyze');
+const token = require('./lib/util/token');
+const copy = require('./lib/copy');
+const index = require('./lib/index');
+const merge = require('./lib/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -24,11 +25,11 @@ function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
-    var q = queue(10);
+    const q = queue(10);
 
     this.indexes = indexes;
 
-    let globalTokens = options.tokens || {};
+    const globalTokens = options.tokens || {};
     if (typeof globalTokens !== 'object') throw new Error('globalTokens must be an object');
 
     this.replacer = token.createGlobalReplacer(globalTokens);
@@ -40,25 +41,25 @@ function Geocoder(indexes, options) {
     this.bystack = {};
     this.byidx = [];
 
-    for (var k in indexes) {
+    for (const k in indexes) {
         indexes[k] = clone(indexes[k]);
         q.defer(loadIndex, k, indexes[k]);
     }
 
-    q.awaitAll(function(err, results) {
-        var names = [];
-        if (results) results.forEach(function(data, i) {
-            var id = data.id;
-            var info = data.info;
-            var dictcache = data.dictcache;
-            var source = indexes[id];
-            var name = info.geocoder_name || id;
-            var type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
-            var types = info.geocoder_types || [type];
-            var stack = info.geocoder_stack || false;
-            var languages = info.geocoder_languages || [];
+    q.awaitAll((err, results) => {
+        const names = [];
+        if (results) results.forEach((data, i) => {
+            const id = data.id;
+            const info = data.info;
+            const dictcache = data.dictcache;
+            const source = indexes[id];
+            const name = info.geocoder_name || id;
+            const type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
+            const types = info.geocoder_types || [type];
+            let stack = info.geocoder_stack || false;
+            const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
-            var scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
+            const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
             if (names.indexOf(name) === -1) names.push(name);
 
@@ -67,12 +68,12 @@ function Geocoder(indexes, options) {
             if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
                 source._geocoder = {
                     freq: (data.freq && fs.existsSync(data.freq)) ?
-                        new cxxcache.RocksDBCache(name + ".freq", data.freq) :
-                        new cxxcache.MemoryCache(name + ".freq"),
+                        new cxxcache.RocksDBCache(name + '.freq', data.freq) :
+                        new cxxcache.MemoryCache(name + '.freq'),
                     grid: (data.grid && fs.existsSync(data.grid)) ?
-                        new cxxcache.RocksDBCache(name + ".grid", data.grid) :
-                        new cxxcache.MemoryCache(name + ".grid")
-                }
+                        new cxxcache.RocksDBCache(name + '.grid', data.grid) :
+                        new cxxcache.MemoryCache(name + '.grid')
+                };
             } else {
                 source._geocoder = source._original._geocoder;
             }
@@ -101,21 +102,21 @@ function Geocoder(indexes, options) {
 
             // Fold language templates into geocoder_format object
             source.geocoder_format = { default: info.geocoder_format };
-            Object.keys(info).forEach(function(key) {
+            Object.keys(info).forEach((key) => {
                 if (/^geocoder_format_/.exec(key)) {
                     source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
                 }
             });
 
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
-            source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
-            source.geocoder_tokens = info.geocoder_tokens||{};
-            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens||{};
+            source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
+            source.geocoder_tokens = info.geocoder_tokens || {};
+            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
             source.geocoder_inherit_score = info.geocoder_inherit_score || false;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
-            source.token_replacer = token.createReplacer(info.geocoder_tokens||{});
-            source.indexing_replacer = token.createReplacer(info.geocoder_tokens||{}, {includeUnambiguous: true, custom: source.geocoder_inverse_tokens||{}});
+            source.token_replacer = token.createReplacer(info.geocoder_tokens || {});
+            source.indexing_replacer = token.createReplacer(info.geocoder_tokens || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
 
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');
@@ -125,7 +126,7 @@ function Geocoder(indexes, options) {
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
             source.stack = stack;
-            source.zoom = info.maxzoom + parseInt(info.geocoder_resolution||0,10);
+            source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
 
             if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
                 throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
@@ -140,15 +141,15 @@ function Geocoder(indexes, options) {
             source.id = id;
             source.idx = i;
             source.ndx = names.indexOf(name);
-            source.bounds = info.bounds || [ -180, -85, 180, 85 ];
+            source.bounds = info.bounds || [-180, -85, 180, 85];
 
             // arrange languages into something presentable
-            var lang = {};
+            const lang = {};
             lang.has_languages = languages.length > 0;
-            lang.languages = ['default'].concat(languages.map(function(l) { return l.replace('-', '_'); }).sort());
+            lang.languages = ['default'].concat(languages.map((l) => { return l.replace('-', '_'); }).sort());
             lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
             lang.lang_map = {};
-            lang.languages.forEach(function(l, idx) { lang.lang_map[l] = idx; });
+            lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
             lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
             source.lang = lang;
 
@@ -163,39 +164,39 @@ function Geocoder(indexes, options) {
             this.byname[name].push(source);
 
             // add bytype index lookup
-            for (var t = 0; t < types.length; t++) {
+            for (let t = 0; t < types.length; t++) {
                 this.bytype[types[t]] = this.bytype[types[t]] || [];
                 this.bytype[types[t]].push(source);
             }
 
             // add bysubtype index lookup
-            for (var st = 0; st < scoreRangeKeys.length; st++) {
+            for (let st = 0; st < scoreRangeKeys.length; st++) {
                 this.bysubtype[type + '.' + scoreRangeKeys[st]] = this.bysubtype[type + '.' + scoreRangeKeys[st]] || [];
                 this.bysubtype[type + '.' + scoreRangeKeys[st]].push(source);
             }
 
             // add bystack index lookup
-            for (var j = 0; j < stack.length; j++) {
+            for (let j = 0; j < stack.length; j++) {
                 this.bystack[stack[j]] = this.bystack[stack[j]] || [];
                 this.bystack[stack[j]].push(source);
             }
 
             // add byidx index lookup
             this.byidx[i] = source;
-        }.bind(this));
+        });
 
         // Second pass -- generate bmask (geocoder_stack) per index.
         // The bmask of an index represents a mask of all indexes that their
         // geocoder_stacks do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
-        for (var i = 0; i < this.byidx.length; i++) {
-            var bmask = [];
-            var a = this.byidx[i];
-            for (var j = 0; j < this.byidx.length; j++) {
-                var b = this.byidx[j];
-                var a_it = a.stack.length;
+        for (let i = 0; i < this.byidx.length; i++) {
+            const bmask = [];
+            const a = this.byidx[i];
+            for (let j = 0; j < this.byidx.length; j++) {
+                const b = this.byidx[j];
+                let a_it = a.stack.length;
                 while (a_it--) {
-                    var b_it = b.stack.length;
+                    let b_it = b.stack.length;
                     while (b_it--) {
                         if (a.stack[a_it] === b.stack[b_it]) {
                             bmask[j] = 0;
@@ -215,39 +216,39 @@ function Geocoder(indexes, options) {
         // where no async ops may be necessary to construct a carmen,
         // in which case callers may not have a chance to register a callback handler
         // before open is emitted if we don't protect it this way
-        var _this = this;
-        setImmediate(function() {
+        const _this = this;
+        setImmediate(() => {
             _this.emit('open', err);
         });
-    }.bind(this));
+    });
 
     function loadIndex(id, source, callback) {
-        source.open(function opened(err) {
+        source.open((err) => {
             if (err) return callback(err);
 
             source.getBaseFilename = function() {
-                var filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
+                const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
                     return filename.replace('.mbtiles', '');
                 } else {
-                    return require('os').tmpdir() + "/temp." + Math.random().toString(36).substr(2, 5);
+                    return require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
                 }
-            }
+            };
 
-            var q = queue();
-            q.defer(function(done) { source.getInfo(done); });
-            q.defer(function(done) {
-                var dawgFile = source.getBaseFilename() + '.dawg';
+            const q = queue();
+            q.defer((done) => { source.getInfo(done); });
+            q.defer((done) => {
+                const dawgFile = source.getBaseFilename() + '.dawg';
                 if (source._original._dictcache || !fs.existsSync(dawgFile)) {
                     done();
                 } else {
                     fs.readFile(dawgFile, done);
                 }
             });
-            q.awaitAll(function(err, loaded) {
+            q.awaitAll((err, loaded) => {
                 if (err) return callback(err);
 
-                var props;
+                let props;
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
                     props = {
@@ -263,7 +264,7 @@ function Geocoder(indexes, options) {
                     };
                 }
 
-                var filename = source.getBaseFilename();
+                const filename = source.getBaseFilename();
                 props.freq = filename + '.freq.rocksdb';
                 props.grid = filename + '.grid.rocksdb';
                 props.norm = filename + '.norm.rocksdb';
@@ -274,7 +275,7 @@ function Geocoder(indexes, options) {
 }
 
 function clone(source) {
-    var cloned = {};
+    const cloned = {};
     cloned.getInfo = source.getInfo.bind(source);
     cloned.getTile = source.getTile.bind(source);
     cloned.open = function(callback) {
@@ -295,7 +296,7 @@ function clone(source) {
         'stopWriting',
         'getIndexableDocs',
         'serialize'
-    ].forEach(function(method) {
+    ].forEach((method) => {
         if (typeof source[method] === 'function') {
             cloned[method] = source[method].bind(source);
         }
@@ -306,7 +307,7 @@ function clone(source) {
 }
 
 function tokenValidator(token_replacer) {
-    for (var i = 0; i < token_replacer.length; i++) {
+    for (let i = 0; i < token_replacer.length; i++) {
         if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
             return true;
         }
@@ -328,8 +329,8 @@ Geocoder.prototype._open = function(callback) {
 // `options` is an object with additional parameters
 // `callback` is called with (error, results)
 Geocoder.prototype.geocode = function(query, options, callback) {
-    var self = this;
-    this._open(function(err) {
+    const self = this;
+    this._open((err) => {
         if (err) return callback(err);
         geocode(self, query, options, callback);
     });
@@ -337,8 +338,8 @@ Geocoder.prototype.geocode = function(query, options, callback) {
 
 // Index docs from one source to another.
 Geocoder.prototype.index = function(from, to, pointer, callback) {
-    var self = this;
-    this._open(function(err) {
+    const self = this;
+    this._open((err) => {
         if (err) return callback(err);
         index(self, from, to, pointer, callback);
     });
@@ -346,8 +347,8 @@ Geocoder.prototype.index = function(from, to, pointer, callback) {
 
 // Merge two indexes
 Geocoder.prototype.merge = function(from1, from2, to, pointer, callback) {
-    var self = this;
-    this._open(function(err) {
+    const self = this;
+    this._open((err) => {
         if (err) return callback(err);
         merge(self, from1, from2, to, pointer, callback);
     });
@@ -355,8 +356,8 @@ Geocoder.prototype.merge = function(from1, from2, to, pointer, callback) {
 
 // Merge arbitrarily many indexes
 Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
-    var self = this;
-    this._open(function(err) {
+    const self = this;
+    this._open((err) => {
         if (err) return callback(err);
         merge.multimerge(self, froms, to, pointer, callback);
     });
@@ -364,7 +365,7 @@ Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
 
 // Analyze a source's index.
 Geocoder.prototype.analyze = function(source, callback) {
-    this._open(function(err) {
+    this._open((err) => {
         if (err) return callback(err);
         analyze(source, callback);
     });
@@ -372,7 +373,7 @@ Geocoder.prototype.analyze = function(source, callback) {
 
 // Copy a source's index to another.
 Geocoder.prototype.copy = function(from, to, callback) {
-    this._open(function(err) {
+    this._open((err) => {
         if (err) return callback(err);
         copy(from, to, callback);
     });

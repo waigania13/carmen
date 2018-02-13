@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -25,12 +26,12 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'Ontario',
             'carmen:zxy':['6/33/32'],
-            'carmen:center':[360/64,0],
+            'carmen:center':[360 / 64,0],
             'carmen:geocoder_stack': 'ca',
             'carmen:geocoder_name': 'region'
         }
@@ -39,7 +40,7 @@ tape('index region', (t) => {
 });
 
 tape('index mx region', (t) => {
-    let region = {
+    const region = {
         id:2,
         properties: {
             'carmen:text':'Veracruz',
@@ -53,7 +54,7 @@ tape('index mx region', (t) => {
 });
 
 tape('index us place', (t) => {
-    let place = {
+    const place = {
         id:1,
         properties: {
             'carmen:text':'Springfield',
@@ -66,7 +67,7 @@ tape('index us place', (t) => {
 });
 
 tape('index ca place', (t) => {
-    let place = {
+    const place = {
         id:2,
         properties: {
             'carmen:text':'Punkeydoodles Corners',
@@ -80,7 +81,7 @@ tape('index ca place', (t) => {
 });
 
 tape('index us address', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text':'Evergreen Terrace',

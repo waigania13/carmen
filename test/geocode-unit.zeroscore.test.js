@@ -1,3 +1,4 @@
+'use strict';
 // Tests Windsor CT (city) vs Windsor Ct (street name)
 // Windsor CT should win via stacky bonus.
 
@@ -11,7 +12,7 @@ const addFeature = require('../lib/util/addfeature'),
 
 const conf = {
     // make maxscore a string to simulate how carmen will encounter it after pulling it from the meta table in an mbtiles file
-    place: new mem({geocoder_name: 'place', maxzoom: 6, minscore: '0', maxscore: '0', geocoder_stack: 'us'}, () => {}),
+    place: new mem({ geocoder_name: 'place', maxzoom: 6, minscore: '0', maxscore: '0', geocoder_stack: 'us' }, () => {}),
 };
 
 const c = new Carmen(conf);
@@ -25,7 +26,7 @@ tape('index place', (t) => {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, () => { buildQueued(conf.place, t.end) });
+    }, () => { buildQueued(conf.place, t.end); });
 });
 
 // this should have been indexed properly despite having a zero score in an index with zero maxscore

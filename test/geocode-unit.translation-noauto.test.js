@@ -1,17 +1,16 @@
 // Confirm that translations are not included in the autocomplete index
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const cxxcache = require('../lib/util/cxxcache');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const runTests = (mode) => {
-    const conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu']}, () => {}) };
+    const conf = { region: new mem({ maxzoom: 6, geocoder_languages: ['en', 'hu'] }, () => {}) };
     const c = new Carmen(conf);
     tape('index first region', (t) => {
         queueFeature(conf.region, {
@@ -47,17 +46,17 @@ const runTests = (mode) => {
         q.awaitAll(t.end);
     });
 
-    if (mode == "lazy") {
+    if (mode === 'lazy') {
         // on the second run through the tests, force carmen-cache to use lazy
         // instead of in-memory caching
         tape('reload cache', (t) => {
-            let cache = c.byidx[0]._geocoder;
+            const cache = c.byidx[0]._geocoder;
 
             ['freq', 'grid'].forEach((type) => {
                 const rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
 
                 cache[type].pack(rocksdb);
-                cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb)
+                cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb);
             });
 
             t.end();
@@ -79,7 +78,7 @@ const runTests = (mode) => {
         });
     });
     tape('de (language: en)', (t) => {
-        c.geocode('de', {language: 'en'}, (err, res) => {
+        c.geocode('de', { language: 'en' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware');
@@ -93,7 +92,7 @@ const runTests = (mode) => {
         });
     });
     tape('de (language: hu)', (t) => {
-        c.geocode('de', {language: 'hu'}, (err, res) => {
+        c.geocode('de', { language: 'hu' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -108,7 +107,7 @@ const runTests = (mode) => {
         });
     });
     tape('de (language: hu-HU)', (t) => {
-        c.geocode('de', {language: 'hu-HU'}, (err, res) => {
+        c.geocode('de', { language: 'hu-HU' }, (err, res) => {
             t.ifError(err);
             t.deepEqual(res.features.length, 2, '2 results');
             t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
@@ -159,10 +158,10 @@ const runTests = (mode) => {
         });
     });
 
-    if (mode == "memory_cache") runTests("lazy");
+    if (mode === 'memory_cache') runTests('lazy');
 };
 
-runTests("memory_cache");
+runTests('memory_cache');
 
 tape('teardown', (t) => {
     context.getTile.cache.reset();

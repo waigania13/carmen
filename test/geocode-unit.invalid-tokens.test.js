@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
@@ -7,10 +8,10 @@ const mem = require('../lib/api-mem');
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
-                "Street": "St",
-                "Arcade": "Arc",
-                "Apartments": "Apts",
-                "Village Post Office": "Vpo",
+                'Street': 'St',
+                'Arcade': 'Arc',
+                'Apartments': 'Apts',
+                'Village Post Office': 'Vpo',
             }
         }, () => {})
     };

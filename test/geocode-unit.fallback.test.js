@@ -1,26 +1,25 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    region: new mem({maxzoom: 6}, () => {}),
-    place: new mem({maxzoom: 6}, () => {}),
-    postcode: new mem({maxzoom: 6}, () => {}),
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
+    region: new mem({ maxzoom: 6 }, () => {}),
+    place: new mem({ maxzoom: 6 }, () => {}),
+    postcode: new mem({ maxzoom: 6 }, () => {}),
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {})
 };
 const c = new Carmen(conf);
 
 const coldCityCenter = [10,0];
 const seattleCenter = [0,0];
 
-//Place 1: Cold City
+// Place 1: Cold City
 tape('index place "Cold City"', (t) => {
-    let place = {
+    const place = {
         id:105,
         properties: {
             'carmen:text':'Cold City',
@@ -34,9 +33,9 @@ tape('index place "Cold City"', (t) => {
     queueFeature(conf.place, place, t.end);
 });
 
-//Address 1 in Cold City
+// Address 1 in Cold City
 tape('index address "Main St" in "Cold City"', (t) => {
-    let address = {
+    const address = {
         id:100,
         properties: {
             'carmen:text':'Main St',
@@ -51,9 +50,9 @@ tape('index address "Main St" in "Cold City"', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 
-//Address 2 in Cold City
+// Address 2 in Cold City
 tape('index address "Market" in "Cold City"', (t) => {
-    let address = {
+    const address = {
         id:101,
         properties: {
             'carmen:text':'Market',
@@ -68,9 +67,9 @@ tape('index address "Market" in "Cold City"', (t) => {
     queueFeature(conf.address, address, t.end);
 });
 
-//Place 2: Seattle
+// Place 2: Seattle
 tape('index place Seattle', (t) => {
-    let place = {
+    const place = {
         id:100,
         properties: {
             'carmen:text':'Seattle',
@@ -84,9 +83,9 @@ tape('index place Seattle', (t) => {
     queueFeature(conf.place, place, t.end);
 });
 
-//Postcode 1: Centered to line up with Seattle
+// Postcode 1: Centered to line up with Seattle
 tape('index postcode "12345" in Seattle', (t) => {
-    let postcode = {
+    const postcode = {
         id:100,
         properties: {
             'carmen:text':'12345',
@@ -100,9 +99,9 @@ tape('index postcode "12345" in Seattle', (t) => {
     queueFeature(conf.postcode, postcode, t.end);
 });
 
-//Region 1: Centered to line up with Seattle
+// Region 1: Centered to line up with Seattle
 tape('index region "Washington" lines up with Seattle', (t) => {
-    let region = {
+    const region = {
         id:100,
         properties: {
             'carmen:text':'Washington',
@@ -125,7 +124,7 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
-//Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
+// Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
 tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', (t) => {
     c.geocode('100 Main St, 12345 Seattle, Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
@@ -136,7 +135,7 @@ tape('3(Cold City) vs 3(Seattle): 100 Main St, 12345 Seattle, Washington', (t) =
     });
 });
 
-//Make a mismatched query with a street(100 Market - containing 2 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
+// Make a mismatched query with a street(100 Market - containing 2 tokens) in Cold City and postcode, place and region layers lining up with Seattle, Washington
 tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', (t) => {
     c.geocode('100 Market 12345 Seattle Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
@@ -147,7 +146,7 @@ tape('2(Cold City) vs 3(Seattle): 100 Market 12345 Seattle Washington', (t) => {
     });
 });
 
-//Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and place and region layers lining up with Seattle, Washington
+// Make a mismatched query with a street(100 Main St - containing 3 tokens) in Cold City and place and region layers lining up with Seattle, Washington
 tape('3(Cold City) vs 2(Seattle): 100 Main St, Seattle Washington', (t) => {
     c.geocode('100 Main St, Seattle Washington', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);

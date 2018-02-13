@@ -1,19 +1,18 @@
 // Test geocoder_name overlapping feature context prioritization
+'use strict';
 
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    place_a: new mem({maxzoom:6, geocoder_name:'place'}, () => {}),
-    place_b: new mem({maxzoom:6, geocoder_name:'place'}, () => {}),
-    street_a: new mem({maxzoom:6, geocoder_name:'street'}, () => {}),
-    street_b: new mem({maxzoom:6, geocoder_name:'street'}, () => {})
+    place_a: new mem({ maxzoom:6, geocoder_name:'place' }, () => {}),
+    place_b: new mem({ maxzoom:6, geocoder_name:'place' }, () => {}),
+    street_a: new mem({ maxzoom:6, geocoder_name:'street' }, () => {}),
+    street_b: new mem({ maxzoom:6, geocoder_name:'street' }, () => {})
 };
 const c = new Carmen(conf);
 tape('index place_a', (t) => {
@@ -71,7 +70,7 @@ tape('geocoder_name dedupe', (t) => {
         t.deepEqual(res.features[0].place_name, 'main street, funtown');
         t.deepEqual(res.features[0].id, 'street.1');
         t.deepEqual(res.features[0].context.length, 1);
-        t.deepEqual(res.features[0].context.map((c) => { return c.text }), ['funtown']);
+        t.deepEqual(res.features[0].context.map((c) => { return c.text; }), ['funtown']);
         t.end();
     });
 });

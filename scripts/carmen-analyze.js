@@ -1,10 +1,8 @@
-#!/usr/bin/env node
+'use strict';
 
 const fs = require('fs');
-const path = require('path');
 const argv = process.argv;
 const Carmen = require('../index.js');
-const termops = require('../lib/util/termops.js');
 const f = argv[2];
 
 if (!f) {

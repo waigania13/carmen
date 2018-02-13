@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const feature = require('../lib/util/feature.js');
 const Memsource = require('../lib/api-mem.js');
@@ -18,12 +19,12 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'a',
-                'carmen:center': [ 0, 0 ],
+                'carmen:center': [0, 0],
                 'carmen:zxy': ['6/32/32']
             },
             geometry: {
                 type: 'Point',
-                coordinates: [ 0, 0 ]
+                coordinates: [0, 0]
             }
         },
         {
@@ -31,12 +32,12 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'b',
-                'carmen:center': [ 0, 0 ],
+                'carmen:center': [0, 0],
                 'carmen:zxy': ['6/32/32']
             },
             geometry: {
                 type: 'Point',
-                coordinates: [ 0, 0 ]
+                coordinates: [0, 0]
             }
         },
         {
@@ -44,12 +45,12 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'c',
-                'carmen:center': [360/64+0.001,0],
+                'carmen:center': [360 / 64 + 0.001,0],
                 'carmen:zxy': ['6/33/32']
             },
             geometry: {
                 type: 'Point',
-                coordinates: [360/64+0.001,0]
+                coordinates: [360 / 64 + 0.001,0]
             }
         },
         {
@@ -57,13 +58,13 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'Frankenstein',
-                'carmen:center': [ 0, 0 ],
+                'carmen:center': [0, 0],
                 'carmen:zxy': ['6/32/32'],
                 'carmen:score': 1500
             },
             geometry: {
                 type: 'Point',
-                coordinates: [ 0, 0 ]
+                coordinates: [0, 0]
             }
         },
         {
@@ -71,13 +72,13 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'Dr Jekyll',
-                'carmen:center': [ 0, 0 ],
+                'carmen:center': [0, 0],
                 'carmen:zxy': ['6/32/32'],
                 'carmen:score': 10
             },
             geometry: {
                 type: 'Point',
-                coordinates: [ 0, 0 ]
+                coordinates: [0, 0]
             }
         },
         {
@@ -85,13 +86,13 @@ tape('putFeatures', (t) => {
             type: 'Feature',
             properties: {
                 'carmen:text': 'Mr Hyde',
-                'carmen:center': [ 0, 0 ],
+                'carmen:center': [0, 0],
                 'carmen:zxy': ['6/32/32'],
                 'carmen:score': 1000
             },
             geometry: {
                 type: 'Point',
-                coordinates: [ 0, 0 ]
+                coordinates: [0, 0]
             }
         },
     ], (err) => {

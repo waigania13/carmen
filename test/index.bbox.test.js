@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const indexdocs = require('../lib/indexer/indexdocs.js');
 
@@ -13,12 +14,12 @@ tape('bbox is sane', (t) => {
             'carmen:center':[0,0],
             'carmen:score': 1,
         },
-        "geometry": {
-            "type":"MultiPolygon",
-            "coordinates":[[[[-140,25],[-65,25],[-65,50],[-140,50],[-140,25]]],[[[160,40],[170,40],[170,50],[160,50],[160,40]]]]}
+        'geometry': {
+            'type':'MultiPolygon',
+            'coordinates':[[[[-140,25],[-65,25],[-65,50],[-140,50],[-140,25]]],[[[160,40],[170,40],[170,50],[160,50],[160,40]]]] }
     });
     const width = res.bbox[2] - res.bbox[0];
-    t.ok(width < 180, "bbox is sane");
-    t.deepEquals(res.bbox, [ 160, 25, -65, 50 ]);
+    t.ok(width < 180, 'bbox is sane');
+    t.deepEquals(res.bbox, [160, 25, -65, 50]);
     t.end();
 });

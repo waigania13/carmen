@@ -1,11 +1,10 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     province: new mem(null, () => {}),
@@ -14,7 +13,7 @@ const conf = {
 };
 const c = new Carmen(conf);
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:1,
         properties: {
             'carmen:text':'new york, ny',
@@ -25,18 +24,18 @@ tape('index province', (t) => {
     queueFeature(conf.province, province, t.end);
 });
 tape('index city 1', (t) => {
-    let city = {
+    const city = {
         id:2,
         properties: {
             'carmen:text':'new york, ny',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }
+    };
     queueFeature(conf.city, city, t.end);
 });
 tape('index city 2', (t) => {
-    let city = {
+    const city = {
         id:3,
         properties: {
             'carmen:text':'tonawanda',
@@ -47,7 +46,7 @@ tape('index city 2', (t) => {
     queueFeature(conf.city, city, t.end);
 });
 tape('index street 1', (t) => {
-    let street = {
+    const street = {
         id:4,
         properties: {
             'carmen:text':'west st',
@@ -58,7 +57,7 @@ tape('index street 1', (t) => {
     queueFeature(conf.street, street, t.end);
 });
 tape('index street 2', (t) => {
-    let street = {
+    const street = {
         id:5,
         properties: {
             'carmen:text':'west st',

@@ -1,3 +1,4 @@
+'use strict';
 // Test multitype behavior when multitype spans across another existing index
 
 const tape = require('tape');
@@ -10,9 +11,9 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    region: new mem({maxzoom:6, geocoder_types:['region','place']}, () => {}),
-    district: new mem({maxzoom:6}, () => {}),
-    place: new mem({maxzoom:6}, () => {}),
+    region: new mem({ maxzoom:6, geocoder_types:['region','place'] }, () => {}),
+    district: new mem({ maxzoom:6 }, () => {}),
+    place: new mem({ maxzoom:6 }, () => {}),
 };
 const c = new Carmen(conf);
 

@@ -1,3 +1,4 @@
+'use strict';
 // Unit tests for reverse geocoding IO. Confirms type filters restrict loading
 // tiles for excluded indexes.
 
