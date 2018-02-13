@@ -21,7 +21,7 @@ Carmen no longer ships with any default or sample data. Sample data will be prov
 
 ## API
 
-For a simplified example of using the carmen API, see [the `example` folder]('./example') in this repository.
+For a simplified example of using the carmen API, see [the `example` folder](./example) in this repository.
 
 For more detail about specific elements of the API (and how to use them directly), see the [API Docs](./docs/api/README.md).
 
@@ -38,11 +38,9 @@ To analyze an index:
 
 ## Data Sources
 
-TODO: General description of vector tiles
+Data sources for carmen must be provided by a [tilelive.js](https://github.com/mapbox/tilelive) interface. Using one of the many already-available tilelive modules, vector tiles can be sourced from backend storage solutions like s3, postgis, mapbox and more. You can also implement your own interface, so long as it satisfies the interface requirements [specified for a Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md).
 
-TODO: links to related specs
-
-TODO: link to [./docs/data-sources.md]() for more detail and examples
+See  [the data-sources API doc](./docs/data-sources.md) for more detail about carmen's extensions on the tilelive base class.
 
 ## How does carmen work?
 
