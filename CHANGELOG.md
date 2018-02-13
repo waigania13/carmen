@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.2.7
+- Fix context builder bug
+
 ## v24.2.6
 - Reduces index size by dropping interpolation for addresss clusters that have a wide address number range
 
