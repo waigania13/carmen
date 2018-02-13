@@ -1,5 +1,6 @@
-//Ensure that results that have equal relev in phrasematch
-//are matched against the 0.5 relev bar instead of 0.75
+'use strict';
+// Ensure that results that have equal relev in phrasematch
+// are matched against the 0.5 relev bar instead of 0.75
 
 const tape = require('tape');
 const Carmen = require('..');
@@ -25,7 +26,7 @@ const addFeature = require('../lib/util/addfeature'),
     const c = new Carmen(conf);
 
     tape('index country', (t) => {
-        let country = {
+        const country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -48,7 +49,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index city', (t) => {
-        let place = {
+        const place = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -69,7 +70,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index region', (t) => {
-        let region = {
+        const region = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -93,7 +94,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('index place2', (t) => {
-        let place = {
+        const place = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -139,7 +140,7 @@ const addFeature = require('../lib/util/addfeature'),
             t.equal(res.features[0].place_name, 'Northwestern Federal District, Russian Federation');
             t.equal(res.features[0].id, 'region.1');
             t.equal(res.features[0].language, undefined, 'language not set on default text');
-            t.equal(res.features[0].matching_place_name, 'Severo-Zapadny federalny okrug, Russian Federation', 'synonym is included in matching_place_name')
+            t.equal(res.features[0].matching_place_name, 'Severo-Zapadny federalny okrug, Russian Federation', 'synonym is included in matching_place_name');
             t.end();
         });
     });
@@ -150,7 +151,7 @@ const addFeature = require('../lib/util/addfeature'),
             t.equal(res.features[0].place_name, 'Russian Federation');
             t.equal(res.features[0].id, 'country.1');
             t.equal(res.features[0].language, undefined, 'language not set on default text');
-            t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'synonym is included in matching_place_name')
+            t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'synonym is included in matching_place_name');
             t.end();
         });
     });
@@ -243,7 +244,7 @@ const addFeature = require('../lib/util/addfeature'),
 
     // also 'translate' the context when available
     tape('St Petersburg => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', (t) => {
-        c.geocode('St Petersburg', { language: 'ru'}, (err, res) => {
+        c.geocode('St Petersburg', { language: 'ru' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
             t.equal(res.features[0].id, 'place.1');
@@ -257,7 +258,7 @@ const addFeature = require('../lib/util/addfeature'),
 
     // test when hitting multiple indexes
     tape('St Petersburg, Russia => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', (t) => {
-        c.geocode('St Petersburg, Russia', { language: 'ru'}, (err, res) => {
+        c.geocode('St Petersburg, Russia', { language: 'ru' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, 'Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация');
             t.equal(res.features[0].id, 'place.1');
@@ -413,12 +414,12 @@ const addFeature = require('../lib/util/addfeature'),
                 t.deepEqual(res.features[0].context[0].language, 'zh-Hant');
 
                 done += 1;
-                if (done == 8) t.end();
+                if (done === 8) t.end();
             });
         });
     });
 
-    //Is not above 0.5 relev so should fail.
+    // Is not above 0.5 relev so should fail.
     tape('fake blah blah => [fail]', (t) => {
         c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
             t.ifError(err);

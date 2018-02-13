@@ -1,11 +1,10 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     country: new mem(null, () => {}),
@@ -15,14 +14,14 @@ const conf = {
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1,
-        geocoder_tokens: {"Drive": "Dr"},
+        geocoder_tokens: { 'Drive': 'Dr' },
         geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'
     }, () => {})
 };
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'United States',
@@ -34,7 +33,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'Colorado',
@@ -46,7 +45,7 @@ tape('index region', (t) => {
 });
 
 tape('index postcode', (t) => {
-    let postcode = {
+    const postcode = {
         id:1,
         properties: {
             'carmen:text':'80138',
@@ -58,7 +57,7 @@ tape('index postcode', (t) => {
 });
 
 tape('index place', (t) => {
-    let place = {
+    const place = {
         id:1,
         properties: {
             'carmen:text':'Parker',
@@ -70,7 +69,7 @@ tape('index place', (t) => {
 });
 
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text':'S Pikes Peak Dr',
@@ -96,14 +95,14 @@ tape('build queued features', (t) => {
 });
 
 tape('Check relevance scoring', (t) => {
-    c.geocode('11027 S. Pikes Peak Drive #201', {limit_verify: 1}, (err, res) => {
+    c.geocode('11027 S. Pikes Peak Drive #201', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].relevance, 0.50, "Apt. number lowers relevance");
+        t.equal(res.features[0].relevance, 0.50, 'Apt. number lowers relevance');
     });
-    c.geocode('11027 S. Pikes Peak Drive', {limit_verify: 1}, (err, res) => {
+    c.geocode('11027 S. Pikes Peak Drive', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].relevance, 1.00, "High relevance with no apartment number");
-        t.end()
+        t.equal(res.features[0].relevance, 1.00, 'High relevance with no apartment number');
+        t.end();
     });
 });
 

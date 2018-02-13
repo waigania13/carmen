@@ -1,18 +1,17 @@
 // test separation of character sets, avoiding unidecode problems like:
 // 'Alberta' aka 'アルバータ州' =[unidecode]=> 'arubataZhou' => false positives for 'Aruba'
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 (() => {
 
     const conf = {
-        place_a: new mem({maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja']}, () => {}),
+        place_a: new mem({ maxzoom: 6, geocoder_name:'region', geocoder_languages: ['ja'] }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index Alberta', (t) => {
@@ -24,7 +23,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
-        }, () => { buildQueued(conf.place_a, t.end) });
+        }, () => { buildQueued(conf.place_a, t.end); });
     });
 
     tape('heading to Aruba, I hope you packed warm clothes', (t) => {
@@ -63,7 +62,7 @@ const addFeature = require('../lib/util/addfeature'),
 
 (() => {
     const conf = {
-        place_a: new mem({maxzoom:6, geocoder_name:'region'}, () => {}),
+        place_a: new mem({ maxzoom:6, geocoder_name:'region' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index abc xyz', (t) => {
@@ -74,7 +73,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:zxy':['6/32/32'],
                 'carmen:center':[0,0]
             }
-        }, () => { buildQueued(conf.place_a, t.end) });
+        }, () => { buildQueued(conf.place_a, t.end); });
     });
 
     tape('check for collisions based on char prefixing', (t) => {

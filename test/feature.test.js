@@ -1,11 +1,12 @@
+'use strict';
 const tape = require('tape');
 const feature = require('../lib/util/feature.js');
 
 tape('shard', (t) => {
     for (let level = 0; level < 7; level++) {
-        let shards = {};
+        const shards = {};
         for (let i = 0; i < Math.pow(2,20); i++) {
-            let shard = feature.shard(level, i);
+            const shard = feature.shard(level, i);
             shards[shard] = shards[shard] || 0;
             shards[shard]++;
         }

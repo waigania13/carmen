@@ -1,3 +1,4 @@
+'use strict';
 const filter = require('../lib/util/filter');
 const tape = require('tape');
 
@@ -28,19 +29,19 @@ tape('filter.sourceMatchesTypes', (t) => {
     }), 'allowed: source with matching type');
     t.ok(filter.sourceMatchesTypes({
         types: ['region'],
-        scoreranges: {a:[],b:[]}
+        scoreranges: { a:[],b:[] }
     }, {
         types: ['region.a','region.d']
     }), 'allowed: source with matching subtype');
     t.ok(filter.sourceMatchesTypes({
         types: ['region'],
-        scoreranges: {a:[],b:[]}
+        scoreranges: { a:[],b:[] }
     }, {
         types:['region.b','region.d']
     }), 'allowed: source with matching subtype');
     t.notOk(filter.sourceMatchesTypes({
         types: ['region'],
-        scoreranges: {a:[],b:[]}
+        scoreranges: { a:[],b:[] }
     }, {
         types: ['region.c','region.d']
     }), 'disallowed: source with non-matched subtype');
@@ -192,7 +193,7 @@ tape('filter.featureMatchesLanguage', (t) => {
 });
 
 tape('filter.equivalentLanguages', (t) => {
-    t.ok(filter.equivalentLanguages("sr_Latn", "hr"));
+    t.ok(filter.equivalentLanguages('sr_Latn', 'hr'));
 
     t.end();
 });

@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -5,7 +6,7 @@ const mem = require('../lib/api-mem');
 
 const conf = {};
 for (let i = 0; i < 100; i++) {
-    conf['place-'+i] = new mem({ maxzoom: 6 }, () => {});
+    conf['place-' + i] = new mem({ maxzoom: 6 }, () => {});
 }
 
 const c = new Carmen(conf);

@@ -1,14 +1,13 @@
-//Ensure that results that have equal relev in phrasematch
-//are matched against the 0.5 relev bar instead of 0.75
+// Ensure that results that have equal relev in phrasematch
+// are matched against the 0.5 relev bar instead of 0.75
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
 const context = require('../lib/context');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 (() => {
     const conf = {
@@ -17,7 +16,7 @@ const addFeature = require('../lib/util/addfeature'),
     const c = new Carmen(conf);
 
     tape('index country', (t) => {
-        let country = {
+        const country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],

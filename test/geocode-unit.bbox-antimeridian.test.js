@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -24,9 +25,9 @@ tape('index feature', (t) => {
             'carmen:center':[0,0],
             'carmen:score': 1,
         },
-        "geometry": {
-            "type":"MultiPolygon",
-            "coordinates":[[[[-140,25],[-65,25],[-65,50],[-140,50],[-140,25]]],[[[160,40],[170,40],[170,50],[160,50],[160,40]]]]}
+        'geometry': {
+            'type':'MultiPolygon',
+            'coordinates':[[[[-140,25],[-65,25],[-65,50],[-140,50],[-140,25]]],[[[160,40],[170,40],[170,50],[160,50],[160,40]]]] }
     };
     queueFeature(conf.country, feature, t.end);
 });
@@ -42,9 +43,9 @@ tape('index feature', (t) => {
             'carmen:center':[0,0],
             'carmen:score': 1,
         },
-        "geometry": {
-            "type":"MultiPolygon",
-            "coordinates":[[[[-140,25],[-130,25],[-130,50],[-140,50],[-140,25]]],[[[60,40],[170,40],[170,50],[60,50],[60,40]]]]}
+        'geometry': {
+            'type':'MultiPolygon',
+            'coordinates':[[[[-140,25],[-130,25],[-130,50],[-140,50],[-140,25]]],[[[60,40],[170,40],[170,50],[60,50],[60,40]]]] }
     };
     queueFeature(conf.country, feature, t.end);
 });
@@ -63,8 +64,8 @@ tape('USA', (t) => {
     c.geocode('USA', { }, (err, res) => {
         t.ifError(err);
         const width = res.features[0].bbox[2] - res.features[0].bbox[0];
-        t.ok(width < 180, "bbox is sane");
-        t.deepEquals(res.features[0].bbox, [ 160, 25, -65, 50 ])
+        t.ok(width < 180, 'bbox is sane');
+        t.deepEquals(res.features[0].bbox, [160, 25, -65, 50]);
         t.end();
     });
 });
@@ -73,8 +74,8 @@ tape('USA, clip bbox at antimeridian', (t) => {
     c.geocode('USA', { clipBBox: true }, (err, res) => {
         t.ifError(err);
         const width = res.features[0].bbox[2] - res.features[0].bbox[0];
-        t.ok(width < 180, "bbox is sane");
-        t.deepEquals(res.features[0].bbox, [ -179.9, 25, -65, 50 ])
+        t.ok(width < 180, 'bbox is sane');
+        t.deepEquals(res.features[0].bbox, [-179.9, 25, -65, 50]);
         t.end();
     });
 });
@@ -83,8 +84,8 @@ tape('Russia', (t) => {
     c.geocode('Russia', { }, (err, res) => {
         t.ifError(err);
         const width = res.features[0].bbox[2] - res.features[0].bbox[0];
-        t.ok(width < 180, "bbox is sane");
-        t.deepEquals(res.features[0].bbox, [ 60, 25, -130, 50 ])
+        t.ok(width < 180, 'bbox is sane');
+        t.deepEquals(res.features[0].bbox, [60, 25, -130, 50]);
         t.end();
     });
 });
@@ -93,8 +94,8 @@ tape('Russia, clip bbox at antimeridian', (t) => {
     c.geocode('Russia', { clipBBox: true }, (err, res) => {
         t.ifError(err);
         const width = res.features[0].bbox[2] - res.features[0].bbox[0];
-        t.ok(width < 180, "bbox is sane");
-        t.deepEquals(res.features[0].bbox, [ 60, 25, 179.9, 50 ])
+        t.ok(width < 180, 'bbox is sane');
+        t.deepEquals(res.features[0].bbox, [60, 25, 179.9, 50]);
         t.end();
     });
 });

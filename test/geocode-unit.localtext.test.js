@@ -1,5 +1,6 @@
-//Ensure that results that have equal relev in phrasematch
-//are matched against the 0.5 relev bar instead of 0.75
+'use strict';
+// Ensure that results that have equal relev in phrasematch
+// are matched against the 0.5 relev bar instead of 0.75
 
 const tape = require('tape');
 const Carmen = require('..');
@@ -22,30 +23,30 @@ tape('index region with bad language code', (t) => {
     };
     const c2 = new Carmen(conf2);
     t.ok(c2);
-    let region = {
+    const region = {
         type: 'Feature',
         properties: {
-            'carmen:center': [ 0, 0 ],
-            'carmen:zxy': [ '6/30/30' ],
+            'carmen:center': [0, 0],
+            'carmen:zxy': ['6/30/30'],
             'carmen:text_fake': 'beetlejuice',
             'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
         },
         id: 2,
         geometry: { type: 'MultiPolygon', coordinates: [] },
-        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
+        bbox: [-11.25, 5.615, -5.625, 11.1784]
     };
     queueFeature(conf2.region, region, () => { buildQueued(conf2.region, (err) => {
         t.equal(err.message, 'fake is an invalid language code');
         t.end();
-    })});
+    });});
 });
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         type: 'Feature',
         properties: {
-            'carmen:center': [ 0, 0 ],
-            'carmen:zxy': [ '6/30/30' ],
+            'carmen:center': [0, 0],
+            'carmen:zxy': ['6/30/30'],
             'carmen:text': 'Russian Federation, Rossiyskaya Federatsiya',
             'carmen:text_ru': 'Российская Федерация',
             'carmen:text_zh_Latn': 'Elousi',
@@ -53,7 +54,7 @@ tape('index country', (t) => {
         },
         id: 2,
         geometry: { type: 'MultiPolygon', coordinates: [] },
-        bbox: [ -11.25, 5.615, -5.625, 11.1784 ]
+        bbox: [-11.25, 5.615, -5.625, 11.1784]
     };
     queueFeature(conf.country, country, t.end);
 });
@@ -84,7 +85,7 @@ tape('Rossiyskaya ==> Russian Federation (synonyms are not available in autoc)',
         t.deepEqual(res.features[0].place_name, 'Russian Federation');
         t.deepEqual(res.features[0].id, 'country.2');
         t.deepEqual(res.features[0].id, 'country.2');
-        t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'matching_place_name contains synonym text')
+        t.equal(res.features[0].matching_place_name, 'Rossiyskaya Federatsiya', 'matching_place_name contains synonym text');
         t.end();
     });
 });
@@ -158,7 +159,7 @@ tape('beetlejuice => [fail]', (t) => {
     });
 });
 
-//Is not above 0.5 relev so should fail.
+// Is not above 0.5 relev so should fail.
 tape('fake blah blah => [fail]', (t) => {
     c.geocode('fake blah blah', { limit_verify:1 }, (err, res) => {
         t.ifError(err);

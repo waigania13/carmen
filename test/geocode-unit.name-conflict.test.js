@@ -1,10 +1,9 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 const queue = require('d3-queue').queue;
 
 const conf = {
@@ -28,7 +27,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'Canada',
@@ -40,7 +39,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'Newfoundland and Labrador',
@@ -52,7 +51,7 @@ tape('index region', (t) => {
 });
 
 tape('index postcode', (t) => {
-    let postcode = {
+    const postcode = {
         id:1,
         properties: {
             'carmen:text':'A1N 4Y1',
@@ -64,7 +63,7 @@ tape('index postcode', (t) => {
 });
 
 tape('index place', (t) => {
-    let place = {
+    const place = {
         id:1,
         properties: {
             'carmen:text':'Mount Pearl',
@@ -76,7 +75,7 @@ tape('index place', (t) => {
 });
 
 tape('index neighborhood', (t) => {
-    let neighborhood = {
+    const neighborhood = {
         id:1,
         properties: {
             'carmen:text':'Waterford Valley',
@@ -114,7 +113,7 @@ tape('build queued features', (t) => {
 tape('Descending Gappy', (t) => {
     c.geocode('Waterford Valley Canada', {}, (err, res) => {
         t.ifError(err);
-        t.deepEqual(res.features[0].id, "neighborhood.1");
+        t.deepEqual(res.features[0].id, 'neighborhood.1');
         t.end();
     });
 });

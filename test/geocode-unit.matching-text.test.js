@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
@@ -15,7 +16,7 @@ const buildQueued = addFeature.buildQueued;
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
-        let country = {
+        const country = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -34,7 +35,7 @@ const buildQueued = addFeature.buildQueued;
         queueFeature(conf.country, country, t.end);
     });
     tape('index region', (t) => {
-        let region = {
+        const region = {
             type: 'Feature',
             properties: {
                 'carmen:center': [0,0],
@@ -96,7 +97,7 @@ const buildQueued = addFeature.buildQueued;
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id: 1,
             type: 'Feature',
             properties: {
@@ -115,7 +116,7 @@ const buildQueued = addFeature.buildQueued;
     tape('build queued features', (t) => {
         const q = queue();
         Object.keys(conf).forEach((c) => {
-            q.defer(cb => { buildQueued(conf[c], cb); });
+            q.defer((cb) => { buildQueued(conf[c], cb); });
         });
         q.awaitAll(t.end);
     });

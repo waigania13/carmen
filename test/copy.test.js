@@ -1,3 +1,4 @@
+'use strict';
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
 const index = require('../lib/index');

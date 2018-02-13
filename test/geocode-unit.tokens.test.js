@@ -1,3 +1,4 @@
+'use strict';
 // Test geocoder_tokens
 
 const tape = require('tape');
@@ -12,23 +13,23 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: {"Street": "St"}
+            geocoder_tokens: { 'Street': 'St' }
         }, () => {})
     };
     const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for relev', (t) => {
         c.geocode('fake st', { limit_verify: 1 }, (err, res) => {
@@ -46,22 +47,22 @@ const addFeature = require('../lib/util/addfeature'),
         }, () => {})
     };
     const opts = {
-        tokens: {"dix-huitième": "18e"}
+        tokens: { 'dix-huitième': '18e' }
     };
     const c = new Carmen(conf, opts);
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'avenue du 18e régiment',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for relev', (t) => {
         c.geocode('avenue du 18e régiment', { limit_verify: 1 }, (err, res) => {
@@ -84,23 +85,23 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: {'q([a-z])([a-z])([a-z])': "$3$2$1"}
+            geocoder_tokens: { 'q([a-z])([a-z])([a-z])': '$3$2$1' }
         }, () => {})
     };
     const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'cba',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test token replacement', (t) => {
         c.geocode('qabc', { limit_verify: 1 }, (err, res) => {
@@ -116,8 +117,8 @@ const addFeature = require('../lib/util/addfeature'),
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
-                "Road": "Rd",
-                "Street": "St"
+                'Road': 'Rd',
+                'Street': 'St'
             }
         }, () => {})
     };
@@ -126,14 +127,14 @@ const addFeature = require('../lib/util/addfeature'),
             'Suite [0-9]+': '',
             'Lot [0-9]+': ''
         }
-    }
+    };
     const c = new Carmen(conf, opts);
     tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -141,25 +142,25 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
         queueFeature(conf.address, address, t.end);
     });
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:2,
             properties: {
                 'carmen:text':'main road lot 42 suite 432',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('unset opts', (t) => {
         addFeature.setOptions({});
@@ -210,8 +211,8 @@ const addFeature = require('../lib/util/addfeature'),
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
-                "Road": "Rd",
-                "Street": "St"
+                'Road': 'Rd',
+                'Street': 'St'
             },
             use_normalization_cache: true
         }, () => {})
@@ -221,14 +222,14 @@ const addFeature = require('../lib/util/addfeature'),
             'Suite [0-9]+': '',
             'Lot [0-9]+': ''
         }
-    }
+    };
     const c = new Carmen(conf, opts);
     tape('set opts', (t) => {
         addFeature.setOptions(opts);
         t.end();
     });
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'fake street',
@@ -236,25 +237,25 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
         queueFeature(conf.address, address, t.end);
     });
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:2,
             properties: {
                 'carmen:text':'main road lot 42 suite 432',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('unset opts', (t) => {
         addFeature.setOptions({});
@@ -311,13 +312,13 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: {'strasse':'str'},
+            geocoder_tokens: { 'strasse':'str' },
             use_normalization_cache: true
         }, () => {})
     };
     const opts = {
         tokens: {
-            '\\b(.+)(strasse|str)\\b': "$1 str"
+            '\\b(.+)(strasse|str)\\b': '$1 str'
         }
     };
 
@@ -327,18 +328,18 @@ const addFeature = require('../lib/util/addfeature'),
         t.end();
     });
     tape('geocoder token test', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'Talstrasse ',
                 'carmen:center':[0,0],
             },
             geometry: {
-                type: "Point",
+                type: 'Point',
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test token replacement', (t) => {
         c.geocode('Talstrasse', { limit_verify: 1 }, (err, res) => {
@@ -395,9 +396,9 @@ const addFeature = require('../lib/util/addfeature'),
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
-                'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
-                'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
-                'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
+                'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
+                'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
+                'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
             },
             use_normalization_cache: true
         }, () => {})
@@ -414,7 +415,7 @@ const addFeature = require('../lib/util/addfeature'),
         t.end();
     });
     tape('geocoder token test -- Burbarg', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text':'Burbarg',
@@ -428,7 +429,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('geocoder token test -- Bürbarg', (t) => {
-        let address = {
+        const address = {
             id:2,
             properties: {
                 'carmen:text':'Bürbarg',
@@ -442,7 +443,7 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
     tape('geocoder token test -- Phoenistraße', (t) => {
-        let address = {
+        const address = {
             id:3,
             properties: {
                 'carmen:text':'Phoenixstraße',
@@ -453,7 +454,7 @@ const addFeature = require('../lib/util/addfeature'),
                 coordinates: [0,0]
             }
         };
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     [
         'phönixstraße',
@@ -484,7 +485,7 @@ const addFeature = require('../lib/util/addfeature'),
         [true, false].forEach((autocomplete) => {
             tape(`finds by ${query} with autocomplete = ${autocomplete}`, (t) => {
                 c.geocode(query, { autocomplete: autocomplete }, (err, res) => {
-                    if (query == "burbarg") {
+                    if (query === 'burbarg') {
                         t.equals(res.features.length, 2);
                         t.deepEqual(res.features.map((x) => { return x.place_name; }).sort(), ['Burbarg', 'Bürbarg']);
                     } else {

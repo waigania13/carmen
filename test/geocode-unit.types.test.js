@@ -1,21 +1,20 @@
 // Tests Windsor CT (city) vs Windsor Ct (street name)
 // Windsor CT should win via stacky bonus.
+'use strict';
 
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     country: new mem({ maxzoom: 6 }, () => {}),
     region: new mem({ maxzoom: 6 }, () => {}),
     place: new mem({ maxzoom: 6 }, () => {}),
-    poi_cn: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: 'cn'}, () => {}),
-    poi_au: new mem({geocoder_name: 'poi', scoreranges: {landmark: [0.5, 1]}, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au'}, () => {})
+    poi_cn: new mem({ geocoder_name: 'poi', scoreranges: { landmark: [0.5, 1] }, minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: 'cn' }, () => {}),
+    poi_au: new mem({ geocoder_name: 'poi', scoreranges: { landmark: [0.5, 1] }, minscore: 0, maxscore: 100, maxzoom: 14, geocoder_stack: 'au' }, () => {})
 };
 
 const c = new Carmen(conf);
@@ -65,7 +64,7 @@ tape('index poi landmark', (t) => {
             'carmen:geocoder_stack':'cn'
         },
         geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: [113.65, 34.75]
         }
     }, t.end);
@@ -80,7 +79,7 @@ tape('index poi', (t) => {
             'carmen:geocoder_stack':'cn'
         },
         geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: [113.65, 34.75]
         }
     }, t.end);
@@ -95,7 +94,7 @@ tape('index offset poi', (t) => {
             'carmen:geocoder_stack':'cn'
         },
         geometry: {
-            type: "Point",
+            type: 'Point',
             coordinates: [113.651, 34.75]
         }
     }, t.end);
@@ -172,7 +171,7 @@ tape('china types: ["asdf"]', (t) => {
     });
 });
 
-//poi.landmark beats poi
+// poi.landmark beats poi
 tape('china types: ["poi.landmark"]', (t) => {
     c.geocode('china', { types:['poi.landmark'] }, (err, res) => {
         t.ifError(err);

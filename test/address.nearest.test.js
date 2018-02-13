@@ -1,3 +1,4 @@
+'use strict';
 const addressItp = require('../lib/pure/addressitp');
 const test = require('tape');
 
@@ -16,7 +17,7 @@ test('nearest', (t) => {
             }]
         }
     }, 900), {
-        coordinates: [ 0, 0 ],
+        coordinates: [0, 0],
         interpolated: true,
         omitted: true, // because nearest endpoint match
         type: 'Point'
@@ -36,7 +37,7 @@ test('nearest', (t) => {
             }]
         }
     }, 1200), {
-        coordinates: [ 0, 100 ],
+        coordinates: [0, 100],
         interpolated: true,
         omitted: true, // because nearest endpoint match
         type: 'Point'
@@ -62,16 +63,16 @@ test('nearest', (t) => {
 });
 
 test('nearest stability 1', (t) => {
-    let a = addressItp.forward(require('./fixtures/range-feature-1a.json'), 25);
-    let b = addressItp.forward(require('./fixtures/range-feature-1b.json'), 25);
+    const a = addressItp.forward(require('./fixtures/range-feature-1a.json'), 25);
+    const b = addressItp.forward(require('./fixtures/range-feature-1b.json'), 25);
     t.deepEqual(a, b);
     t.deepEqual(a.omitted, undefined);
     t.end();
 });
 
 test('nearest stability 2', (t) => {
-    let a = addressItp.forward(require('./fixtures/range-feature-3a.json'), 625);
-    let b = addressItp.forward(require('./fixtures/range-feature-3b.json'), 625);
+    const a = addressItp.forward(require('./fixtures/range-feature-3a.json'), 625);
+    const b = addressItp.forward(require('./fixtures/range-feature-3b.json'), 625);
     t.deepEqual(a, b);
     t.deepEqual(a.coordinates, [-103.368341,20.665601]);
     t.deepEqual(a.omitted, undefined);
@@ -80,8 +81,8 @@ test('nearest stability 2', (t) => {
 });
 
 test('nearest stability 3', (t) => {
-    let a = addressItp.forward(require('./fixtures/range-feature-2a.json'), 100);
-    let b = addressItp.forward(require('./fixtures/range-feature-2b.json'), 100);
+    const a = addressItp.forward(require('./fixtures/range-feature-2a.json'), 100);
+    const b = addressItp.forward(require('./fixtures/range-feature-2b.json'), 100);
     t.deepEqual(a, b);
     t.deepEqual(a.omitted, undefined);
     t.deepEqual(b.omitted, undefined);
