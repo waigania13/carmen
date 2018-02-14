@@ -1,0 +1,12 @@
+{
+  "name": "example-geocoder",
+  "version": "0.0.0",
+  "description": "Example of using carmen",
+  "main": "index.js",
+  "author": "boblannon",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@mapbox/carmen": "^24.2.6"
+  }
+}
