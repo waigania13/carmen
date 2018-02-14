@@ -1,5 +1,11 @@
 # Changelog
 
+## v24.2.8
+- massive linting/cleaning
+- overhauls readme
+- adds example project
+- adds separate docs folder for in-depth topics
+
 ## v24.2.7
 - Fix context builder bug
 
