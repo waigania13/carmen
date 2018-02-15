@@ -1,5 +1,11 @@
 # Data Sources
 
+Data sources for carmen must be provided by a [tilelive.js](https://github.com/mapbox/tilelive) interface. Using one of the many already-available tilelive modules, vector tiles can be sourced from backend storage solutions like s3, postgis, mapbox and more. You can also implement your own interface, so long as it satisfies the interface requirements [specified for a Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md).
+
+See  [the data-sources API doc](./docs/data-sources.md) for more detail about carmen's extensions on the tilelive base class.
+
+# Data Sources
+
 Each document is a valid geojson `Feature`. Each feature should contain a unique `id` field
 as well as the following settings in the `properties` object.
 
