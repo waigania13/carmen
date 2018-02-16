@@ -20,7 +20,16 @@ const merge = require('./lib/merge');
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
-// Initialize and load Geocoder, with a selection of indexes.
+/**
+ * The Geocoder class is an interface used to submit a single query to
+ * multiple indexes, returning a single set of ranked results.
+ *
+ * @param {Object<string, Tilesource>} indexes - A one-to-one mapping from index layer name to [Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md)
+ * @param {Object} options - options
+ * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
+ * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [text-processsing](./text-processing.md) for details.
+ *
+ */
 function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
@@ -41,6 +50,10 @@ function Geocoder(indexes, options) {
     this.bystack = {};
     this.byidx = [];
 
+    // Cloning each index. Below, many of the properties on the source object are
+    // set due to the configuration of the Geocoder instance itself. Cloning
+    // allows us to re-use a given source across multiple Geocoder instances,
+    // setting these properties differently for each clone.
     for (const k in indexes) {
         indexes[k] = clone(indexes[k]);
         q.defer(loadIndex, k, indexes[k]);
@@ -274,6 +287,13 @@ function Geocoder(indexes, options) {
     }
 }
 
+/**
+ * Clones the source object. Methods in the cloned object are all bound
+ * with the original source as their first argument.
+ *
+ * @param {Tilesource} source - a tilelive [Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md)
+ * @returns {Tilesource} a clone of the input Tilesource
+ */
 function clone(source) {
     const cloned = {};
     cloned.getInfo = source.getInfo.bind(source);
@@ -306,6 +326,12 @@ function clone(source) {
     return cloned;
 }
 
+/**
+ * Validates token replacer. Ensures that none of the values in from or to include blank space.
+ *
+ * @param {Object} token_replacer - a token replacer
+ * @returns {(null|true)} true if any 'from' or 'to' values contains blank space
+ */
 function tokenValidator(token_replacer) {
     for (let i = 0; i < token_replacer.length; i++) {
         if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
@@ -319,15 +345,15 @@ Geocoder.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
-// Main geocoding API entry point.
-// Returns results across all indexes for a given query.
-//
-// Actual searches are delegated to `Geocoder.prototype.search` over each
-// enabled backend.
-//
-// `query` is a string of text, like "Chester, NJ"
-// `options` is an object with additional parameters
-// `callback` is called with (error, results)
+/**
+ * Main entry point for geocoding API. Returns results across all indexes for
+ * a given query. Actual searches are delegated to {@link Geocoder#search}
+ * over each enabled backend.
+ *
+ * @param {string} query - a query string, eg "Chester, NJ"
+ * @param {Object} options - options
+ * @returns {FeatureCollection} A GeoJSON Feature collection. Each feature is a search result.
+ */
 Geocoder.prototype.geocode = function(query, options, callback) {
     const self = this;
     this._open((err) => {
@@ -336,7 +362,14 @@ Geocoder.prototype.geocode = function(query, options, callback) {
     });
 };
 
-// Index docs from one source to another.
+/**
+ * Main entry point for indexing. Index docs from one source to another.
+ *
+ * @param {Tilesource} from - A Tilesource source
+ * @param {Tilesource} to - Destination of index
+ * @param {Object} pointer - options
+ * @param {Object} pointer.
+ */
 Geocoder.prototype.index = function(from, to, pointer, callback) {
     const self = this;
     this._open((err) => {
