@@ -315,11 +315,14 @@ function Geocoder(indexes, options) {
             });
         });
     }
+
 }
 
 /**
  * Clones the source object. Methods in the cloned object are all bound
  * with the original source as their first argument.
+ *
+ * @access private
  *
  * @param {Tilesource} source - a tilelive [Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md)
  * @returns {Tilesource} a clone of the input Tilesource
@@ -358,6 +361,8 @@ function clone(source) {
 
 /**
  * Validates token replacer. Ensures that none of the values in from or to include blank space.
+ *
+ * @access private
  *
  * @param {Object} token_replacer - a token replacer
  * @returns {(null|true)} true if any 'from' or 'to' values contains blank space
