@@ -21,8 +21,10 @@ require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
 /**
- * The Geocoder class is an interface used to submit a single query to
+ * Geocoder is an interface used to submit a single query to
  * multiple indexes, returning a single set of ranked results.
+ *
+ * @access public
  *
  * @param {Object<string, Tilesource>} indexes - A one-to-one mapping from index layer name to [Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md)
  * @param {Object} options - options
@@ -49,6 +51,7 @@ function Geocoder(indexes, options) {
     this.bysubtype = {};
     this.bystack = {};
     this.byidx = [];
+    const names = [];
 
     // Cloning each index. Below, many of the properties on the source object are
     // set due to the configuration of the Geocoder instance itself. Cloning
@@ -60,143 +63,7 @@ function Geocoder(indexes, options) {
     }
 
     q.awaitAll((err, results) => {
-        const names = [];
-        if (results) results.forEach((data, i) => {
-            const id = data.id;
-            const info = data.info;
-            const dictcache = data.dictcache;
-            const source = indexes[id];
-            const name = info.geocoder_name || id;
-            const type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
-            const types = info.geocoder_types || [type];
-            let stack = info.geocoder_stack || false;
-            const languages = info.geocoder_languages || [];
-            if (typeof stack === 'string') stack = [stack];
-            const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
-
-            if (names.indexOf(name) === -1) names.push(name);
-
-            source._dictcache = source._original._dictcache || dictcache;
-
-            if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
-                source._geocoder = {
-                    freq: (data.freq && fs.existsSync(data.freq)) ?
-                        new cxxcache.RocksDBCache(name + '.freq', data.freq) :
-                        new cxxcache.MemoryCache(name + '.freq'),
-                    grid: (data.grid && fs.existsSync(data.grid)) ?
-                        new cxxcache.RocksDBCache(name + '.grid', data.grid) :
-                        new cxxcache.MemoryCache(name + '.grid')
-                };
-            } else {
-                source._geocoder = source._original._geocoder;
-            }
-
-            // Set references to _geocoder, _dictcache on original source to
-            // avoid duplication if it's loaded again.
-            source._original._geocoder = source._geocoder;
-            source._original._dictcache = source._dictcache;
-
-            if (info.geocoder_address) {
-                source.geocoder_address = info.geocoder_address;
-            } else {
-                source.geocoder_address = false;
-            }
-
-            if (info.geocoder_version) {
-                source.version = parseInt(info.geocoder_version, 10);
-                if (source.version !== 8) {
-                    err = new Error('geocoder version is not 8, index: ' + id);
-                    return;
-                }
-            } else {
-                source.version = 0;
-                source.shardlevel = info.geocoder_shardlevel || 0;
-            }
-
-            // Fold language templates into geocoder_format object
-            source.geocoder_format = { default: info.geocoder_format };
-            Object.keys(info).forEach((key) => {
-                if (/^geocoder_format_/.exec(key)) {
-                    source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
-                }
-            });
-
-            source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
-            source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
-            source.geocoder_tokens = info.geocoder_tokens || {};
-            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
-            source.geocoder_inherit_score = info.geocoder_inherit_score || false;
-            source.geocoder_universal_text = info.geocoder_universal_text || false;
-            source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
-            source.token_replacer = token.createReplacer(info.geocoder_tokens || {});
-            source.indexing_replacer = token.createReplacer(info.geocoder_tokens || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
-
-            if (tokenValidator(source.token_replacer)) {
-                throw new Error('Using global tokens');
-            }
-
-            source.maxzoom = info.maxzoom;
-            source.maxscore = info.maxscore;
-            source.minscore = info.minscore;
-            source.stack = stack;
-            source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
-
-            if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
-                throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
-            }
-
-            source.scoreranges = info.scoreranges ? info.scoreranges : {};
-            source.maxscore = info.maxscore;
-            source.minscore = info.minscore;
-            source.types = types;
-            source.type = type;
-            source.name = name;
-            source.id = id;
-            source.idx = i;
-            source.ndx = names.indexOf(name);
-            source.bounds = info.bounds || [-180, -85, 180, 85];
-
-            // arrange languages into something presentable
-            const lang = {};
-            lang.has_languages = languages.length > 0;
-            lang.languages = ['default'].concat(languages.map((l) => { return l.replace('-', '_'); }).sort());
-            lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
-            lang.lang_map = {};
-            lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
-            lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
-            source.lang = lang;
-
-            // decide whether to use the text normalization cache
-            source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
-            if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
-                source._dictcache.loadNormalizationCache(data.norm);
-            }
-
-            // add byname index lookup
-            this.byname[name] = this.byname[name] || [];
-            this.byname[name].push(source);
-
-            // add bytype index lookup
-            for (let t = 0; t < types.length; t++) {
-                this.bytype[types[t]] = this.bytype[types[t]] || [];
-                this.bytype[types[t]].push(source);
-            }
-
-            // add bysubtype index lookup
-            for (let st = 0; st < scoreRangeKeys.length; st++) {
-                this.bysubtype[type + '.' + scoreRangeKeys[st]] = this.bysubtype[type + '.' + scoreRangeKeys[st]] || [];
-                this.bysubtype[type + '.' + scoreRangeKeys[st]].push(source);
-            }
-
-            // add bystack index lookup
-            for (let j = 0; j < stack.length; j++) {
-                this.bystack[stack[j]] = this.bystack[stack[j]] || [];
-                this.bystack[stack[j]].push(source);
-            }
-
-            // add byidx index lookup
-            this.byidx[i] = source;
-        });
+        if (results) results.forEach(activateIndex, this);
 
         // Second pass -- generate bmask (geocoder_stack) per index.
         // The bmask of an index represents a mask of all indexes that their
@@ -222,7 +89,6 @@ function Geocoder(indexes, options) {
             this.byidx[i].bmask = bmask;
         }
 
-        this._error = err;
         this._opened = true;
 
         // emit the open event in a setImmediate -- circumstances exist
@@ -233,8 +99,172 @@ function Geocoder(indexes, options) {
         setImmediate(() => {
             _this.emit('open', err);
         });
+
     });
 
+    /**
+     * Activates a single index in the geocoder. This function operates on the
+     * output of {@link loadIndex}, which provides information needed for
+     * activation.
+     *
+     * @access private
+     *
+     * @param {Object} data - data obtained via {@link loadIndex}
+     * @param {int} i - index number
+     */
+    function activateIndex(data, i) {
+        const id = data.id;
+        const info = data.info;
+        const dictcache = data.dictcache;
+        const source = indexes[id];
+        const name = info.geocoder_name || id;
+        const type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
+        const types = info.geocoder_types || [type];
+        let stack = info.geocoder_stack || false;
+        const languages = info.geocoder_languages || [];
+        if (typeof stack === 'string') stack = [stack];
+        const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
+
+        let err;
+
+        if (names.indexOf(name) === -1) names.push(name);
+
+        source._dictcache = source._original._dictcache || dictcache;
+
+        if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
+            source._geocoder = {
+                freq: (data.freq && fs.existsSync(data.freq)) ?
+                    new cxxcache.RocksDBCache(name + '.freq', data.freq) :
+                    new cxxcache.MemoryCache(name + '.freq'),
+                grid: (data.grid && fs.existsSync(data.grid)) ?
+                    new cxxcache.RocksDBCache(name + '.grid', data.grid) :
+                    new cxxcache.MemoryCache(name + '.grid')
+            };
+        } else {
+            source._geocoder = source._original._geocoder;
+        }
+
+        // Set references to _geocoder, _dictcache on original source to
+        // avoid duplication if it's loaded again.
+        source._original._geocoder = source._geocoder;
+        source._original._dictcache = source._dictcache;
+
+        if (info.geocoder_address) {
+            source.geocoder_address = info.geocoder_address;
+        } else {
+            source.geocoder_address = false;
+        }
+
+        if (info.geocoder_version) {
+            source.version = parseInt(info.geocoder_version, 10);
+            if (source.version !== 8) {
+                err = new Error('geocoder version is not 8, index: ' + id);
+                return;
+            }
+        } else {
+            source.version = 0;
+            source.shardlevel = info.geocoder_shardlevel || 0;
+        }
+
+        // Fold language templates into geocoder_format object
+        source.geocoder_format = { default: info.geocoder_format };
+        Object.keys(info).forEach((key) => {
+            if (/^geocoder_format_/.exec(key)) {
+                source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
+            }
+        });
+
+        source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
+        source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
+        source.geocoder_tokens = info.geocoder_tokens || {};
+        source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
+        source.geocoder_inherit_score = info.geocoder_inherit_score || false;
+        source.geocoder_universal_text = info.geocoder_universal_text || false;
+        source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
+        source.token_replacer = token.createReplacer(info.geocoder_tokens || {});
+        source.indexing_replacer = token.createReplacer(info.geocoder_tokens || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
+
+        if (tokenValidator(source.token_replacer)) {
+            throw new Error('Using global tokens');
+        }
+
+        source.maxzoom = info.maxzoom;
+        source.maxscore = info.maxscore;
+        source.minscore = info.minscore;
+        source.stack = stack;
+        source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
+
+        if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
+            throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
+        }
+
+        source.scoreranges = info.scoreranges ? info.scoreranges : {};
+        source.maxscore = info.maxscore;
+        source.minscore = info.minscore;
+        source.types = types;
+        source.type = type;
+        source.name = name;
+        source.id = id;
+        source.idx = i;
+        source.ndx = names.indexOf(name);
+        source.bounds = info.bounds || [-180, -85, 180, 85];
+
+        // arrange languages into something presentable
+        const lang = {};
+        lang.has_languages = languages.length > 0;
+        lang.languages = ['default'].concat(languages.map((l) => { return l.replace('-', '_'); }).sort());
+        lang.hash = crypto.createHash('sha512').update(JSON.stringify(lang.languages)).digest().toString('hex').slice(0,8);
+        lang.lang_map = {};
+        lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
+        lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
+        source.lang = lang;
+
+        // decide whether to use the text normalization cache
+        source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
+        if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
+            source._dictcache.loadNormalizationCache(data.norm);
+        }
+
+        this._error = err;
+
+        // add byname index lookup
+        this.byname[name] = this.byname[name] || [];
+        this.byname[name].push(source);
+
+        // add bytype index lookup
+        for (let t = 0; t < types.length; t++) {
+            this.bytype[types[t]] = this.bytype[types[t]] || [];
+            this.bytype[types[t]].push(source);
+        }
+
+        // add bysubtype index lookup
+        for (let st = 0; st < scoreRangeKeys.length; st++) {
+            this.bysubtype[type + '.' + scoreRangeKeys[st]] = this.bysubtype[type + '.' + scoreRangeKeys[st]] || [];
+            this.bysubtype[type + '.' + scoreRangeKeys[st]].push(source);
+        }
+
+        // add bystack index lookup
+        for (let j = 0; j < stack.length; j++) {
+            this.bystack[stack[j]] = this.bystack[stack[j]] || [];
+            this.bystack[stack[j]].push(source);
+        }
+
+        // add byidx index lookup
+        this.byidx[i] = source;
+    }
+
+    /**
+     * Loads an index. The source clone is opened and all of the information
+     * needed for adding the index to the geocoder is obtained. If the
+     * original source object does not have a `_dictcache` member, then it is
+     * instantiated here, included in the returned object.
+     *
+     * @access private
+     *
+     * @param {string} id - the name of the index, eg "place" or "address"
+     * @param {Tilesource} source - a (clone of) a tilelive source
+     * @param {function(error, Object)} callback - callback function.
+     */
     function loadIndex(id, source, callback) {
         source.open((err) => {
             if (err) return callback(err);
