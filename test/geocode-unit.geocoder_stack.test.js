@@ -1,15 +1,14 @@
 // byId debug geocoding queries
+'use strict';
 
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
-//Tests string value for index level geocoder_stack
+// Tests string value for index level geocoder_stack
 (() => {
     const conf = {
         us: new mem({
@@ -113,16 +112,16 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//Tests array values for index level geocoder_stack
+// Tests array values for index level geocoder_stack
 (() => {
     const conf = {
         country: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'us', 'ca' ]
+            geocoder_stack: ['us', 'ca']
         }, () => {}),
         place: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'ca', 'us' ]
+            geocoder_stack: ['ca', 'us']
         }, () => {})
     };
     const c = new Carmen(conf);
@@ -181,8 +180,8 @@ const addFeature = require('../lib/util/addfeature'),
         q.awaitAll(t.end);
     });
 
-    //Features are first filtered by the index level geocoder_stack
-    //At the end each feature is then filtered by the feature level geocoder_stack
+    // Features are first filtered by the index level geocoder_stack
+    // At the end each feature is then filtered by the feature level geocoder_stack
     tape('dual filter', (t) => {
         c.geocode('Place', { stacks: ['us'] }, (err, res) => {
             t.ifError(err);
@@ -201,14 +200,14 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//Test mixed string/array index level geocoder stack
+// Test mixed string/array index level geocoder stack
 // Test mixed feature level / non existant geocoder_stack tags
 //    - Lack of geocoder_stack should make them able to appear in all stacks
 (() => {
     const conf = {
         country: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'us', 'ca' ]
+            geocoder_stack: ['us', 'ca']
         }, () => {}),
         place: new mem({
             maxzoom: 6,
@@ -289,11 +288,11 @@ const addFeature = require('../lib/util/addfeature'),
     const conf = {
         country: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'us', 'ca' ]
+            geocoder_stack: ['us', 'ca']
         }, () => {}),
         place: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'us', 'ca' ]
+            geocoder_stack: ['us', 'ca']
         }, () => {})
     };
     const c = new Carmen(conf);
@@ -342,7 +341,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-//Test existing/non-existing index level geocoder_stack
+// Test existing/non-existing index level geocoder_stack
 (() => {
     const conf = {
         country: new mem({
@@ -350,7 +349,7 @@ const addFeature = require('../lib/util/addfeature'),
         }, () => {}),
         place: new mem({
             maxzoom: 6,
-            geocoder_stack: [ 'ca', 'us' ]
+            geocoder_stack: ['ca', 'us']
         }, () => {})
     };
     const c = new Carmen(conf);

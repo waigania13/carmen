@@ -1,3 +1,4 @@
+'use strict';
 const uniq = require('../lib/util/uniq');
 const test = require('tape');
 

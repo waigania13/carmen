@@ -1,3 +1,4 @@
+'use strict';
 // scoredist unit test
 
 const tape = require('tape');

@@ -1,3 +1,4 @@
+'use strict';
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.
 
@@ -20,9 +21,9 @@ tape('ready', (t) => {
 });
 
 tape('index place', (t) => {
-    let docs = [];
+    const docs = [];
     for (let i = 1; i < 100; i++) {
-        let text = Math.random().toString().split('.').pop().toString(36);
+        const text = Math.random().toString().split('.').pop().toString(36);
         docs.push({
             id:i,
             properties: {
@@ -32,7 +33,7 @@ tape('index place', (t) => {
             }
         });
     }
-    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end) })
+    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end); });
 });
 
 function reset() {
@@ -46,7 +47,7 @@ tape('io', (t) => {
     c.geocode('aa', {}, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 5, 'returns 5 features');
-        let loaded = c.indexes.place._original.logs.getGeocoderData.filter((id) => { return /grid/.test(id) }).length;
+        const loaded = c.indexes.place._original.logs.getGeocoderData.filter((id) => { return /grid/.test(id); }).length;
         t.deepEqual(loaded <= 10, true, '<= 10 shards loaded: ' + loaded);
         t.end();
     });

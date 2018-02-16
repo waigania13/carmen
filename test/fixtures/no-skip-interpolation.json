@@ -1,0 +1,128 @@
+{
+    "type": "Feature",
+    "id": 1,
+    "properties": {
+        "carmen:text": "WASHINGTON STREET",
+        "carmen:center": [
+            0,
+            0
+        ],
+        "carmen:rangetype": "tiger",
+        "carmen:parityl": [
+            [
+                1,
+                2,
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:lfromhn": [
+            [
+                740,
+                146,
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:ltohn": [
+            [
+                0,
+                10000,
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:parityr": [
+            [
+                "O",
+                "O",
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:rfromhn": [
+            [
+                753,
+                10001,
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:rtohn": [
+            [
+                1,
+                9,
+                null,
+                null,
+                null
+            ],
+            []
+        ],
+        "carmen:addressnumber": [
+            null,
+            [
+                "70",
+                "100a",
+                "130",
+                "160"
+            ]
+        ],
+        "carmen:zxy": [
+            "6/32/32"
+        ]
+    },
+    "geometry": {
+        "type": "GeometryCollection",
+        "geometries": [
+            {
+                "type": "MultiLineString",
+                "coordinates": [
+                    [
+                        [
+                            0,
+                            0
+                        ],
+                        [
+                            0,
+                            0
+                        ],
+                        [
+                            0,
+                            0
+                        ],
+                        [
+                            0,
+                            0
+                        ]
+                    ]
+                ]
+            },
+            {
+                "type": "MultiPoint",
+                "coordinates": [
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        0,
+                        0
+                    ]
+                ]
+            }
+        ]
+    }
+}

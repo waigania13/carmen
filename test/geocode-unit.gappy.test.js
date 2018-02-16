@@ -1,3 +1,4 @@
+'use strict';
 // Unit tests for gappy stacking of features ("west st new york")
 
 const tape = require('tape');
@@ -24,7 +25,7 @@ const conf = {
 };
 const c = new Carmen(conf);
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:1,
         properties: {
             'carmen:text':'new york, ny',
@@ -35,7 +36,7 @@ tape('index province', (t) => {
     queueFeature(conf.province, province, t.end);
 });
 tape('index city 1', (t) => {
-    let city = {
+    const city = {
         id:1,
         properties: {
             'carmen:text':'new york, ny',
@@ -46,7 +47,7 @@ tape('index city 1', (t) => {
     queueFeature(conf.city, city, t.end);
 });
 tape('index city 2', (t) => {
-    let city = {
+    const city = {
         id:2,
         properties: {
             'carmen:text':'tonawanda',
@@ -57,7 +58,7 @@ tape('index city 2', (t) => {
     queueFeature(conf.city, city, t.end);
 });
 tape('index street 1', (t) => {
-    let street = {
+    const street = {
         id:1,
         properties: {
             'carmen:text':'west st',
@@ -68,7 +69,7 @@ tape('index street 1', (t) => {
     queueFeature(conf.street, street, t.end);
 });
 tape('index street 2', (t) => {
-    let street = {
+    const street = {
         id:2,
         properties: {
             'carmen:text':'west st',

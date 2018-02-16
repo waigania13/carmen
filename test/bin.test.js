@@ -1,3 +1,4 @@
+'use strict';
 const fs = require('fs-extra');
 const path = require('path');
 const tape = require('tape');
@@ -17,19 +18,19 @@ const addFeature = require('../lib/util/addfeature'),
 
 tape('clean tmp index', (t) => {
     try {
-        fs.unlinkSync(tmpindex)
-        fs.removeSync(tmpindex.replace(".mbtiles", ".freq.rocksdb"));
-        fs.removeSync(tmpindex.replace(".mbtiles", ".grid.rocksdb"));
+        fs.unlinkSync(tmpindex);
+        fs.removeSync(tmpindex.replace('.mbtiles', '.freq.rocksdb'));
+        fs.removeSync(tmpindex.replace('.mbtiles', '.grid.rocksdb'));
 
-        fs.unlinkSync(tmpindex2)
-        fs.removeSync(tmpindex2.replace(".mbtiles", ".freq.rocksdb"));
-        fs.removeSync(tmpindex2.replace(".mbtiles", ".grid.rocksdb"));
+        fs.unlinkSync(tmpindex2);
+        fs.removeSync(tmpindex2.replace('.mbtiles', '.freq.rocksdb'));
+        fs.removeSync(tmpindex2.replace('.mbtiles', '.grid.rocksdb'));
 
-        fs.unlinkSync(tmpindex3)
-        fs.removeSync(tmpindex3.replace(".mbtiles", ".freq.rocksdb"));
-        fs.removeSync(tmpindex3.replace(".mbtiles", ".grid.rocksdb"));
+        fs.unlinkSync(tmpindex3);
+        fs.removeSync(tmpindex3.replace('.mbtiles', '.freq.rocksdb'));
+        fs.removeSync(tmpindex3.replace('.mbtiles', '.grid.rocksdb'));
     } catch (err) {
-        //File does not exist
+        // File does not exist
     } finally {
         t.end();
     }
@@ -38,10 +39,10 @@ tape('clean tmp index', (t) => {
 tape('index', (t) => {
     try {
         fs.unlinkSync(tmpindex);
-        fs.removeSync(tmpindex.replace(".mbtiles", ".freq.rocksdb"));
-        fs.removeSync(tmpindex.replace(".mbtiles", ".grid.rocksdb"));
+        fs.removeSync(tmpindex.replace('.mbtiles', '.freq.rocksdb'));
+        fs.removeSync(tmpindex.replace('.mbtiles', '.grid.rocksdb'));
     } catch (err) {
-        //'file not found'
+        // 'file not found'
     }
     const conf = { index: new MBTiles(tmpindex, () => {}) };
     const carmen = new Carmen(conf);
@@ -102,14 +103,14 @@ tape('bin/carmen-index', (t) => {
 });
 
 tape('bin/carmen-index', (t) => {
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --tokens="'+__dirname + '/fixtures/tokens.json" --index="'+tmpindex2+'" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
+    exec(bin + '/carmen-index.js --config="' + __dirname + '/fixtures/index-bin-config.json" --tokens="' + __dirname + '/fixtures/tokens.json" --index="' + tmpindex2 + '" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
         t.ifError(err);
         t.end();
     });
 });
 
 tape('bin/carmen-index', (t) => {
-    exec(bin + '/carmen-index.js --config="'+__dirname + '/fixtures/index-bin-config.json" --tokens="'+__dirname + '/fixtures/tokens.js" --index="'+tmpindex3+'" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
+    exec(bin + '/carmen-index.js --config="' + __dirname + '/fixtures/index-bin-config.json" --tokens="' + __dirname + '/fixtures/tokens.js" --index="' + tmpindex3 + '" < ./test/fixtures/small-docs.jsonl', (err, stdout, stderr) => {
         t.ifError(err);
         t.end();
     });
@@ -131,7 +132,7 @@ tape('bin/carmen DEBUG', (t) => {
 tape('bin/carmen', (t) => {
     exec(bin + '/carmen.js', (err, stdout, stderr) => {
         t.equal(1, err.code);
-        t.equal("Usage: carmen.js [file|dir] --query=\"<query>\"\n", stdout);
+        t.equal('Usage: carmen.js [file|dir] --query="<query>"\n', stdout);
         t.end();
     });
 });
@@ -153,11 +154,11 @@ tape('bin/carmen query', (t) => {
 tape('bin/carmen query w/ stats', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --stats', (err, stdout, stderr) => {
         t.ifError(err);
-        const warmup_re = new RegExp(/warmup\:\s+(\d+)ms/)
-        const phrasematch_re = new RegExp(/phrasematch\:\s+(\d+)ms/)
-        const spatialmatch_re = new RegExp(/spatialmatch\:\s+(\d+)ms/)
-        const verifymatch_re = new RegExp(/verifymatch\:\s+(\d+)ms/)
-        const totaltime_re = new RegExp(/totaltime\:\s+(\d+)ms/)
+        const warmup_re = new RegExp(/warmup\:\s+(\d+)ms/);
+        const phrasematch_re = new RegExp(/phrasematch\:\s+(\d+)ms/);
+        const spatialmatch_re = new RegExp(/spatialmatch\:\s+(\d+)ms/);
+        const verifymatch_re = new RegExp(/verifymatch\:\s+(\d+)ms/);
+        const totaltime_re = new RegExp(/totaltime\:\s+(\d+)ms/);
 
         const warmup_match = warmup_re.exec(stdout);
         const phrasematch_match = phrasematch_re.exec(stdout);
@@ -165,19 +166,19 @@ tape('bin/carmen query w/ stats', (t) => {
         const verifymatch_match = verifymatch_re.exec(stdout);
         const totaltime_match = totaltime_re.exec(stdout);
 
-        t.ok(warmup_match[1] < 3600000, "ensure load stat is an elapsed delta of less than an hour");
-        t.ok(phrasematch_match[1] < 3600000, "ensure phrasematch stat is an elapsed delta of less than an hour");
-        t.ok(spatialmatch_match[1] < 3600000, "ensure spatialmatch stat is an elapsed delta of less than an hour");
-        t.ok(verifymatch_match[1] < 3600000, "ensure verifymatch stat is an elapsed delta of less than an hour");
-        t.ok(totaltime_match[1] < 3600000, "ensure totaltime stat is an elapsed delta of less than an hour");
+        t.ok(warmup_match[1] < 3600000, 'ensure load stat is an elapsed delta of less than an hour');
+        t.ok(phrasematch_match[1] < 3600000, 'ensure phrasematch stat is an elapsed delta of less than an hour');
+        t.ok(spatialmatch_match[1] < 3600000, 'ensure spatialmatch stat is an elapsed delta of less than an hour');
+        t.ok(verifymatch_match[1] < 3600000, 'ensure verifymatch stat is an elapsed delta of less than an hour');
+        t.ok(totaltime_match[1] < 3600000, 'ensure totaltime stat is an elapsed delta of less than an hour');
         t.end();
     });
 });
 
 
-//Index was not indexed witht the brazil=canada token so this should produce Canada as a result
+// Index was not indexed witht the brazil=canada token so this should produce Canada as a result
 tape('bin/carmen query w/ global tokens', (t) => {
-    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --tokens="'+__dirname + '/fixtures/tokens.json"', (err, stdout, stderr) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --tokens="' + __dirname + '/fixtures/tokens.json"', (err, stdout, stderr) => {
         t.ifError(err);
         t.equal(/\d+\.\d+ Canada/.test(stdout), true, 'finds canada');
         t.end();
@@ -217,17 +218,30 @@ tape('bin/carmen query language=es,en', (t) => {
         t.end();
     });
 });
+tape('bin/carmen query bbox', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465,9.830,21.913"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+tape('bin/carmen query invalid bbox', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465"', (err, stdout, stderr) => {
+        t.ok(err, 'bbox must be minX,minY,maxX,maxY');
+        t.end();
+    });
+});
 tape('bin/carmen-copy noargs', (t) => {
     exec(bin + '/carmen-copy.js', (err, stdout, stderr) => {
         t.equal(1, err.code);
-        t.equal("Usage: carmen-copy.js <from> <to>\n", stdout);
+        t.equal('Usage: carmen-copy.js <from> <to>\n', stdout);
         t.end();
     });
 });
 tape('bin/carmen-copy 1arg', (t) => {
     exec(bin + '/carmen-copy.js ' + tmpindex, (err, stdout, stderr) => {
         t.equal(1, err.code);
-        t.equal("Usage: carmen-copy.js <from> <to>\n", stdout);
+        t.equal('Usage: carmen-copy.js <from> <to>\n', stdout);
         t.end();
     });
 });

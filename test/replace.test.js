@@ -1,234 +1,235 @@
+'use strict';
 const token = require('../lib/util/token');
 const test = require('tape');
 
-let tokenList = {
-    "First": "1st",
-    "Second": "2nd",
-    "Third": "3rd",
-    "Fourth": "4th",
-    "Fifth": "5th",
-    "Sixth": "6th",
-    "Seventh": "7th",
-    "Eigth": "8th",
-    "Ninth": "9th",
-    "Tenth": "10th",
-    "Eleventh": "11th",
-    "Twelfth": "12th",
-    "Thirteenth": "13th",
-    "Fourteenth": "14th",
-    "Fifteenth": "15th",
-    "Sixteenth": "16th",
-    "Seventeenth": "17th",
-    "Eighteenth": "18th",
-    "Nineteenth": "19th",
-    "Twentieth": "20th",
-    "Alley": "Aly",
-    "Arcade": "Arc",
-    "Avenue": "Ave",
-    "Bayoo": "Byu",
-    "Beach": "Bch",
-    "Bluff": "Blf",
-    "Bottom": "Btm",
-    "Boulevard": "Blvd",
-    "Branch": "Br",
-    "Bridge": "Brg",
-    "Brook": "Brk",
-    "Brooks": "Brks",
-    "Burg": "Bg",
-    "Burgs": "Bgs",
-    "Bypass": "Byp",
-    "Calle": "Cll",
-    "Camp": "Cp",
-    "Canyon": "Cyn",
-    "Cape": "Cpe",
-    "Causeway": "Cswy",
-    "Center": "Ctr",
-    "Centers": "Ctrs",
-    "Circle": "Cir",
-    "Circles": "Cirs",
-    "Cliff": "Clf",
-    "Cliffs": "Clfs",
-    "Club": "Clb",
-    "Common": "Cmn",
-    "Corner": "Cor",
-    "Course": "Crse",
-    "Court": "Ct",
-    "Courts": "Cts",
-    "Cove": "Cv",
-    "Creek": "Crk",
-    "Crescent": "Cres",
-    "Crest": "Crst",
-    "Crossing": "Xing",
-    "Curve": "Curv",
-    "Dale": "Dl",
-    "Dam": "Dm",
-    "Divide": "Dv",
-    "Drive": "Dr",
-    "Drives": "Drs",
-    "East": "E",
-    "Estate": "Est",
-    "Estates": "Ests",
-    "Expressway": "Expy",
-    "Extension": "Ext",
-    "Extensions": "Exts",
-    "Falls": "Fls",
-    "Ferry": "Fry",
-    "Field": "Fld",
-    "Fields": "Flds",
-    "Flat": "Flt",
-    "Flats": "Flts",
-    "Ford": "Frd",
-    "Forest": "Frst",
-    "Forge": "Frg",
-    "Forges": "Frgs",
-    "Fork": "Frk",
-    "Fort": "Ft",
-    "Freeway": "Fwy",
-    "Grade": "Grd",
-    "Green": "Grn",
-    "Harbor": "Hbr",
-    "Harbors": "Hbrs",
-    "Haven": "Hvn",
-    "Heights": "Hts",
-    "Highway": "Hwy",
-    "Hill": "Hl",
-    "Hills": "Hls",
-    "Hollow": "Holw",
-    "Industrial": "Ind",
-    "Interstate": "I",
-    "Island": "Is",
-    "Islands": "Iss",
-    "Junction": "Jct",
-    "Junctions": "Jcts",
-    "Junior": "Jr",
-    "Key": "Ky",
-    "Keys": "Kys",
-    "Knoll": "Knl",
-    "Knolls": "Knls",
-    "Lake": "Lk",
-    "Lakes": "Lks",
-    "Landing": "Lndg",
-    "Lane": "Ln",
-    "Lieutenant": "Lt",
-    "Light": "Lgt",
-    "Lights": "Lgts",
-    "Loaf": "Lf",
-    "Lock": "Lck",
-    "Locks": "Lcks",
-    "Lodge": "Ldg",
-    "Mall": "Mal",
-    "Manor": "Mnr",
-    "Manors": "Mnrs",
-    "Meadow": "Mdw",
-    "Meadows": "Mdws",
-    "Mill": "Ml",
-    "Mission": "Msn",
-    "Moorhead": "Mhd",
-    "Motorway": "Mtwy",
-    "Mountain": "Mtn",
-    "Mount": "Mt",
-    "Neck": "Nck",
-    "Northeast": "NE",
-    "North": "N",
-    "Northwest": "NW",
-    "Orchard": "Orch",
-    "Overpass": "Ovps",
-    "Parkway": "Pky",
-    "Passage": "Psge",
-    "Place": "Pl",
-    "Plain": "Pln",
-    "Plains": "Plns",
-    "Plaza": "Plz",
-    "Point": "Pt",
-    "Points": "Pts",
-    "Port": "Prt",
-    "Ports": "Prts",
-    "Prairie": "Pr",
-    "Private": "Pvt",
-    "Radial": "Radl",
-    "Ranch": "Rnch",
-    "Rapid": "Rpd",
-    "Rapids": "Rpds",
-    "Rest": "Rst",
-    "Ridge": "Rdg",
-    "Ridges": "Rdgs",
-    "River": "Riv",
-    "Road": "Rd",
-    "Roads": "Rds",
-    "Route": "Rte",
-    "Saint": "St",
-    "Senior": "Sr",
-    "Sergeant": "Sgt",
-    "Shoal": "Shl",
-    "Shoals": "Shls",
-    "Shore": "Shr",
-    "Shores": "Shrs",
-    "Skyway": "Sky",
-    "Southeast": "SE",
-    "South": "S",
-    "Southwest": "SW",
-    "Spring": "Spg",
-    "Springs": "Spgs",
-    "Square": "Sq",
-    "Squares": "Sqs",
-    "Station": "Sta",
-    "Stream": "Strm",
-    "Streets": "Sts",
-    "Street": "St",
-    "Summit": "Smt",
-    "Terrace": "Ter",
-    "Thoroughfare": "Thfr",
-    "Thruway": "Thwy",
-    "Trace": "Trce",
-    "Trafficway": "Tfwy",
-    "Trail": "Trl",
-    "Tunnel": "Tunl",
-    "Turnpike": "Tpke",
-    "Underpass": "Unp",
-    "Unions": "Uns",
-    "Union": "Un",
-    "Valleys": "Vlys",
-    "Valley": "Vly",
-    "Viaduct": "Via",
-    "Views": "Vws",
-    "View": "Vw",
-    "Villages": "Vlgs",
-    "Village": "Vlg",
-    "Ville": "Vl",
-    "Vista": "Vis",
-    "Walkway": "Wlky",
-    "West": "W",
-    "San Francisco": "sf",
-    "Rio": "R",
-    "S.": "S"
+const tokenList = {
+    'First': '1st',
+    'Second': '2nd',
+    'Third': '3rd',
+    'Fourth': '4th',
+    'Fifth': '5th',
+    'Sixth': '6th',
+    'Seventh': '7th',
+    'Eigth': '8th',
+    'Ninth': '9th',
+    'Tenth': '10th',
+    'Eleventh': '11th',
+    'Twelfth': '12th',
+    'Thirteenth': '13th',
+    'Fourteenth': '14th',
+    'Fifteenth': '15th',
+    'Sixteenth': '16th',
+    'Seventeenth': '17th',
+    'Eighteenth': '18th',
+    'Nineteenth': '19th',
+    'Twentieth': '20th',
+    'Alley': 'Aly',
+    'Arcade': 'Arc',
+    'Avenue': 'Ave',
+    'Bayoo': 'Byu',
+    'Beach': 'Bch',
+    'Bluff': 'Blf',
+    'Bottom': 'Btm',
+    'Boulevard': 'Blvd',
+    'Branch': 'Br',
+    'Bridge': 'Brg',
+    'Brook': 'Brk',
+    'Brooks': 'Brks',
+    'Burg': 'Bg',
+    'Burgs': 'Bgs',
+    'Bypass': 'Byp',
+    'Calle': 'Cll',
+    'Camp': 'Cp',
+    'Canyon': 'Cyn',
+    'Cape': 'Cpe',
+    'Causeway': 'Cswy',
+    'Center': 'Ctr',
+    'Centers': 'Ctrs',
+    'Circle': 'Cir',
+    'Circles': 'Cirs',
+    'Cliff': 'Clf',
+    'Cliffs': 'Clfs',
+    'Club': 'Clb',
+    'Common': 'Cmn',
+    'Corner': 'Cor',
+    'Course': 'Crse',
+    'Court': 'Ct',
+    'Courts': 'Cts',
+    'Cove': 'Cv',
+    'Creek': 'Crk',
+    'Crescent': 'Cres',
+    'Crest': 'Crst',
+    'Crossing': 'Xing',
+    'Curve': 'Curv',
+    'Dale': 'Dl',
+    'Dam': 'Dm',
+    'Divide': 'Dv',
+    'Drive': 'Dr',
+    'Drives': 'Drs',
+    'East': 'E',
+    'Estate': 'Est',
+    'Estates': 'Ests',
+    'Expressway': 'Expy',
+    'Extension': 'Ext',
+    'Extensions': 'Exts',
+    'Falls': 'Fls',
+    'Ferry': 'Fry',
+    'Field': 'Fld',
+    'Fields': 'Flds',
+    'Flat': 'Flt',
+    'Flats': 'Flts',
+    'Ford': 'Frd',
+    'Forest': 'Frst',
+    'Forge': 'Frg',
+    'Forges': 'Frgs',
+    'Fork': 'Frk',
+    'Fort': 'Ft',
+    'Freeway': 'Fwy',
+    'Grade': 'Grd',
+    'Green': 'Grn',
+    'Harbor': 'Hbr',
+    'Harbors': 'Hbrs',
+    'Haven': 'Hvn',
+    'Heights': 'Hts',
+    'Highway': 'Hwy',
+    'Hill': 'Hl',
+    'Hills': 'Hls',
+    'Hollow': 'Holw',
+    'Industrial': 'Ind',
+    'Interstate': 'I',
+    'Island': 'Is',
+    'Islands': 'Iss',
+    'Junction': 'Jct',
+    'Junctions': 'Jcts',
+    'Junior': 'Jr',
+    'Key': 'Ky',
+    'Keys': 'Kys',
+    'Knoll': 'Knl',
+    'Knolls': 'Knls',
+    'Lake': 'Lk',
+    'Lakes': 'Lks',
+    'Landing': 'Lndg',
+    'Lane': 'Ln',
+    'Lieutenant': 'Lt',
+    'Light': 'Lgt',
+    'Lights': 'Lgts',
+    'Loaf': 'Lf',
+    'Lock': 'Lck',
+    'Locks': 'Lcks',
+    'Lodge': 'Ldg',
+    'Mall': 'Mal',
+    'Manor': 'Mnr',
+    'Manors': 'Mnrs',
+    'Meadow': 'Mdw',
+    'Meadows': 'Mdws',
+    'Mill': 'Ml',
+    'Mission': 'Msn',
+    'Moorhead': 'Mhd',
+    'Motorway': 'Mtwy',
+    'Mountain': 'Mtn',
+    'Mount': 'Mt',
+    'Neck': 'Nck',
+    'Northeast': 'NE',
+    'North': 'N',
+    'Northwest': 'NW',
+    'Orchard': 'Orch',
+    'Overpass': 'Ovps',
+    'Parkway': 'Pky',
+    'Passage': 'Psge',
+    'Place': 'Pl',
+    'Plain': 'Pln',
+    'Plains': 'Plns',
+    'Plaza': 'Plz',
+    'Point': 'Pt',
+    'Points': 'Pts',
+    'Port': 'Prt',
+    'Ports': 'Prts',
+    'Prairie': 'Pr',
+    'Private': 'Pvt',
+    'Radial': 'Radl',
+    'Ranch': 'Rnch',
+    'Rapid': 'Rpd',
+    'Rapids': 'Rpds',
+    'Rest': 'Rst',
+    'Ridge': 'Rdg',
+    'Ridges': 'Rdgs',
+    'River': 'Riv',
+    'Road': 'Rd',
+    'Roads': 'Rds',
+    'Route': 'Rte',
+    'Saint': 'St',
+    'Senior': 'Sr',
+    'Sergeant': 'Sgt',
+    'Shoal': 'Shl',
+    'Shoals': 'Shls',
+    'Shore': 'Shr',
+    'Shores': 'Shrs',
+    'Skyway': 'Sky',
+    'Southeast': 'SE',
+    'South': 'S',
+    'Southwest': 'SW',
+    'Spring': 'Spg',
+    'Springs': 'Spgs',
+    'Square': 'Sq',
+    'Squares': 'Sqs',
+    'Station': 'Sta',
+    'Stream': 'Strm',
+    'Streets': 'Sts',
+    'Street': 'St',
+    'Summit': 'Smt',
+    'Terrace': 'Ter',
+    'Thoroughfare': 'Thfr',
+    'Thruway': 'Thwy',
+    'Trace': 'Trce',
+    'Trafficway': 'Tfwy',
+    'Trail': 'Trl',
+    'Tunnel': 'Tunl',
+    'Turnpike': 'Tpke',
+    'Underpass': 'Unp',
+    'Unions': 'Uns',
+    'Union': 'Un',
+    'Valleys': 'Vlys',
+    'Valley': 'Vly',
+    'Viaduct': 'Via',
+    'Views': 'Vws',
+    'View': 'Vw',
+    'Villages': 'Vlgs',
+    'Village': 'Vlg',
+    'Ville': 'Vl',
+    'Vista': 'Vis',
+    'Walkway': 'Wlky',
+    'West': 'W',
+    'San Francisco': 'sf',
+    'Rio': 'R',
+    'S.': 'S'
 };
 // store an original copy of the tokenList object that we can compare against
 const tokenClone = JSON.parse(JSON.stringify(tokenList));
 
-let tokens = token.createReplacer(tokenList);
-var tokensR = token.createReplacer(tokenList, {includeUnambiguous: true});
+const tokens = token.createReplacer(tokenList);
+const tokensR = token.createReplacer(tokenList, { includeUnambiguous: true });
 
 // this is a test function that returns "saint" if the match is at the beginning, "street"
 // if it's at the end, or "st" otherwise. In real life you'd want something smarter than this
-var tokensRC = token.createReplacer(tokenList, {
+const tokensRC = token.createReplacer(tokenList, {
     includeUnambiguous: true,
     custom: {
         'St': function() {
-            var full = arguments[arguments.length - 1];
-            var offset = arguments[arguments.length - 2];
-            var match = arguments[0];
-            var pre = full.slice(0, offset);
-            var post = full.slice(offset + match.length);
+            const full = arguments[arguments.length - 1];
+            const offset = arguments[arguments.length - 2];
+            const match = arguments[0];
+            const pre = full.slice(0, offset);
+            const post = full.slice(offset + match.length);
 
-            var out;
-            if (pre.trim() == "") out = arguments[1] + "saint" + arguments[2];
-            else if (post.trim() == "") out = arguments[1] + "street" + arguments[2];
+            let out;
+            if (pre.trim() === '') out = arguments[1] + 'saint' + arguments[2];
+            else if (post.trim() === '') out = arguments[1] + 'street' + arguments[2];
             else out = arguments[0];
 
             return out;
         }
     }
-})
+});
 
 // We use the same tokens object to create both indexer and runtime token replacers.
 // Test that indexer-only token replacers don't leak into runtime replacers.
@@ -283,15 +284,15 @@ test('token replacement', (q) => {
     // variants that will actually get hit.
     let ubTokens;
     ubTokens = token.createReplacer({
-        'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'},
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
         'uber': 'üb',
     });
-    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),[ 'üb cat', 'uber cat' ], 'does not cascade replacements');
+    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['üb cat', 'uber cat'], 'does not cascade replacements');
     ubTokens = token.createReplacer({
         'uber': 'üb',
-        'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'},
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
     });
-    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),[ 'ueb cat', 'üb cat', 'uber cat' ], 'hits all permutations');
+    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['ueb cat', 'üb cat', 'uber cat'], 'hits all permutations');
 
 
     q.end();
@@ -317,7 +318,7 @@ test('custom reverse replacement', (q) => {
     ]);
 
     q.end();
-})
+});
 
 test('replacer', (q) => {
 
@@ -327,7 +328,7 @@ test('replacer', (q) => {
         'Road': 'Rd',
         'Street': 'St'
     });
-    var WORD_BOUNDARY = "[\\s\\u2000-\\u206F\\u2E00-\\u2E7F\\\\'!\"#$%&()*+,\\-.\\/:;<=>?@\\[\\]^_`{|}~]";
+    const WORD_BOUNDARY = "[\\s\\u2000-\\u206F\\u2E00-\\u2E7F\\\\'!\"#$%&()*+,\\-.\\/:;<=>?@\\[\\]^_`{|}~]";
     q.deepEqual(rep.map((r) => { return r.named; }), [false, false]);
     q.deepEqual(rep.map((r) => { return r.to; }), ['$1Rd$2', '$1St$2']);
     q.deepEqual(
@@ -357,43 +358,43 @@ test('replacer', (q) => {
 });
 
 test('named/numbered group replacement', (q) => {
-    let tokens = token.createReplacer({
-        "abc": "xyz",
-        "(1\\d+)": "@@@$1@@@",
-        "(?<number>2\\d+)": "###${number}###"
+    const tokens = token.createReplacer({
+        'abc': 'xyz',
+        '(1\\d+)': '@@@$1@@@',
+        '(?<number>2\\d+)': '###${number}###'
     });
     q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
     q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
 
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), [ 'xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def' ]);
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), [ 'xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def' ]);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
+    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
 
     q.end();
 });
 
 test('throw on mixed name/num replacement groups', (q) => {
     q.throws(() => {
-        token.createReplacer({ "(abc)(?<namedgroup>def)": "${namedgroup}$1" });
+        token.createReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
     });
     q.end();
 });
 
-test('make sure word boundaries work right', function(q) {
-    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), 'R de Janeiro', "phrase-initial token");
-    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), 'de R Janeiro', "phrase-medial token");
-    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), 'de Janeiro R', "phrase-terminal token");
-    q.deepEqual(token.replaceToken(tokens, 'de-rio!Janeiro'), 'de-R!Janeiro', "punctuation-separated token");
+test('make sure word boundaries work right', (q) => {
+    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), 'R de Janeiro', 'phrase-initial token');
+    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), 'de R Janeiro', 'phrase-medial token');
+    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), 'de Janeiro R', 'phrase-terminal token');
+    q.deepEqual(token.replaceToken(tokens, 'de-rio!Janeiro'), 'de-R!Janeiro', 'punctuation-separated token');
     q.deepEqual(token.replaceToken(tokens, 'deteriorate'), 'deteriorate', "word-medial token (doesn't replace)");
     q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), 'Rua Oratório', "word-terminal token preceded by accented character (doesn't replace)");
     q.end();
 });
 
-test('test skipDiacritics and skipBoundaries flags', function(q) {
-    let replacer = token.createReplacer({
-        'ä': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ae'},
-        'ö': {skipBoundaries: true, skipDiacriticStripping: true, text: 'oe'},
-        'ü': {skipBoundaries: true, skipDiacriticStripping: true, text: 'ue'}
-    }, {includeUnambiguous: true});
+test('test skipDiacritics and skipBoundaries flags', (q) => {
+    const replacer = token.createReplacer({
+        'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
+        'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+    }, { includeUnambiguous: true });
     q.deepEqual(replacer, [
         { named: false, from: /ä/gi, to: 'ae', inverse: false },
         { named: false, from: /ö/gi, to: 'oe', inverse: false },

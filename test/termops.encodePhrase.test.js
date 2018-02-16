@@ -1,15 +1,16 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const uniq = require('../lib/util/uniq');
 const test = require('tape');
 
 test('termops.encodePhrase clustering', (t) => {
-    let sets = [
+    const sets = [
         ['apples', 'application', 'apply', 'appears', 'appomattox'],
         ['bananas', 'bandana', 'banner', 'bandit', 'banter'],
         ['cat', 'catacomb', 'cateract', 'catastrophe', 'cat nip'],
     ];
     sets.forEach((set) => {
-        let encoded = set.map((text) => { return termops.encodePhrase(text); });
+        const encoded = set.map((text) => { return termops.encodePhrase(text); });
         t.deepEqual(uniq(encoded).length, set.length, 'unique phrases ' + set);
     });
     t.end();
@@ -34,10 +35,10 @@ test('termops.encodePhrase', (t) => {
     t.deepEqual(a, 'main st', 'main st (array)');
 
     a = termops.encodePhrase('lazy dog');
-    t.deepEqual(a, 'lazy dog', 'lazy dog')
+    t.deepEqual(a, 'lazy dog', 'lazy dog');
 
     a = termops.encodePhrase('lazy dog', true);
-    t.deepEqual(a, 'lazy dog', 'lazy dog (skip)')
+    t.deepEqual(a, 'lazy dog', 'lazy dog (skip)');
 
     a = termops.encodePhrase('The quick brown fox jumps over the lazy dog');
     t.deepEqual(a, 'the quick brown fox jumps over the lazy dog', 'long phrase');
@@ -70,12 +71,12 @@ test('termops.encodePhrase', (t) => {
 
 test('termops.encodePhrase collisions', (t) => {
     let texts = 0;
-    let sample = 1e6;
-    let ids = {};
-    let collisions = [];
+    const sample = 1e6;
+    const ids = {};
+    const collisions = [];
     while (texts < sample) {
-        let text = Math.random().toString(36);
-        let id = termops.encodePhrase(text);
+        const text = Math.random().toString(36);
+        const id = termops.encodePhrase(text);
 
         if (id >= Math.pow(2,52)) {
             t.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
@@ -92,9 +93,9 @@ test('termops.encodePhrase collisions', (t) => {
         }
         texts++;
     }
-    let rate = (collisions.length/sample);
-    let thresh = 1/1e6;
-    t.equal(rate < thresh, true, 'Collision rate ' + (rate*100).toFixed(4) + '% < ' + (thresh*100).toFixed(4) + '%');
+    const rate = (collisions.length / sample);
+    const thresh = 1 / 1e6;
+    t.equal(rate < thresh, true, 'Collision rate ' + (rate * 100).toFixed(4) + '% < ' + (thresh * 100).toFixed(4) + '%');
     t.end();
 });
 

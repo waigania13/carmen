@@ -1,3 +1,4 @@
+'use strict';
 // Ensures that token replacement casts a wide (unidecoded) net for
 // left-hand side of token mapping.
 
@@ -26,7 +27,7 @@ tape('index Maréchal', (t) => {
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, () => { buildQueued(conf.test, t.end) });
+    }, () => { buildQueued(conf.test, t.end); });
 });
 tape('Mal => Maréchal', (t) => {
     c.geocode('Mal', { limit_verify:1 }, (err, res) => {

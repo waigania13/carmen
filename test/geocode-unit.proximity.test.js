@@ -1,4 +1,5 @@
-//Proximity flag
+'use strict';
+// Proximity flag
 
 const tape = require('tape');
 const Carmen = require('..');
@@ -10,13 +11,13 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    country: new mem({maxzoom: 1}, () => {}),
-    province: new mem({maxzoom: 6}, () => {})
+    country: new mem({ maxzoom: 1 }, () => {}),
+    province: new mem({ maxzoom: 6 }, () => {})
 };
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'country',
@@ -27,7 +28,7 @@ tape('index country', (t) => {
     queueFeature(conf.country, country, t.end);
 });
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:2,
         properties: {
             'carmen:text':'country',
@@ -38,9 +39,9 @@ tape('index country', (t) => {
     queueFeature(conf.country, country, t.end);
 });
 
-//Across layers
+// Across layers
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:1,
         properties: {
             'carmen:text':'province',
@@ -51,7 +52,7 @@ tape('index province', (t) => {
     queueFeature(conf.province, province, t.end);
 });
 tape('index province', (t) => {
-    let country = {
+    const country = {
         id:3,
         properties: {
             'carmen:text':'province',
@@ -62,7 +63,7 @@ tape('index province', (t) => {
     queueFeature(conf.country, country, t.end);
 });
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:2,
         properties: {
             'carmen:text':'fakeprov',
@@ -73,7 +74,7 @@ tape('index province', (t) => {
     queueFeature(conf.province, province, t.end);
 });
 tape('index province', (t) => {
-    let province = {
+    const province = {
         id:3,
         properties: {
             'carmen:text':'fakeprov',

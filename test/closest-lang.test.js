@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const closestLangLabel = require('../lib/util/closest-lang');
 
@@ -30,7 +31,7 @@ tape('closestLangLabel', (t) => {
 });
 
 tape('Arabic fallback', (t) => {
-    //Arabic fallback behaviour
+    // Arabic fallback behaviour
     t.equal(closestLangLabel('ar', {
         'en': 'English',
     }), 'English');

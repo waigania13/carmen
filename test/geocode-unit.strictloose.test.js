@@ -1,3 +1,4 @@
+'use strict';
 // Tests Windsor CT (city) vs Windsor Ct (street name)
 // Windsor CT should win via stacky bonus.
 

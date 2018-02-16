@@ -1,7 +1,7 @@
 {
   "name": "@mapbox/carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "24.1.12",
+  "version": "24.2.8",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
@@ -39,12 +39,14 @@
     "xregexp": "3.1.1"
   },
   "devDependencies": {
+    "@mapbox/eslint-config-geocoding": "^1.0.0",
     "benchmark": "^2.1.4",
     "bytes": "^2.5.0",
     "combined-stream": "~1.0.5",
     "coveralls": "^2.11.4",
     "deep-equal": "1.0.1",
-    "eslint": "^4.11.0",
+    "eslint": "^4.17.0",
+    "eslint-plugin-node": "^5.2.1",
     "istanbul": "^0.4.0",
     "retire": "^1.2.12",
     "tape": "4.6.3"
@@ -58,7 +60,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "lint": "eslint index.js lib test",
+    "lint": "eslint index.js lib test scripts",
     "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && yarn run bench",
     "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
     "bench": "./test/run_all_benchmarks.sh"

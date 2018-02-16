@@ -1,11 +1,10 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     country: new mem(null, () => {}),
@@ -20,7 +19,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'Japan',
@@ -32,7 +31,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'東京都',
@@ -44,7 +43,7 @@ tape('index region', (t) => {
 });
 
 tape('index place 1', (t) => {
-    let place = {
+    const place = {
         id:1,
         properties: {
             'carmen:text':'羽村市',
@@ -56,7 +55,7 @@ tape('index place 1', (t) => {
 });
 
 tape('index address 1', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text':'神明台三丁目',
@@ -82,10 +81,10 @@ tape('build queued features', (t) => {
 });
 
 tape('Check numeric text', (t) => {
-    c.geocode('神明台三丁目5', { debug: true}, (err, res) => {
+    c.geocode('神明台三丁目5', { debug: true }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 1, "1 feature");
-        t.equal(res.features[0].address, '5', "right address");
+        t.equal(res.features.length, 1, '1 feature');
+        t.equal(res.features[0].address, '5', 'right address');
         t.end();
     });
 });
@@ -93,9 +92,9 @@ tape('Check numeric text', (t) => {
 tape('Check numeric text', (t) => {
     c.geocode('神明台三丁目 5', null, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 1, "1 feature");
-        t.equal(res.features[0].address, '5', "right address");
-        t.end()
+        t.equal(res.features.length, 1, '1 feature');
+        t.equal(res.features[0].address, '5', 'right address');
+        t.end();
     });
 });
 

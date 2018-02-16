@@ -1,3 +1,4 @@
+'use strict';
 const Carmen = require('..');
 const context = require('../lib/context');
 const test = require('tape');
@@ -18,16 +19,16 @@ test('contextVector deflate', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [ 0,0 ]
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [0,0]
                 },
-                "properties": {
-                    'carmen:center': [ -99.693234, 37.245325 ],
+                'properties': {
+                    'carmen:center': [-99.693234, 37.245325],
                     'carmen:text': 'United States of America, United States, America, USA, US',
                     'iso2': 'US',
                     'population': 307212123,
@@ -35,9 +36,9 @@ test('contextVector deflate', (t) => {
                 }
             }
         ]
-    }), "data");
+    }), 'data');
     const buffer = zlib.deflateSync(vtile.getData());
-    let source = {
+    const source = {
         getTile: (z, x, y, cb) => {
             return cb(null, buffer);
         },
@@ -60,7 +61,7 @@ test('contextVector deflate', (t) => {
                 'carmen:types': ['test'],
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
-                'carmen:center': [ -99.6932, 37.2453 ],
+                'carmen:center': [-99.6932, 37.2453],
                 'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
                 'carmen:geomtype': 1,
@@ -80,16 +81,16 @@ test('contextVector gzip', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [ 0,0 ]
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [0,0]
                 },
-                "properties": {
-                    'carmen:center': [ -99.693234, 37.245325 ],
+                'properties': {
+                    'carmen:center': [-99.693234, 37.245325],
                     'carmen:text': 'United States of America, United States, America, USA, US',
                     'iso2': 'US',
                     'population': 307212123,
@@ -97,9 +98,9 @@ test('contextVector gzip', (t) => {
                 }
             }
         ]
-    }), "data");
+    }), 'data');
     const buffer = zlib.gzipSync(vtile.getData());
-    let source = {
+    const source = {
         getTile: (z, x, y, cb) => {
             return cb(null, buffer);
         },
@@ -122,7 +123,7 @@ test('contextVector gzip', (t) => {
                 'carmen:types': ['test'],
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
-                'carmen:center': [ -99.6932, 37.2453 ],
+                'carmen:center': [-99.6932, 37.2453],
                 'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
                 'carmen:geomtype': 1,
@@ -140,7 +141,7 @@ test('contextVector gzip', (t) => {
 test('contextVector badbuffer', (t) => {
     context.getTile.cache.reset();
 
-    let source = {
+    const source = {
         getTile: (z,x,y,cb) => {
             return cb(null, new Buffer('lkzvjlkajsdf'));
         },
@@ -158,14 +159,14 @@ test('contextVector badbuffer', (t) => {
     });
 });
 
-//Carmen should gracefully ignore empty VT buffers
+// Carmen should gracefully ignore empty VT buffers
 test('contextVector empty VT buffer', (t) => {
     context.getTile.cache.reset();
 
     const vtile = new mapnik.VectorTile(0,0,0);
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -190,7 +191,7 @@ test('nearestPoints empty VT buffer', (t) => {
     const vtile = new mapnik.VectorTile(0,0,0);
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -215,24 +216,24 @@ test('nearestPoints scoreFilter', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 2, "carmen:text": "A", "carmen:score": 40, "carmen:center": "0,0" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { id: 2, 'carmen:text': 'A', 'carmen:score': 40, 'carmen:center': '0,0' }
             },
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 3, "carmen:text": "B", "carmen:score": 60, "carmen:center": "0,0" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { id: 3, 'carmen:text': 'B', 'carmen:score': 60, 'carmen:center': '0,0' }
             }
         ]
-    }), "data");
+    }), 'data');
 
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -242,7 +243,7 @@ test('nearestPoints scoreFilter', (t) => {
             maxscore: 100,
             minscore: 0,
             scoreranges: {
-                landmark: [ 0.5, 1]
+                landmark: [0.5, 1]
             },
             name: 'poi',
             type: 'poi',
@@ -277,23 +278,23 @@ test('contextVector ignores negative score', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "carmen:text": "A", "carmen:score": -1 }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { 'carmen:text': 'A', 'carmen:score': -1 }
             },
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "carmen:text": "B" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { 'carmen:text': 'B' }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -318,18 +319,18 @@ test('contextVector only negative score', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "carmen:text": "A", "carmen:score": -1 }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { 'carmen:text': 'A', 'carmen:score': -1 }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -354,18 +355,18 @@ test('contextVector matched negative score', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { "id": 1, "carmen:text": "A", "carmen:score": -1 }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { 'id': 1, 'carmen:text': 'A', 'carmen:score': -1 }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -390,23 +391,23 @@ test('contextVector grabbed exclusive ID', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 4, "carmen:text": "A", "carmen:score": -1 }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { id: 4, 'carmen:text': 'A', 'carmen:score': -1 }
             },
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [ 0,0 ] },
-                "properties": { id: 5, "carmen:text": "B" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { id: 5, 'carmen:text': 'B' }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -418,7 +419,7 @@ test('contextVector grabbed exclusive ID', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {_exclusive: true, 4: true}, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, { _exclusive: true, 4: true }, null, false, false, (err, data) => {
             t.ifError(err);
             t.equal(data.properties['carmen:text'], 'A');
             t.end();
@@ -438,18 +439,18 @@ test('contextVector restricts distance', (t) => {
     // |    \|
     // +-----o
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "LineString", "coordinates": [ [-180,85],[180,-85] ] },
-                "properties": { "carmen:text": "A" }
+                'type': 'Feature',
+                'geometry': { 'type': 'LineString', 'coordinates': [[-180,85],[180,-85]] },
+                'properties': { 'carmen:text': 'A' }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -478,34 +479,34 @@ test('contextVector restricts distance', (t) => {
     // |     |
     // +-----+
 
-    let geojson = {
-        "type": "FeatureCollection",
-        "features": [
+    const geojson = {
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [-0.001,0.001] },
-                "properties": { "id":1, "carmen:text": "A" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [-0.001,0.001] },
+                'properties': { 'id':1, 'carmen:text': 'A' }
             },
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [0.001,0.001] },
-                "properties": { "id":2, "carmen:text": "B" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0.001,0.001] },
+                'properties': { 'id':2, 'carmen:text': 'B' }
             }
         ]
     };
     const vtileA = new mapnik.VectorTile(0,0,0);
-    vtileA.addGeoJSON(JSON.stringify(geojson),"data");
+    vtileA.addGeoJSON(JSON.stringify(geojson),'data');
 
     geojson.features.reverse();
     const vtileB = new mapnik.VectorTile(0,0,0);
-    vtileB.addGeoJSON(JSON.stringify(geojson),"data");
+    vtileB.addGeoJSON(JSON.stringify(geojson),'data');
 
     test('contextVector sorts ties A', (t) => {
         context.getTile.cache.reset();
 
         zlib.gzip(vtileA.getData(), (err, buffer) => {
             t.ifError(err);
-            let source = {
+            const source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -530,7 +531,7 @@ test('contextVector restricts distance', (t) => {
 
         zlib.gzip(vtileB.getData(), (err, buffer) => {
             t.ifError(err);
-            let source = {
+            const source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -555,7 +556,7 @@ test('contextVector restricts distance', (t) => {
 
         zlib.gzip(vtileB.getData(), (err, buffer) => {
             t.ifError(err);
-            let source = {
+            const source = {
                 getTile: (z,x,y,cb) => {
                     return cb(null, buffer);
                 },
@@ -581,18 +582,18 @@ test('contextVector caching', (t) => {
 
     const vtile = new mapnik.VectorTile(0,0,0);
     vtile.addGeoJSON(JSON.stringify({
-        "type": "FeatureCollection",
-        "features": [
+        'type': 'FeatureCollection',
+        'features': [
             {
-                "type": "Feature",
-                "geometry": { "type": "Point", "coordinates": [0,0] },
-                "properties": { "carmen:text": "A" }
+                'type': 'Feature',
+                'geometry': { 'type': 'Point', 'coordinates': [0,0] },
+                'properties': { 'carmen:text': 'A' }
             }
         ]
-    }),"data");
+    }),'data');
     zlib.gzip(vtile.getData(), (err, buffer) => {
         t.ifError(err);
-        let source = {
+        const source = {
             getTile: (z,x,y,cb) => {
                 return cb(null, buffer);
             },
@@ -628,11 +629,11 @@ test('contextVector caching', (t) => {
 test('Context eliminates correct properties', (t) => {
     const conf = {
         country: new mem({ maxzoom:6 }, () => {}),
-        region: new mem({maxzoom: 6 }, () => {})
+        region: new mem({ maxzoom: 6 }, () => {})
     };
     const c = new Carmen(conf);
 
-    let country = {
+    const country = {
         id: 1,
         properties: {
             'carmen:text': 'united states',
@@ -647,7 +648,7 @@ test('Context eliminates correct properties', (t) => {
             coordinates: [0,0]
         }
     };
-    let region = {
+    const region = {
         id: 2,
         properties: {
             'carmen:text': 'maine',

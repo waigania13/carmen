@@ -1,20 +1,19 @@
 // Test that a feature at a tile's edge can be found.
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    test: new mem({maxzoom:14}, () => {})
+    test: new mem({ maxzoom:14 }, () => {})
 };
 const c = new Carmen(conf);
 
 tape('index test', (t) => {
-    let feature = {
+    const feature = {
         id:1,
         properties: {
             'carmen:text':'test',
@@ -22,7 +21,7 @@ tape('index test', (t) => {
             'carmen:center':[-2.17405858745506,53.4619151830114]
         }
     };
-    queueFeature(conf.test, feature, () => { buildQueued(conf.test, t.end) });
+    queueFeature(conf.test, feature, () => { buildQueued(conf.test, t.end); });
 });
 
 tape('forward between tiles', (t) => {
