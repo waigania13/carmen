@@ -375,19 +375,32 @@ function tokenValidator(token_replacer) {
     }
 }
 
-// Ensure that all carmen sources are opened.
+/**
+ * Ensure that all carmen sources are opened
+ *
+ * @access private
+ *
+ * @param {function} callback - a callback function
+ * @returns {boolean} true if all sources have been opened
+ */
 Geocoder.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
 /**
  * Main entry point for geocoding API. Returns results across all indexes for
- * a given query. Actual searches are delegated to {@link Geocoder#search}
- * over each enabled backend.
+ * a given query.
+ *
+ * @access public
+ *
+ * @name Geocoder#geocode
+ * @memberof Geocoder
+ * @see {@link #geocode|gecode} for more details, including
+ * `options` properties.
  *
  * @param {string} query - a query string, eg "Chester, NJ"
  * @param {Object} options - options
- * @returns {FeatureCollection} A GeoJSON Feature collection. Each feature is a search result.
+ * @param {function} callback - a callback function, passed on to {@link #geocode|geocode}
  */
 Geocoder.prototype.geocode = function(query, options, callback) {
     const self = this;
@@ -400,16 +413,22 @@ Geocoder.prototype.geocode = function(query, options, callback) {
 /**
  * Main entry point for indexing. Index docs from one source to another.
  *
- * @param {Tilesource} from - A Tilesource source
- * @param {Tilesource} to - Destination of index
- * @param {Object} pointer - options
- * @param {Object} pointer.
+ * @name Geocoder#index
+ * @memberof Geocoder
+ * @see {@link #index|index} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {Stream} from - A source object
+ * @param {string} to - Destination of index
+ * @param {Object} options - options
+ * @param {function} callback - a callback function, passed on to {@link #index|index}
  */
-Geocoder.prototype.index = function(from, to, pointer, callback) {
+Geocoder.prototype.index = function(from, to, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        index(self, from, to, pointer, callback);
+        index(self, from, to, options, callback);
     });
 };
 
