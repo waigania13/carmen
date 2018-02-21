@@ -6,6 +6,7 @@
     -   [Geocoder#geocode](#geocodergeocode)
     -   [Geocoder#index](#geocoderindex)
 -   [geocode](#geocode)
+-   [phrasematch](#phrasematch)
 
 ## Geocoder
 
@@ -76,3 +77,16 @@ Main interface for querying an index and returning ranked results.
     -   `options.autocomplete` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, indexes will be returned as part of the results. (optional, default `true`)
     -   `options.reverseMode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Choices are `'distance'`, `'score'`. Affects the way that a result's context array is built (optional, default `'distance'`)
 -   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+
+## phrasematch
+
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/9255f8fe2e36b119cb55421b7329d9a788a07b8b/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+
+phrasematch
+
+**Parameters**
+
+-   `source` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a Geocoder datasource
+-   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
+-   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** called with `(err, phrasematches, source)`
