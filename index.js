@@ -419,10 +419,10 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  *
  * @access public
  *
- * @param {Stream} from - A source object
- * @param {string} to - Destination of index
+ * @param {stream.Writable} from - a readable stream of GeoJSON features
+ * @param {Tilesink} to - a {@link tilelive.Tilesink https://github.com/mapbox/tilelive/blob/master/API.md} describing the destination of the index
  * @param {Object} options - options
- * @param {function} callback - a callback function, passed on to {@link #index|index}
+ * @param {function} callback - a callback function, passed on to {@link #index|inde}
  */
 Geocoder.prototype.index = function(from, to, options, callback) {
     const self = this;

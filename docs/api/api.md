@@ -9,7 +9,7 @@
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/d6a024c12b84878a95fe1b5f48a534567aa13b7d/index.js#L35-L319 "Source code on GitHub")
+[index.js:35-319](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L35-L319 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
@@ -23,7 +23,7 @@ multiple indexes, returning a single set of ranked results.
 
 ### Geocoder#geocode
 
-[index.js:405-411](https://github.com/mapbox/carmen/blob/d6a024c12b84878a95fe1b5f48a534567aa13b7d/index.js#L405-L411 "Source code on GitHub")
+[index.js:405-411](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L405-L411 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -39,7 +39,7 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:427-433](https://github.com/mapbox/carmen/blob/d6a024c12b84878a95fe1b5f48a534567aa13b7d/index.js#L427-L433 "Source code on GitHub")
+[index.js:427-433](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L427-L433 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
@@ -47,14 +47,14 @@ Main entry point for indexing. Index docs from one source to another.
 
 **Parameters**
 
--   `from` **[Stream](https://nodejs.org/api/stream.html)** A source object
--   `to` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Destination of index
+-   `from` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** a readable stream of GeoJSON features
+-   `to` **Tilesink** a [https://github.com/mapbox/tilelive/blob/master/API.md](tilelive.Tilesink) describing the destination of the index
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function, passed on to [index](#index)
+-   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function, passed on to [inde](#index)
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/d6a024c12b84878a95fe1b5f48a534567aa13b7d/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
