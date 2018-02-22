@@ -319,7 +319,11 @@ function Geocoder(indexes, options) {
 }
 
 /**
- * An interface to the underlying data that a {@link Geocoder} instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive {@link https://github.com/mapbox/tilelive/blob/master/API.md API Docs} for more info.
+ * An interface to the underlying data that a {@link Geocoder} instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive {@link https://github.com/mapbox/tilelive/blob/master/API.md API Docs} for more info. Currently, carmen supports the following tilelive modules:
+ *
+ * - {@link https://github.com/mapbox/tilelive-s3 tilelive-s3}
+ * - {@link https://github.com/mapbox/node-mbtiles node-mbtiles}
+ * - {@link MemSource}
  *
  * @access public
  *
@@ -340,7 +344,7 @@ function Geocoder(indexes, options) {
  *
  * @access private
  *
- * @param {CarmenSource} source - a CarmenSource. Usually {@link MemSource} or an {@link https://github.com/mapbox/node-mbtiles MBTiles} source.
+ * @param {CarmenSource} source - a CarmenSource.
  * @returns {CarmenSource} a clone of the input source
  */
 function clone(source) {
@@ -427,7 +431,7 @@ Geocoder.prototype.geocode = function(query, options, callback) {
 };
 
 /**
- * Main entry point for indexing. Index docs from one source to another.
+ * Main entry point for indexing. Index a stream of GeoJSON docs.
  *
  * @name Geocoder#index
  * @memberof Geocoder
@@ -436,7 +440,7 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  * @access public
  *
  * @param {stream.Readable} from - a readable stream of GeoJSON features
- * @param {CarmenSource} to - a CarmenSource. Usually {@link MemSource} or an {@link https://github.com/mapbox/node-mbtiles MBTiles} source.
+ * @param {CarmenSource} to - the interface to the index's destination
  * @param {Object} options - options
  * @param {number} options.zoom - the max zoom level for the index
  * @param {stream.Writable} options.output - the output stream for
