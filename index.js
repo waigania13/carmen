@@ -419,9 +419,12 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  *
  * @access public
  *
- * @param {stream.Writable} from - a readable stream of GeoJSON features
+ * @param {stream.Readable} from - a readable stream of GeoJSON features
  * @param {Tilesink} to - a {@link tilelive.Tilesink https://github.com/mapbox/tilelive/blob/master/API.md} describing the destination of the index
  * @param {Object} options - options
+ * @param {number} options.zoom - the max zoom level for the index
+ * @param {stream.Writable} options.output - the output stream for
+ * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
  * @param {function} callback - a callback function, passed on to {@link #index|inde}
  */
 Geocoder.prototype.index = function(from, to, options, callback) {
