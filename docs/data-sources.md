@@ -2,9 +2,53 @@
 
 Data sources for carmen must be provided by a [tilelive.js](https://github.com/mapbox/tilelive) interface. Using one of the many already-available tilelive modules, vector tiles can be sourced from backend storage solutions like s3, postgis, mapbox and more. You can also implement your own interface, so long as it satisfies the interface requirements [specified for a Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md).
 
+
 See  [the data-sources API doc](./docs/data-sources.md) for more detail about carmen's extensions on the tilelive base class.
 
-# Data Sources
+## Carmen source API
+
+Carmen sources must satisfy the API requirements of [tilelive sources](https://github.com/mapbox/tilelive.js/blob/master/API.md).
+
+TODO: note that we only support some tilelive protocols: MBTiles, MemSource, and maybe s3?
+
+They must also, however, implement the following carmen-specifc methods:
+
+
+### getFeature(id, callback)
+
+Retrieves a feature given by `id`, calls `callback` with `(err, result)`
+
+### putFeature(id, data, callback)
+
+Inserts feature `data` and calls callback with `(err, result)`.
+
+### startWriting(callback)
+
+Create necessary indexes or structures in order for this carmen source to
+be written to.
+
+### putGeocoderData(index, shard, buffer, callback)
+
+Put buffer into a shard with index `index`, and call callback with `(err)`
+
+### getGeocoderData(index, shard, callback)
+
+Get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+
+### getIndexableDocs(pointer, callback)
+
+Get documents needed to create a forward geocoding datasource.
+
+`pointer` is an optional object that has different behavior between sources -
+it indicates the state of the database or dataset like a cursor would, allowing
+you to page through documents.
+
+`callback` is called with `(error, documents, pointer)`, in which `documents`
+is a list of objects. Each object may have any attributes but the following are
+required:
+
+
+## Document Structure
 
 Each document is a valid geojson `Feature`. Each feature should contain a unique `id` field
 as well as the following settings in the `properties` object.
@@ -18,7 +62,7 @@ attribute         | description
 `carmen:addressnumber`  | Optional. Used with `geocoder_address`. An array of addresses corresponding to the order of their geometries in the `GeometryCollection`
 `carmen:types`    | Optional. An array of types associating this feature with one or more feature classes defined by the source-level `geocoder_type` key. By setting multiple types a feature can move between various feature levels depending on the query and results. If omitted, defaults to the `geocoder_type` set by the feature's index.
 
-## Example Features
+## Example Documents
 
 ### Polygon Example
 
