@@ -5,26 +5,28 @@
 -   [Geocoder](#geocoder)
     -   [Geocoder#geocode](#geocodergeocode)
     -   [Geocoder#index](#geocoderindex)
+-   [CarmenSource](#carmensource)
 -   [geocode](#geocode)
 -   [phrasematch](#phrasematch)
+-   [index](#index)
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L35-L319 "Source code on GitHub")
+[index.js:35-319](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L35-L319 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
 
 **Parameters**
 
--   `indexes` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), Tilesource>** A one-to-one mapping from index layer name to [Tilesource](https://github.com/mapbox/tilelive/blob/master/API.md)
+-   `indexes` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [CarmenSource](#carmensource)>** A one-to-one mapping from index layer name to a [CarmenSource](#carmensource).
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
     -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
     -   `options.geocoder_inverse_tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), ([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function))>** for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [text-processsing](./text-processing.md) for details.
 
 ### Geocoder#geocode
 
-[index.js:405-411](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L405-L411 "Source code on GitHub")
+[index.js:421-427](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L421-L427 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -40,7 +42,7 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:427-433](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/index.js#L427-L433 "Source code on GitHub")
+[index.js:446-452](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L446-L452 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
@@ -48,14 +50,32 @@ Main entry point for indexing. Index docs from one source to another.
 
 **Parameters**
 
--   `from` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** a readable stream of GeoJSON features
--   `to` **Tilesink** a [https://github.com/mapbox/tilelive/blob/master/API.md](tilelive.Tilesink) describing the destination of the index
+-   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a readable stream of GeoJSON features
+-   `to` **[CarmenSource](#carmensource)** a CarmenSource. Usually [MemSource](MemSource) or an [MBTiles](https://github.com/mapbox/node-mbtiles) source.
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
+    -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
+    -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
+    -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
 -   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function, passed on to [inde](#index)
+
+## CarmenSource
+
+[index.js:346-376](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L346-L376 "Source code on GitHub")
+
+An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info.
+
+Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)
+
+**Properties**
+
+-   `getGeocoderData` **function ([index](#index), shard, callback)** get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+-   `putGeocoderData` **function ([index](#index), shard, [buffer](https://nodejs.org/api/buffer.html), callback)** put buffer into a shard with index `index`, and call callback with `(err)`
+-   `geocoderDataIterator` **function (type)** TODO
+-   `getIndexableDocs` **function (pointer, callback)** get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/8268edfa4ef04ef08577a756ebf853abe3822cb2/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
@@ -80,13 +100,31 @@ Main interface for querying an index and returning ranked results.
 
 ## phrasematch
 
-[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/9255f8fe2e36b119cb55421b7329d9a788a07b8b/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/phrasematch.js#L17-L119 "Source code on GitHub")
 
 phrasematch
 
 **Parameters**
 
 -   `source` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a Geocoder datasource
--   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
+-   `query`  
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
 -   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** called with `(err, phrasematches, source)`
+-   `a` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** list of terms composing the query to Carmen
+
+## index
+
+[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/index.js#L30-L97 "Source code on GitHub")
+
+The main interface for building an index
+
+**Parameters**
+
+-   `geocoder` **[Geocoder](#geocoder)** a [Geocoder](#geocoder) instance
+-   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a stream of geojson features
+-   `to` **[CarmenSource](#carmensource)** a CarmenSource. Usually [MemSource](MemSource) or an [MBTiles](https://github.com/mapbox/node-mbtiles) source.
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
+    -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
+    -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
+    -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
+-   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** A callback function

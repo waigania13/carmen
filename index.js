@@ -329,9 +329,7 @@ function Geocoder(indexes, options) {
  * @property {function(index,shard,callback)} getGeocoderData - get carmen record at `shard` in `index` and call callback with `(err, buffer)`
  * @property {function(index,shard,buffer,callback)} putGeocoderData - put buffer into a shard with index `index`, and call callback with `(err)`
  * @property {function(type)} geocoderDataIterator - TODO
- * @property {function(pointer, callback)} getIndexableDocs - get documents needed to create a forward geocoding datasource.
- *  - `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc.
- *  - `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
+ * @property {function(pointer, callback)} getIndexableDocs - get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
  *
  */
 
@@ -438,7 +436,7 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  * @access public
  *
  * @param {stream.Readable} from - a readable stream of GeoJSON features
- * @param {CarmenSource} source - a CarmenSource. Usually {@link MemSource} or an {@link https://github.com/mapbox/node-mbtiles MBTiles} source.
+ * @param {CarmenSource} to - a CarmenSource. Usually {@link MemSource} or an {@link https://github.com/mapbox/node-mbtiles MBTiles} source.
  * @param {Object} options - options
  * @param {number} options.zoom - the max zoom level for the index
  * @param {stream.Writable} options.output - the output stream for
