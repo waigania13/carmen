@@ -23,7 +23,7 @@ Carmen no longer ships with any default or sample data. Sample data will be prov
 
 For a simplified example of using the carmen API, see [the `example` folder](./example) in this repository.
 
-For more detail about specific elements of the API (and how to use them directly), see the [API Docs](./docs/api/README.md).
+For more detail about specific elements of the API (and how to use them directly), see the [API Docs](./docs/api.md).
 
 ## Command-line scripts
 Carmen comes with command line utilities that also act as examples of API usage.
@@ -54,7 +54,11 @@ The example project is located in the [`example`](./example) directory. It is a 
 
 ### API Documentation
 
-API documentation is written as [JSDoc comments](http://usejsdoc.org/) in the source code. It is also available as markdown-formatted documents in the [`docs/api`](./docs/api) directory. These documents are generated using [documentationjs](http://documentation.js.org/), and should be updated after any JSDoc comment changes.
+API documentation is written as [JSDoc comments](http://usejsdoc.org/) in the source code. It is also available as a markdown-formatted document: [`docs/api.md`](./docs/api.md). This document is generated using [documentationjs](http://documentation.js.org/), and should be updated after any JSDoc comment changes:
+
+```bash
+yarn build-docs
+```
 
 #### API Documentation Style Guide
 
