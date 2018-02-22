@@ -12,7 +12,7 @@
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L35-L319 "Source code on GitHub")
+[index.js:35-319](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/index.js#L35-L319 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
@@ -26,7 +26,7 @@ multiple indexes, returning a single set of ranked results.
 
 ### Geocoder#geocode
 
-[index.js:421-427](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L421-L427 "Source code on GitHub")
+[index.js:425-431](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/index.js#L425-L431 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -42,16 +42,16 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:446-452](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L446-L452 "Source code on GitHub")
+[index.js:450-456](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/index.js#L450-L456 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
-Main entry point for indexing. Index docs from one source to another.
+Main entry point for indexing. Index a stream of GeoJSON docs.
 
 **Parameters**
 
 -   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a readable stream of GeoJSON features
--   `to` **[CarmenSource](#carmensource)** a CarmenSource. Usually [MemSource](MemSource) or an [MBTiles](https://github.com/mapbox/node-mbtiles) source.
+-   `to` **[CarmenSource](#carmensource)** the interface to the index's destination
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
     -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
     -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
@@ -60,9 +60,13 @@ Main entry point for indexing. Index docs from one source to another.
 
 ## CarmenSource
 
-[index.js:346-376](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/index.js#L346-L376 "Source code on GitHub")
+[index.js:350-380](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/index.js#L350-L380 "Source code on GitHub")
 
-An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info.
+An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info. Currently, carmen supports the following tilelive modules:
+
+-   [tilelive-s3](https://github.com/mapbox/tilelive-s3)
+-   [node-mbtiles](https://github.com/mapbox/node-mbtiles)
+-   [MemSource](MemSource)
 
 Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)
 
@@ -75,7 +79,7 @@ Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Sta
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
@@ -100,7 +104,7 @@ Main interface for querying an index and returning ranked results.
 
 ## phrasematch
 
-[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/lib/phrasematch.js#L17-L119 "Source code on GitHub")
 
 phrasematch
 
@@ -114,7 +118,7 @@ phrasematch
 
 ## index
 
-[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/d694343f767bf5a4f9d026c861e4d93c3feb2ee3/lib/index.js#L30-L97 "Source code on GitHub")
+[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/398f8f33f75b4f5083e6e95be799616894f0c291/lib/index.js#L30-L97 "Source code on GitHub")
 
 The main interface for building an index
 
@@ -122,7 +126,7 @@ The main interface for building an index
 
 -   `geocoder` **[Geocoder](#geocoder)** a [Geocoder](#geocoder) instance
 -   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a stream of geojson features
--   `to` **[CarmenSource](#carmensource)** a CarmenSource. Usually [MemSource](MemSource) or an [MBTiles](https://github.com/mapbox/node-mbtiles) source.
+-   `to` **[CarmenSource](#carmensource)** the interface to the index's destinaton
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
     -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
     -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
