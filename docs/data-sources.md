@@ -13,12 +13,12 @@ We make use of [tilelive.js](https://github.com/mapbox/tilelive), which supports
 Using already-available [tilelive modules](https://github.com/mapbox/tilelive#awesome-tilelive-modules), vector tiles can be sourced from different backend storage solutions. Currently, carmen supports the following modules:
 
 - [tilelive-s3](https://github.com/mapbox/tilelive-s3)
-- [node-mbtiles](https://github.com/mapbox/node-mbtiles node-mbtiles)
+- [node-mbtiles](https://github.com/mapbox/node-mbtiles)
 - [`MemSource`](./api.md#memsource)
 
 ### Extension
 
-As noted above, carmen's data source interfaces implement the `tilelive.Tilesource` architecture. They also extend it, however, requiring additional functions not specified by tilelive. This extended specification is called `CarmenSource`, and is documented in detail in the [API doc](./api.md#CarmenSource).
+As noted above, carmen's data source interfaces implement the `tilelive.Tilesource` architecture. They also extend it, however, requiring additional functions not specified by tilelive. This extended specification is called `CarmenSource`, and is documented in detail in the [API doc](./api.md#carmensource).
 
 The reason that many tilelive modules won't work with carmen is that carmen expects them to conform to the `CarmenSource` specification.  In the modules that are supported, these requirements have been added on the modules themselves. See, for example, [this addition to `node-mbtile`](https://github.com/mapbox/node-mbtiles/commit/51c598ddaca615ed3fea08f50d343de6a6d43053).
 
