@@ -9,11 +9,16 @@
 -   [geocode](#geocode)
 -   [phrasematch](#phrasematch)
 -   [spatialmatch](#spatialmatch)
+-   [verifymatch](#verifymatch)
 -   [index](#index)
+-   [merge](#merge)
+    -   [Document Merge](#document-merge)
+    -   [RocksDB grid and freq caches](#rocksdb-grid-and-freq-caches)
+    -   [DAWG merge](#dawg-merge)
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/index.js#L35-L319 "Source code on GitHub")
+[index.js:35-319](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L35-L319 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
@@ -27,7 +32,7 @@ multiple indexes, returning a single set of ranked results.
 
 ### Geocoder#geocode
 
-[index.js:425-431](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/index.js#L425-L431 "Source code on GitHub")
+[index.js:425-431](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L425-L431 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -43,7 +48,7 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:450-456](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/index.js#L450-L456 "Source code on GitHub")
+[index.js:450-456](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L450-L456 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
@@ -61,7 +66,7 @@ Main entry point for indexing. Index a stream of GeoJSON docs.
 
 ## CarmenSource
 
-[index.js:350-380](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/index.js#L350-L380 "Source code on GitHub")
+[index.js:350-380](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L350-L380 "Source code on GitHub")
 
 An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info. Currently, carmen supports the following tilelive modules:
 
@@ -80,7 +85,7 @@ Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Sta
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
@@ -105,7 +110,7 @@ Main interface for querying an index and returning ranked results.
 
 ## phrasematch
 
-[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/phrasematch.js#L17-L119 "Source code on GitHub")
 
 phrasematch
 
@@ -119,7 +124,7 @@ phrasematch
 
 ## spatialmatch
 
-[lib/spatialmatch.js:27-122](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/lib/spatialmatch.js#L27-L122 "Source code on GitHub")
+[lib/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/spatialmatch.js#L27-L124 "Source code on GitHub")
 
 spatialmatch determines whether indexes can be spatially stacked and discards indexes that cannot be stacked together
 
@@ -130,9 +135,25 @@ spatialmatch determines whether indexes can be spatially stacked and discards in
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed in with the query
 -   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** callback called with indexes that could be spatially stacked
 
+## verifymatch
+
+[lib/verifymatch.js:29-94](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/verifymatch.js#L29-L94 "Source code on GitHub")
+
+verifymatch - results from spatialmatch are now verified by querying real geometries in vector tiles
+
+**Parameters**
+
+-   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
+-   `stats`  
+-   `geocoder` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a geocoder datasource
+-   `matched`  
+-   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
+-   `callback`  
+-   `matches` **matched** resultant indexes that could be spatially stacked
+
 ## index
 
-[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/eca3579d105bc13d43899904f1891c61be4e29dd/lib/index.js#L30-L97 "Source code on GitHub")
+[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/index.js#L30-L97 "Source code on GitHub")
 
 The main interface for building an index
 
@@ -146,3 +167,43 @@ The main interface for building an index
     -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
     -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
 -   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** A callback function
+
+## merge
+
+[lib/merge.js:226-448](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/merge.js#L226-L448 "Source code on GitHub")
+
+Merge two CarmenSources. The merge happens in three steps
+
+### Document Merge
+
+The `Feature` documents from each source are joined and merged where
+necessary. The join is a [full outer join](https://www.w3schools.com/sql/sql_join_full.asp),
+meaning that all elements of the two sources are returned. A stream of
+records is returned like:
+
+    { shard: <shard_value>, data1: <from1_document>, data2: <from2_docment> }
+
+The full outer join means:
+
+| if a shard value...              | `data1`     | `data2`     |
+| -------------------------------- | ----------- | ----------- |
+| ...exists in `from1` and `from2` | `Feature`   | `Feature`   |
+| ...only exists in `from1`        | `Feature`   | `undefined` |
+| ...only exists in `from2`        | `undefined` | `Feature`   |
+
+### RocksDB grid and freq caches
+
+see [RocksDBCache#merge](RocksDBCache#merge).
+
+### DAWG merge
+
+TODO: document how dawg merge works
+
+**Parameters**
+
+-   `geocoder` **[Geocoder](#geocoder)** an instance of carmen Geocoder
+-   `from1` **[CarmenSource](#carmensource)** a source index to be merged
+-   `from2` **[CarmenSource](#carmensource)** another source to be merged
+-   `to` **[CarmenSource](#carmensource)** the destination of the merged sources
+-   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
+-   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
