@@ -18,7 +18,7 @@
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L35-L319 "Source code on GitHub")
+[index.js:35-319](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/index.js#L35-L319 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
@@ -27,12 +27,12 @@ multiple indexes, returning a single set of ranked results.
 
 -   `indexes` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [CarmenSource](#carmensource)>** A one-to-one mapping from index layer name to a [CarmenSource](#carmensource).
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
-    -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
+    -   `options.tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** mapping from string patterns to strings. patterns are replaced with strings when found in queries. this is treated as a global token replacement map: any substring matching a pattern key (which can be regex) is replaced with the associated string value.
     -   `options.geocoder_inverse_tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), ([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function))>** for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [text-processsing](./text-processing.md) for details.
 
 ### Geocoder#geocode
 
-[index.js:425-431](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L425-L431 "Source code on GitHub")
+[index.js:425-431](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/index.js#L425-L431 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -48,7 +48,7 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:450-456](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L450-L456 "Source code on GitHub")
+[index.js:450-456](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/index.js#L450-L456 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
@@ -66,7 +66,7 @@ Main entry point for indexing. Index a stream of GeoJSON docs.
 
 ## CarmenSource
 
-[index.js:350-380](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/index.js#L350-L380 "Source code on GitHub")
+[index.js:350-380](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/index.js#L350-L380 "Source code on GitHub")
 
 An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info. Currently, carmen supports the following tilelive modules:
 
@@ -85,7 +85,7 @@ Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Sta
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
@@ -110,7 +110,7 @@ Main interface for querying an index and returning ranked results.
 
 ## phrasematch
 
-[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/phrasematch.js#L17-L119 "Source code on GitHub")
 
 phrasematch
 
@@ -124,7 +124,7 @@ phrasematch
 
 ## spatialmatch
 
-[lib/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/spatialmatch.js#L27-L124 "Source code on GitHub")
+[lib/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/spatialmatch.js#L27-L124 "Source code on GitHub")
 
 spatialmatch determines whether indexes can be spatially stacked and discards indexes that cannot be stacked together
 
@@ -137,23 +137,22 @@ spatialmatch determines whether indexes can be spatially stacked and discards in
 
 ## verifymatch
 
-[lib/verifymatch.js:29-94](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/verifymatch.js#L29-L94 "Source code on GitHub")
+[lib/verifymatch.js:30-94](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/verifymatch.js#L30-L94 "Source code on GitHub")
 
 verifymatch - results from spatialmatch are now verified by querying real geometries in vector tiles
 
 **Parameters**
 
 -   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
--   `stats`  
+-   `stats` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** ?
 -   `geocoder` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a geocoder datasource
--   `matched`  
+-   `matched` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** resultant indexes that could be spatially stacked
 -   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
--   `callback`  
--   `matches` **matched** resultant indexes that could be spatially stacked
+-   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** callback function which is called with the verified indexes in the correct hierarchical order
 
 ## index
 
-[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/index.js#L30-L97 "Source code on GitHub")
+[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/index.js#L30-L97 "Source code on GitHub")
 
 The main interface for building an index
 
@@ -170,7 +169,7 @@ The main interface for building an index
 
 ## merge
 
-[lib/merge.js:226-448](https://github.com/mapbox/carmen/blob/8136a162dfa20dc0525785d5c860a3cbd74d5537/lib/merge.js#L226-L448 "Source code on GitHub")
+[lib/merge.js:226-448](https://github.com/mapbox/carmen/blob/15f9151103953cc47b3bdfe76a71d806913aea7d/lib/merge.js#L226-L448 "Source code on GitHub")
 
 Merge two CarmenSources. The merge happens in three steps
 
