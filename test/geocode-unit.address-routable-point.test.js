@@ -1,5 +1,5 @@
 // Tests whether routable_point is added to geocoding results
-
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -11,11 +11,11 @@ const addFeature = require('../lib/util/addfeature'),
 // Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (() => {
     const conf = {
-        address: new mem({maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}'}, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
-        let address = {
+        const address = {
             id:1,
             properties: {
                 'carmen:text': 'fake street',
@@ -23,10 +23,10 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:addressnumber': [null, ['9','11','13']]
             },
             geometry: {
-                type: "GeometryCollection",
+                type: 'GeometryCollection',
                 geometries: [
                     {
-                        type: "MultiLineString",
+                        type: 'MultiLineString',
                         coordinates: [
                             [
                                 [1.111, 1.11],
@@ -37,13 +37,13 @@ const addFeature = require('../lib/util/addfeature'),
                         ]
                     },
                     {
-                        type: "MultiPoint",
+                        type: 'MultiPoint',
                         coordinates: [[1.111, 1.111], [1.113, 1.111], [1.115, 1.111]]
                     }
                 ]
             }
-        }
-        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end) });
+        };
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
     tape('Search for interpolated address and return routable point', (t) => {

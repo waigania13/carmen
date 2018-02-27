@@ -1,16 +1,17 @@
+'use strict';
 const tape = require('tape');
 const routablePoint = require('../lib/pure/routablepoint.js');
 
-tape('features without linestrings', function(assert) {
+tape('features without linestrings', (assert) => {
     const point = [1.111, 1.11];
     const featureNoLinestring = {
-        type: "Feature",
+        type: 'Feature',
         properties: {},
         geometry: {
-            type: "GeometryCollection",
+            type: 'GeometryCollection',
             geometries: [
                 {
-                    type: "MultiPoint",
+                    type: 'MultiPoint',
                     coordinates: [[1, 1]]
                 }
             ]
@@ -29,16 +30,16 @@ tape('features without linestrings', function(assert) {
 (() => {
     const testPrefix = 'routablePoint on straight line: ';
     const feature = {
-        type: "Feature",
+        type: 'Feature',
         properties: {
-            "carmen:addressnumber": [null, ["110", "112", "114"]],
-            "carmen:center": [1.111, 1.113]
+            'carmen:addressnumber': [null, ['110', '112', '114']],
+            'carmen:center': [1.111, 1.113]
         },
         geometry: {
-            type: "GeometryCollection",
+            type: 'GeometryCollection',
             geometries: [
                 {
-                    type: "MultiLineString",
+                    type: 'MultiLineString',
                     coordinates: [
                         [
                             [1.111, 1.11],
@@ -49,7 +50,7 @@ tape('features without linestrings', function(assert) {
                     ]
                 },
                 {
-                    type: "MultiPoint",
+                    type: 'MultiPoint',
                     coordinates: [[1.111, 1.111], [1.113, 1.111], [1.118, 1.111]]
                 }
             ]
@@ -57,7 +58,7 @@ tape('features without linestrings', function(assert) {
         id: 1
     };
 
-    tape(testPrefix + 'with actual feature point', function(assert) {
+    tape(testPrefix + 'with actual feature point', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -73,7 +74,7 @@ tape('features without linestrings', function(assert) {
         assert.end();
     });
 
-    tape(testPrefix + 'with point already on linestring', function(assert) {
+    tape(testPrefix + 'with point already on linestring', (assert) => {
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
          *
@@ -88,7 +89,7 @@ tape('features without linestrings', function(assert) {
         assert.end();
     });
 
-    tape(testPrefix + 'with point ???', function(assert) {
+    tape(testPrefix + 'with point ???', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -105,7 +106,7 @@ tape('features without linestrings', function(assert) {
         assert.end();
     });
 
-    tape(testPrefix + 'with point not in the linestring', function(assert) {
+    tape(testPrefix + 'with point not in the linestring', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -127,16 +128,16 @@ tape('features without linestrings', function(assert) {
 (() => {
     const testPrefix = 'routablePoint on ZigZag Line: ';
     const feature = {
-        type: "Feature",
+        type: 'Feature',
         properties: {
-            "carmen:addressnumber": [null, ["110", "112", "114"]],
-            "carmen:center": [1.111, 1.113]
+            'carmen:addressnumber': [null, ['110', '112', '114']],
+            'carmen:center': [1.111, 1.113]
         },
         geometry: {
-            type: "GeometryCollection",
+            type: 'GeometryCollection',
             geometries: [
                 {
-                    type: "MultiLineString",
+                    type: 'MultiLineString',
                     coordinates: [
                         [
                             [1.111, 1.11],
@@ -147,7 +148,7 @@ tape('features without linestrings', function(assert) {
                     ]
                 },
                 {
-                    type: "MultiPoint",
+                    type: 'MultiPoint',
                     coordinates: [[1.111, 1.111], [1.113, 1.112], [1.115, 1.111]]
                 }
             ]
@@ -155,7 +156,7 @@ tape('features without linestrings', function(assert) {
         id: 1
     };
 
-    tape(testPrefix + 'on a diagonal', function(assert) {
+    tape(testPrefix + 'on a diagonal', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -179,16 +180,16 @@ tape('features without linestrings', function(assert) {
 (() => {
     const testPrefix = 'routablePoint in cul de sac: ';
     const feature = {
-        type: "Feature",
+        type: 'Feature',
         properties: {
-            "carmen:addressnumber": [null, ["110", "112", "114"]],
-            "carmen:center": [1.111, 1.113]
+            'carmen:addressnumber': [null, ['110', '112', '114']],
+            'carmen:center': [1.111, 1.113]
         },
         geometry: {
-            type: "GeometryCollection",
+            type: 'GeometryCollection',
             geometries: [
                 {
-                    type: "MultiLineString",
+                    type: 'MultiLineString',
                     coordinates: [
                         [
                             [1.111, 1.112],
@@ -199,7 +200,7 @@ tape('features without linestrings', function(assert) {
                     ]
                 },
                 {
-                    type: "MultiPoint",
+                    type: 'MultiPoint',
                     coordinates: [[1.111, 1.112], [1.1115, 1.111], [1.1115, 1.112]]
                 }
             ]
@@ -207,7 +208,7 @@ tape('features without linestrings', function(assert) {
         id: 1
     };
 
-    tape(testPrefix + 'right in the middle of a cul de sac', function(assert) {
+    tape(testPrefix + 'right in the middle of a cul de sac', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -227,7 +228,7 @@ tape('features without linestrings', function(assert) {
         assert.end();
     });
 
-    tape(testPrefix + 'off-center in the middle of a cul de sac', function(assert) {
+    tape(testPrefix + 'off-center in the middle of a cul de sac', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -245,7 +246,7 @@ tape('features without linestrings', function(assert) {
         assert.end();
     });
 
-    tape(testPrefix + 'off-center in the middle of a cul de sac', function(assert) {
+    tape(testPrefix + 'off-center in the middle of a cul de sac', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
