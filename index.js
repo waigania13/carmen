@@ -435,7 +435,7 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  *
  * @name Geocoder#index
  * @memberof Geocoder
- * @see {@link #index|index} for more details, including `options` properties.
+ * @see {@link index} for more details, including `options` properties.
  *
  * @access public
  *
@@ -455,16 +455,42 @@ Geocoder.prototype.index = function(from, to, options, callback) {
     });
 };
 
-// Merge two indexes
-Geocoder.prototype.merge = function(from1, from2, to, pointer, callback) {
+/**
+ * Merge two CarmenSources and output to a third.
+ * @name Geocoder#merge
+ * @memberof Geocoder
+ * @see {@link merge} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {Geocoder} geocoder - an instance of carmen Geocoder
+ * @param {CarmenSource} from1 - a source index to be merged
+ * @param {CarmenSource} from2 - another source to be merged
+ * @param {CarmenSource} to - the destination of the merged sources
+ * @param {object} options - options
+ * @param {function} callback - a callback function
+ */
+Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        merge(self, from1, from2, to, pointer, callback);
+        merge(self, from1, from2, to, options, callback);
     });
 };
 
-// Merge arbitrarily many indexes
+/**
+ * Merge more than two CarmenSources. Only supports MBTile sources.
+ * @name Geocoder#multimerge
+ * @memberof Geocoder
+ * @see {@link multimerge} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {Array<string>} fromFiles - array of paths to input mbtiles files
+ * @param {string} toFile - path to output of merge
+ * @param {object} options - options
+ * @param {function} callback - a callback function
+ */
 Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
     const self = this;
     this._open((err) => {
