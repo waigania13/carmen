@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const mem = require('../lib/api-mem');
@@ -59,18 +60,18 @@ const addFeature = require('../lib/util/addfeature'),
         t.deepEquals(
             conf.country._geocoder.grid.list(),
             [
-                [ 'india', [ 0 ] ],
-                [ 'united states', [ 0, 1 ] ],
-                [ 'بھارت', [ 3 ] ],
-                [ 'هندوستان', [ 2 ] ]
+                ['india', [0]],
+                ['united states', [0, 1]],
+                ['بھارت', [3]],
+                ['هندوستان', [2]]
             ],
-            "fallbacks have been properly computed"
+            'fallbacks have been properly computed'
         );
         t.end();
-    })
+    });
 
     tape('query: United States', (t) => {
-        c.geocode('United States', { language: 'ar'}, (err, res) => {
+        c.geocode('United States', { language: 'ar' }, (err, res) => {
             t.equal('United States', res.features[0].text, 'Fallback to English');
             t.equal('en', res.features[0].language, 'Language returned is English');
             t.ifError(err);
@@ -79,7 +80,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 
     tape('query: India', (t) => {
-        c.geocode('India', { language: 'ar'}, (err, res) => {
+        c.geocode('India', { language: 'ar' }, (err, res) => {
             t.equal('بھارت', res.features[0].text, 'Heuristically falls back to Urdu');
             t.equal('ur', res.features[0].language, 'Language returned is Urdu');
             t.ifError(err);

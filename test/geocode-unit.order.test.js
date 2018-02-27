@@ -1,3 +1,4 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
@@ -20,7 +21,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index country', (t) => {
-    let country = {
+    const country = {
         id:1,
         properties: {
             'carmen:text':'United States',
@@ -32,7 +33,7 @@ tape('index country', (t) => {
 });
 
 tape('index region', (t) => {
-    let region = {
+    const region = {
         id:1,
         properties: {
             'carmen:text':'North Carolina',
@@ -44,7 +45,7 @@ tape('index region', (t) => {
 });
 
 tape('index place', (t) => {
-    let place = {
+    const place = {
         id:1,
         properties: {
             'carmen:text':'Winston-Salem',
@@ -56,7 +57,7 @@ tape('index place', (t) => {
 });
 
 tape('index address', (t) => {
-    let address = {
+    const address = {
         id:1,
         properties: {
             'carmen:text':'Log Cabin Ln',
@@ -73,7 +74,7 @@ tape('index address', (t) => {
 });
 
 tape('index poi', (t) => {
-    let poi = {
+    const poi = {
         id:2,
         properties: {
             'carmen:text':'United States',
@@ -94,46 +95,46 @@ tape('build queued features', (t) => {
 });
 
 tape('Winston-Salem North Carolina', (t) => {
-    c.geocode('Winston-Salem North Carolina', {limit_verify: 1}, (err, res) => {
+    c.geocode('Winston-Salem North Carolina', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{place} {region}`")
+        t.equal(res.features[0].text, 'Winston-Salem', 'ok when query is ordered `{place} {region}`');
         t.equal(res.features[0].relevance, 1, "Expected ascending order doesn't lower relevance");
         t.end();
     });
 });
 
 tape('North Carolina Winston-Salem', (t) => {
-    c.geocode('North Carolina Winston-Salem', {limit_verify: 1}, (err, res) => {
+    c.geocode('North Carolina Winston-Salem', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].text, "Winston-Salem", "ok when query is ordered `{region} {place}`");
-        t.equal(res.features[0].relevance, 0.99, "Unexpected descending order lowers relevance");
+        t.equal(res.features[0].text, 'Winston-Salem', 'ok when query is ordered `{region} {place}`');
+        t.equal(res.features[0].relevance, 0.99, 'Unexpected descending order lowers relevance');
         t.end();
     });
 });
 
 tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
-    c.geocode('Log Cabin Ln North Carolina Winston-Salem', {limit_verify: 2}, (err, res) => {
+    c.geocode('Log Cabin Ln North Carolina Winston-Salem', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].text, "Log Cabin Ln", "ok when query order is mixed up");
-        t.equal(res.features[0].relevance, 0.8333333333333333, "Mixed-up order lowers relevance");
+        t.equal(res.features[0].text, 'Log Cabin Ln', 'ok when query order is mixed up');
+        t.equal(res.features[0].relevance, 0.8333333333333333, 'Mixed-up order lowers relevance');
         t.end();
     });
 });
 
 tape('No descending order POIs', (t) => {
-    c.geocode('North Carolina United States', {limit_verify: 2}, (err, res) => {
+    c.geocode('North Carolina United States', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
-        t.deepEqual(res.features[0].id, "region.1", "First result matches expected order");
+        t.equal(res.features.length, 2, 'feaatures matching in both directions are returned');
+        t.deepEqual(res.features[0].id, 'region.1', 'First result matches expected order');
         t.end();
     });
 });
 
 tape('Descending Gappy', (t) => {
-    c.geocode('United States Winston-Salem', {limit_verify: 2}, (err, res) => {
+    c.geocode('United States Winston-Salem', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 2, "feaatures matching in both directions are returned");
-        t.deepEqual(res.features[0].id, "poi.2", "First result matches expected order");
+        t.equal(res.features.length, 2, 'feaatures matching in both directions are returned');
+        t.deepEqual(res.features[0].id, 'poi.2', 'First result matches expected order');
         t.end();
     });
 });

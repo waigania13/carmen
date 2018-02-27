@@ -1,12 +1,11 @@
 // scoredist unit test
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 const queue = require('d3-queue').queue;
 
 (() => {
@@ -93,7 +92,7 @@ const queue = require('d3-queue').queue;
     // Many medium-scored features in region index
     tape('index lamplace (medium score)', (t) => {
         const q = queue(1);
-        for (let i =2; i < 25; i++) q.defer((i, done) => {
+        for (let i = 2; i < 25; i++) q.defer((i, done) => {
             queueFeature(conf.lamplace, {
                 id:i,
                 properties: {
@@ -145,8 +144,8 @@ const queue = require('d3-queue').queue;
     tape('high score beats low score + high scorefactor', (t) => {
         c.geocode('smallville', null, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].id, "lamplace.1", "Place (high score) is first result")
-            t.equal(res.features[1].id, "namplace.1", "Place (high score) is second result")
+            t.equal(res.features[0].id, 'lamplace.1', 'Place (high score) is first result');
+            t.equal(res.features[1].id, 'namplace.1', 'Place (high score) is second result');
             t.end();
         });
     });

@@ -1,26 +1,24 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const test = require('tape');
 
 test('termops.getIndexablePhrases', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['main', 'st'];
-    freq = {};
-    freq["__COUNT__"] = [101];
+    const tokens = ['main', 'st'];
+    const freq = {};
+    freq['__COUNT__'] = [101];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         {
-            "relev": 1,
-            "text": "main st",
-            "phrase": termops.encodePhrase('main st'),
+            'relev': 1,
+            'text': 'main st',
+            'phrase': termops.encodePhrase('main st'),
         },
         {
-            "relev": 0.8,
-            "text": "main",
-            "phrase": termops.encodePhrase('main'),
+            'relev': 0.8,
+            'text': 'main',
+            'phrase': termops.encodePhrase('main'),
         }
     ]);
 
@@ -29,12 +27,9 @@ test('termops.getIndexablePhrases', (t) => {
 
 
 test('termops.getIndexablePhrases (weight sieve)', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['jose', 'de', 'la', 'casa'];
-    freq = {};
-    freq["__COUNT__"] = [202];
+    const tokens = ['jose', 'de', 'la', 'casa'];
+    const freq = {};
+    freq['__COUNT__'] = [202];
     freq[termops.encodeTerm(tokens[0])] = [1];
     freq[termops.encodeTerm(tokens[1])] = [100];
     freq[termops.encodeTerm(tokens[2])] = [100];
@@ -53,12 +48,9 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
 });
 
 test('termops.getIndexablePhrases (京都市)', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['京都市'];
-    freq = {};
-    freq["__COUNT__"] = [1];
+    const tokens = ['京都市'];
+    const freq = {};
+    freq['__COUNT__'] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -69,12 +61,9 @@ test('termops.getIndexablePhrases (京都市)', (t) => {
 });
 
 test('termops.getIndexablePhrases (москва)', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['москва'];
-    freq = {};
-    freq["__COUNT__"] = [1];
+    const tokens = ['москва'];
+    const freq = {};
+    freq['__COUNT__'] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -85,12 +74,9 @@ test('termops.getIndexablePhrases (москва)', (t) => {
 });
 
 test('termops.getIndexablePhrases (josé)', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['josé'];
-    freq = {};
-    freq["__COUNT__"] = [1];
+    const tokens = ['josé'];
+    const freq = {};
+    freq['__COUNT__'] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
@@ -101,12 +87,9 @@ test('termops.getIndexablePhrases (josé)', (t) => {
 });
 
 test('termops.getIndexablePhrases (josé, no degens)', (t) => {
-    let tokens;
-    let freq;
-
-    tokens = ['josé'];
-    freq = {};
-    freq["__COUNT__"] = [1];
+    const tokens = ['josé'];
+    const freq = {};
+    freq['__COUNT__'] = [1];
     freq[termops.encodeTerm(tokens[0])] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [

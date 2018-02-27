@@ -1,3 +1,4 @@
+'use strict';
 const proximity = require('../lib/util/proximity');
 const test = require('tape');
 

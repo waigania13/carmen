@@ -1,16 +1,14 @@
-#!/usr/bin/env node
+'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var argv = process.argv;
-var Carmen = require('../index.js');
-var merge = require('../lib/merge.js');
-var argv = require('minimist')(process.argv, {
-    string: [ 'version', 'config', 'input', 'output' ],
-    boolean: [ 'help' ]
+const fs = require('fs');
+const path = require('path');
+let argv = process.argv;
+const merge = require('../lib/merge.js');
+argv = require('minimist')(process.argv, {
+    string: ['version', 'config', 'input', 'output'],
+    boolean: ['help']
 });
-var settings = require('../package.json');
-var queue = require('d3-queue').queue;
+const settings = require('../package.json');
 
 function help() {
     console.log('carmen-merge.js --input=<path>[,<path>,...] --output=<path> [options]');
@@ -27,7 +25,7 @@ function help() {
 if (argv.help) help();
 
 if (argv.version) {
-    console.log('carmen@'+settings.version);
+    console.log('carmen@' + settings.version);
     process.exit(0);
 }
 
@@ -36,15 +34,14 @@ if (!argv.config) help();
 if (!argv.input) throw new Error('--input argument required');
 if (!argv.output) throw new Error('--output argument required');
 
-var config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
+const config = JSON.parse(fs.readFileSync(argv.config, 'utf8'));
 
-var inputs = [];
-argv.input.split(",").forEach(function(_input) {
-    var conf;
+const inputs = [];
+argv.input.split(',').forEach((_input) => {
     if (fs.lstatSync(_input).isDirectory()) {
         fs.readdirSync(_input)
-            .filter(function(fname) { return /\.mbtiles$/.exec(fname); })
-            .forEach(function(fname) {
+            .filter((fname) => { return /\.mbtiles$/.exec(fname); })
+            .forEach((fname) => {
                 inputs.push(path.join(_input, fname));
             });
     } else {
@@ -52,8 +49,8 @@ argv.input.split(",").forEach(function(_input) {
     }
 });
 
-var outputOptions = JSON.parse(JSON.stringify(config));
-merge.multimerge(inputs, argv.output, outputOptions, function(err) {
+const outputOptions = JSON.parse(JSON.stringify(config));
+merge.multimerge(inputs, argv.output, outputOptions, (err) => {
     if (err) throw err;
     process.exit(0);
 });

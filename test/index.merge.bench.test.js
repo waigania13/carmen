@@ -1,3 +1,4 @@
+'use strict';
 const Carmen = require('..');
 const index = require('../lib/index');
 const mem = require('../lib/api-mem');
@@ -13,11 +14,11 @@ function fuzzIndex(limit, callback) {
         .sort((a, b) => {
             return Math.random() - Math.random();
         });
-    let features = [];
+    const features = [];
     for (let i = 0; i < limit; i++) {
-        let text = docs[i % docs.length];
-        let lat = Math.random() * 85 * (Math.random() < 0.5 ? -1 : 1);
-        let lon = Math.random() * 180 * (Math.random() < 0.5 ? -1 : 1);
+        const text = docs[i % docs.length];
+        const lat = Math.random() * 85 * (Math.random() < 0.5 ? -1 : 1);
+        const lon = Math.random() * 180 * (Math.random() < 0.5 ? -1 : 1);
         features.push({
             id: Math.floor(Math.random() * Math.pow(2,25)),
             type: 'Feature',
@@ -37,12 +38,12 @@ function fuzzIndex(limit, callback) {
     });
 }
 
-let sources = {};
+const sources = {};
 
 tape('setup a', (t) => {
-    let start = +new Date;
+    const start = +new Date;
     fuzzIndex(50000, (err, geocoder, a) => {
-        let time = +new Date - start;
+        const time = +new Date - start;
         t.ifError(err, 'completed indexing a in ' + time + 'ms');
         sources.a = a;
         t.end();
@@ -50,9 +51,9 @@ tape('setup a', (t) => {
 });
 
 tape('setup b', (t) => {
-    let start = +new Date;
+    const start = +new Date;
     fuzzIndex(50000, (err, geocoder, b) => {
-        let time = +new Date - start;
+        const time = +new Date - start;
         t.ifError(err, 'completed indexing b in ' + time + 'ms');
         sources.b = b;
         t.end();

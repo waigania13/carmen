@@ -1,9 +1,10 @@
+'use strict';
 const termops = require('../lib/util/termops');
 const test = require('tape');
 
 test('termops.uniqPermutations', (t) => {
     let a = termops.permutations(['a','b','c'], [0.2, 0.2, 0.6]);
-    let b = termops.permutations(['a','b','c'], [0.2, 0.1, 0.7]);
+    const b = termops.permutations(['a','b','c'], [0.2, 0.1, 0.7]);
 
     function debug(v) {
         return v.join(' ') + (v.relev ? ' - ' + v.relev : '');

@@ -1,3 +1,4 @@
+'use strict';
 // "Konglish" refers to cross-language query scenarios like:
 //
 // - User's device locale is set to Korean

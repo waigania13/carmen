@@ -1,22 +1,23 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const addFeature = require('../lib/util/addfeature');
+const queueFeature = addFeature.queueFeature;
+const buildQueued = addFeature.buildQueued;
 
 const conf = {
-    place: new mem({maxzoom: 12}, () => {})
+    place: new mem({ maxzoom: 12 }, () => {})
 };
 const c = new Carmen(conf);
-let tiles = [];
+const tiles = [];
 let tiles1 = [];
 let tiles2 = [];
 let tiles3 = [];
 let tile;
-for (let k=2048; k<2080; k++) {
-    for (let l=2048; l<2080; l++) {
+for (let k = 2048; k < 2080; k++) {
+    for (let l = 2048; l < 2080; l++) {
         tile = '12/' + k + '/' + l;
         tiles.push(tile);
     }
@@ -26,7 +27,7 @@ tiles2 = tiles.slice(341,682);
 tiles3 = tiles.slice(682);
 
 tape('index place', (t) => {
-    let docs = [];
+    const docs = [];
     let place;
 
     place = {
@@ -65,13 +66,13 @@ tape('index place', (t) => {
     };
     docs.push(place);
 
-    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end) });
+    queueFeature(conf.place, docs, () => { buildQueued(conf.place, t.end); });
 });
 
 tape('query', (t) => {
     context.getTile.cache.reset();
     addFeature.resetLogs(conf);
-    c.geocode('san', {debug: true, proximity: [3, -3]}, (err, res) => {
+    c.geocode('san', { debug: true, proximity: [3, -3] }, (err, res) => {
         t.equal(res.features[0].id, 'place.3', 'proximity boosts lower-scored place');
         t.equal(res.features[0].properties['carmen:score'] < res.features[2].properties['carmen:score'], true, 'place.3 has a lower score than place.2');
         t.equal(res.features[0].properties['carmen:distance'] < res.features[2].properties['carmen:distance'], true, 'place.3 is closer than place.2 to proximity point');

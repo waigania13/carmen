@@ -1,11 +1,10 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
     street: new mem(null, () => {})
@@ -14,7 +13,7 @@ const conf = {
 const c = new Carmen(conf);
 
 tape('index feature', (t) => {
-    let range = [];
+    const range = [];
     for (let i = 1; i < 100; i++) range.push(i);
     range.forEach((i) => {
         t.test('addFeature', (tt) => {
@@ -35,7 +34,7 @@ tape('index feature', (t) => {
 });
 
 tape('index feature', (t) => {
-    let feature = {
+    const feature = {
         id:102,
         properties: {
             'carmen:text':'Main Street',
@@ -48,7 +47,7 @@ tape('index feature', (t) => {
 });
 
 tape('index feature', (t) => {
-    let feature = {
+    const feature = {
         id:103,
         properties: {
             'carmen:text':'Date Line Street',
@@ -71,13 +70,13 @@ tape('build queued features', (t) => {
 
 // run query with invalid bbox, expect error
 tape('fake bbox', (t) => {
-    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0], allow_dupes: true}, (err, res) => {
+    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0], allow_dupes: true }, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'bbox array length = 3');
     });
-    c.geocode('Main St', {bbox: [-1.0, -1.0, 1.0, 'a'], allow_dupes: true}, (err, res) => {
+    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 'a'], allow_dupes: true }, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'non-numeric bbox param');
     });
-    c.geocode('Main St', {bbox: [-180, -90, 180, 91], allow_dupes: true}, (err, res) => {
+    c.geocode('Main St', { bbox: [-180, -90, 180, 91], allow_dupes: true }, (err, res) => {
         t.equal(err && err.code, 'EINVALID', 'maxY out-of-bounds');
     });
     t.end();
@@ -94,7 +93,7 @@ tape('no bbox', (t) => {
 
 // run query with bbox fitler, expect only one feature back
 tape('with bbox', (t) => {
-    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true}, (err, res) => {
+    c.geocode('Main St', { bbox: [-1.0, -1.0, 1.0, 1.0], allow_dupes: true }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 1);
         t.end();

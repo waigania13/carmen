@@ -1,3 +1,4 @@
+'use strict';
 // Test geocoder_name overlapping feature context prioritization
 
 const tape = require('tape');
@@ -10,8 +11,8 @@ const addFeature = require('../lib/util/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    place_a: new mem({maxzoom:6, geocoder_name:'place'}, () => {}),
-    place_b: new mem({maxzoom:6, geocoder_name:'place'}, () => {})
+    place_a: new mem({ maxzoom:6, geocoder_name:'place' }, () => {}),
+    place_b: new mem({ maxzoom:6, geocoder_name:'place' }, () => {})
 };
 const c = new Carmen(conf);
 tape('index place_a', (t) => {

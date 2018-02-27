@@ -1,13 +1,12 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
-const country =new mem(null, () => {});
+const country = new mem(null, () => {});
 const region = new mem(null, () => {});
 const place = new mem(null, () => {});
 const confA = {

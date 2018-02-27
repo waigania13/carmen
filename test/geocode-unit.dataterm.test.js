@@ -1,21 +1,20 @@
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 const conf = {
-    address: new mem({maxzoom: 6, geocoder_address: 1, geocoder_name:'address'}, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {})
 };
 const c = new Carmen(conf);
 
 tape('index address (noise)', (t) => {
     const q = queue(1);
     for (let i = 1; i < 41; i++) q.defer((i, done) => {
-        let address = {
+        const address = {
             id:i,
             properties: {
                 'carmen:text':'fake street',
@@ -33,7 +32,7 @@ tape('index address (noise)', (t) => {
 });
 
 tape('index address (signal)', (t) => {
-    let address = {
+    const address = {
         id:101,
         properties: {
             'carmen:text':'fake street',

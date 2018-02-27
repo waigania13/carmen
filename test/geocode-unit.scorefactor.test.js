@@ -1,3 +1,4 @@
+'use strict';
 // Test that score is multiplied by the index scorefactor so that
 // cross-index comparisons make sense.
 
@@ -49,7 +50,7 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:score': 1e6,
                 'carmen:text': 'testplace',
                 'carmen:zxy': ['6/33/32'],
-                'carmen:center': [360/64+0.001,0]
+                'carmen:center': [360 / 64 + 0.001,0]
             }
         }, t.end);
     });

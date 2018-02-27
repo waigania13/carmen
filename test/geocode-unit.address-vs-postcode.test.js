@@ -1,20 +1,19 @@
 // Pits an housenumber/street name/city query
 // vs a similarly matching city/state/postcode result
 
+'use strict';
 const tape = require('tape');
 const Carmen = require('..');
 const context = require('../lib/context');
 const mem = require('../lib/api-mem');
-const addFeature = require('../lib/util/addfeature'),
-    queueFeature = addFeature.queueFeature,
-    buildQueued = addFeature.buildQueued;
+const { queueFeature, buildQueued } = require('../lib/util/addfeature');
 
 (() => {
     const conf = {
-        region: new mem({maxzoom: 6 }, () => {}),
-        place: new mem({maxzoom: 6 }, () => {}),
-        postcode: new mem({maxzoom: 6 }, () => {}),
-        address: new mem({maxzoom: 6,  geocoder_address:1}, () => {}),
+        region: new mem({ maxzoom: 6 }, () => {}),
+        place: new mem({ maxzoom: 6 }, () => {}),
+        postcode: new mem({ maxzoom: 6 }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1 }, () => {}),
     };
     const c = new Carmen(conf);
 
