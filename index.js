@@ -28,7 +28,7 @@ module.exports = Geocoder;
  *
  * @param {Object<string, CarmenSource>} indexes - A one-to-one mapping from index layer name to a {@link CarmenSource}.
  * @param {Object} options - options
- * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
+ * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. this is treated as a global token replacement map: any substring matching a pattern key (which can be regex) is replaced with the associated string value.
  * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [text-processsing](./text-processing.md) for details.
  *
  */
