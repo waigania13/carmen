@@ -20,7 +20,26 @@ const merge = require('./lib/merge');
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
-// TODO: tokens and geocoder_tokens need to be renamed
+/**
+ * An interface to the underlying data that a {@link Geocoder} instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive {@link https://github.com/mapbox/tilelive/blob/master/API.md API Docs} for more info. Currently, carmen supports the following tilelive modules:
+ *
+ * - {@link https://github.com/mapbox/tilelive-s3 tilelive-s3}
+ * - {@link https://github.com/mapbox/node-mbtiles node-mbtiles}
+ * - {@link MemSource}
+ *
+ * @access public
+ *
+ * @typedef {function} CarmenSource
+ * @property {function(id, callback} getFeature - retrieves a feature given by `id`, calls `callback` with `(err, result)`
+ * @property {function(id, data, callback} putFeature - inserts feature `data` and calls callback with `(err, result)`.
+ * @property {function(index,shard,callback)} getGeocoderData - get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+ * @property {function(index,shard,buffer,callback)} putGeocoderData - put buffer into a shard with index `index`, and call callback with `(err)`
+ * @property {function(type)} geocoderDataIterator - custom method for iterating over documents in the source.
+ * @property {function(pointer, callback)} getIndexableDocs - get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
+ *
+ */
+
+
 
 /**
  * Geocoder is an interface used to submit a single query to
@@ -30,7 +49,7 @@ module.exports = Geocoder;
  *
  * @param {Object<string, CarmenSource>} indexes - A one-to-one mapping from index layer name to a {@link CarmenSource}.
  * @param {Object} options - options
- * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. this is treated as a global token replacement map: any substring matching a pattern key (which can be regex) is replaced with the associated string value.
+ * @param {PatternReplaceMap} options.tokens - A {@link PatternReplaceMap} used to perform custom string replacement at index and query time.
  * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [text-processsing](./text-processing.md) for details.
  *
  */
@@ -319,25 +338,6 @@ function Geocoder(indexes, options) {
     }
 
 }
-
-/**
- * An interface to the underlying data that a {@link Geocoder} instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive {@link https://github.com/mapbox/tilelive/blob/master/API.md API Docs} for more info. Currently, carmen supports the following tilelive modules:
- *
- * - {@link https://github.com/mapbox/tilelive-s3 tilelive-s3}
- * - {@link https://github.com/mapbox/node-mbtiles node-mbtiles}
- * - {@link MemSource}
- *
- * @access public
- *
- * @typedef {function} CarmenSource
- * @property {function(id, callback} getFeature - retrieves a feature given by `id`, calls `callback` with `(err, result)`
- * @property {function(id, data, callback} putFeature - inserts feature `data` and calls callback with `(err, result)`.
- * @property {function(index,shard,callback)} getGeocoderData - get carmen record at `shard` in `index` and call callback with `(err, buffer)`
- * @property {function(index,shard,buffer,callback)} putGeocoderData - put buffer into a shard with index `index`, and call callback with `(err)`
- * @property {function(type)} geocoderDataIterator - TODO
- * @property {function(pointer, callback)} getIndexableDocs - get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
- *
- */
 
 
 /**
