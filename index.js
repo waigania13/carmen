@@ -20,6 +20,8 @@ const merge = require('./lib/merge');
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
+// TODO: tokens and geocoder_tokens need to be renamed
+
 /**
  * Geocoder is an interface used to submit a single query to
  * multiple indexes, returning a single set of ranked results.
@@ -463,7 +465,6 @@ Geocoder.prototype.index = function(from, to, options, callback) {
  *
  * @access public
  *
- * @param {Geocoder} geocoder - an instance of carmen Geocoder
  * @param {CarmenSource} from1 - a source index to be merged
  * @param {CarmenSource} from2 - another source to be merged
  * @param {CarmenSource} to - the destination of the merged sources
@@ -491,11 +492,11 @@ Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
  * @param {object} options - options
  * @param {function} callback - a callback function
  */
-Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
+Geocoder.prototype.multimerge = function(fromFiles, toFile, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        merge.multimerge(self, froms, to, pointer, callback);
+        merge.multimerge(self, fromFiles, toFile, options, callback);
     });
 };
 

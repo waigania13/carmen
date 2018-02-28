@@ -21,7 +21,7 @@
 
 ## Geocoder
 
-[index.js:35-319](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L35-L319 "Source code on GitHub")
+[index.js:37-321](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L37-L321 "Source code on GitHub")
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
@@ -35,7 +35,7 @@ multiple indexes, returning a single set of ranked results.
 
 ### Geocoder#geocode
 
-[index.js:425-431](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L425-L431 "Source code on GitHub")
+[index.js:427-433](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L427-L433 "Source code on GitHub")
 
 -   **See: [gecode](#geocode) for more details, including
     `options` properties.**
@@ -51,7 +51,7 @@ a given query.
 
 ### Geocoder#index
 
-[index.js:450-456](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L450-L456 "Source code on GitHub")
+[index.js:452-458](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L452-L458 "Source code on GitHub")
 
 -   **See: [index](#index) for more details, including `options` properties.**
 
@@ -69,7 +69,7 @@ Main entry point for indexing. Index a stream of GeoJSON docs.
 
 ### Geocoder#merge
 
-[index.js:473-479](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L473-L479 "Source code on GitHub")
+[index.js:474-480](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L474-L480 "Source code on GitHub")
 
 -   **See: [merge](#merge) for more details, including `options` properties.**
 
@@ -77,7 +77,6 @@ Merge two CarmenSources and output to a third.
 
 **Parameters**
 
--   `geocoder` **[Geocoder](#geocoder)** an instance of carmen Geocoder
 -   `from1` **[CarmenSource](#carmensource)** a source index to be merged
 -   `from2` **[CarmenSource](#carmensource)** another source to be merged
 -   `to` **[CarmenSource](#carmensource)** the destination of the merged sources
@@ -86,7 +85,7 @@ Merge two CarmenSources and output to a third.
 
 ### Geocoder#multimerge
 
-[index.js:494-500](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L494-L500 "Source code on GitHub")
+[index.js:495-501](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L495-L501 "Source code on GitHub")
 
 -   **See: [multimerge](#multimerge) for more details, including `options` properties.**
 
@@ -101,7 +100,7 @@ Merge more than two CarmenSources. Only supports MBTile sources.
 
 ## CarmenSource
 
-[index.js:350-380](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/index.js#L350-L380 "Source code on GitHub")
+[index.js:352-382](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/index.js#L323-L340 "Source code on GitHub")
 
 An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info. Currently, carmen supports the following tilelive modules:
 
@@ -120,7 +119,7 @@ Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Sta
 
 ## geocode
 
-[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/geocode.js#L40-L159 "Source code on GitHub")
+[lib/geocode.js:40-159](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/geocode.js#L40-L159 "Source code on GitHub")
 
 Main interface for querying an index and returning ranked results.
 
@@ -145,7 +144,7 @@ Main interface for querying an index and returning ranked results.
 
 ## phrasematch
 
-[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/phrasematch.js#L17-L119 "Source code on GitHub")
+[lib/phrasematch.js:17-119](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/phrasematch.js#L17-L119 "Source code on GitHub")
 
 phrasematch
 
@@ -159,7 +158,7 @@ phrasematch
 
 ## spatialmatch
 
-[lib/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/spatialmatch.js#L27-L124 "Source code on GitHub")
+[lib/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/spatialmatch.js#L27-L124 "Source code on GitHub")
 
 spatialmatch determines whether indexes can be spatially stacked and discards indexes that cannot be stacked together
 
@@ -172,7 +171,7 @@ spatialmatch determines whether indexes can be spatially stacked and discards in
 
 ## verifymatch
 
-[lib/verifymatch.js:30-94](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/verifymatch.js#L30-L94 "Source code on GitHub")
+[lib/verifymatch.js:30-94](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/verifymatch.js#L30-L94 "Source code on GitHub")
 
 verifymatch - results from spatialmatch are now verified by querying real geometries in vector tiles
 
@@ -187,7 +186,7 @@ verifymatch - results from spatialmatch are now verified by querying real geomet
 
 ## index
 
-[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/index.js#L30-L97 "Source code on GitHub")
+[lib/index.js:30-97](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/index.js#L30-L97 "Source code on GitHub")
 
 The main interface for building an index
 
@@ -204,7 +203,7 @@ The main interface for building an index
 
 ## merge
 
-[lib/merge.js:226-448](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/merge.js#L226-L448 "Source code on GitHub")
+[lib/merge.js:226-448](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/merge.js#L226-L448 "Source code on GitHub")
 
 Merge two CarmenSources. The merge happens in three steps
 
@@ -244,7 +243,7 @@ TODO: document how dawg merge works
 
 ## multimerge
 
-[lib/merge.js:495-579](https://github.com/mapbox/carmen/blob/8549b2f58c071219a033c2295ff1bd14b74314dc/lib/merge.js#L495-L579 "Source code on GitHub")
+[lib/merge.js:495-579](https://github.com/mapbox/carmen/blob/1b1858d92ab2f132b21b5beb5ef8e5794b17bb96/lib/merge.js#L495-L579 "Source code on GitHub")
 
 Merge more than two CarmenSources. Only supports MBTile sources.
 
