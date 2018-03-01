@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@mapbox/carmen-cache@0.20.0":
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.20.0.tgz#0bf87c30b794c495e96df06668554c63f1b4d53b"
+"@mapbox/carmen-cache@https://github.com/mapbox/carmen-cache/tarball/4041a9b40010fec14d3923ab42fda8e183c70088":
+  version "0.20.0-cache-split-2"
+  resolved "https://github.com/mapbox/carmen-cache/tarball/4041a9b40010fec14d3923ab42fda8e183c70088#e9d1ba08cbd17e254d781340717567487629ebb8"
   dependencies:
     nan "~2.5.1"
     node-pre-gyp "~0.6.32"
