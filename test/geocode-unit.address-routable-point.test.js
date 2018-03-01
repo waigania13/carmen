@@ -1,4 +1,4 @@
-// Tests whether routable_point is added to geocoding results
+// Tests whether routable_points is added to geocoding results
 'use strict';
 const tape = require('tape');
 const Carmen = require('..');
@@ -8,7 +8,7 @@ const addFeature = require('../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-// Test geocoder_address formatting + return place_name as germany style address (address number follows name)
+// Test geocoder_address formatting + return place_name as US style address (address number follows name)
 (() => {
     const conf = {
         address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
@@ -46,10 +46,19 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
-    tape('Search for interpolated address and return routable point', (t) => {
+    tape('Forward search for interpolated address and return routable points', (t) => {
         c.geocode('9 fake street', { limit_verify: 1, debug: true, full: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.features[0].routable_point, [1.111, 1.11], 'routable_point is set to correct value');
+            t.deepEquals(res.features[0].routable_points, [[1.111, 1.11]], 'Forward geocode of interpolated address result has correct routable_point');
+            t.end();
+        });
+    });
+
+    tape('Reverse geocode a point and return routable points', (t) => {
+        c.geocode('1.111, 1.111', { limit_verify: 1, debug: true, full: true }, (err, res) => {
+            t.ifError(err);
+            console.log(res);
+            t.deepEquals(res.features[0].routable_points, [[1.111, 1.11]], 'Reverse geocode of interpolated address result has correct routable_point');
             t.end();
         });
     });
