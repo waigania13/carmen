@@ -58,7 +58,7 @@ key | description
 `address` | Where applicable. Contains the housenumber for the returned feature
 `center` | Array of the form [lon,lat].
 `context` | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
-`routable_point` | Optional. Array of the form [lon,lat]. Closest point on the relevant road, if the feature has an associated road.
+`routable_points` | Optional. Array of coordinate arrays of the form [[lon,lat], [lon,lat]]. Closest point on the relevant road, if the feature has an associated road.
 
 For geocodes that include one or more language codes set by `options.language`, the following keys will also be returned for each language requested:
 
