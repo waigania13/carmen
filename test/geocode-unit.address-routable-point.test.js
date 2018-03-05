@@ -53,15 +53,6 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
-
-    tape('Reverse geocode a point and return routable points', (t) => {
-        c.geocode('1.111, 1.111', { limit_verify: 1, debug: true, full: true }, (err, res) => {
-            t.ifError(err);
-            console.log(res);
-            t.deepEquals(res.features[0].routable_points, [[1.111, 1.11]], 'Reverse geocode of interpolated address result has correct routable_point');
-            t.end();
-        });
-    });
 })();
 
 
