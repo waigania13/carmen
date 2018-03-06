@@ -12,5 +12,4 @@ test:
   override:
     - yarn run lint
     - yarn run coverage
-    - codecov
     - yarn run bench
