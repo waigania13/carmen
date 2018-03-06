@@ -446,7 +446,7 @@ Geocoder.prototype.geocode = function(query, options, callback) {
  * @param {Object} options - options
  * @param {number} options.zoom - the max zoom level for the index
  * @param {stream.Writable} options.output - the output stream for
- * @param {Object<string, string>} options.tokens - mapping from string patterns to strings. patterns are replaced with strings when found in queries. helpful for abbreviations, eg. "Streets" => "St"
+ * @param {PatternReplaceMap} options.tokens - a pattern-based string replacement specification
  * @param {function} callback - a callback function, passed on to {@link #index|inde}
  */
 Geocoder.prototype.index = function(from, to, options, callback) {

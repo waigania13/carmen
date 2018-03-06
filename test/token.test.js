@@ -38,8 +38,7 @@ tape.test('token#includeUnambiguous', (t) => {
             named: false,
             to: '$1Street$2'
         }
-    ]
-    ;
+    ];
 
     t.deepEquals(tokenReplacer, expected, 'created a regex');
 
