@@ -42,7 +42,7 @@
     "benchmark": "^2.1.4",
     "bytes": "^2.5.0",
     "combined-stream": "~1.0.5",
-    "coveralls": "^2.11.4",
+    "codecov": "^1.0.0",
     "deep-equal": "1.0.1",
     "documentation": "^5.4.0",
     "eslint": "^4.17.0",
