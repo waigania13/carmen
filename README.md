@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/mapbox/carmen.svg?style=svg)](https://circleci.com/gh/mapbox/carmen)
 
-[![Coverage Status](https://coveralls.io/repos/mapbox/carmen/badge.svg?branch=Coveralls&service=github)](https://coveralls.io/github/mapbox/carmen?branch=Coveralls)
+[![codecov](https://codecov.io/gh/mapbox/carmen/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/carmen)
 
 # carmen
 
