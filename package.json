@@ -62,7 +62,7 @@
   "scripts": {
     "lint": "eslint index.js lib test scripts",
     "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && yarn run bench",
-    "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
+    "coverage": "TESTING=true istanbul cover tape test/*.js",
     "bench": "./test/run_all_benchmarks.sh",
     "build-docs": " $(yarn bin)/documentation build --access public --github --format md --output docs/api.md index.js"
   },
