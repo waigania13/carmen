@@ -68,7 +68,7 @@ tape('features without linestrings', (assert) => {
          */
         assert.deepEquals(
             routablePoint([1.113, 1.111], feature),
-            [[1.113, 1.11]],
+            [1.113, 1.11],
             'Point that is same as input'
         );
         assert.end();
@@ -83,7 +83,7 @@ tape('features without linestrings', (assert) => {
          */
         assert.deepEquals(
             routablePoint([1.111, 1.11], feature),
-            [[1.111, 1.11]],
+            [1.111, 1.11],
             'Point that is already on linestring should return itself'
         );
         assert.end();
@@ -100,7 +100,7 @@ tape('features without linestrings', (assert) => {
          */
         assert.deepEquals(
             routablePoint([1.113, 1.115], feature),
-            [[1.113, 1.11]],
+            [1.113, 1.11],
             'Point in between linestring coords should return midpoint between coords on linestring'
         );
         assert.end();
@@ -117,7 +117,7 @@ tape('features without linestrings', (assert) => {
          */
         assert.deepEquals(
             routablePoint([1.115, 1.115], feature),
-            [[1.115, 1.11]],
+            [1.115, 1.11],
             'Point not in the linestring'
         );
         assert.end();
@@ -169,7 +169,7 @@ tape('features without linestrings', (assert) => {
 
         assert.deepEquals(
             routablePoint([1.116, 1.113], feature),
-            [[1.1168, 1.1114]],
+            [1.1168, 1.1114],
             'point projected onto the diagonal'
         );
         assert.end();
@@ -222,7 +222,7 @@ tape('features without linestrings', (assert) => {
         // expecting the projection to be on the side closest to the beginning of the line
         assert.deepEquals(
             routablePoint([1.1115, 1.1115], feature),
-            [[1.111, 1.1115]],
+            [1.111, 1.1115],
             'Point projected to left side of the cul de sac line'
         );
         assert.end();
@@ -240,7 +240,7 @@ tape('features without linestrings', (assert) => {
 
         assert.deepEquals(
             routablePoint([1.1118, 1.1115], feature),
-            [[1.112, 1.1115]],
+            [1.112, 1.1115],
             'point projected to the closer side of the cul de sac line'
         );
         assert.end();
@@ -259,7 +259,7 @@ tape('features without linestrings', (assert) => {
 
         assert.deepEquals(
             routablePoint([1.1118, 1.1112], feature),
-            [[1.112, 1.1112]],
+            [1.112, 1.1112],
             'point projected to the side of the cul de sac line it is closest to'
         );
         assert.end();
@@ -273,7 +273,6 @@ tape('features without linestrings', (assert) => {
  * TODO: Test case where point is entirely offset from linestring, e.g.:
  *       x
  *              -------------------
- * TODO: Test invalid inputs
  * TODO: Test not interpolated feature?
  * TODO: Integration tests for reverse geocoding?
  * TODO: Test cases crossing dateline?
