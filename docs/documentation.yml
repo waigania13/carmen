@@ -1,0 +1,27 @@
+toc:
+    - name: Main
+      description: |
+          Central API elements, used in geocoding and indexing
+      children:
+          - Geocoder
+          - CarmenSource
+          - PatternReplaceMap
+    - name: Geocoding
+      description: |
+          Functions in use when querying indexes. Most commonly used in a production setting.
+      children:
+          - geocode
+          - phrasematch
+          - spatialmatch
+          - verifymatch
+    - name: Indexing
+      description: |
+          Functions dedicated toward building and manipulating indexes.
+      children:
+          - index
+          - analyze
+          - merge
+          - multimerge
+    - name: Text Processing
+      description: |
+          The various utility functions for preparing text while indexing and querying.
