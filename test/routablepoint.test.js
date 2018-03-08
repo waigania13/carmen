@@ -2,7 +2,9 @@
 const tape = require('tape');
 const routablePoint = require('../lib/pure/routablepoint.js');
 
-tape('features without linestrings', (assert) => {
+
+// Test validity of inputs
+tape('routablePoint with feature without linestrings', (assert) => {
     const point = [1.111, 1.11];
     const featureNoLinestring = {
         type: 'Feature',
@@ -26,10 +28,9 @@ tape('features without linestrings', (assert) => {
     assert.end();
 });
 
-// straight line
-(() => {
-    const testPrefix = 'routablePoint on straight line: ';
+tape('routablePoint with empty point', (assert) => {
     const feature = {
+        id: 1,
         type: 'Feature',
         properties: {
             'carmen:addressnumber': [null, ['110', '112', '114']],
@@ -54,8 +55,57 @@ tape('features without linestrings', (assert) => {
                     coordinates: [[1.111, 1.111], [1.113, 1.111], [1.118, 1.111]]
                 }
             ]
+        }
+    };
+    const pointObject = {
+        type: 'Point',
+        coordinates: [1.11, 1.11]
+    };
+
+    assert.deepEquals(
+        routablePoint([], feature),
+        null,
+        'Empty point arrays should return null'
+    );
+
+    assert.deepEquals(
+        routablePoint(pointObject, feature),
+        [1.111, 1.11],
+        'Point object should work in addition to point coordinate array'
+    );
+    assert.end();
+});
+
+// straight line
+(() => {
+    const testPrefix = 'routablePoint on straight line: ';
+    const feature = {
+        id: 1,
+        type: 'Feature',
+        properties: {
+            'carmen:addressnumber': [null, ['110', '112', '114']],
+            'carmen:center': [1.111, 1.113]
         },
-        id: 1
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+                {
+                    type: 'MultiLineString',
+                    coordinates: [
+                        [
+                            [1.111, 1.11],
+                            [1.112, 1.11],
+                            [1.114, 1.11],
+                            [1.118, 1.11],
+                        ]
+                    ]
+                },
+                {
+                    type: 'MultiPoint',
+                    coordinates: [[1.111, 1.111], [1.113, 1.111], [1.118, 1.111]]
+                }
+            ]
+        }
     };
 
     tape(testPrefix + 'with actual feature point', (assert) => {
@@ -265,17 +315,3 @@ tape('features without linestrings', (assert) => {
         assert.end();
     });
 })();
-
-/**
- * TODO: Test invalidinputs
- * TODO: Test non-straight linestring
- * TODO: Test linestring and point with 2 equidistant closest points (and determine expected behavior)
- * TODO: Test case where point is entirely offset from linestring, e.g.:
- *       x
- *              -------------------
- * TODO: Test not interpolated feature?
- * TODO: Integration tests for reverse geocoding?
- * TODO: Test cases crossing dateline?
- */
-
-

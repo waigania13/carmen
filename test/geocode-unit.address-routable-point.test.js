@@ -95,12 +95,12 @@ const addFeature = require('../lib/util/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
 
-    tape('Forward search for interpolated address and return routable points', (t) => {
+    tape('Forward search for interpolated address', (t) => {
         c.geocode('150 Main Street', { debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 undefined,
-                'Forward geocode of interpolated address result does not set routable_points');
+                'Forward geocode of interpolated address result should not set routable_points');
             t.end();
         });
     });
