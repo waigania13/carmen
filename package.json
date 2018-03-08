@@ -42,7 +42,7 @@
     "benchmark": "^2.1.4",
     "bytes": "^2.5.0",
     "combined-stream": "~1.0.5",
-    "coveralls": "^2.11.4",
+    "codecov": "^1.0.0",
     "deep-equal": "1.0.1",
     "documentation": "^5.4.0",
     "eslint": "^4.17.0",
@@ -62,7 +62,7 @@
   "scripts": {
     "lint": "eslint index.js lib test scripts",
     "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && yarn run bench",
-    "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
+    "coverage": "TESTING=true istanbul cover tape test/*.js && codecov",
     "bench": "./test/run_all_benchmarks.sh",
     "build-docs": " $(yarn bin)/documentation build --access public --github --format md --output docs/api.md index.js"
   },
