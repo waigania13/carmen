@@ -28,7 +28,8 @@ tape('routablePoint with feature without linestrings', (assert) => {
     assert.end();
 });
 
-// Test routablePoint with feature with routable_points already defined
+// TODO: Test routablePoint with feature with routable_points already defined
+// TODO: Test routablePoint with non-address
 
 tape('routablePoint with empty point', (assert) => {
     const feature = {
