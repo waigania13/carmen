@@ -5,6 +5,7 @@ toc:
       children:
           - Geocoder
           - CarmenSource
+          - MemSource
           - PatternReplaceMap
     - name: Geocoding
       description: |
@@ -25,3 +26,7 @@ toc:
     - name: Text Processing
       description: |
           The various utility functions for preparing text while indexing and querying.
+      children:
+          - ReplaceRule
+          - createGlobalReplacer
+          - createReplacer
