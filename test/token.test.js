@@ -19,6 +19,32 @@ tape.test('token#street=>st', (t) => {
     t.end();
 });
 
+tape.test('token#includeUnambiguous', (t) => {
+    const tokens = {
+        'Street': 'st'
+    };
+
+    const tokenReplacer = tokenize.createReplacer(tokens, { includeUnambiguous: true });
+    const expected =  [
+        {
+            from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)Street([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi,
+            inverse: false,
+            named: false,
+            to: '$1st$2'
+        },
+        {
+            from: /([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)st([\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)/gi,
+            inverse: true,
+            named: false,
+            to: '$1Street$2'
+        }
+    ];
+
+    t.deepEquals(tokenReplacer, expected, 'created a regex');
+
+    t.end();
+});
+
 tape.test('token#concatenated single token', (t) => {
     const tokens = {
         '([a-z]+)gatan': '$1g'
