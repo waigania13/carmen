@@ -29,7 +29,40 @@ tape('routablePoint with feature without linestrings', (assert) => {
 });
 
 // TODO: Test routablePoint with feature with routable_points already defined
-// TODO: Test routablePoint with non-address
+// TODO: Test routablePoint with non-address, that would otherwise work.
+// This test passes, but it's because the POI features don't have geometries in the features (at least at tehe verifymatch stage),
+// and they dont have geometryCollections at all.
+// Maybe test with a locality or a street?
+
+
+tape('routablePoint with POI', (assert) => {
+    const feature = {
+        id: 6666777777982370,
+        type: 'Feature',
+        properties: {
+            'carmen:center': [-122.22083, 37.72139],
+            'carmen:geocoder_stack': 'us',
+            'carmen:score': 196,
+            'landmark': true,
+            'wikidata': 'Q1165584',
+            'carmen:text_universal': 'OAK',
+            'tel': '(510) 563-3300',
+            'category': 'airport',
+            'address': '1 Airport Dr',
+            'carmen:text': 'Oakland International Airport,OAK,KOAK, Metropolitan Oakland International Airport, airport',
+            'carmen:zxy': ['6/10/24'],
+            'id': 6666777777982370,
+            'carmen:types': ['poi'],
+            'carmen:index': 'poi'
+        }
+    };
+
+    assert.deepEquals(
+        routablePoint(feature.properties['carmen:center'], feature),
+        undefined,
+        'non-addresses should not return routable Points'
+    );
+});
 
 tape('routablePoint with empty point', (assert) => {
     const feature = {

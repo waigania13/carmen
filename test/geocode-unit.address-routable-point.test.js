@@ -20,7 +20,8 @@ const addFeature = require('../lib/util/addfeature'),
             properties: {
                 'carmen:text': 'fake street',
                 'carmen:center': [0,0], // not used
-                'carmen:addressnumber': [null, ['9','11','13']]
+                'carmen:addressnumber': [null, ['9','11','13']],
+                'carmen:types': ['address']
             },
             geometry: {
                 type: 'GeometryCollection',
@@ -141,6 +142,49 @@ const addFeature = require('../lib/util/addfeature'),
 
 })();
 
+
+// Test POI
+(()=> {
+    const conf = {
+        poi : new mem({ maxzoom: 6 }, () => {})
+    };
+    const c = new Carmen(conf);
+
+    tape('index POI', (t) => {
+        const poi = {
+            'type': 'Feature',
+            'id': 6666777777982370,
+            'geometry': {
+                'type': 'Point',
+                'coordinates': [-122.22083333333, 37.721388888889]
+            },
+            'properties': {
+                'carmen:center': [-122.22083, 37.72139],
+                'carmen:geocoder_stack': 'us',
+                'carmen:score': 196,
+                'landmark': true,
+                'wikidata': 'Q1165584',
+                'carmen:text_universal': 'OAK',
+                'tel': '(510) 563-3300',
+                'category': 'airport',
+                'address': '1 Airport Dr',
+                'carmen:text': 'Oakland International Airport,OAK,KOAK, Metropolitan Oakland International Airport, airport'
+            }
+        };
+        queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end); });
+    });
+
+    tape('Forward search for POI', (t) => {
+        c.geocode('Oakland International Airport', { debug: true, full: true }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].routable_points,
+                undefined,
+                'Forward search for POI returns no routable_points'
+            );
+            t.end();
+        });
+    });
+})();
 
 
 tape('teardown', (t) => {
