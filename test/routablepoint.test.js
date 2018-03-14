@@ -2,8 +2,13 @@
 const tape = require('tape');
 const routablePoint = require('../lib/pure/routablepoint.js');
 
+(()=> {
+    const testPrefix = 'routablePoint input validation: ';
 
-tape('routablePoint input validity', (assert) => {
+    const pointObject = {
+        type: 'Point',
+        coordinates: [1.11, 1.11]
+    };
     const feature = {
         id: 1,
         type: 'Feature',
@@ -32,49 +37,7 @@ tape('routablePoint input validity', (assert) => {
             ]
         }
     };
-    const pointObject = {
-        type: 'Point',
-        coordinates: [1.11, 1.11]
-    };
 
-    assert.deepEquals(
-        routablePoint([], feature),
-        null,
-        'Empty point arrays should return null'
-    );
-
-    assert.deepEquals(
-        routablePoint(pointObject),
-        null,
-        'Missing feature input should return null'
-    );
-
-    assert.deepEquals(
-        routablePoint([1.11, 1.11], {}),
-        null,
-        'Empty feature input should return null'
-    );
-
-    assert.deepEquals(
-        routablePoint(pointObject, feature),
-        [1.111, 1.11],
-        'Point input as an object should work'
-    );
-
-    assert.deepEquals(
-        routablePoint([1.11, 1,11], feature),
-        [1.111, 1.11],
-        'Point as an array should work'
-    );
-    assert.end();
-});
-
-// Test validity of input feature geometry
-tape('routablePoint with feature without linestrings', (assert) => {
-    const point = {
-        type: 'Point',
-        coordinates: [1.111, 1.11]
-    };
     const featureNoLinestring = {
         type: 'Feature',
         properties: {},
@@ -89,13 +52,47 @@ tape('routablePoint with feature without linestrings', (assert) => {
         }
     };
 
-    assert.deepEquals(
-        routablePoint(point, featureNoLinestring),
-        null,
-        'Features with no linestrings should return null'
-    );
-    assert.end();
-});
+    tape(testPrefix + 'point inputs', (assert) => {
+        assert.deepEquals(
+            routablePoint([], feature),
+            null,
+            'Empty point arrays should return null'
+        );
+        assert.ok(
+            routablePoint(pointObject, feature),
+            'Point objects should be accepted'
+        );
+
+        assert.ok(
+            routablePoint([1, 1], feature),
+            'Point arrays should be accepted'
+        );
+        assert.ok(
+            routablePoint([0, 0], feature),
+            '[0,0] should not necessarily return null'
+        );
+        assert.end();
+    });
+
+    tape(testPrefix + 'feature inputs', (assert) => {
+        assert.deepEquals(
+            routablePoint(pointObject),
+            null,
+            'Missing feature input should return null'
+        );
+        assert.deepEquals(
+            routablePoint([1.11, 1.11], {}),
+            null,
+            'Empty feature input should return null'
+        );
+        assert.deepEquals(
+            routablePoint(pointObject, featureNoLinestring),
+            null,
+            'Features with no linestrings should return null'
+        );
+        assert.end();
+    });
+})();
 
 
 // TODO: Test routablePoint with feature with routable_points already defined
@@ -105,7 +102,7 @@ tape('routablePoint with feature without linestrings', (assert) => {
 // Maybe test with a locality or a street?
 
 
-tape('routablePoint with POI', (assert) => {
+tape('routablePoint input validation: POI feature', (assert) => {
     const feature = {
         id: 6666777777982370,
         type: 'Feature',
