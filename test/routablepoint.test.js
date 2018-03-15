@@ -14,7 +14,8 @@ const routablePoint = require('../lib/pure/routablepoint.js');
         type: 'Feature',
         properties: {
             'carmen:addressnumber': [null, ['110', '112', '114']],
-            'carmen:center': [1.111, 1.113]
+            'carmen:center': [1.111, 1.113],
+            'carmen:types': ['address']
         },
         geometry: {
             type: 'GeometryCollection',
@@ -40,7 +41,9 @@ const routablePoint = require('../lib/pure/routablepoint.js');
 
     const featureNoLinestring = {
         type: 'Feature',
-        properties: {},
+        properties: {
+            'carmen:types': ['address']
+        },
         geometry: {
             type: 'GeometryCollection',
             geometries: [
@@ -57,6 +60,11 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             routablePoint([], feature),
             null,
             'Empty point arrays should return null'
+        );
+        assert.deepEquals(
+            routablePoint({}, feature),
+            null,
+            'Empty point objects should return null'
         );
         assert.ok(
             routablePoint(pointObject, feature),
@@ -94,6 +102,104 @@ const routablePoint = require('../lib/pure/routablepoint.js');
     });
 })();
 
+// Test interpolated points
+(() => {
+    const feature = {
+        id: '7654',
+        type: 'Feature',
+        properties: {
+            'carmen:text': 'Main Street',
+            'carmen:center': [-97.2, 37.3],
+            'carmen:score': 99,
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['100']],
+            'carmen:ltohn': [['200']],
+            'carmen:rfromhn': [['101']],
+            'carmen:rtohn': [['199']],
+            'carmen:parityl': [['E']],
+            'carmen:parityr': [['O']],
+            'carmen:zxy': ['6/14/24'],
+            'id': '7654',
+            'carmen:types': ['address'],
+            'carmen:index': 'address',
+            'carmen:address': '150'
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiLineString',
+                coordinates: [
+                    [
+                        [-97.2, 37.2, 0],
+                        [-97.2, 37.4, 0.19999999999999574]
+                    ]
+                ]
+            }]
+        }
+    };
+
+    const pointInterpolated = {
+        type: 'Point',
+        coordinates: [-97.2, 37.3],
+        interpolated: true
+    };
+    tape('routablePoint with interpolated point', (assert) => {
+        assert.deepEquals(
+            routablePoint(pointInterpolated, feature),
+            null,
+            'Interpolated point inputs should return null'
+        );
+        assert.end();
+    });
+})();
+
+(() => {
+    const featureRoutablePoints = {
+        id: 6666777777982370,
+        type: 'Feature',
+        properties: {
+            'carmen:center': [-122.22083, 37.72139],
+            'carmen:geocoder_stack': 'us',
+            'carmen:score': 196,
+            'landmark': true,
+            'wikidata': 'Q1165584',
+            'carmen:text_universal': 'OAK',
+            'tel': '(510) 563-3300',
+            'category': 'airport',
+            'address': '1 Airport Dr',
+            'carmen:text': 'Oakland International Airport,OAK,KOAK, Metropolitan Oakland International Airport, airport',
+            'carmen:zxy': ['6/10/24'],
+            'id': 6666777777982370,
+            'carmen:types': ['poi'],
+            'carmen:index': 'poi',
+            'carmen:routable_points': [[-122.213550, 37.712913]]
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [-122.22083, 37.72139]
+        }
+    };
+    // TODO: Are these assumptions correct? Both what routable_points looks like on the feature,
+    // and the expected result of routablePoint.
+    tape('routablePoint with feature containing routable_points', (assert) => {
+        assert.deepEquals(
+            routablePoint([-122, 37], featureRoutablePoints),
+            null,
+            'features that already have routable_points should return null'
+        );
+        assert.end();
+    });
+})();
+
+// TODO: This isn't currently necessary since we're also testing for addresses
+// But eventually POIs could be an acceptable type for routablePoint,
+// and there may be a distinction between POIs that have routable_points at index time and those that don't.
+
+
+
+
+
+
 
 // TODO: Test routablePoint with feature with routable_points already defined
 // TODO: Test routablePoint with non-address, that would otherwise work.
@@ -121,6 +227,11 @@ tape('routablePoint input validation: POI feature', (assert) => {
             'id': 6666777777982370,
             'carmen:types': ['poi'],
             'carmen:index': 'poi'
+        },
+        // This is slightly artificial since at this point in verifymatch, geometry actually gets stripped out
+        geometry: {
+            type: 'Point',
+            coordinates: [-122.22083, 37.72139]
         }
     };
 
@@ -141,7 +252,8 @@ tape('routablePoint input validation: POI feature', (assert) => {
         type: 'Feature',
         properties: {
             'carmen:addressnumber': [null, ['110', '112', '114']],
-            'carmen:center': [1.111, 1.113]
+            'carmen:center': [1.111, 1.113],
+            'carmen:types': ['address']
         },
         geometry: {
             type: 'GeometryCollection',
@@ -238,7 +350,8 @@ tape('routablePoint input validation: POI feature', (assert) => {
         type: 'Feature',
         properties: {
             'carmen:addressnumber': [null, ['110', '112', '114']],
-            'carmen:center': [1.111, 1.113]
+            'carmen:center': [1.111, 1.113],
+            'carmen:types': ['address']
         },
         geometry: {
             type: 'GeometryCollection',
@@ -290,7 +403,8 @@ tape('routablePoint input validation: POI feature', (assert) => {
         type: 'Feature',
         properties: {
             'carmen:addressnumber': [null, ['110', '112', '114']],
-            'carmen:center': [1.111, 1.113]
+            'carmen:center': [1.111, 1.113],
+            'carmen:types': ['address']
         },
         geometry: {
             type: 'GeometryCollection',
