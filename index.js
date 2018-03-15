@@ -20,7 +20,39 @@ const merge = require('./lib/merge');
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
 
-// Initialize and load Geocoder, with a selection of indexes.
+/**
+ * An interface to the underlying data that a {@link Geocoder} instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive {@link https://github.com/mapbox/tilelive/blob/master/API.md API Docs} for more info. Currently, carmen supports the following tilelive modules:
+ *
+ * - {@link https://github.com/mapbox/tilelive-s3 tilelive-s3}
+ * - {@link https://github.com/mapbox/node-mbtiles node-mbtiles}
+ * - {@link MemSource}
+ *
+ * @access public
+ *
+ * @typedef {function} CarmenSource
+ * @property {function(id, callback} getFeature - retrieves a feature given by `id`, calls `callback` with `(err, result)`
+ * @property {function(id, data, callback} putFeature - inserts feature `data` and calls callback with `(err, result)`.
+ * @property {function(index,shard,callback)} getGeocoderData - get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+ * @property {function(index,shard,buffer,callback)} putGeocoderData - put buffer into a shard with index `index`, and call callback with `(err)`
+ * @property {function(type)} geocoderDataIterator - custom method for iterating over documents in the source.
+ * @property {function(pointer, callback)} getIndexableDocs - get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
+ *
+ */
+
+
+
+/**
+ * Geocoder is an interface used to submit a single query to
+ * multiple indexes, returning a single set of ranked results.
+ *
+ * @access public
+ *
+ * @param {Object<string, CarmenSource>} indexes - A one-to-one mapping from index layer name to a {@link CarmenSource}.
+ * @param {Object} options - options
+ * @param {PatternReplaceMap} options.tokens - A {@link PatternReplaceMap} used to perform custom string replacement at index and query time.
+ * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see {@link #text-processsing Text Processing} for details.
+ *
+ */
 function Geocoder(indexes, options) {
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
@@ -41,11 +73,25 @@ function Geocoder(indexes, options) {
     this.bystack = {};
     this.byidx = [];
 
+    // Cloning each index. Below, many of the properties on the source object are
+    // set due to the configuration of the Geocoder instance itself. Cloning
+    // allows us to re-use a given source across multiple Geocoder instances,
+    // setting these properties differently for each clone.
     for (const k in indexes) {
         indexes[k] = clone(indexes[k]);
         q.defer(loadIndex, k, indexes[k]);
     }
 
+    /**
+     * Activates a single index in the geocoder. This function operates on the
+     * output of {@link loadIndex}, which provides information needed for
+     * activation.
+     *
+     * @access private
+     *
+     * @param {Object} data - data obtained via {@link loadIndex}
+     * @param {int} i - index number
+     */
     q.awaitAll((err, results) => {
         const names = [];
         if (results) results.forEach((data, i) => {
@@ -60,6 +106,7 @@ function Geocoder(indexes, options) {
             const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
+
 
             if (names.indexOf(name) === -1) names.push(name);
 
@@ -183,6 +230,7 @@ function Geocoder(indexes, options) {
 
             // add byidx index lookup
             this.byidx[i] = source;
+
         });
 
         // Second pass -- generate bmask (geocoder_stack) per index.
@@ -220,8 +268,22 @@ function Geocoder(indexes, options) {
         setImmediate(() => {
             _this.emit('open', err);
         });
+
     });
 
+
+    /**
+     * Loads an index. The source clone is opened and all of the information
+     * needed for adding the index to the geocoder is obtained. If the
+     * original source object does not have a `_dictcache` member, then it is
+     * instantiated here, included in the returned object.
+     *
+     * @access private
+     *
+     * @param {string} id - the name of the index, eg "place" or "address"
+     * @param {CarmenSource} source - a (clone of) a CarmenSource
+     * @param {function(error, Object)} callback - callback function.
+     */
     function loadIndex(id, source, callback) {
         source.open((err) => {
             if (err) return callback(err);
@@ -272,8 +334,19 @@ function Geocoder(indexes, options) {
             });
         });
     }
+
 }
 
+
+/**
+ * Clones the source object. Methods in the cloned object are all bound
+ * with the original source as their first argument.
+ *
+ * @access private
+ *
+ * @param {CarmenSource} source - a CarmenSource.
+ * @returns {CarmenSource} a clone of the input source
+ */
 function clone(source) {
     const cloned = {};
     cloned.getInfo = source.getInfo.bind(source);
@@ -306,6 +379,14 @@ function clone(source) {
     return cloned;
 }
 
+/**
+ * Validates token replacer. Ensures that none of the values in from or to include blank space.
+ *
+ * @access private
+ *
+ * @param {Object} token_replacer - a token replacer
+ * @returns {(null|true)} true if any 'from' or 'to' values contains blank space
+ */
 function tokenValidator(token_replacer) {
     for (let i = 0; i < token_replacer.length; i++) {
         if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
@@ -314,20 +395,33 @@ function tokenValidator(token_replacer) {
     }
 }
 
-// Ensure that all carmen sources are opened.
+/**
+ * Ensure that all carmen sources are opened
+ *
+ * @access private
+ *
+ * @param {function} callback - a callback function
+ * @returns {boolean} true if all sources have been opened
+ */
 Geocoder.prototype._open = function(callback) {
     return this._opened ? callback(this._error) : this.once('open', callback);
 };
 
-// Main geocoding API entry point.
-// Returns results across all indexes for a given query.
-//
-// Actual searches are delegated to `Geocoder.prototype.search` over each
-// enabled backend.
-//
-// `query` is a string of text, like "Chester, NJ"
-// `options` is an object with additional parameters
-// `callback` is called with (error, results)
+/**
+ * Main entry point for geocoding API. Returns results across all indexes for
+ * a given query.
+ *
+ * @access public
+ *
+ * @name Geocoder#geocode
+ * @memberof Geocoder
+ * @see {@link #geocode|gecode} for more details, including
+ * `options` properties.
+ *
+ * @param {string} query - a query string, eg "Chester, NJ"
+ * @param {Object} options - options
+ * @param {function} callback - a callback function, passed on to {@link #geocode|geocode}
+ */
 Geocoder.prototype.geocode = function(query, options, callback) {
     const self = this;
     this._open((err) => {
@@ -336,30 +430,71 @@ Geocoder.prototype.geocode = function(query, options, callback) {
     });
 };
 
-// Index docs from one source to another.
-Geocoder.prototype.index = function(from, to, pointer, callback) {
+/**
+ * Main entry point for indexing. Index a stream of GeoJSON docs.
+ *
+ * @name Geocoder#index
+ * @memberof Geocoder
+ * @see {@link index} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {stream.Readable} from - a readable stream of GeoJSON features
+ * @param {CarmenSource} to - the interface to the index's destination
+ * @param {Object} options - options
+ * @param {number} options.zoom - the max zoom level for the index
+ * @param {stream.Writable} options.output - the output stream for
+ * @param {PatternReplaceMap} options.tokens - a pattern-based string replacement specification
+ * @param {function} callback - a callback function, passed on to {@link #index|inde}
+ */
+Geocoder.prototype.index = function(from, to, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        index(self, from, to, pointer, callback);
+        index(self, from, to, options, callback);
     });
 };
 
-// Merge two indexes
-Geocoder.prototype.merge = function(from1, from2, to, pointer, callback) {
+/**
+ * Merge two CarmenSources and output to a third.
+ * @name Geocoder#merge
+ * @memberof Geocoder
+ * @see {@link merge} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {CarmenSource} from1 - a source index to be merged
+ * @param {CarmenSource} from2 - another source to be merged
+ * @param {CarmenSource} to - the destination of the merged sources
+ * @param {object} options - options
+ * @param {function} callback - a callback function
+ */
+Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        merge(self, from1, from2, to, pointer, callback);
+        merge(self, from1, from2, to, options, callback);
     });
 };
 
-// Merge arbitrarily many indexes
-Geocoder.prototype.multimerge = function(froms, to, pointer, callback) {
+/**
+ * Merge more than two CarmenSources. Only supports MBTile sources.
+ * @name Geocoder#multimerge
+ * @memberof Geocoder
+ * @see {@link multimerge} for more details, including `options` properties.
+ *
+ * @access public
+ *
+ * @param {Array<string>} fromFiles - array of paths to input mbtiles files
+ * @param {string} toFile - path to output of merge
+ * @param {object} options - options
+ * @param {function} callback - a callback function
+ */
+Geocoder.prototype.multimerge = function(fromFiles, toFile, options, callback) {
     const self = this;
     this._open((err) => {
         if (err) return callback(err);
-        merge.multimerge(self, froms, to, pointer, callback);
+        merge.multimerge(self, fromFiles, toFile, options, callback);
     });
 };
 

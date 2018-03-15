@@ -1,5 +1,11 @@
 # Changelog
 
+## v24.2.9
+- JSDoc comments added
+- documentation.js for auto-generating docs/api.md
+- warn when code is missing JSDoc
+- switch to codecov for coverage reporting
+
 ## v24.2.8
 - massive linting/cleaning
 - overhauls readme
