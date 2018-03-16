@@ -48,6 +48,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 // Test geocoder_address formatting with multiple formats by language
@@ -105,6 +110,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].place_name, '9 fake street');
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
@@ -251,6 +261,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 (() => {
@@ -308,6 +323,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 // If the layer does not have geocoder_address do not take house number into account
@@ -337,6 +357,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].relevance, 0.50);
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
@@ -401,6 +426,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].place_name, 'snowball II, springfield');
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
