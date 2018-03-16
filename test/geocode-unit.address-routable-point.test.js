@@ -51,7 +51,7 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('9 fake street', { limit_verify: 1, debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
-                [[1.111, 1.11]],
+                [{ coordinates: [1.111, 1.11] }],
                 'Forward geocode of non-interpolated address result has correct routable_point');
             t.end();
         });

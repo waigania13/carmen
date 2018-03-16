@@ -143,7 +143,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
         coordinates: [-97.2, 37.3],
         interpolated: true
     };
-    tape('routablePoint with interpolated point', (assert) => {
+    tape('routablePoint input validation: interpolated point', (assert) => {
         assert.deepEquals(
             routablePoint(pointInterpolated, feature),
             null,
@@ -153,6 +153,9 @@ const routablePoint = require('../lib/pure/routablepoint.js');
     });
 })();
 
+// Test feature that already has routable_points
+// This is slightly redundant since it would also return null because this feature is a POI,
+// but the realistic case is that routable_points will only be added for POIs
 (() => {
     const featureRoutablePoints = {
         id: 6666777777982370,
@@ -179,9 +182,9 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             coordinates: [-122.22083, 37.72139]
         }
     };
-    // TODO: Are these assumptions correct? Both what routable_points looks like on the feature,
-    // and the expected result of routablePoint.
-    tape('routablePoint with feature containing routable_points', (assert) => {
+    // TODO: Confirm these assumpitons - Both what routable_points looks like on the feature,
+    // and the expected result of routablePoint if so.
+    tape('routablePoint input validation: feature containing routable_points', (assert) => {
         assert.deepEquals(
             routablePoint([-122, 37], featureRoutablePoints),
             null,
@@ -191,23 +194,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
     });
 })();
 
-// TODO: This isn't currently necessary since we're also testing for addresses
-// But eventually POIs could be an acceptable type for routablePoint,
-// and there may be a distinction between POIs that have routable_points at index time and those that don't.
-
-
-
-
-
-
-
-// TODO: Test routablePoint with feature with routable_points already defined
-// TODO: Test routablePoint with non-address, that would otherwise work.
-// This test passes, but it's because the POI features don't have geometries in the features (at least at tehe verifymatch stage),
-// and they dont have geometryCollections at all.
-// Maybe test with a locality or a street?
-
-
+// Test routablePoint with POI
 tape('routablePoint input validation: POI feature', (assert) => {
     const feature = {
         id: 6666777777982370,
