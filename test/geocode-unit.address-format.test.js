@@ -48,6 +48,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 // Test geocoder_address formatting with multiple formats by language
@@ -105,6 +110,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].place_name, '9 fake street');
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
@@ -251,6 +261,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 (() => {
@@ -308,6 +323,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 // If the layer does not have geocoder_address do not take house number into account
@@ -337,6 +357,11 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].relevance, 0.50);
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
@@ -401,6 +426,153 @@ const addFeature = require('../lib/util/addfeature'),
             t.equals(res.features[0].place_name, 'snowball II, springfield');
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
+})();
+
+// Test dashes in format string
+(() => {
+    const conf = {
+        region: new mem({ maxzoom: 6,  geocoder_format: '{region._name}' }, () => {}),
+        place: new mem({ maxzoom: 6,  geocoder_format: '{place._name} - {region._name}' }, () => {}),
+        locality: new mem({ maxzoom: 6,  geocoder_format: '{locality._name}, {place._name} - {region._name}' }, () => {}),
+        neighborhood: new mem({ maxzoom: 6,  geocoder_format: '{neighborhood._name}, {place._name} - {region._name}' }, () => {})
+    };
+    const c = new Carmen(conf);
+    tape('index region:', (t) => {
+        const region = {
+            id:1,
+            properties: {
+                'carmen:text': 'Region A',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            }
+        };
+        queueFeature(conf.region, region, t.end);
+    });
+    tape('index region:', (t) => {
+        const region = {
+            id:2,
+            properties: {
+                'carmen:text': 'Region B',
+                'carmen:center': [-1,-1],
+                'carmen:zxy': ['6/31/32']
+            }
+        };
+        queueFeature(conf.region, region, t.end);
+    });
+    tape('index region:', (t) => {
+        const region = {
+            id:3,
+            properties: {
+                'carmen:text': 'Region C',
+                'carmen:center': [-1,1],
+                'carmen:zxy': ['6/31/31']
+            }
+        };
+        queueFeature(conf.region, region, t.end);
+    });
+    tape('index place', (t) => {
+        const place = {
+            id:1,
+            properties: {
+                'carmen:text': 'Place A',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            }
+        };
+        queueFeature(conf.place, place, t.end);
+    });
+    tape('index locality', (t) => {
+        const locality = {
+            id:1,
+            properties: {
+                'carmen:text': 'Locality C',
+                'carmen:center': [-1,1],
+                'carmen:zxy': ['6/31/31']
+            }
+        };
+        queueFeature(conf.locality, locality, t.end);
+    });
+    tape('index neighborhood', (t) => {
+        const neighborhood = {
+            id:1,
+            properties: {
+                'carmen:text': 'Neighborhood A',
+                'carmen:center': [0,0],
+                'carmen:zxy': ['6/32/32']
+            }
+        };
+        queueFeature(conf.neighborhood, neighborhood, t.end);
+    });
+    tape('index neighborhood', (t) => {
+        const neighborhood = {
+            id:2,
+            properties: {
+                'carmen:text': 'Neighborhood B',
+                'carmen:center': [-1,-1],
+                'carmen:zxy': ['6/31/32']
+            }
+        };
+        queueFeature(conf.neighborhood, neighborhood, t.end);
+    });
+    tape('index neighborhood', (t) => {
+        const neighborhood = {
+            id:3,
+            properties: {
+                'carmen:text': 'Neighborhood C',
+                'carmen:center': [-1,1],
+                'carmen:zxy': ['6/31/31']
+            }
+        };
+        queueFeature(conf.neighborhood, neighborhood, t.end);
+    });
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('Place A', (t) => {
+        c.geocode('Place A', { }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'Place A - Region A');
+            t.end();
+        });
+    });
+    tape('Locality C', (t) => {
+        c.geocode('Locality C', { }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'Locality C, Region C');
+            t.end();
+        });
+    });
+    tape('Neighborhood A', (t) => {
+        c.geocode('Neighborhood A', { }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'Neighborhood A, Place A - Region A');
+            t.end();
+        });
+    });
+    tape('Neighborhood C', (t) => {
+        c.geocode('Neighborhood C', { }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'Neighborhood C, Region C');
+            t.end();
+        });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
