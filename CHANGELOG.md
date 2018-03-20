@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.2.12
+- add support for dashes in format string templates
+
 ## v24.2.11
 - changed the fallback for `hr`	from `sr` to `sr-Latn`
 
