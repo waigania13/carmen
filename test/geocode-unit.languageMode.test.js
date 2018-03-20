@@ -277,7 +277,7 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-// digraphic exclusion test
+// digraphic exclusion test with sr_Latn fallback in United States
 (() => {
     const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
@@ -296,6 +296,125 @@ const addFeature = require('../lib/util/addfeature'),
                 'carmen:text_en': 'United States',
                 'carmen:text_sr': 'Сједињене Америчке Државе',
                 'carmen:text_sr_Latn': 'Sjedinjene Američke Države'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, t.end);
+    });
+
+    tape('index region', (t) => {
+        queueFeature(conf.region, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_hr': 'Teksas',
+                'carmen:text': 'Texas'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, t.end);
+    });
+
+    tape('index place', (t) => {
+        queueFeature(conf.place, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_sr': 'Парис',
+                'carmen:text': 'Paris'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, t.end);
+    });
+
+    tape('index place', (t) => {
+        queueFeature(conf.place, {
+            type: 'Feature',
+            id: 2,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text_sr': 'Београд',
+                'carmen:text_hr': 'Beograd',
+                'carmen:text': 'Belgrade'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, t.end);
+    });
+
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+
+    tape('query: paris, language: sr-Latn, languageMode: strict', (t) => {
+        c.geocode('paris', { language: 'sr-Latn', languageMode: 'strict' }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features.length, 0, 'filters out mixed-script results');
+            t.end();
+        });
+    });
+
+    tape('query: belgrade, language: sr-Latn, languageMode: strict', (t) => {
+        c.geocode('belgrade', { language: 'sr-Latn', languageMode: 'strict' }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'allows hr result');
+            t.equal(res.features[0].language, 'hr', 'language code is hr');
+            t.end();
+        });
+    });
+
+    tape('query: belgrade, language: hr, languageMode: strict', (t) => {
+        c.geocode('belgrade', { language: 'hr', languageMode: 'strict' }, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features.length, 1, 'allows hr result');
+            t.equal(res.features[0].language, 'hr', 'language code is hr');
+            t.equal(res.features[0].place_name, 'Beograd, Teksas, Sjedinjene Američke Države', 'language=hr fallback to sr_Latn results');
+            t.end();
+        });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
+})();
+
+// digraphic exclusion test without sr_Latn fallback in United States
+(() => {
+    const conf = {
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['en', 'zh', 'sr', 'sr_Latn', 'hr'] }, () => {})
+    };
+    const c = new Carmen(conf);
+
+    tape('index country', (t) => {
+        queueFeature(conf.country, {
+            type: 'Feature',
+            id: 1,
+            properties: {
+                'carmen:center': [1,1],
+                'carmen:text': 'United States',
+                'carmen:text_en': 'United States',
+                'carmen:text_sr': 'Сједињене Америчке Државе'
             },
             geometry: {
                 type: 'Point',
