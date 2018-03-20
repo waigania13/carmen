@@ -1,5 +1,9 @@
 # Changelog
 
+## v24.2.10
+
+- Add support for Oconomowoc, WI style addresses
+
 ## v24.2.9
 - JSDoc comments added
 - documentation.js for auto-generating docs/api.md
