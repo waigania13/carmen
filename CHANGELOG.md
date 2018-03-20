@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.2.11
+- changed the fallback for `hr`	from `sr` to `sr-Latn`
+
 ## v24.2.10
 
 - Add support for Oconomowoc, WI style addresses
