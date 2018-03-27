@@ -1,6 +1,6 @@
 'use strict';
-const termops = require('../lib/util/termops');
-const token = require('../lib/util/token');
+const termops = require('../../../lib/text-processing/termops');
+const token = require('../../../lib/text-processing/token');
 const test = require('tape');
 
 test('termops.getIndexableText', (t) => {

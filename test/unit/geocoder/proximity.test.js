@@ -1,5 +1,5 @@
 'use strict';
-const proximity = require('../lib/util/proximity');
+const proximity = require('../../../lib/util/proximity');
 const test = require('tape');
 
 test('proximity.center2zxy', (t) => {

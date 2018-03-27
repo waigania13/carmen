@@ -1,7 +1,7 @@
 'use strict';
 const test = require('tape');
 
-const scoredist = require('../lib/util/proximity').scoredist;
+const scoredist = require('../../../lib/util/proximity').scoredist;
 
 function compare(a, b) {
     return scoredist(b.score, b.distance) - scoredist(a.score, a.distance);

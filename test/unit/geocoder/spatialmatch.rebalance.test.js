@@ -1,6 +1,6 @@
 'use strict';
-const rebalance = require('../lib/spatialmatch.js').rebalance;
-const Phrasematch = require('../lib/phrasematch').Phrasematch;
+const rebalance = require('../../../lib/geocoder/forward/spatialmatch').rebalance;
+const Phrasematch = require('../../../lib/geocoder/forward/phrasematch').Phrasematch;
 const test = require('tape');
 
 test('rebalance, no garbage', (t) => {

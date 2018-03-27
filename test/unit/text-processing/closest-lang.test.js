@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const closestLangLabel = require('../lib/util/closest-lang');
+const closestLangLabel = require('../../../lib/text-processing/closest-lang');
 
 tape('closestLangLabel', (t) => {
     // English variations:

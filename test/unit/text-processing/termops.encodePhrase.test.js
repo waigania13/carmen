@@ -1,6 +1,6 @@
 'use strict';
-const termops = require('../lib/util/termops');
-const uniq = require('../lib/util/uniq');
+const termops = require('../../../lib/text-processing/termops');
+const uniq = require('../../../lib/util/uniq');
 const test = require('tape');
 
 test('termops.encodePhrase clustering', (t) => {

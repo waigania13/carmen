@@ -1,5 +1,5 @@
 'use strict';
-const termops = require('../lib/util/termops');
+const termops = require('../../../lib/text-processing/termops');
 const test = require('tape');
 const clone = (d) => { return JSON.parse(JSON.stringify(d)); };
 

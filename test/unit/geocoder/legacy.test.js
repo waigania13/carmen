@@ -1,7 +1,7 @@
 'use strict';
 const tape = require('tape');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const Carmen = require('../../..');
+const mem = require('../../../lib/sources/api-mem');
 
 tape('legacy version (pre-v1 => ok)', (t) => {
     const c = new Carmen({

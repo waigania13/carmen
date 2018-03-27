@@ -1,5 +1,5 @@
 'use strict';
-const getHousenumRangeV3 = require('../lib/util/termops').getHousenumRangeV3;
+const getHousenumRangeV3 = require('../../../lib/text-processing/termops').getHousenumRangeV3;
 const test = require('tape');
 
 test('termops.getHousenumRangeV3', (t) => {

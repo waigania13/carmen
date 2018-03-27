@@ -1,5 +1,5 @@
 'use strict';
-const tokenize = require('../lib/util/token.js');
+const tokenize = require('../../../lib/text-processing/token.js');
 const tape = require('tape');
 
 tape.test('token#street=>st', (t) => {

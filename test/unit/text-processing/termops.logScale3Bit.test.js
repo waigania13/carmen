@@ -1,6 +1,6 @@
 'use strict';
 const test = require('tape');
-const termops = require('../lib/util/termops');
+const termops = require('../../../lib/text-processing/termops');
 
 test('encode', (t) => {
     let term = 0;

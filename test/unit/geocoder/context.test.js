@@ -1,6 +1,6 @@
 'use strict';
 const Carmen = require('../../..');
-const context = require('../../../lib/geocoding/context');
+const context = require('../../../lib/geocoder/context');
 const test = require('tape');
 const zlib = require('zlib');
 const path = require('path');

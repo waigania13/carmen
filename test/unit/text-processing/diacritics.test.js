@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const removeDiacritics = require('../lib/util/remove-diacritics');
+const removeDiacritics = require('../../../lib/text-processing/remove-diacritics');
 
 tape('removeDiacritics', (t) => {
     t.equal(removeDiacritics('Hérê àrë søme wöřdš, including diacritics and puncatuation!'), 'Here are some words, including diacritics and puncatuation!', 'diacritics are removed from latin text');
