@@ -1,5 +1,5 @@
 'use strict';
-const addressItp = require('../lib/pure/addressitp');
+const addressItp = require('../../../lib/geocoder/addressitp');
 const test = require('tape');
 
 test('nearest', (t) => {

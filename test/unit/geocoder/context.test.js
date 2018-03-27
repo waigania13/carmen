@@ -1,15 +1,15 @@
 'use strict';
-const Carmen = require('..');
-const context = require('../lib/context');
+const Carmen = require('../../..');
+const context = require('../../../lib/geocoding/context');
 const test = require('tape');
 const zlib = require('zlib');
 const path = require('path');
 const mapnik = require('mapnik');
-const addFeature = require('../lib/util/addfeature'),
+const addFeature = require('../../../lib/util/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 const queue = require('d3-queue').queue;
-const mem = require('../lib/api-mem');
+const mem = require('../../../lib/sources/api-mem');
 
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'ogr.input'));
 mapnik.register_datasource(path.join(mapnik.settings.paths.input_plugins,'geojson.input'));

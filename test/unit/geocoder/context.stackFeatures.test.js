@@ -1,5 +1,5 @@
 'use strict';
-const context = require('../lib/context');
+const context = require('../../../lib/geocoder/context');
 const tape = require('tape');
 
 tape('context.stackFeatures noop', (t) => {

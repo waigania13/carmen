@@ -1,6 +1,6 @@
 'use strict';
-const address = require('../lib/pure/addressitp');
-const addressCluster = require('../lib/pure/addresscluster.js');
+const address = require('../../../lib/geocoder/addressitp');
+const addressCluster = require('../../../lib/geocoder/addresscluster.js');
 const test = require('tape');
 
 test('address.reverse - null ITP', (t) => {
