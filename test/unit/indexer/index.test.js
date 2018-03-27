@@ -2,15 +2,15 @@
 const fs = require('fs');
 const path = require('path');
 const Stream = require('stream');
-const Carmen = require('..');
-const index = require('../lib/index');
-const indexdocs = require('../lib/indexer/indexdocs.js');
-const mem = require('../lib/api-mem');
-const token = require('../lib/util/token');
+const Carmen = require('../..');
+const index = require('../../../lib/index');
+const indexdocs = require('../../../lib/indexer/indexdocs.js');
+const mem = require('../../../lib/indexer/api-mem');
+const token = require('../../../lib/text-processing/token');
 
 const UPDATE = process.env.UPDATE;
 const test = require('tape');
-const termops = require('../lib/util/termops');
+const termops = require('../../../lib/text-processing/termops');
 
 test('index - streaming interface', (t) => {
     const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });

@@ -1,7 +1,7 @@
 'use strict';
-const Carmen = require('..');
-const index = require('../lib/index');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const index = require('../../../lib/indexer/index');
+const mem = require('../../../lib/sources/api-mem');
 const tape = require('tape');
 
 // Creates an index with fuzzed data

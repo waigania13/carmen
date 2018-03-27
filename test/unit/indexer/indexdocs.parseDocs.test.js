@@ -1,6 +1,6 @@
 'use strict';
 const fs = require('fs');
-const indexdocs = require('../lib/indexer/indexdocs.js');
+const indexdocs = require('../../../lib/indexer/indexdocs.js');
 const tape = require('tape');
 
 tape('indexdocs.parseDocs (passthru)', (t) => {

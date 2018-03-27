@@ -3,13 +3,13 @@ const fs = require('fs');
 const path = require('path');
 const Stream = require('stream');
 const split = require('split');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const mem = require('../../../lib/sources/api-mem');
 const de = require('deep-equal');
 const queue = require('d3-queue').queue;
 
 const test = require('tape');
-const merge = require('../lib/merge');
+const merge = require('../../../lib/indexer/merge');
 
 const randomMBtiles = () => {
     return '/tmp/' + ((new Date()).getTime() + Math.random()).toString().replace('.', '_') + '.mbtiles';

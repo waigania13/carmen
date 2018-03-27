@@ -1,7 +1,7 @@
 'use strict';
 const tape = require('tape');
 const zlib = require('zlib');
-const DawgCache = require('../lib/util/dawg');
+const DawgCache = require('../../../lib/indexer/dawg');
 
 tape('create', (t) => {
     const dict = new DawgCache();

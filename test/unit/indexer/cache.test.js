@@ -1,6 +1,6 @@
 'use strict';
-const Cache = require('../lib/util/cxxcache').MemoryCache;
-const RocksDBCache = require('../lib/util/cxxcache').RocksDBCache;
+const Cache = require('../../../lib/indexer/cxxcache').MemoryCache;
+const RocksDBCache = require('../../../lib/indexer/cxxcache').RocksDBCache;
 const test = require('tape');
 const fs = require('fs');
 

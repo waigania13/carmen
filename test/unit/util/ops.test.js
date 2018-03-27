@@ -1,5 +1,5 @@
 'use strict';
-const ops = require('../lib/util/ops');
+const ops = require('../../../lib/geocoder/ops');
 const test = require('tape');
 
 test('ops#toFeature', (t) => {

@@ -1,9 +1,9 @@
 'use strict';
-const indexdocs = require('../lib/indexer/indexdocs.js');
-const grid = require('../lib/util/grid.js');
+const indexdocs = require('../../../lib/indexer/indexdocs.js');
+const grid = require('../../../lib/util/grid.js');
 const tape = require('tape');
-const termops = require('../lib/util/termops.js');
-const token = require('../lib/util/token.js');
+const termops = require('../../../lib/text-processing/termops.js');
+const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
 
 tape('indexdocs.loadDoc', (t) => {

@@ -1,5 +1,5 @@
 'use strict';
-const uniq = require('../lib/util/uniq');
+const uniq = require('../../../lib/util/uniq');
 const test = require('tape');
 
 test('.uniq', (t) => {

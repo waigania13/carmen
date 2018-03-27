@@ -1,7 +1,7 @@
 'use strict';
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
-const index = require('../lib/index');
+const Carmen = require('../..');
+const mem = require('../../../lib/sources/api-mem');
+const index = require('../../../lib/indexer/index');
 const docs = require('./fixtures/mem-docs.json');
 const test = require('tape');
 

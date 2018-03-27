@@ -1,5 +1,5 @@
 'use strict';
-const permute = require('../lib/util/permute');
+const permute = require('../../../lib/util/permute');
 const test = require('tape');
 
 // Convert bitmasks to readable strings that are 0-padded.

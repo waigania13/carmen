@@ -1,5 +1,5 @@
 'use strict';
-const grid = require('../lib/util/grid');
+const grid = require('../../../lib/util/grid');
 const test = require('tape');
 
 test('grid', (t) => {

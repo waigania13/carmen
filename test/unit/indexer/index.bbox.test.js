@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const indexdocs = require('../lib/indexer/indexdocs.js');
+const indexdocs = require('../../../lib/indexer/indexdocs.js');
 
 // Multipolygon with one big part in the Eastern Hemisphere, and one small part in the Western.
 // Make sure bbox is formatted [W,S,E,N] order, not literally [minX,minY,maxX,maxY].

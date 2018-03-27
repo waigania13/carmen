@@ -4,10 +4,10 @@ const path = require('path');
 const Stream = require('stream');
 const split = require('split');
 const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const mem = require('../../../lib/sources/api-mem');
 const de = require('deep-equal');
 const CombinedStream = require('combined-stream');
-const DawgCache = require('../lib/util/dawg');
+const DawgCache = require('../../../lib/indexer/dawg');
 
 const tmpdir = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
 fs.mkdirSync(tmpdir);
