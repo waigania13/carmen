@@ -1,8 +1,8 @@
 'use strict';
 const tape = require('tape');
-const feature = require('../lib/util/feature.js');
-const Memsource = require('../lib/api-mem.js');
-const Carmen = require('../index.js');
+const feature = require('../../../lib/util/feature.js');
+const Memsource = require('../../../lib/sources/api-mem.js');
+const Carmen = require('../../../index.js');
 
 const source = new Memsource({
     maxzoom: 6,

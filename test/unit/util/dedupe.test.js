@@ -1,5 +1,5 @@
 'use strict';
-const dedupe = require('../lib/util/dedupe');
+const dedupe = require('../../../lib/geocoder/dedupe');
 const tape = require('tape');
 
 tape('dedup lowercase vs caps', (t) => {

@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const BBox = require('../lib/util/bbox');
+const BBox = require('../../../lib/util/bbox');
 
 tape('check if polygons intersect', (t) => {
     const bb1 = [-75, 35, -65, 45];

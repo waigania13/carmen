@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const BBox = require('../lib/util/bbox');
+const BBox = require('../../../lib/util/bbox');
 
 tape('check if point is inside polygon', (t) => {
     const coords = [-77, 38];
