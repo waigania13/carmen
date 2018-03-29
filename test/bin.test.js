@@ -4,7 +4,7 @@ const path = require('path');
 const tape = require('tape');
 const exec = require('child_process').exec;
 const tmpdir = require('os').tmpdir();
-const bin = path.resolve(path.join(__dirname, '..', 'scripts'));
+const bin = path.resolve(path.join(__dirname, '..', 'bin'));
 
 const Carmen = require('../index.js');
 const MBTiles = require('@mapbox/mbtiles');
@@ -12,7 +12,7 @@ const rand = Math.random().toString(36).substr(2, 5);
 const tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 const tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
 const tmpindex3 = path.join(tmpdir, 'test-carmen-index3-' + rand + '.mbtiles');
-const addFeature = require('../lib/util/addfeature'),
+const addFeature = require('../lib/indexer/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
