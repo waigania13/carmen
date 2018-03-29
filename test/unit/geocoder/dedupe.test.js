@@ -33,7 +33,7 @@ tape('dedup lowercase vs caps', (t) => {
 });
 
 tape('dedup - change relev order', (t) => {
-    const dedup = dedupe(require('./fixtures/relev.json'));
+    const dedup = dedupe(require('../../fixtures/relev.json'));
 
 
     t.equals(dedup.length, 9);

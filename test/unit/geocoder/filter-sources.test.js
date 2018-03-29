@@ -1,5 +1,5 @@
 'use strict';
-const filter = require('../../../lib/geocoder/filter');
+const filter = require('../../../lib/geocoder/filter-sources');
 const tape = require('tape');
 
 tape('filter.sourceMatchesStacks', (t) => {

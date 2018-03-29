@@ -1,8 +1,8 @@
 'use strict';
-const stackable = require('../../../lib/geocoder/forward/spatialmatch.js').stackable;
-const sortByRelevLengthIdx = require('../../../lib/geocoder/forward/spatialmatch.js').sortByRelevLengthIdx;
-const sortByZoomIdx = require('../../../lib/geocoder/forward/spatialmatch.js').sortByZoomIdx;
-const phrasematch = require('../../../lib/geocoder/forward/phrasematch');
+const stackable = require('../../../lib/geocoder/spatialmatch.js').stackable;
+const sortByRelevLengthIdx = require('../../../lib/geocoder/spatialmatch.js').sortByRelevLengthIdx;
+const sortByZoomIdx = require('../../../lib/geocoder/spatialmatch.js').sortByZoomIdx;
+const phrasematch = require('../../../lib/geocoder/phrasematch');
 const Phrasematch = phrasematch.Phrasematch;
 const PhrasematchResult = phrasematch.PhrasematchResult;
 const test = require('tape');

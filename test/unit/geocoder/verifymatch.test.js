@@ -1,5 +1,5 @@
 'use strict';
-const verifymatch = require('../../../lib/geocoder/forward/verifymatch');
+const verifymatch = require('../../../lib/geocoder/verifymatch');
 const tape = require('tape');
 const bigAddress = require('../../fixtures/bigaddress.json');
 
