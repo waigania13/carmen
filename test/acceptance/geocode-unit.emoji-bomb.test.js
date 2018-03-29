@@ -1,8 +1,8 @@
 'use strict';
 const tape = require('tape');
-const Carmen = require('..');
-const context = require('../lib/context');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
+const mem = require('../../lib/sources/api-mem');
 
 const conf = {};
 for (let i = 0; i < 100; i++) {

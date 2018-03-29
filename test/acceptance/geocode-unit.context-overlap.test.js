@@ -2,11 +2,11 @@
 'use strict';
 
 const tape = require('tape');
-const Carmen = require('..');
-const context = require('../lib/context');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
+const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
-const { queueFeature, buildQueued } = require('../lib/util/addfeature');
+const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 const conf = {
     place_a: new mem({ maxzoom:6, geocoder_name:'place' }, () => {}),

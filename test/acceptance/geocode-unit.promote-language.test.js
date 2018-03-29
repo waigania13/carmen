@@ -1,10 +1,10 @@
 'use strict';
 const tape = require('tape');
-const Carmen = require('..');
-const context = require('../lib/context');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
+const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
-const { queueFeature, buildQueued } = require('../lib/util/addfeature');
+const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 // Tests New York (place), New York (region), USA (country)
 // identically-named features should reverse the gappy penalty and

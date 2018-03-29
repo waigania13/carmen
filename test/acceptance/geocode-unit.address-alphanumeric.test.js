@@ -6,7 +6,7 @@ const Carmen = require('../..');
 const context = require('../../lib/geocoder/context');
 const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
-const { queueFeature, buildQueued } = require('../../lib/util/addfeature');
+const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 // Make sure that capital letters are lowercased on indexing to match input token
 (() => {

@@ -1,8 +1,8 @@
 'use strict';
 const tape = require('tape');
-const skipInterpolation = require('./fixtures/skip-interpolation.json');
-const noskipInterpolation = require('./fixtures/no-skip-interpolation.json');
-const indexdocs = require('../lib/indexer/indexdocs.js');
+const skipInterpolation = require('../fixtures/skip-interpolation.json');
+const noskipInterpolation = require('../fixtures/no-skip-interpolation.json');
+const indexdocs = require('../../lib/indexer/indexdocs');
 
 // skip interpolation for address clusters with large address ranges
 (() => {

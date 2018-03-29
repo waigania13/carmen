@@ -3,10 +3,10 @@
 // are matched against the 0.5 relev bar instead of 0.75
 
 const tape = require('tape');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature'),
+const addFeature = require('../../lib/indexer/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 

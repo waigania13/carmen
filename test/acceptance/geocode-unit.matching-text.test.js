@@ -1,10 +1,10 @@
 'use strict';
 const tape = require('tape');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
-const context = require('../lib/context');
+const Carmen = require('../..');
+const mem = require('../../lib/sources/api-mem');
+const context = require('../../lib/geocoder/context');
 const queue = require('d3-queue').queue;
-const addFeature = require('../lib/util/addfeature');
+const addFeature = require('../../lib/indexer/addfeature');
 
 const queueFeature = addFeature.queueFeature;
 const buildQueued = addFeature.buildQueued;

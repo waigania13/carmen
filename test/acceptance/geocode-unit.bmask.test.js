@@ -2,8 +2,8 @@
 // Tests bounds mask generation.
 
 const tape = require('tape');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const mem = require('../../lib/sources/api-mem');
 
 tape('boundsmask', (t) => {
     const conf = {

@@ -2,10 +2,10 @@
 'use strict';
 
 const tape = require('tape');
-const Carmen = require('..');
-const context = require('../lib/context');
-const mem = require('../lib/api-mem');
-const { queueFeature, buildQueued } = require('../lib/util/addfeature');
+const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
+const mem = require('../../lib/sources/api-mem');
+const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 // Confirm that disabling autocomplete works, and that in situations where an autocomplete
 // result scores highest, the winner changes depending on whether or not autocomplete is enabled
