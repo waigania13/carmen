@@ -20,7 +20,7 @@ test('index - streaming interface', (t) => {
     function getIndex(start, end, fileName) {
 
         let count = 0;
-        const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/' + (fileName || 'docs.jsonl')), { encoding: 'utf8' });
+        const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/' + (fileName || 'docs.jsonl')), { encoding: 'utf8' });
         const transformStream = new Stream.Transform();
         transformStream._transform = (data, encoding, done) => {
             if (data) {

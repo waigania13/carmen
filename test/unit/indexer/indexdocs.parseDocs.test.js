@@ -79,7 +79,7 @@ tape('indexdocs.parseDocs (address MultiPoint)', (t) => {
     t.ifError(err);
 
     if (process.env.UPDATE) {
-        fs.writeFileSync(__dirname + '/fixtures/indexdocs.parseDocs.json', JSON.stringify(full.vectors, null, 2));
+        fs.writeFileSync(__dirname + '/../../fixtures/indexdocs.parseDocs.json', JSON.stringify(full.vectors, null, 2));
     }
     const expected = JSON.parse(fs.readFileSync(__dirname + '/../../fixtures/indexdocs.parseDocs.json'));
 

@@ -1,5 +1,5 @@
 'use strict';
-const token = require('../lib/util/token');
+const token = require('../../../lib/text-processing/token');
 const test = require('tape');
 
 const tokenList = {

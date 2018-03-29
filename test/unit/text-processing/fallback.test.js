@@ -1,7 +1,7 @@
 'use strict';
 const tape = require('tape');
-const fallbackDisplay = require('../lib/util/fallback-display');
-const fallbackIndexer = require('../lib/util/fallback-indexer');
+const fallbackDisplay = require('../../../lib/text-processing/fallback-display');
+const fallbackIndexer = require('../../../lib/text-processing/fallback-indexer');
 
 tape('fallback lists', (assert) => {
     assert.deepEqual(

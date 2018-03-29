@@ -13,7 +13,7 @@ test('index - streaming interface', (t) => {
     function getIndex(start, end) {
 
         let count = 0;
-        const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+        const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/docs.jsonl'), { encoding: 'utf8' });
         const transformStream = new Stream.Transform();
         transformStream._transform = (data, encoding, done) => {
             if (data) {

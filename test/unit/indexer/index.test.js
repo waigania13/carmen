@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const Stream = require('stream');
 const Carmen = require('../../..');
-const index = require('../../../lib/index');
-const indexdocs = require('../../../lib/indexer/indexdocs.js');
-const mem = require('../../../lib/indexer/api-mem');
+const index = require('../../../lib/indexer/index');
+const indexdocs = require('../../../lib/indexer/indexdocs');
+const mem = require('../../../lib/sources/api-mem');
 const token = require('../../../lib/text-processing/token');
 
 const UPDATE = process.env.UPDATE;
@@ -13,7 +13,7 @@ const test = require('tape');
 const termops = require('../../../lib/text-processing/termops');
 
 test('index - streaming interface', (t) => {
-    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/small-docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/small-docs.jsonl'), { encoding: 'utf8' });
 
     const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
@@ -42,8 +42,8 @@ test('index - streaming interface', (t) => {
         carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
-            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze-small.json', JSON.stringify(stats, null, 4));
-            q.deepEqual(require('./fixtures/mem-analyze-small.json'), stats);
+            if (UPDATE) fs.writeFileSync(__dirname + '/../../fixtures/mem-analyze-small.json', JSON.stringify(stats, null, 4));
+            q.deepEqual(require('../../fixtures/mem-analyze-small.json'), stats);
             q.end();
         });
     });
@@ -88,7 +88,7 @@ test('index.generateStats', (t) => {
 });
 
 test('index.update -- error', (t) => {
-    const memdocs = require('./fixtures/mem-docs.json');
+    const memdocs = require('../../fixtures/mem-docs.json');
     const conf = { to: new mem(memdocs, null, () => {}) };
     const carmen = new Carmen(conf);
     t.ok(carmen);
@@ -175,7 +175,7 @@ test('index.update freq', (t) => {
 });
 
 test('index', (t) => {
-    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
@@ -186,7 +186,7 @@ test('index', (t) => {
         done();
     };
 
-    const memdocs = require('./fixtures/mem-docs.json');
+    const memdocs = require('../../fixtures/mem-docs.json');
     const conf = { to: new mem(memdocs, { maxzoom: 6, geocoder_languages: ['zh', 'fa'] }, () => {}) };
 
     const carmen = new Carmen(conf);
@@ -198,7 +198,7 @@ test('index', (t) => {
         }, (err) => {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            const memJson = __dirname + '/fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
+            const memJson = __dirname + '/../../fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
             if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
             q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
@@ -208,8 +208,8 @@ test('index', (t) => {
         carmen.analyze(conf.to, (err, stats) => {
             q.ifError(err);
             // Updates the mem-analyze.json fixture on disk.
-            if (UPDATE) fs.writeFileSync(__dirname + '/fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
-            q.deepEqual(require('./fixtures/mem-analyze.json'), stats);
+            if (UPDATE) fs.writeFileSync(__dirname + '/../../fixtures/mem-analyze.json', JSON.stringify(stats, null, 4));
+            q.deepEqual(require('../../fixtures/mem-analyze.json'), stats);
             q.end();
         });
     });
@@ -237,7 +237,7 @@ test('index', (t) => {
 });
 
 test('error -- zoom too high', (t) => {
-    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
@@ -264,7 +264,7 @@ test('error -- zoom too high', (t) => {
 });
 
 test('error -- zoom too low', (t) => {
-    const inputStream = fs.createReadStream(path.resolve(__dirname, './fixtures/docs.jsonl'), { encoding: 'utf8' });
+    const inputStream = fs.createReadStream(path.resolve(__dirname, '../../fixtures/docs.jsonl'), { encoding: 'utf8' });
 
     const outputStream = new Stream.Writable();
     outputStream._write = (chunk, encoding, done) => {
@@ -326,7 +326,7 @@ test('index phrase collection', (t) => {
 });
 
 test('error -- _geometry too high resolution', (t) => {
-    const docs = JSON.parse(fs.readFileSync(__dirname + '/fixtures/hugedoc.json'));
+    const docs = JSON.parse(fs.readFileSync(__dirname + '/../../fixtures/hugedoc.json'));
 
     const s = new Stream.Readable();
     s._read = function noop() {}; // redundant? see update below

@@ -8,7 +8,7 @@ const tape = require('tape');
 function fuzzIndex(limit, callback) {
     const conf = { street: new mem({ maxzoom:14 }, () => {}) };
     const c = new Carmen(conf);
-    const docs = require('fs').readFileSync(__dirname + '/../bench/fixtures/lake-streetnames.txt', 'utf8')
+    const docs = require('fs').readFileSync(__dirname + '/../../../bench/fixtures/lake-streetnames.txt', 'utf8')
         .split('\n')
         .filter((text) => { return !!text; })
         .sort((a, b) => {

@@ -100,7 +100,7 @@ tape('build queued features', (t) => {
 tape('Toronto', (t) => {
     c.geocode('Toronto', {}, (err, res) => {
         t.ifError(err);
-        const filepath = __dirname + '/fixtures/output.default.geojson';
+        const filepath = __dirname + '/../../fixtures/output.default.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();
@@ -110,7 +110,7 @@ tape('Toronto', (t) => {
 tape('Toronto (dev mode)', (t) => {
     c.geocode('Toronto', { debug: true }, (err, res) => {
         t.ifError(err);
-        const filepath = __dirname + '/fixtures/output.dev.geojson';
+        const filepath = __dirname + '/../../fixtures/output.dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();
@@ -120,7 +120,7 @@ tape('Toronto (dev mode)', (t) => {
 tape('0,0 (dev mode)', (t) => {
     c.geocode('0,0', { debug: true }, (err, res) => {
         t.ifError(err);
-        const filepath = __dirname + '/fixtures/output.reverse-dev.geojson';
+        const filepath = __dirname + '/../../fixtures/output.reverse-dev.geojson';
         if (process.env.UPDATE) fs.writeFileSync(filepath, JSON.stringify(res, null, 4));
         t.deepEqual(JSON.parse(JSON.stringify(res)), JSON.parse(fs.readFileSync(filepath)));
         t.end();
