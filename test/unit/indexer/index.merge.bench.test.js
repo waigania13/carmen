@@ -1,5 +1,5 @@
 'use strict';
-const Carmen = require('../..');
+const Carmen = require('../../..');
 const index = require('../../../lib/indexer/index');
 const mem = require('../../../lib/sources/api-mem');
 const tape = require('tape');
