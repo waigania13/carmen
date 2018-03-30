@@ -4,7 +4,7 @@
 'use strict';
 
 const readline = require('readline');
-const termops = require('../lib/util/termops.js');
+const termops = require('../lib/text-processing/termops.js');
 
 console.error('Enter a token or phrase below to tokenize');
 

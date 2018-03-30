@@ -1,10 +1,10 @@
 var suite = new require('benchmark').Suite();
 
-var Carmen = require('..');
-var index = require('../lib/index');
-var phrasematch = require('../lib/phrasematch');
-var mem = require('../lib/api-mem');
-var dawgcache = require('../lib/util/dawg');
+var Carmen = require('../..');
+var index = require('../lib/indexer/index');
+var phrasematch = require('../lib/geocoder/phrasematch');
+var mem = require('../lib/sources/api-mem');
+var dawgcache = require('../lib/indexer/dawg');
 
 var conf = { street: new mem({ maxzoom:14, geocoder_shardlevel:2 }, function() {}) };
 var c = new Carmen(conf);

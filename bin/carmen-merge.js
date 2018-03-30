@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 let argv = process.argv;
-const merge = require('../lib/merge.js');
+const merge = require('../lib/indexer/merge.js');
 argv = require('minimist')(process.argv, {
     string: ['version', 'config', 'input', 'output'],
     boolean: ['help']

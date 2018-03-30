@@ -1,6 +1,6 @@
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
-var token = require('../lib/util/token');
+var token = require('../lib/text-processing/token');
 var tokens = require('./fixtures/tokens.json');
 
 module.exports = benchmark;

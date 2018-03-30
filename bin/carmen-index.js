@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 let argv = process.argv;
-const Carmen = require('../index.js');
+const Carmen = require('../..');
 argv = require('minimist')(process.argv, {
     string: ['version', 'config', 'index', 'tokens', 'inverse_tokens'],
     boolean: ['help']
