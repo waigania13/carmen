@@ -7,7 +7,7 @@ if (!process.argv[2]) {
 
 const fs = require('fs');
 const path = require('path');
-const Carmen = require('../..');
+const Carmen = require('..');
 const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],

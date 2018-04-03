@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const argv = process.argv;
-const Carmen = require('../..');
+const Carmen = require('..');
 const f = argv[2];
 
 if (!f) {
