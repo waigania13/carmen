@@ -1,6 +1,6 @@
 var suite = new require('benchmark').Suite();
 
-var Carmen = require('../..');
+var Carmen = require('..');
 var index = require('../lib/indexer/index');
 var phrasematch = require('../lib/geocoder/phrasematch');
 var mem = require('../lib/sources/api-mem');
