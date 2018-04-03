@@ -100,8 +100,8 @@ const addFeature = require('../lib/util/addfeature'),
         c.geocode('150 Main Street', { debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
-                undefined,
-                'Forward geocode of interpolated address result should not set routable_points');
+                [{ coordinates: res.features[0].geometry.coordinates }],
+                'Forward geocode of interpolated address result should return existing coordinates');
             t.end();
         });
     });

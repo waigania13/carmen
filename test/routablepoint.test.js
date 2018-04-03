@@ -146,7 +146,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
     tape('routablePoint input validation: interpolated point', (assert) => {
         assert.deepEquals(
             routablePoint(pointInterpolated, feature),
-            null,
+            [-97.2, 37.3],
             'Interpolated point inputs should return null'
         );
         assert.end();
