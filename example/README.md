@@ -42,7 +42,7 @@ Carmen is a library that does two things:
 
 ### Initialize geocoder
 
-To instantiate a new geocoder, you'll need to pass an index configuration object, which maps from index names to carmen source objects. Carmen source objects must satisfy the requirements of the tilelive [`Tilesource`](https://github.com/mapbox/tilelive/blob/master/API.md) API. An easy way to get started is to use [`MemSource`]('./lib/api-mem.js'). Let's set up a geocoder that has address, place and point-of-interest (POI) indexes:
+To instantiate a new geocoder, you'll need to pass an index configuration object, which maps from index names to carmen source objects. Carmen source objects must satisfy the requirements of the tilelive [`Tilesource`](https://github.com/mapbox/tilelive/blob/master/API.md) API. An easy way to get started is to use [`MemSource`]('../docs/api.md#memsource'). Let's set up a geocoder that has address, place and point-of-interest (POI) indexes:
 
 ```javascript
 const Carmen = require('@mapbox/carmen');
