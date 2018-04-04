@@ -1,0 +1,86 @@
+'use strict';
+// spatialmatch test to ensure the highest relev for a stacked zxy cell
+// is used, disallowing a lower scoring cell from overwriting a previous
+// entry.
+
+const tape = require('tape');
+const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
+const mem = require('../../lib/sources/api-mem');
+const queue = require('d3-queue').queue;
+const addFeature = require('../../lib/indexer/addfeature'),
+    queueFeature = addFeature.queueFeature,
+    buildQueued = addFeature.buildQueued;
+
+const conf = {
+    place: new mem({ maxzoom: 6 }, () => {}),
+    address: new mem({ maxzoom: 6, geocoder_address: 1 }, () => {})
+};
+const c = new Carmen(conf);
+tape('index place', (t) => {
+    const feature = {
+        id:1,
+        properties: {
+            'carmen:text':'fakecity',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0],
+        }
+    };
+    queueFeature(conf.place, feature, t.end);
+});
+tape('index matching address', (t) => {
+    const feature = {
+        id:2,
+        properties: {
+            'carmen:text':'fake street',
+            'carmen:zxy':['6/32/32','6/32/33'],
+            'carmen:center':[0,0],
+            'carmen:addressnumber': ['1']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
+        }
+    };
+    queueFeature(conf.address, feature, t.end);
+});
+tape('index other address', (t) => {
+    const feature = {
+        id:3,
+        properties: {
+            'carmen:text':'fake street',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center': [0,0],
+            'carmen:addressnumber': ['2']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            coordinates: [[0,0]]
+        }
+    };
+    queueFeature(conf.address, feature, t.end);
+});
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
+        });
+    });
+    q.awaitAll(t.end);
+});
+tape('test spatialmatch relev', (t) => {
+    c.geocode('1 fake street fakecity', { limit_verify: 1 }, (err, res) => {
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.equals(res.features[0].relevance, 1);
+        t.equals(res.features[0].id, 'address.2');
+        t.end();
+    });
+});
+
+tape('teardown', (t) => {
+    context.getTile.cache.reset();
+    t.end();
+});
+

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
-var context = require('../lib/context');
+var context = require('../lib/geocoder/context');
 
 var stats = {
     max_rss:0,

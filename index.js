@@ -6,16 +6,15 @@ const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
 
-const dawgcache = require('./lib/util/dawg');
-const cxxcache = require('./lib/util/cxxcache');
-const getContext = require('./lib/context');
-const loader = require('./lib/loader');
-const geocode = require('./lib/geocode');
-const analyze = require('./lib/analyze');
-const token = require('./lib/util/token');
-const copy = require('./lib/copy');
-const index = require('./lib/index');
-const merge = require('./lib/merge');
+const dawgcache = require('./lib/indexer/dawg');
+const cxxcache = require('./lib/indexer/cxxcache');
+const getContext = require('./lib/geocoder/context');
+const loader = require('./lib/sources/loader');
+const geocode = require('./lib/geocoder/geocode');
+const analyze = require('./lib/util/analyze');
+const token = require('./lib/text-processing/token');
+const index = require('./lib/indexer/index');
+const merge = require('./lib/indexer/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -503,14 +502,6 @@ Geocoder.prototype.analyze = function(source, callback) {
     this._open((err) => {
         if (err) return callback(err);
         analyze(source, callback);
-    });
-};
-
-// Copy a source's index to another.
-Geocoder.prototype.copy = function(from, to, callback) {
-    this._open((err) => {
-        if (err) return callback(err);
-        copy(from, to, callback);
     });
 };
 

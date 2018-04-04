@@ -4,7 +4,7 @@ const path = require('path');
 const tape = require('tape');
 const exec = require('child_process').exec;
 const tmpdir = require('os').tmpdir();
-const bin = path.resolve(path.join(__dirname, '..', 'scripts'));
+const bin = path.resolve(path.join(__dirname, '..', 'bin'));
 
 const Carmen = require('../index.js');
 const MBTiles = require('@mapbox/mbtiles');
@@ -12,7 +12,7 @@ const rand = Math.random().toString(36).substr(2, 5);
 const tmpindex = path.join(tmpdir, 'test-carmen-index-' + rand + '.mbtiles');
 const tmpindex2 = path.join(tmpdir, 'test-carmen-index2-' + rand + '.mbtiles');
 const tmpindex3 = path.join(tmpdir, 'test-carmen-index3-' + rand + '.mbtiles');
-const addFeature = require('../lib/util/addfeature'),
+const addFeature = require('../lib/indexer/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
@@ -228,31 +228,6 @@ tape('bin/carmen query bbox', (t) => {
 tape('bin/carmen query invalid bbox', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465"', (err, stdout, stderr) => {
         t.ok(err, 'bbox must be minX,minY,maxX,maxY');
-        t.end();
-    });
-});
-tape('bin/carmen-copy noargs', (t) => {
-    exec(bin + '/carmen-copy.js', (err, stdout, stderr) => {
-        t.equal(1, err.code);
-        t.equal('Usage: carmen-copy.js <from> <to>\n', stdout);
-        t.end();
-    });
-});
-tape('bin/carmen-copy 1arg', (t) => {
-    exec(bin + '/carmen-copy.js ' + tmpindex, (err, stdout, stderr) => {
-        t.equal(1, err.code);
-        t.equal('Usage: carmen-copy.js <from> <to>\n', stdout);
-        t.end();
-    });
-});
-tape('bin/carmen-copy', (t) => {
-    const dst = tmpdir + '/carmen-copy-test-' + rand + '.mbtiles';
-    exec(bin + '/carmen-copy.js ' + tmpindex + ' ' + dst, (err, stdout, stderr) => {
-        t.ifError(err);
-        t.equal(/Copying/.test(stdout), true);
-        t.equal(/Done\./.test(stdout), true);
-        t.equal(fs.statSync(dst).size > 20e3, true);
-        t.equal(fs.unlinkSync(dst), undefined, 'cleanup');
         t.end();
     });
 });

@@ -1,6 +1,6 @@
 var Benchmark = require('benchmark'),
     suite = new Benchmark.Suite();
-var address = require('../lib/pure/addressitp');
+var address = require('../lib/geocoder/addressitp');
 
 var bytes = require('bytes');
 
