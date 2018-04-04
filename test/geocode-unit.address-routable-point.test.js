@@ -186,8 +186,3 @@ const addFeature = require('../lib/util/addfeature'),
     });
 })();
 
-
-tape('teardown', (t) => {
-    context.getTile.cache.reset();
-    t.end();
-});
