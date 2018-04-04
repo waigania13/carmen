@@ -246,6 +246,8 @@ const routablePoint = require('../lib/pure/routablepoint.js');
     });
 })();
 
+
+// Input validation
 (()=> {
     const testPrefix = 'routablePoint input validation: ';
 
@@ -283,6 +285,20 @@ const routablePoint = require('../lib/pure/routablepoint.js');
         }
     };
 
+    const featureNoTypes = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+                {
+                    type: 'LineString',
+                    coordinates: [[1, 1.11], [1, 1.13]]
+                }
+            ]
+        }
+    }
+
     const featureNoLinestring = {
         type: 'Feature',
         properties: {
@@ -298,6 +314,59 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             ]
         }
     };
+
+    //TODO: revisit if this test case is necessary. It's not valid GeoJSON without geometry,
+    // but there is a check for geometry in routablePoint anyway to avoid throwing an error on geometry.geometries
+    const featureNoGeometry = {
+        type: 'Feature',
+        properties: {
+            'carmen:types': ['address']
+        }
+    };
+
+    const featureSingleGeomLineString = {
+        type: 'Feature',
+        properties: {
+            'carmen:types': ['address']
+        },
+        geometry: {
+            type: 'LineString',
+            coordinates: [[1, 1.11], [1, 1.13]]
+        }
+    };
+
+    const featureSingleGeomMultiLineString = {
+        type: 'Feature',
+        properties: {
+            'carmen:types': ['address']
+        },
+        geometry: {
+            type: 'MultiLineString',
+            coordinates: [
+                [[1, 1.11], [1, 1.13]],
+                [[1, 1.13], [0, 1.13]]
+            ]
+        }
+    };
+
+    const featureLineString = {
+        type: 'Feature',
+        properties: {
+            'carmen:types': ['address']
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+                {
+                    type: 'LineString',
+                    coordinates: [[1, 1.11], [1, 1.13]]
+                }
+            ]
+
+        }
+    }
+
+
 
     tape(testPrefix + 'point inputs', (assert) => {
         assert.deepEquals(
@@ -333,14 +402,39 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             'Missing feature input should return null'
         );
         assert.deepEquals(
-            routablePoint([1.11, 1.11], {}),
+            routablePoint(pointObject, {}),
             null,
             'Empty feature input should return null'
+        );
+        assert.deepEquals(
+            routablePoint(pointObject, featureNoTypes),
+            null,
+            'Features with no types specified should return null'
+        );
+        assert.deepEquals(
+            routablePoint(pointObject, featureNoGeometry),
+            null,
+            'Features with no geometry should return null'
         );
         assert.deepEquals(
             routablePoint(pointObject, featureNoLinestring),
             null,
             'Features with no linestrings should return null'
+        );
+        assert.deepEqual(
+            routablePoint(pointObject, featureLineString),
+            [1, 1.11],
+            'Features with LineStrings, instead of MultiLineStrings, should also work'
+        )
+        assert.deepEquals(
+            routablePoint(pointObject, featureSingleGeomLineString),
+            [1, 1.11],
+            'Features with single geometry, instead of geometry collections, with LineString, should work'
+        );
+        assert.deepEquals(
+            routablePoint(pointObject, featureSingleGeomMultiLineString),
+            [1, 1.11],
+            'Features with single geometry, instead of geometry collections, with MultiLineString, should work'
         );
         assert.end();
     });
@@ -459,7 +553,7 @@ tape('routablePoint input validation: POI feature', (assert) => {
             'carmen:types': ['poi'],
             'carmen:index': 'poi'
         },
-        // This is slightly artificial since at this point in verifymatch, geometry actually gets stripped out
+        // This is slightly artificial since at this point in verifymatch, geometry actually gets stripped out for POIs
         geometry: {
             type: 'Point',
             coordinates: [-122.22083, 37.72139]
@@ -467,9 +561,11 @@ tape('routablePoint input validation: POI feature', (assert) => {
     };
 
     assert.deepEquals(
-        routablePoint(feature.properties['carmen:center'], feature),
+        routablePoint(
+        feature.properties['carmen:center'], feature),
         null,
         'non-addresses should not return routable Points'
     );
     assert.end();
 });
+

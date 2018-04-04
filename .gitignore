@@ -8,4 +8,4 @@
 npm-debug.log
 /coverage
 /.nyc_output/
-ccoverage.lcov
+coverage.lcov
