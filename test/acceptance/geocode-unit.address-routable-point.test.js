@@ -45,7 +45,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('Forward search for non-interpolated address and return routable points', (t) => {
-        c.geocode('9 fake street', { debug: true, full: true, routingMode: true }, (err, res) => {
+        c.geocode('9 fake street', { debug: true, routingMode: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 [{ coordinates: [1.111, 1.11] }],
@@ -54,15 +54,15 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         });
     });
 
-    tape('Geocode for non-interpolated address without routingMode', ((t) => {
+    tape('Geocode for non-interpolated address without routingMode', (t) => {
         c.geocode('9 fake street', {}, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
-            undefined,
-            'Forward geocode without routingMode: true does not return routable_points');
-            t.end()
+                undefined,
+                'Forward geocode without routingMode: true does not return routable_points');
+            t.end();
         });
-    }))
+    });
 })();
 
 
