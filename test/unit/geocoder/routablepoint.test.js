@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const routablePoint = require('../lib/pure/routablepoint.js');
+const routablePoint = require('../../../lib/geocoder/routablepoint.js');
 
 
 // straight line
@@ -297,7 +297,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
                 }
             ]
         }
-    }
+    };
 
     const featureNoLinestring = {
         type: 'Feature',
@@ -315,7 +315,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
         }
     };
 
-    //TODO: revisit if this test case is necessary. It's not valid GeoJSON without geometry,
+    // TODO: revisit if this test case is necessary. It's not valid GeoJSON without geometry,
     // but there is a check for geometry in routablePoint anyway to avoid throwing an error on geometry.geometries
     const featureNoGeometry = {
         type: 'Feature',
@@ -364,7 +364,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             ]
 
         }
-    }
+    };
 
 
 
@@ -425,7 +425,7 @@ const routablePoint = require('../lib/pure/routablepoint.js');
             routablePoint(pointObject, featureLineString),
             [1, 1.11],
             'Features with LineStrings, instead of MultiLineStrings, should also work'
-        )
+        );
         assert.deepEquals(
             routablePoint(pointObject, featureSingleGeomLineString),
             [1, 1.11],
@@ -562,7 +562,7 @@ tape('routablePoint input validation: POI feature', (assert) => {
 
     assert.deepEquals(
         routablePoint(
-        feature.properties['carmen:center'], feature),
+            feature.properties['carmen:center'], feature),
         null,
         'non-addresses should not return routable Points'
     );
