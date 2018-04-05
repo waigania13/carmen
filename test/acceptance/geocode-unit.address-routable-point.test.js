@@ -45,7 +45,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('Forward search for non-interpolated address and return routable points', (t) => {
-        c.geocode('9 fake street', { limit_verify: 1, debug: true, full: true }, (err, res) => {
+        c.geocode('9 fake street', { debug: true, full: true, routingMode: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 [{ coordinates: [1.111, 1.11] }],
@@ -53,6 +53,16 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.end();
         });
     });
+
+    tape('Geocode for non-interpolated address without routingMode', ((t) => {
+        c.geocode('9 fake street', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].routable_points,
+            undefined,
+            'Forward geocode without routingMode: true does not return routable_points');
+            t.end()
+        });
+    }))
 })();
 
 
@@ -94,7 +104,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('Forward search for interpolated address', (t) => {
-        c.geocode('150 Main Street', { debug: true, full: true }, (err, res) => {
+        c.geocode('150 Main Street', { routingMode: true, debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 [{ coordinates: res.features[0].geometry.coordinates }],
@@ -128,7 +138,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('Forward search for address with no LineString data', (t) => {
-        c.geocode('9 fake street', { debug: true, full: true }, (err, res) => {
+        c.geocode('9 fake street', { routingMode: true, debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 undefined,
@@ -172,7 +182,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('Forward search for POI', (t) => {
-        c.geocode('Oakland International Airport', { debug: true, full: true }, (err, res) => {
+        c.geocode('Oakland International Airport', { routingMode: true, debug: true, full: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 undefined,
