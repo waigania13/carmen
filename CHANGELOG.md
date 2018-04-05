@@ -1,5 +1,10 @@
 # Changelog
 
+## v24.3.1
+- major reorganization of modules, but no API changes
+- major reorganization of tests
+- remove carmen-copy, along with associated lib and tests
+
 ## v24.2.12
 - add support for dashes in format string templates
 

@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
 var assert = require('assert');
-var termops = require('../lib/util/termops');
+var termops = require('../lib/text-processing/termops');
 
 module.exports = benchmark;
 

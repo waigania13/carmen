@@ -1,6 +1,6 @@
 # Tests
 
-Carmen has two main jobs - one is to index our data and the other one is to search for a feature through our indexes given a query. The [README.md](https://github.com/mapbox/carmen/blob/master/README.md) covers how carmen creates a geocoder instance and returns a feature to the user in a number of steps. 
+Carmen has two main jobs - one is to index our data and the other one is to search for a feature through our indexes given a query. The [README.md](../README.md) covers how carmen creates a geocoder instance and returns a feature to the user in a number of steps.
 
 Carmen is constantly being improved and the way to make sure that any additional functionality is not going to break anything, is by writing tests. In carmen we write [unit tests](https://en.wikipedia.org/wiki/Unit_testing), and [acceptance tests](https://en.wikipedia.org/wiki/Acceptance_testing).
 
@@ -8,10 +8,10 @@ Carmen is constantly being improved and the way to make sure that any additional
 ### Unit test
 > Unit testing is a software testing method by which individual units of source code, sets of one or more computer program modules together with associated control data, usage procedures, and operating procedures, are tested to determine whether they are fit for use.
 
-Unit tests in carmen are written to test whether individual functions in a file perform consistently, or to check whether changes to a file doesn't break one or more functions within that file. An example for a unit test in carmen can be seen in [context.test.js](https://github.com/mapbox/carmen/blob/master/test/context.test.js) where functions in [context.js](https://github.com/mapbox/carmen/blob/master/lib/context.js) have been tested in the file by supplying an input for every function and asserting the output of every option. For example, [contextVector()](https://github.com/mapbox/carmen/blob/master/lib/context.js#L385) loads a representative tile, and if we find a feature, add it to the `context` array in a way that represents it in imaginary z-space (country, town, place, etc).
+Unit tests in carmen are written to test whether individual functions in a file perform consistently, or to check whether changes to a file doesn't break one or more functions within that file. An example for a unit test in carmen can be seen in [context.test.js](./unit/geocoder/context.test.js) where functions in [context.js](../lib/geocoder/context.js) have been tested in the file by supplying an input for every function and asserting the output of every option. For example, [contextVector()](../lib/geocoder/context.js#L385) loads a representative tile, and if we find a feature, add it to the `context` array in a way that represents it in imaginary z-space (country, town, place, etc).
 
 ```
-// from context.test.js 
+// from context.test.js
 
 context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, (err, data) => {
 	t.ifError(err);
@@ -23,19 +23,19 @@ context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, (err,
 ### Acceptance tests
 >In engineering and its various subdisciplines, acceptance testing is a test conducted to determine if the requirements of a specification or contract are met.
 
-Acceptance tests in carmen are written in carmen treating carmen as a black box. The input is the query you want to test and you assert whether the values returned are what is expected of carmen. For example, in the following [proximity test](https://github.com/mapbox/carmen/blob/master/test/geocode-unit.proximity.test.js#L97) we notice that the input is a string, while the [proximity options](https://github.com/mapbox/carmen/blob/master/docs/api/carmen.md#geocodequery-options-callback) of carmen accepts an array of longitude and latitude, in this case carmen should throw and error alerting the customer of the invalid input options. An acceptance test would typically look like this:
+Acceptance tests in carmen are written in carmen treating carmen as a black box. The input is the query you want to test and you assert whether the values returned are what is expected of carmen. For example, in the following [proximity test](./acceptance/geocode-unit.proximity.test.js#L97) we notice that the input is a string, while the proximity options ([see options.proximity in geocode](../docs/api.md#geocode)) of carmen accepts an array of longitude and latitude, in this case carmen should throw and error alerting the customer of the invalid input options. An acceptance test would typically look like this:
 
 
 ```
 const tape = require('tape');
-const Carmen = require('..');
-const mem = require('../lib/api-mem');
+const Carmen = require('../..');
+const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue
-const addFeature = require('../lib/util/addfeature'),
+const addFeature = require('../../lib/indexer/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
-    
-// api-mem is a tile-live source used for tests that 
+
+// api-mem is a tile-live source used for tests that
 // satisfies the constraints - https://github.com/mapbox/tilelive/blob/master/API.md
 
 const conf = {
