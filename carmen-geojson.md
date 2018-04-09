@@ -59,6 +59,7 @@ key | description
 `center` | Array of the form [lon,lat].
 `context` | Array representing a hierarchy of parents. Each parent includes `id`, `text` keys.
 `routable_points` | Optional. Array of coordinate arrays of the form [[lon,lat], [lon,lat]]. Closest point on the relevant road, if the feature has an associated road.
+`routable_points_found` | Optional. Values are `true` or `false` for whether `routable_points` were found. This will only appear if the request was made with `routingMode` enabled.
 
 For geocodes that include one or more language codes set by `options.language`, the following keys will also be returned for each language requested:
 
