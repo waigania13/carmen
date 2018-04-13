@@ -1,11 +1,11 @@
 'use strict';
 const tape = require('tape');
-const routablePoint = require('../../../lib/geocoder/routablepoint.js');
+const routablePoints = require('../../../lib/geocoder/routablepoint.js');
 
 
 // straight line
 (() => {
-    const testPrefix = 'routablePoint on straight line: ';
+    const testPrefix = 'routablePoints address on straight line: ';
     const feature = {
         id: 1,
         type: 'Feature',
@@ -36,7 +36,7 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
         }
     };
 
-    tape(testPrefix + 'with actual feature point', (assert) => {
+    tape(testPrefix + 'with actual address point', (assert) => {
 
         /**
          * Example point (x) feature point coords (.) and linestring coords (-) looks like:
@@ -45,9 +45,11 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          * - - - - -
          */
         assert.deepEquals(
-            routablePoint([1.113, 1.111], feature),
-            [1.113, 1.11],
-            'Point that is same as input'
+            routablePoints([1.113, 1.111], feature),
+            {
+                points: [{ coordinates: [1.113, 1.11] }]
+            },
+            'Actual address point on feature with interpolation linestring should find routable points'
         );
         assert.end();
     });
@@ -60,8 +62,10 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          * - - x - -
          */
         assert.deepEquals(
-            routablePoint([1.111, 1.11], feature),
-            [1.111, 1.11],
+            routablePoints([1.111, 1.11], feature),
+            {
+                points: [{ coordinates: [1.111, 1.11] }]
+            },
             'Point that is already on linestring should return itself'
         );
         assert.end();
@@ -77,8 +81,10 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          * - -   - -
          */
         assert.deepEquals(
-            routablePoint([1.113, 1.115], feature),
-            [1.113, 1.11],
+            routablePoints([1.113, 1.115], feature),
+            {
+                points: [{ coordinates: [1.113, 1.11] }]
+            },
             'Point in between linestring coords should return midpoint between coords on linestring'
         );
         assert.end();
@@ -94,9 +100,11 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          * - - - - - - -
          */
         assert.deepEquals(
-            routablePoint([1.115, 1.115], feature),
-            [1.115, 1.11],
-            'Point not in the linestring'
+            routablePoints([1.115, 1.115], feature),
+            {
+                points: [{ coordinates: [1.115, 1.11] }]
+            },
+            'Point not in the linestring should find routable point'
         );
         assert.end();
     });
@@ -104,7 +112,7 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
 
 // zigzag line
 (() => {
-    const testPrefix = 'routablePoint on ZigZag Line: ';
+    const testPrefix = 'routablePoints address on ZigZag Line: ';
     const feature = {
         type: 'Feature',
         properties: {
@@ -147,9 +155,11 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          */
 
         assert.deepEquals(
-            routablePoint([1.116, 1.113], feature),
-            [1.1168, 1.1114],
-            'point projected onto the diagonal'
+            routablePoints([1.116, 1.113], feature),
+            {
+                points: [{ coordinates: [1.1168, 1.1114] }]
+            },
+            'Point should be projected onto the diagonal linestring'
         );
         assert.end();
     });
@@ -157,7 +167,7 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
 
 // |_| cul de sac street
 (() => {
-    const testPrefix = 'routablePoint in cul de sac: ';
+    const testPrefix = 'routablePoints address in cul de sac: ';
     const feature = {
         type: 'Feature',
         properties: {
@@ -201,8 +211,10 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
         // in a case like this where either side of the cul de sac is equal distance from the point
         // expecting the projection to be on the side closest to the beginning of the line
         assert.deepEquals(
-            routablePoint([1.1115, 1.1115], feature),
-            [1.111, 1.1115],
+            routablePoints([1.1115, 1.1115], feature),
+            {
+                points: [{ coordinates: [1.111, 1.1115] }]
+            },
             'Point projected to left side of the cul de sac line'
         );
         assert.end();
@@ -219,8 +231,10 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          */
 
         assert.deepEquals(
-            routablePoint([1.1118, 1.1115], feature),
-            [1.112, 1.1115],
+            routablePoints([1.1118, 1.1115], feature),
+            {
+                points: [{ coordinates: [1.112, 1.1115] }]
+            },
             'point projected to the closer side of the cul de sac line'
         );
         assert.end();
@@ -238,8 +252,10 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
          */
 
         assert.deepEquals(
-            routablePoint([1.1118, 1.1112], feature),
-            [1.112, 1.1112],
+            routablePoints([1.1118, 1.1112], feature),
+            {
+                points: [{ coordinates: [1.112, 1.1112] }]
+            },
             'point projected to the side of the cul de sac line it is closest to'
         );
         assert.end();
@@ -249,7 +265,7 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
 
 // Input validation
 (()=> {
-    const testPrefix = 'routablePoint input validation: ';
+    const testPrefix = 'routablePoints input validation: ';
 
     const pointObject = {
         type: 'Point',
@@ -285,19 +301,6 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
         }
     };
 
-    const featureNoTypes = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-            type: 'GeometryCollection',
-            geometries: [
-                {
-                    type: 'LineString',
-                    coordinates: [[1, 1.11], [1, 1.13]]
-                }
-            ]
-        }
-    };
 
     const featureNoLinestring = {
         type: 'Feature',
@@ -316,7 +319,7 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
     };
 
     // TODO: revisit if this test case is necessary. It's not valid GeoJSON without geometry,
-    // but there is a check for geometry in routablePoint anyway to avoid throwing an error on geometry.geometries
+    // but there is a check for geometry in routablePoints anyway to avoid throwing an error on geometry.geometries
     const featureNoGeometry = {
         type: 'Feature',
         properties: {
@@ -370,70 +373,75 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
 
     tape(testPrefix + 'point inputs', (assert) => {
         assert.deepEquals(
-            routablePoint([], feature),
-            null,
+            routablePoints([], feature),
+            null, // TODO should this return the whole routable_points object?
             'Empty point arrays should return null'
         );
         assert.deepEquals(
-            routablePoint({}, feature),
-            null,
+            routablePoints({}, feature),
+            null, // TODO should this return the whole routable_points object?
             'Empty point objects should return null'
         );
         assert.ok(
-            routablePoint(pointObject, feature),
+            routablePoints(pointObject, feature),
             'Point objects should be accepted'
         );
 
         assert.ok(
-            routablePoint([1, 1], feature),
+            routablePoints([1, 1], feature),
             'Point arrays should be accepted'
         );
         assert.ok(
-            routablePoint([0, 0], feature),
-            '[0,0] should not necessarily return null'
+            routablePoints([0, 0], feature),
+            '[0,0] should not necessarily return points: null'
         );
         assert.end();
     });
 
     tape(testPrefix + 'feature inputs', (assert) => {
         assert.deepEquals(
-            routablePoint(pointObject),
-            null,
-            'Missing feature input should return null'
+            routablePoints(pointObject),
+            null, // TODO should this return the whole routable_points object?
+            'Missing feature input should return points: null'
         );
         assert.deepEquals(
-            routablePoint(pointObject, {}),
-            null,
-            'Empty feature input should return null'
+            routablePoints(pointObject, {}),
+            null, // TODO should this return the whole routable_points object?
+            'Empty feature input should return points: null'
         );
         assert.deepEquals(
-            routablePoint(pointObject, featureNoTypes),
-            null,
-            'Features with no types specified should return null'
+            routablePoints(pointObject, featureNoGeometry),
+            {
+                points: null
+            },
+            'Features with no geometry should return points: null'
         );
         assert.deepEquals(
-            routablePoint(pointObject, featureNoGeometry),
-            null,
-            'Features with no geometry should return null'
-        );
-        assert.deepEquals(
-            routablePoint(pointObject, featureNoLinestring),
-            null,
-            'Features with no linestrings should return null'
+            routablePoints(pointObject, featureNoLinestring),
+            {
+                points: null
+            },
+            'Features with no linestrings should return points: null'
         );
         assert.deepEqual(
-            routablePoint(pointObject, featureLineString),
-            [1, 1.11],
+            routablePoints(pointObject, featureLineString),
+            {
+                points: [{ coordinates: [1, 1.11] }]
+            },
             'Features with LineStrings, instead of MultiLineStrings, should also work'
         );
         assert.deepEquals(
-            routablePoint(pointObject, featureSingleGeomLineString),
-            [1, 1.11],
+            routablePoints(pointObject, featureSingleGeomLineString),
+            {
+                points: [{ coordinates: [1, 1.11] }]
+            },
             'Features with single geometry, instead of geometry collections, with LineString, should work'
         );
         assert.deepEquals(
-            routablePoint(pointObject, featureSingleGeomMultiLineString),
-            [1, 1.11],
+            routablePoints(pointObject, featureSingleGeomMultiLineString),
+            {
+                points: [{ coordinates: [1, 1.11] }]
+            },
             'Features with single geometry, instead of geometry collections, with MultiLineString, should work'
         );
         assert.end();
@@ -481,21 +489,21 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
         coordinates: [-97.2, 37.3],
         interpolated: true
     };
-    tape('routablePoint input validation: interpolated point', (assert) => {
+    tape('routablePoints input validation: interpolated point', (assert) => {
         assert.deepEquals(
-            routablePoint(pointInterpolated, feature),
-            [-97.2, 37.3],
-            'Interpolated point inputs should return null'
+            routablePoints(pointInterpolated, feature),
+            {
+                points: [{ coordinates: [-97.2, 37.3] }]
+            },
+            'Interpolated point inputs should return routable_point response with original coordinates as points'
         );
         assert.end();
     });
 })();
 
 // Test feature that already has routable_points
-// This is slightly redundant since it would also return null because this feature is a POI,
-// but the realistic case is that routable_points will only be added for POIs
 (() => {
-    const featureRoutablePoints = {
+    const featureroutablePoints = {
         id: 6666777777982370,
         type: 'Feature',
         properties: {
@@ -521,19 +529,21 @@ const routablePoint = require('../../../lib/geocoder/routablepoint.js');
         }
     };
     // TODO: Confirm these assumpitons - Both what routable_points looks like on the feature,
-    // and the expected result of routablePoint if so.
-    tape('routablePoint input validation: feature containing routable_points', (assert) => {
+    // and the expected result of routablePoints if so.
+    tape('routablePoints input validation: feature containing routable_points', (assert) => {
         assert.deepEquals(
-            routablePoint([-122, 37], featureRoutablePoints),
-            null,
-            'features that already have routable_points should return null'
+            routablePoints([-122, 37], featureroutablePoints),
+            {
+                points: featureroutablePoints.properties['carmen:routable_points']
+            },
+            'features that already have routable_points should return existing routable points'
         );
         assert.end();
     });
 })();
 
-// Test routablePoint with POI
-tape('routablePoint input validation: POI feature', (assert) => {
+// Test routablePoints with POI
+tape('routablePoints input validation: POI feature', (assert) => {
     const feature = {
         id: 6666777777982370,
         type: 'Feature',
@@ -561,10 +571,12 @@ tape('routablePoint input validation: POI feature', (assert) => {
     };
 
     assert.deepEquals(
-        routablePoint(
+        routablePoints(
             feature.properties['carmen:center'], feature),
-        null,
-        'non-addresses should not return routable Points'
+        {
+            points: null
+        },
+        'non-addresses should return null routable points'
     );
     assert.end();
 });
