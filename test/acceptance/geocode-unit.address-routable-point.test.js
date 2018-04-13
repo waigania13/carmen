@@ -47,11 +47,10 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Forward search for non-interpolated address and return routable points', (t) => {
         c.geocode('9 fake street', { debug: true, routingMode: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.features[0].routable_points.found,
-                true,
-                'Forward geocode of non-interpolated address sets the routable_points.found flag to true');
-            t.deepEquals(res.features[0].routable_points.points,
-                [{ coordinates: [1.111, 1.11] }],
+            t.deepEquals(res.features[0].routable_points,
+                {
+                    points: [{ coordinates: [1.111, 1.11] }]
+                },
                 'Forward geocode of non-interpolated address result has correct routable_point');
             t.end();
         });
@@ -62,7 +61,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 undefined,
-                'Forward geocode witout routingMode: true does not set routable_points on response'
+                'Forward geocode without routingMode: true does not set routable_points on response'
             );
             t.end();
         });
@@ -110,10 +109,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Forward search for interpolated address', (t) => {
         c.geocode('150 Main Street', { routingMode: true, debug: true, full: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.features[0].routable_points.found,
-                true,
-                'Forward geocode of interpolated address result should set routable_points.found to true'
-            );
             t.deepEquals(res.features[0].routable_points.points,
                 [{ coordinates: res.features[0].geometry.coordinates }],
                 'Forward geocode of interpolated address result should return existing coordinates'
@@ -149,10 +144,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Forward search for address with no LineString data', (t) => {
         c.geocode('9 fake street', { routingMode: true, debug: true, full: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.features[0].routable_points.found,
-                false,
-                'Forward geocode of address with no LineString data sets routable_points.found to false'
-            );
             t.deepEquals(res.features[0].routable_points.points,
                 null,
                 'Forward geocode of address with no LineString data returns no routable_points');
@@ -197,14 +188,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Forward search for POI with routingMode', (t) => {
         c.geocode('Oakland International Airport', { routingMode: true }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res.features[0].routable_points.found,
-                false,
-                'Forward search for POI in routingMode sets routable_points.found to false'
-            );
-            t.deepEquals(res.features[0].routable_points.supported_type,
-                false,
-                'Forward search for POI in routingMode sets routable_points.supported_type to false'
-            );
             t.deepEquals(res.features[0].routable_points.points,
                 null,
                 'Forward search for POI returns found: false, supported_type: false, and points: null'
@@ -224,4 +207,3 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         });
     });
 })();
-
