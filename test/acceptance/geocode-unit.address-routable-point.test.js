@@ -2,6 +2,7 @@
 'use strict';
 const tape = require('tape');
 const Carmen = require('../..');
+const context = require('../../lib/geocoder/context');
 const mem = require('../../lib/sources/api-mem');
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
@@ -66,6 +67,11 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 
@@ -116,6 +122,11 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.end();
         });
     });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 
@@ -149,6 +160,11 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
                 'Forward geocode of address with no LineString data returns no routable_points');
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 
 })();
@@ -205,6 +221,11 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             );
             t.end();
         });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
     });
 })();
 
@@ -269,7 +290,12 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             );
             t.end();
         });
-    })
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
 
 // Test where limit is > 1, all address features should have routable_points
@@ -347,22 +373,31 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     tape('build address index', (t) => {
         buildQueued(conf.address, t.end);
-    })
+    });
 
     tape('Forward search for address with multiple results', (t) => {
         c.geocode('9 fake street', { routingMode: true, types: ['address'], limit: 5, allow_dupes: true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(
                 res.features[0].routable_points,
-                { points: [{ coordinates: [1.111, 1.11] }]},
+                { points: [{ coordinates: [1.111, 1.11] }] },
                 'First address should have correct routable points'
             );
             t.deepEquals(
                 res.features[1].routable_points,
-                { points: [{ coordinates: [2.111, 2.11] }]},
+                { points: [{ coordinates: [2.111, 2.11] }] },
                 'Second address should have correct routable points'
             );
-            t.end(); 
+            t.end();
         });
     });
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
 })();
+
+tape('teardown', (t) => {
+    context.getTile.cache.reset();
+    t.end();
+});
