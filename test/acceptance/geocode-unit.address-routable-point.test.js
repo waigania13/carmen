@@ -271,3 +271,98 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         });
     })
 })();
+
+// Test where limit is > 1, all address features should have routable_points
+(() => {
+    const conf = {
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+    };
+    const c = new Carmen(conf);
+    const address1 = {
+        id: 1,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [0,0], // not used
+            'carmen:addressnumber': [null, ['9','11','13']],
+            'carmen:types': ['address']
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+                {
+                    type: 'MultiLineString',
+                    coordinates: [
+                        [
+                            [1.111, 1.11],
+                            [1.112, 1.11],
+                            [1.114, 1.11],
+                            [1.115, 1.11]
+                        ]
+                    ]
+                },
+                {
+                    type: 'MultiPoint',
+                    coordinates: [[1.111, 1.111], [1.113, 1.111], [1.115, 1.111]]
+                }
+            ]
+        }
+    };
+
+    const address2 = {
+        id: 2,
+        properties: {
+            'carmen:text': 'fake street',
+            'carmen:center': [2,2], // not used
+            'carmen:addressnumber': [null, ['9','11','13']],
+            'carmen:types': ['address']
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [
+                {
+                    type: 'MultiLineString',
+                    coordinates: [
+                        [
+                            [2.111, 2.11],
+                            [2.112, 2.11],
+                            [2.114, 2.11],
+                            [2.115, 2.11]
+                        ]
+                    ]
+                },
+                {
+                    type: 'MultiPoint',
+                    coordinates: [[2.111, 2.111], [2.113, 2.111], [2.115, 2.111]]
+                }
+            ]
+        }
+    };
+
+    tape('index address1', (t) => {
+        queueFeature(conf.address, address1, t.end);
+    });
+    tape('index address2', (t) => {
+        queueFeature(conf.address, address2, t.end);
+    });
+
+    tape('build address index', (t) => {
+        buildQueued(conf.address, t.end);
+    })
+
+    tape('Forward search for address with multiple results', (t) => {
+        c.geocode('9 fake street', { routingMode: true, types: ['address'], limit: 5, allow_dupes: true }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(
+                res.features[0].routable_points,
+                { points: [{ coordinates: [1.111, 1.11] }]},
+                'First address should have correct routable points'
+            );
+            t.deepEquals(
+                res.features[1].routable_points,
+                { points: [{ coordinates: [2.111, 2.11] }]},
+                'Second address should have correct routable points'
+            );
+            t.end(); 
+        });
+    });
+})();
