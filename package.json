@@ -54,7 +54,6 @@
   "bin": {
     "carmen": "./bin/carmen.js",
     "carmen-analyze": "./bin/carmen-analyze.js",
-    "carmen-copy": "./bin/carmen-copy.js",
     "carmen-index": "./bin/carmen-index.js",
     "carmen-merge": "./bin/carmen-merge.js"
   },

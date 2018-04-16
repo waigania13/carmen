@@ -12,7 +12,7 @@ argv = require('minimist')(process.argv, {
 const settings = require('../package.json');
 
 function help() {
-    console.log('carmen-copy.js --config=<path> --index=<path> [options]');
+    console.log('carmen-index.js --config=<path> --index=<path> [options]');
     console.log('[options]:');
     console.log('  --help                  Prints this message');
     console.log('  --version               Print the carmen version');
