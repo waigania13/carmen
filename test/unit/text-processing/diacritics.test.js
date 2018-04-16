@@ -24,8 +24,8 @@ tape('removeDiacritics', (t) => {
     // (which can have weird tokenization results)
     t.assert(removeDiacritics('\u0300').length > 0, 'bare combining diacritics are left alone');
     t.assert(removeDiacritics('\u0300\u0311').length > 0, 'bare combining diacritics are left alone');
-    t.assert(removeDiacritics('asdf \u0300').split(' ').filter((t) => t.length > 0).length == 2, 'tokens consisting of bare combining diacritics are left alone');
-    t.assert(removeDiacritics('asdf \u0300\u0311').split(' ').filter((t) => t.length > 0).length == 2, 'tokens consisting of bare combining diacritics are left alone');
+    t.assert(removeDiacritics('asdf \u0300').split(' ').filter((t) => t.length > 0).length === 2, 'tokens consisting of bare combining diacritics are left alone');
+    t.assert(removeDiacritics('asdf \u0300\u0311').split(' ').filter((t) => t.length > 0).length === 2, 'tokens consisting of bare combining diacritics are left alone');
 
     t.end();
 });
