@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.3.2
+- update to carmen-cache@0.21.1, which removes unnecessary dependencies
+
 ## v24.3.1
 - major reorganization of modules, but no API changes
 - major reorganization of tests
