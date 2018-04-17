@@ -318,8 +318,6 @@ const routablePoints = require('../../../lib/geocoder/routablepoint.js');
         }
     };
 
-    // TODO: revisit if this test case is necessary. It's not valid GeoJSON without geometry,
-    // but there is a check for geometry in routablePoints anyway to avoid throwing an error on geometry.geometries
     const featureNoGeometry = {
         type: 'Feature',
         properties: {
