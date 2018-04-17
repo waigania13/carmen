@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.4.0
+- improve diacritical mark removal to support combining diacritics
+
 ## v24.3.2
 - update to carmen-cache@0.21.1, which removes unnecessary dependencies
 
