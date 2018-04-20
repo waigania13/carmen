@@ -213,7 +213,7 @@ Main interface for querying an index and returning ranked results.
     -   `options.indexes` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, indexes will be returned as part of the results. (optional, default `false`)
     -   `options.autocomplete` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, indexes will be returned as part of the results. (optional, default `true`)
     -   `options.reverseMode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Choices are `'distance'`, `'score'`. Affects the way that a result's context array is built (optional, default `'distance'`)
-    -   `options.routingMode` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, routable_points will be returned as part of the results. Currently only forward geocoding of addresses are supported. (optional, default `false`)
+    -   `options.routing` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, routable_points will be returned as part of the results. Currently only forward geocoding of addresses are supported. (optional, default `false`)
 -   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
 
 ### phrasematch
