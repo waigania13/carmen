@@ -135,6 +135,8 @@ function Geocoder(indexes, options) {
                 source.geocoder_address = false;
             }
 
+            source.geocoder_routable = info.geocoder_routable ? info.geocoder_routable : false;
+
             if (info.geocoder_version) {
                 source.version = parseInt(info.geocoder_version, 10);
                 if (source.version !== 8) {

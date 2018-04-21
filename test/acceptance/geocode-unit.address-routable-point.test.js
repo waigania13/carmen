@@ -9,7 +9,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test non-interpolated address routable_points
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -78,7 +78,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test interpolated address
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -133,7 +133,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test feature that doesn't have linestring data
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -173,7 +173,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test POI
 (() => {
     const conf = {
-        poi : new mem({ maxzoom: 6 }, () => {})
+        poi : new mem({ maxzoom: 6, geocoder_routable:1 }, () => {})
     };
     const c = new Carmen(conf);
 
@@ -229,11 +229,56 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 })();
 
+// Test non-routable layer, like countries
+(() => {
+    const conf = {
+        country: new mem({ maxzoom: 6 }, () => {})
+    };
+    const c = new Carmen(conf);
+
+    tape('index country', (assert) => {
+        queueFeature(conf.country, {
+            id:2,
+            properties: {
+                'carmen:text': 'Sweden',
+                'carmen:center': [0,0]
+            },
+            geometry: {
+                type: 'Polygon',
+                coordinates: [[
+                    [-1,-1],
+                    [-1, 1],
+                    [1, 1],
+                    [1,-1],
+                    [-1,-1]
+                ]]
+            }
+        }, () => {
+            buildQueued(conf.country, assert.end);
+        });
+    });
+
+    tape('Forward search for country with routing=true', (t) => {
+        c.geocode('Sweden', { routing: true }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].routable_points,
+                undefined,
+                'Forward search for non-routable feature type does not return routable_points'
+            );
+            t.end();
+        });
+    });
+
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
+})();
 
 // Test reverse geocoding
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -274,7 +319,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.ifError(err);
             t.deepEquals(res.features[0].routable_points,
                 {
-                    points: null
+                    points: [{ coordinates: [1.111, 1.11] }]
                 },
                 'Reverse geocode with routing sets routable_points.points to false'
             );
@@ -301,7 +346,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test where limit is > 1, all address features should have routable_points
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
     };
     const c = new Carmen(conf);
     const address1 = {
