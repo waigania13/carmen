@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.4.1
+- Add basic routable point functionality for forward and reverse geocoding of features from sources that are routable
+
 ## v24.4.0
 - improve diacritical mark removal to support combining diacritics
 
