@@ -98,6 +98,12 @@ tape('москва => москва', (t) => {
         t.end();
     });
 });
+tape('Москва́ => москва', (t) => {
+    c.geocode('Москва́', { limit_verify:1 }, (err, res) => {
+        t.deepEqual(res.features[0].place_name, 'москва');
+        t.end();
+    });
+});
 tape('m => москва', (t) => {
     c.geocode('m', { limit_verify:1 }, (err, res) => {
         t.equal(res.features.length, 0, 'm (no results)');
