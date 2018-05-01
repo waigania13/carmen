@@ -50,7 +50,7 @@ test('contextVector deflate', (t) => {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+    context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
         t.ifError(err);
 
         t.deepEqual(data.properties['carmen:vtquerydist'] < 0.0001, true);
@@ -112,7 +112,7 @@ test('contextVector gzip', (t) => {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+    context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
         t.ifError(err);
 
         t.deepEqual(data.properties['carmen:vtquerydist'] < 0.0001, true);
@@ -153,7 +153,7 @@ test('contextVector badbuffer', (t) => {
         id: 'testA',
         idx: 0
     };
-    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, false, (err, data) => {
+    context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, false, undefined, (err, data) => {
         t.equal(err.toString(), 'Error: Could not detect compression of vector tile');
         t.end();
     });
@@ -178,7 +178,7 @@ test('contextVector empty VT buffer', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.end();
         });
@@ -306,7 +306,7 @@ test('contextVector ignores negative score', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data.properties['carmen:text'], 'B');
             t.end();
@@ -342,7 +342,7 @@ test('contextVector only negative score', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data, false);
             t.end();
@@ -378,7 +378,7 @@ test('contextVector matched negative score', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, { 1:{} }, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data.properties['carmen:text'], 'A');
             t.end();
@@ -419,7 +419,7 @@ test('contextVector grabbed exclusive ID', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 0, 0, false, { _exclusive: true, 4: true }, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, { _exclusive: true, 4: true }, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data.properties['carmen:text'], 'A');
             t.end();
@@ -462,7 +462,7 @@ test('contextVector restricts distance', (t) => {
             id: 'testA',
             idx: 0
         };
-        context.contextVector(source, 170, 80, false, {}, null, false, false, (err, data) => {
+        context.contextVector(source, 170, 80, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data, false);
             t.end();
@@ -518,7 +518,7 @@ test('contextVector restricts distance', (t) => {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
                 t.ifError(err);
                 t.equal(data.properties['carmen:text'], 'A');
                 t.end();
@@ -543,7 +543,7 @@ test('contextVector restricts distance', (t) => {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
                 t.ifError(err);
                 t.equal(data.properties['carmen:text'], 'A');
                 t.end();
@@ -568,7 +568,7 @@ test('contextVector restricts distance', (t) => {
                 id: 'testA',
                 idx: 0
             };
-            context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, (err, data) => {
+            context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, undefined, (err, data) => {
                 t.ifError(err);
                 t.equal(data.properties['carmen:text'], 'B');
                 t.end();
@@ -608,14 +608,14 @@ test('contextVector caching', (t) => {
         let hit, miss;
         hit = context.getTile.cacheStats.hit;
         miss = context.getTile.cacheStats.miss;
-        context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+        context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
             t.equal(data.properties['carmen:extid'], 'test.1');
             t.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             t.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
-            context.contextVector(source, 0, 0, false, {}, null, false, false, (err, data) => {
+            context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
                 t.ifError(err);
                 t.equal(data.properties['carmen:extid'], 'test.1');
                 t.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
@@ -679,6 +679,10 @@ test('Context eliminates correct properties', (t) => {
         });
     });
 });
+
+
+
+
 
 test('teardown', (t) => {
     context.getTile.cache.reset();
