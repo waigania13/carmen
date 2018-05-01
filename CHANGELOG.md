@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.4.2
+- Update context.js to only calculate routable points if `routing` option is enabled
+
 ## v24.4.1
 - Add basic routable point functionality for forward and reverse geocoding of features from sources that are routable
 
