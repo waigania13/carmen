@@ -31,6 +31,7 @@ if (argv.help) {
     console.log('  --reverseMode="{mode}"       Sort features in reverse queries by one of `score` or `distance`');
     console.log('  --languageMode="strict"      Only return results with text in a consistent script family');
     console.log('  --bbox="minX,minY,maxX,maxY" Limit results to those within the specified bounding box');
+    console.log(' --routing=true                Return routable points, if possible');
     console.log('  --help                       Print this report');
     process.exit(0);
 }
@@ -103,6 +104,8 @@ if (argv.reverseMode) {
     if (argv.reverseMode !== 'score' && argv.reverseMode !== 'distance') throw new Error('reverseMode must be one of `score` or `distance`');
 }
 
+if (argv.routing) argv.routing = (argv.routing || false); 
+
 let load = +new Date();
 
 carmen.geocode(argv.query, {
@@ -116,7 +119,8 @@ carmen.geocode(argv.query, {
     'indexes': true,
     'reverseMode': argv.reverseMode,
     'languageMode': argv.languageMode,
-    'bbox': argv.bbox
+    'bbox': argv.bbox,
+    'routing': argv.routing
 }, (err, data) => {
     if (err) throw err;
     load = +new Date() - load;
