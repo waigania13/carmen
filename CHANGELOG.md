@@ -1,5 +1,8 @@
 # Changelog
 
+## v24.4.3
+- Fix text indexing issue that caused indexing to fail upon encountering certain kinds of malformed unicode input
+
 ## v24.4.2
 - Update context.js to only calculate routable points if `routing` option is enabled
 
