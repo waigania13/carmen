@@ -156,9 +156,9 @@ function Geocoder(indexes, options) {
                 }
             });
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
-            source.geocoder_layer = (info.geocoder_layer||'').split('.').shift();
-            source.geocoder_tokens = info.geocoder_tokens||{};
-            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens||{};
+            source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
+            source.geocoder_tokens = info.geocoder_tokens || {};
+            source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
             source.geocoder_squishy_inherit = info.geocoder_squishy_inherit || false;
             source.geocoder_squishy_bestow = info.hasOwnProperty('geocoder_squishy_bestow') ? info.geocoder_squishy_bestow : true;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
