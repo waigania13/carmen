@@ -1,0 +1,12 @@
+{
+    "id": 3,
+    "type": "Feature",
+    "properties": {
+        "carmen:text": "San Diego Model Railroad Museum",
+        "carmen:center": [ -117.148, 32.7311 ]
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [ -117.148, 32.731 ]
+    }
+}

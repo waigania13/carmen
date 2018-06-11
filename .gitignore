@@ -7,3 +7,6 @@
 /node_modules
 npm-debug.log
 /coverage
+/.nyc_output/
+coverage.lcov
+yarn-error.log

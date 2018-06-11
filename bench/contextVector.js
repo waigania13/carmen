@@ -1,7 +1,7 @@
 var fs = require('fs');
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
-var context = require('../lib/context');
+var context = require('../lib/geocoder/context');
 
 var stats = {
     max_rss:0,
@@ -34,7 +34,7 @@ var source = {
 suite.add('context vector', {
 	'defer': true,
 	'fn': function(deferred) {
-        context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, false, function(err, data) {
+        context.contextVector(source, -97.4707, 39.4362, false, {}, null, false, false, undefined, function(err, data) {
     	    deferred.resolve();
         });
 	}

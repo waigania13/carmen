@@ -1,12 +1,12 @@
 {
   "name": "@mapbox/carmen",
   "description": "Mapnik vector-tile-based geocoder with support for swappable data sources.",
-  "version": "24.1.9",
+  "version": "24.4.3",
   "url": "http://github.com/mapbox/carmen",
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "0.20.0",
+    "@mapbox/carmen-cache": "0.21.1",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.9.0",
@@ -14,18 +14,21 @@
     "@mapbox/tile-cover": "^3.0.2",
     "@mapbox/tilebelt": "1.0.x",
     "@mapbox/tilelive": "^5.12.6",
-    "@turf/bbox": "^4.0.1",
-    "@turf/bbox-clip": "^4.6.0",
-    "@turf/bearing": "^4.0.1",
-    "@turf/center": "^4.0.1",
-    "@turf/destination": "^4.0.1",
-    "@turf/distance": "^4.0.1",
-    "@turf/helpers": "^4.0.1",
-    "@turf/line-distance": "^4.0.1",
-    "@turf/point-on-surface": "^4.0.1",
+    "@turf/bbox": "^5.1.5",
+    "@turf/bbox-clip": "^5.1.5",
+    "@turf/bearing": "^5.1.5",
+    "@turf/center": "^5.1.5",
+    "@turf/destination": "^5.1.5",
+    "@turf/distance": "^5.1.5",
+    "@turf/helpers": "^5.1.5",
+    "@turf/length": "^5.1.5",
+    "@turf/nearest-point-on-line": "^5.1.5",
+    "@turf/point-on-feature": "^5.1.5",
     "d3-queue": "3.0.x",
     "dawg-cache": "0.5.0",
     "err-code": "^1.1.2",
+    "es6-native-map": "https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz",
+    "es6-native-set": "https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz",
     "fs-extra": "^2.1.2",
     "geojson-rewind": "^0.2.0",
     "iter-tools": "1.3.0",
@@ -36,78 +39,32 @@
     "xregexp": "3.1.1"
   },
   "devDependencies": {
+    "@mapbox/eslint-config-geocoding": "^1.0.0",
     "benchmark": "^2.1.4",
     "bytes": "^2.5.0",
+    "codecov": "^1.0.0",
     "combined-stream": "~1.0.5",
-    "coveralls": "^2.11.4",
     "deep-equal": "1.0.1",
-    "eslint": "^3.19.0",
-    "istanbul": "^0.4.0",
+    "documentation": "^5.4.0",
+    "eslint": "^4.17.0",
+    "eslint-plugin-node": "^5.2.1",
+    "nyc": "^11.6.0",
     "retire": "^1.2.12",
     "tape": "4.6.3"
   },
   "bin": {
-    "carmen": "./scripts/carmen.js",
-    "carmen-analyze": "./scripts/carmen-analyze.js",
-    "carmen-copy": "./scripts/carmen-copy.js",
-    "carmen-index": "./scripts/carmen-index.js",
-    "carmen-merge": "./scripts/carmen-merge.js"
+    "carmen": "./bin/carmen.js",
+    "carmen-analyze": "./bin/carmen-analyze.js",
+    "carmen-index": "./bin/carmen-index.js",
+    "carmen-merge": "./bin/carmen-merge.js"
   },
   "main": "./index.js",
   "scripts": {
-    "lint": "eslint index.js lib test",
-    "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape ./test/*.js && yarn run bench",
-    "coverage": "TESTING=true istanbul cover tape test/*.js && coveralls < ./coverage/lcov.info",
-    "bench": "./test/run_all_benchmarks.sh"
-  },
-  "eslintConfig": {
-    "rules": {
-      "no-use-before-define": [
-        2,
-        "nofunc"
-      ],
-      "space-before-function-paren": [
-        2,
-        "never"
-      ],
-      "space-in-parens": 2,
-      "space-before-blocks": 2,
-      "keyword-spacing": 2,
-      "comma-style": 2,
-      "indent": 2,
-      "no-lonely-if": 2,
-      "no-else-return": 0,
-      "new-cap": 0,
-      "no-empty": 2,
-      "no-new": 2,
-      "no-multi-spaces": 0,
-      "space-in-brackets": 0,
-      "brace-style": 0,
-      "quotes": 0,
-      "no-underscore-dangle": 0,
-      "curly": 0,
-      "no-constant-condition": 0,
-      "no-native-reassign": 0,
-      "no-shadow": 0,
-      "key-spacing": 0,
-      "no-unused-vars": [
-        2,
-        {
-          "args": "none"
-        }
-      ],
-      "no-redeclare": 2,
-      "no-undef": 2,
-      "block-scoped-var": 2
-    },
-    "ecmaFeatures": {
-      "forOf": true
-    },
-    "env": {
-      "node": true,
-      "es6": true
-    },
-    "globals": {}
+    "lint": "eslint index.js lib test scripts",
+    "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape './test/**/*.js' && yarn run bench",
+    "coverage": "TESTING=true nyc tape 'test/**/*.js' && nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "bench": "./test/run_all_benchmarks.sh",
+    "build-docs": " $(yarn bin)/documentation build --config docs/documentation.yml --access public --github --format md --output docs/api.md index.js lib/**"
   },
   "engines": {
     "node": "6.x.x"

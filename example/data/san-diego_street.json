@@ -1,0 +1,24 @@
+{
+    "id": 2,
+    "type": "Feature",
+    "properties": {
+        "carmen:rangetype": "tiger",
+        "carmen:parityl": [["E"]],
+        "carmen:lfromhn": [[500]],
+        "carmen:ltohn": [[600]],
+        "carmen:parityr": [["O"]],
+        "carmen:rfromhn": [[501]],
+        "carmen:rtohn": [[601]],
+        "carmen:text": "San Diego Avenue",
+        "carmen:center": [ -75.095875, 40.085907 ]
+    },
+    "geometry": {
+        "type": "GeometryCollection",
+        "geometries": [
+            {
+                "type":"MultiLineString",
+                "coordinates":[[[-75.093657,40.085796],[-75.095136,40.085792],[-75.096206,40.085754],[-75.097004,40.086226]]]
+            }
+        ]
+    }
+}

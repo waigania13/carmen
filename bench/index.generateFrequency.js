@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite();
 var assert = require('assert');
-var index = require('../lib/index');
+var index = require('../lib/indexer/index');
 var docs = require('../test/fixtures/mem-docs.json');
 
 module.exports = benchmark;
