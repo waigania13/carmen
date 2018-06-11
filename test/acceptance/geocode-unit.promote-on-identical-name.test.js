@@ -295,7 +295,7 @@ const conf3 = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_squishy_bestow: false }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
     district: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_squishy_inherit: true}, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en','fr'], geocoder_squishy_inherit: true }, () => {})
 };
 const c3 = new Carmen(conf3);
 
@@ -308,9 +308,9 @@ tape('index country', (t) => {
             'carmen:text_fr':'Mexico',
             'carmen:geocoder_stack':'mx'
         },
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
+        'geometry': {
+            'type': 'Polygon',
+            'coordinates': [
                 [
                     [
                         99.90966796875,
@@ -348,9 +348,9 @@ tape('index country', (t) => {
                 'carmen:text_fr':'Mexico',
                 'carmen:geocoder_stack':'mx'
             },
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
+            'geometry': {
+                'type': 'Polygon',
+                'coordinates': [
                     [
                         [
                             100.49571990966797,
