@@ -12,7 +12,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 const conf = {
     country: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, () => {}),
     region: new mem({ maxzoom: 6, geocoder_languages: ['en'] }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_languages: ['en'], geocoder_squishy_inherit: true }, () => {})
+    place: new mem({ maxzoom: 6, geocoder_languages: ['en'], geocoder_inherit_score: true }, () => {})
 };
 
 const c = new Carmen(conf);
