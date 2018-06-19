@@ -323,6 +323,7 @@ function Geocoder(indexes, options) {
                     props = {
                         id: id,
                         info: loaded[0],
+                        // TODO: https://github.com/mapbox/node-fuzzy-phrase/blob/master/test/all.js#L16
                         dictcache: new dawgcache(loaded[1])
                     };
                 }
