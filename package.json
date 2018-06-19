@@ -56,6 +56,7 @@
     "carmen": "./bin/carmen.js",
     "carmen-analyze": "./bin/carmen-analyze.js",
     "carmen-index": "./bin/carmen-index.js",
+     TODO: remove carmen-merge
     "carmen-merge": "./bin/carmen-merge.js"
   },
   "main": "./index.js",

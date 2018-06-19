@@ -11,6 +11,8 @@ const queue = require('d3-queue').queue;
 const test = require('tape');
 const merge = require('../../../lib/indexer/merge');
 
+// TODO: remove test <19-06-18, boblannon> //
+
 const randomMBtiles = () => {
     return '/tmp/' + ((new Date()).getTime() + Math.random()).toString().replace('.', '_') + '.mbtiles';
 };

@@ -14,6 +14,7 @@ const geocode = require('./lib/geocoder/geocode');
 const analyze = require('./lib/util/analyze');
 const token = require('./lib/text-processing/token');
 const index = require('./lib/indexer/index');
+// TODO: remove require <19-06-18, boblannon> //
 const merge = require('./lib/indexer/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
@@ -470,6 +471,7 @@ Geocoder.prototype.index = function(from, to, options, callback) {
  * @param {object} options - options
  * @param {function} callback - a callback function
  */
+// TODO: remove function <19-06-18, boblannon> //
 Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
     const self = this;
     this._open((err) => {
@@ -491,6 +493,7 @@ Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
  * @param {object} options - options
  * @param {function} callback - a callback function
  */
+// TODO: remove function <19-06-18, boblannon> //
 Geocoder.prototype.multimerge = function(fromFiles, toFile, options, callback) {
     const self = this;
     this._open((err) => {

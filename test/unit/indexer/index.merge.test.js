@@ -8,6 +8,7 @@ const mem = require('../../../lib/sources/api-mem');
 const de = require('deep-equal');
 
 const test = require('tape');
+// TODO: remove test <19-06-18, boblannon> //
 
 test('index - streaming interface', (t) => {
     function getIndex(start, end) {

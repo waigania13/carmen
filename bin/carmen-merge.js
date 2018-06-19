@@ -10,6 +10,7 @@ argv = require('minimist')(process.argv, {
 });
 const settings = require('../package.json');
 
+// TODO: remove this file <19-06-18, boblannon> //
 function help() {
     console.log('carmen-merge.js --input=<path>[,<path>,...] --output=<path> [options]');
     console.log('[options]:');

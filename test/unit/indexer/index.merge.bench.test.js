@@ -3,6 +3,7 @@ const Carmen = require('../../..');
 const index = require('../../../lib/indexer/index');
 const mem = require('../../../lib/sources/api-mem');
 const tape = require('tape');
+// TODO: remove test <19-06-18, boblannon> //
 
 // Creates an index with fuzzed data
 function fuzzIndex(limit, callback) {

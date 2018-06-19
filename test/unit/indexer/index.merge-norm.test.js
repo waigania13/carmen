@@ -16,6 +16,8 @@ const tmpfile = () => { return tmpdir + '/' + (tmpidx++) + '.dat'; };
 
 const test = require('tape');
 
+// TODO: remove test <19-06-18, boblannon> //
+
 test('index - streaming interface', (t) => {
     function getIndex(start, end, fileName) {
 
