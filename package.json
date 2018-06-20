@@ -55,8 +55,7 @@
   "bin": {
     "carmen": "./bin/carmen.js",
     "carmen-analyze": "./bin/carmen-analyze.js",
-    "carmen-index": "./bin/carmen-index.js",
-    "carmen-merge": "./bin/carmen-merge.js"
+    "carmen-index": "./bin/carmen-index.js"
   },
   "main": "./index.js",
   "scripts": {

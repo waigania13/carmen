@@ -14,7 +14,6 @@ const geocode = require('./lib/geocoder/geocode');
 const analyze = require('./lib/util/analyze');
 const token = require('./lib/text-processing/token');
 const index = require('./lib/indexer/index');
-const merge = require('./lib/indexer/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -303,8 +302,13 @@ function Geocoder(indexes, options) {
             q.defer((done) => {
                 const dawgFile = source.getBaseFilename() + '.dawg';
                 if (source._original._dictcache || !fs.existsSync(dawgFile)) {
+                    // write case: null buf gets passed on and DawgCache acts as a WriteCache
+                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
                     done();
                 } else {
+                    // read case: file buffer gets passed on and DawgCache acts as a ReadCache
+                    // happens when deploying (when dawg already exists)
+                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
                     fs.readFile(dawgFile, done);
                 }
             });
@@ -312,6 +316,7 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
 
                 let props;
+                // TODO: expect a file path and a boolean for whether it exists, then decide read or write <20-06-18, boblannon> //
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
                     props = {
@@ -453,49 +458,6 @@ Geocoder.prototype.index = function(from, to, options, callback) {
     this._open((err) => {
         if (err) return callback(err);
         index(self, from, to, options, callback);
-    });
-};
-
-/**
- * Merge two CarmenSources and output to a third.
- * @name Geocoder#merge
- * @memberof Geocoder
- * @see {@link merge} for more details, including `options` properties.
- *
- * @access public
- *
- * @param {CarmenSource} from1 - a source index to be merged
- * @param {CarmenSource} from2 - another source to be merged
- * @param {CarmenSource} to - the destination of the merged sources
- * @param {object} options - options
- * @param {function} callback - a callback function
- */
-Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
-    const self = this;
-    this._open((err) => {
-        if (err) return callback(err);
-        merge(self, from1, from2, to, options, callback);
-    });
-};
-
-/**
- * Merge more than two CarmenSources. Only supports MBTile sources.
- * @name Geocoder#multimerge
- * @memberof Geocoder
- * @see {@link multimerge} for more details, including `options` properties.
- *
- * @access public
- *
- * @param {Array<string>} fromFiles - array of paths to input mbtiles files
- * @param {string} toFile - path to output of merge
- * @param {object} options - options
- * @param {function} callback - a callback function
- */
-Geocoder.prototype.multimerge = function(fromFiles, toFile, options, callback) {
-    const self = this;
-    this._open((err) => {
-        if (err) return callback(err);
-        merge.multimerge(self, fromFiles, toFile, options, callback);
     });
 };
 
