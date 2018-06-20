@@ -302,9 +302,13 @@ function Geocoder(indexes, options) {
             q.defer((done) => {
                 const dawgFile = source.getBaseFilename() + '.dawg';
                 if (source._original._dictcache || !fs.existsSync(dawgFile)) {
+                    // write case: null buf gets passed on and DawgCache acts as a WriteCache
+                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
                     done();
                 } else {
+                    // read case: file buffer gets passed on and DawgCache acts as a ReadCache
                     // happens when deploying (when dawg already exists)
+                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
                     fs.readFile(dawgFile, done);
                 }
             });
@@ -312,6 +316,7 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
 
                 let props;
+                // TODO: expect a file path and a boolean for whether it exists, then decide read or write <20-06-18, boblannon> //
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
                     props = {
