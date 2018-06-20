@@ -1,4 +1,4 @@
-BSD 2-clause "Simplified" license
+BSD 2-Clause License
 
 carmen copyright (c) 2018, Mapbox.
 
