@@ -304,6 +304,7 @@ function Geocoder(indexes, options) {
                 if (source._original._dictcache || !fs.existsSync(dawgFile)) {
                     done();
                 } else {
+                    // happens when deploying (when dawg already exists)
                     fs.readFile(dawgFile, done);
                 }
             });
