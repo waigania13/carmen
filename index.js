@@ -200,12 +200,6 @@ function Geocoder(indexes, options) {
             lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
             source.lang = lang;
 
-            // decide whether to use the text normalization cache
-            source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
-            if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
-                source._dictcache.loadNormalizationCache(data.norm);
-            }
-
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];
             this.byname[name].push(source);
@@ -335,7 +329,6 @@ function Geocoder(indexes, options) {
                 const filename = source.getBaseFilename();
                 props.freq = filename + '.freq.rocksdb';
                 props.grid = filename + '.grid.rocksdb';
-                props.norm = filename + '.norm.rocksdb';
                 callback(null, props);
             });
         });
