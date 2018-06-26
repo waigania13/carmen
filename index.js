@@ -6,7 +6,7 @@ const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
 
-const dawgcache = require('./lib/indexer/dawg');
+const fuzzy = require('node-fuzzy-phrase');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
@@ -294,16 +294,16 @@ function Geocoder(indexes, options) {
             const q = queue();
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
-                const dawgFile = source.getBaseFilename() + '.dawg';
-                if (source._original._dictcache || !fs.existsSync(dawgFile)) {
+                const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
+                if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
                     // write case: null buf gets passed on and DawgCache acts as a WriteCache
                     // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    done();
+                    done({ path: fuzzySetFile, exists: false });
                 } else {
                     // read case: file buffer gets passed on and DawgCache acts as a ReadCache
                     // happens when deploying (when dawg already exists)
                     // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    fs.readFile(dawgFile, done);
+                    done({ path: fuzzySetFile, exists: true });
                 }
             });
             q.awaitAll((err, loaded) => {
@@ -318,11 +318,17 @@ function Geocoder(indexes, options) {
                         info: loaded[0]
                     };
                 // create dictcache at load time to allow incremental gc
+                } else if (loaded[1].exists) {
+                    props = {
+                        id: id,
+                        info: loaded[0],
+                        dictcache: new fuzzy.FuzzyPhraseSet(loaded[1].path)
+                    };
                 } else {
                     props = {
                         id: id,
                         info: loaded[0],
-                        dictcache: new dawgcache(loaded[1])
+                        dictcache: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
                     };
                 }
 
@@ -335,7 +341,6 @@ function Geocoder(indexes, options) {
     }
 
 }
-
 
 /**
  * Clones the source object. Methods in the cloned object are all bound

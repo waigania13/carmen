@@ -36,7 +36,8 @@
     "minimist": "1.2.0",
     "model-un": "0.0.3",
     "split": "^1.0.1",
-    "xregexp": "^4.2.0"
+    "xregexp": "^4.2.0",
+    "node-fuzzy-phrase": "https://github.com/mapbox/node-fuzzy-phrase/archive/65f100956f5c4523bdcb97d1d395be4f96ff992c.tar.gz"
   },
   "devDependencies": {
     "@mapbox/eslint-config-geocoding": "^1.0.0",
