@@ -198,7 +198,7 @@ test('index', (t) => {
         }, (err) => {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            const memJson = __dirname + '/../../fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
+            const memJson = __dirname + '/../../fixtures/mem-fuzzy.json';
             if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
             q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
@@ -365,4 +365,3 @@ test('index.cleanDocs', (t) => {
     t.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{},properties: { 'carmen:addressnumber':{} } }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
     t.end();
 });
-

@@ -298,12 +298,12 @@ function Geocoder(indexes, options) {
                 if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
                     // write case: null buf gets passed on and DawgCache acts as a WriteCache
                     // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    done({ path: fuzzySetFile, exists: false });
+                    done(null, { path: fuzzySetFile, exists: false });
                 } else {
                     // read case: file buffer gets passed on and DawgCache acts as a ReadCache
                     // happens when deploying (when dawg already exists)
                     // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    done({ path: fuzzySetFile, exists: true });
+                    done(null, { path: fuzzySetFile, exists: true });
                 }
             });
             q.awaitAll((err, loaded) => {
