@@ -286,8 +286,11 @@ function Geocoder(indexes, options) {
                 const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
                     return filename.replace('.mbtiles', '');
+                } else if (source._original.tmpFilename) {
+                    return source._original.tmpFilename;
                 } else {
-                    return require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    source._original.tmpFilename = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    return source._original.tmpFilename;
                 }
             };
 
