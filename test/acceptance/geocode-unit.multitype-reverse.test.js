@@ -12,7 +12,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
 
 const conf = {
     region: new mem({ maxzoom:6, geocoder_types:['region','place'] }, () => {}),
-    place: new mem({ maxzoom:6 }, () => {}),
     poi: new mem({ maxzoom:6 }, () => {})
 };
 const c = new Carmen(conf);
