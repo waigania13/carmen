@@ -67,15 +67,17 @@ tape('ready', (t) => {
             }
         }, t.end);
     });
-    tape('build queued features', (t) => {
-        const q = queue();
-        Object.keys(conf).forEach((c) => {
-            q.defer((cb) => {
-                buildQueued(conf[c], cb);
-            });
+});
+
+// TODO: check to see why this was inside the loop...  <28-06-18, boblannon> //
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
         });
-        q.awaitAll(t.end);
     });
+    q.awaitAll(t.end);
 });
 
 function reset() {
