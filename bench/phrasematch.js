@@ -4,7 +4,6 @@ var Carmen = require('..');
 var index = require('../lib/indexer/index');
 var phrasematch = require('../lib/geocoder/phrasematch');
 var mem = require('../lib/sources/api-mem');
-var dawgcache = require('../lib/indexer/dawg');
 
 var conf = { street: new mem({ maxzoom:14, geocoder_shardlevel:2 }, function() {}) };
 var c = new Carmen(conf);
@@ -45,13 +44,6 @@ function setup(cb) {
         index.store(conf.street, function(err) {
             if (err) throw err;
             console.log('setup time ' + (+new Date - start) + 'ms');
-            // compact the dawg cache to simulate production
-            console.time("compacting dawg");
-            Object.keys(c.indexes).forEach(function(idx_name) {
-                var compacted = new dawgcache(c.indexes[idx_name]._dictcache.dump())
-                c.indexes[idx_name]._dictcache = compacted;
-            })
-            console.timeEnd("compacting dawg");
             runphrasematch(cb);
         });
     });
