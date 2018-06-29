@@ -3,35 +3,34 @@ const tape = require('tape');
 const Carmen = require('../..');
 const context = require('../../lib/geocoder/context');
 const mem = require('../../lib/sources/api-mem');
-const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
+const fuzzy = require('node-fuzzy-phrase');
 
 const country = new mem(null, () => {});
 const conf = { country: country };
-let a;
+const a = new Carmen(conf);
 
 tape('index country', (t) => {
-    queueFeature(conf.country, {
+    const countryDoc = {
         id:1,
         properties: {
             'carmen:text':'america',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
-    }, t.end);
-});
-tape('build queued features', (t) => {
-    const q = queue();
-    Object.keys(conf).forEach((c) => {
-        q.defer((cb) => {
-            buildQueued(conf[c], cb);
+    };
+    queueFeature(conf.country, countryDoc, (err) => {
+        t.ifError(err);
+        buildQueued(conf.country, (err) => {
+            t.ifError(err);
+            t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
+            t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
+            t.assert(a.indexes.country._dictcache instanceof fuzzy.FuzzyPhraseSet, 'dictcache should be a FuzzyPhraseSet');
+            t.end();
         });
     });
-    q.awaitAll(() => {
-        a = new Carmen(conf);
-        t.end();
-    });
 });
+
 tape('geocodes', (t) => {
     a.geocode('america', {}, (err, res) => {
         t.ifError(err);
