@@ -325,13 +325,19 @@ function Geocoder(indexes, options) {
                     props = {
                         id: id,
                         info: loaded[0],
-                        dictcache: new fuzzy.FuzzyPhraseSet(loaded[1].path)
+                        dictcache: {
+                            reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
+                            writer: null
+                        }
                     };
                 } else {
                     props = {
                         id: id,
                         info: loaded[0],
-                        dictcache: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
+                        dictcache: {
+                            reader: null,
+                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
+                        }
                     };
                 }
 

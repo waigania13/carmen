@@ -4,7 +4,6 @@ const Carmen = require('../..');
 const context = require('../../lib/geocoder/context');
 const mem = require('../../lib/sources/api-mem');
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
-const fuzzy = require('node-fuzzy-phrase');
 
 const country = new mem(null, () => {});
 const conf = { country: country };
@@ -27,7 +26,6 @@ tape('index country', (t) => {
             t.ok(country._dictcache, 'sets source._dictcache on original instance');
             t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
             t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
-            t.assert(a.indexes.country._dictcache instanceof fuzzy.FuzzyPhraseSet, 'dictcache should be a FuzzyPhraseSet');
             t.end();
         });
     });
