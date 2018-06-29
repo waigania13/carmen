@@ -8,7 +8,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 const country = new mem(null, () => {});
 const conf = { country: country };
-const a = new Carmen(conf);
+let a;
 
 tape('index country', (t) => {
     queueFeature(conf.country, {
@@ -27,7 +27,10 @@ tape('build queued features', (t) => {
             buildQueued(conf[c], cb);
         });
     });
-    q.awaitAll(t.end);
+    q.awaitAll(() => {
+        a = new Carmen(conf);
+        t.end();
+    });
 });
 tape('geocodes', (t) => {
     a.geocode('america', {}, (err, res) => {
