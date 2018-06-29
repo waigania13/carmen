@@ -23,6 +23,8 @@ tape('index country', (t) => {
         t.ifError(err);
         buildQueued(conf.country, (err) => {
             t.ifError(err);
+            t.ok(country._geocoder, 'sets source._geocoder on original instance');
+            t.ok(country._dictcache, 'sets source._dictcache on original instance');
             t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
             t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
             t.assert(a.indexes.country._dictcache instanceof fuzzy.FuzzyPhraseSet, 'dictcache should be a FuzzyPhraseSet');
@@ -40,10 +42,6 @@ tape('geocodes', (t) => {
     });
 });
 tape('sets cache/dictcache', (t) => {
-    t.ok(country._geocoder, 'sets source._geocoder on original instance');
-    t.ok(country._dictcache, 'sets source._dictcache on original instance');
-    t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
-    t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
     const b = new Carmen({ country: country });
     t.equal(b.indexes.country._geocoder, a.indexes.country._geocoder, 'a cache === b cache');
     t.equal(b.indexes.country._dictcache, a.indexes.country._dictcache, 'a dictcache === b dictcache');
