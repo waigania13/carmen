@@ -16,7 +16,7 @@ const places = [
         id:1,
         properties: {
             'carmen:score': 100,
-            'carmen:text':'abqde',
+            'carmen:text':'Pinball Parlour Arcade',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -25,7 +25,7 @@ const places = [
         id:2,
         properties: {
             'carmen:score': 10,
-            'carmen:text':'abcde',
+            'carmen:text':'Pinball Parlor Arcade',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -33,18 +33,35 @@ const places = [
 ];
 queueFeature(conf.place, places, (err) => {
     buildQueued(conf.place, () => {
-        tape('abcde - with fuzzy', (t) => {
-            c.geocode('abcde', { limit_verify:1, autocomplete: 0, fuzzyMatch: 1 }, (err, res) => {
+        tape('parlor - with fuzzy', (t) => {
+            c.geocode('pinball parlor arcade', { limit_verify:1, autocomplete: 0, fuzzyMatch: 1 }, (err, res) => {
                 t.ifError(err);
-                t.deepEqual(res.features[0].place_name, 'abqde', 'abqde wins for abcde with fuzzy');
+                console.log(res.features);
+                t.deepEqual(res.features[0].place_name, 'Pinball Parlour Arcade', 'Parlour wins with fuzzy');
                 t.deepEqual(res.features[0].id, 'place.1');
                 t.end();
             });
         });
-        tape('abcde - without fuzzy', (t) => {
-            c.geocode('abcde', { limit_verify:1, autocomplete: 0, fuzzyMatch: 0 }, (err, res) => {
+        tape('parlor - without fuzzy', (t) => {
+            c.geocode('pinball parlor arcade', { limit_verify:1, autocomplete: 0, fuzzyMatch: 0 }, (err, res) => {
                 t.ifError(err);
-                t.deepEqual(res.features[0].place_name, 'abcde', 'abcde wins for abcde without fuzzy');
+                t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins without fuzzy');
+                t.deepEqual(res.features[0].id, 'place.2');
+                t.end();
+            });
+        });
+        tape('parlor - prefix with fuzzy', (t) => {
+            c.geocode('pinball parlor', { limit_verify:1, autocomplete: 1, fuzzyMatch: 1 }, (err, res) => {
+                t.ifError(err);
+                t.deepEqual(res.features[0].place_name, 'Pinball Parlour Arcade', 'Parlour wins with fuzzy');
+                t.deepEqual(res.features[0].id, 'place.1');
+                t.end();
+            });
+        });
+        tape('parlor - prefix without fuzzy', (t) => {
+            c.geocode('pinball parlor', { limit_verify:1, autocomplete: 1, fuzzyMatch: 0 }, (err, res) => {
+                t.ifError(err);
+                t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins without fuzzy');
                 t.deepEqual(res.features[0].id, 'place.2');
                 t.end();
             });

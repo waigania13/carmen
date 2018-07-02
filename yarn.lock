@@ -4393,9 +4393,9 @@ node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
 
-"node-fuzzy-phrase@https://github.com/mapbox/node-fuzzy-phrase/archive/65f100956f5c4523bdcb97d1d395be4f96ff992c.tar.gz":
+"node-fuzzy-phrase@https://github.com/mapbox/node-fuzzy-phrase/archive/80d3db508914d69d5d9af6b14605b487db61580f.tar.gz":
   version "0.1.0-dev2"
-  resolved "https://github.com/mapbox/node-fuzzy-phrase/archive/65f100956f5c4523bdcb97d1d395be4f96ff992c.tar.gz#4205271125b175e36eda8332668164b99571b58a"
+  resolved "https://github.com/mapbox/node-fuzzy-phrase/archive/80d3db508914d69d5d9af6b14605b487db61580f.tar.gz#b84538f623469f25cfcb32ac1de9e4fe3800f3de"
   dependencies:
     "@mapbox/cfn-config" "^2.15.0"
     "@mapbox/cloudfriend" "^1.9.1"
