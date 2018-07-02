@@ -37,7 +37,7 @@
     "model-un": "0.0.3",
     "split": "^1.0.1",
     "xregexp": "^4.2.0",
-    "node-fuzzy-phrase": "https://github.com/mapbox/node-fuzzy-phrase/archive/80d3db508914d69d5d9af6b14605b487db61580f.tar.gz"
+    "node-fuzzy-phrase": "https://mapbox.s3.amazonaws.com/package/node-fuzzy-phrase-v0.1.0-dev2-877cc047554722d16c5de4cab75ab1c30867a82a-eef4dc247aed766ccf13740a214494f9bcccb698.tgz"
   },
   "devDependencies": {
     "@mapbox/eslint-config-geocoding": "^1.0.0",
