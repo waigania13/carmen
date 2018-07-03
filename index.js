@@ -299,13 +299,10 @@ function Geocoder(indexes, options) {
             q.defer((done) => {
                 const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
                 if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
-                    // write case: null buf gets passed on and DawgCache acts as a WriteCache
-                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
+                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
                     done(null, { path: fuzzySetFile, exists: false });
                 } else {
-                    // read case: file buffer gets passed on and DawgCache acts as a ReadCache
-                    // happens when deploying (when dawg already exists)
-                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
+                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
                     done(null, { path: fuzzySetFile, exists: true });
                 }
             });
@@ -313,7 +310,6 @@ function Geocoder(indexes, options) {
                 if (err) return callback(err);
 
                 let props;
-                // TODO: expect a file path and a boolean for whether it exists, then decide read or write <20-06-18, boblannon> //
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
                     props = {
@@ -322,6 +318,7 @@ function Geocoder(indexes, options) {
                     };
                 // create dictcache at load time to allow incremental gc
                 } else if (loaded[1].exists) {
+                    // read cache
                     props = {
                         id: id,
                         info: loaded[0],
@@ -331,6 +328,7 @@ function Geocoder(indexes, options) {
                         }
                     };
                 } else {
+                    // write cache
                     props = {
                         id: id,
                         info: loaded[0],

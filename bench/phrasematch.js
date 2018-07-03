@@ -11,7 +11,6 @@ const c = new Carmen(conf);
 
 module.exports = setup;
 
-// TODO: use addFeature/buildQueue pattern <29-06-18, boblannon> //
 function setup(cb) {
     if (!cb) cb = function(){};
     console.log('# phrasematch');

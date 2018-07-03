@@ -69,7 +69,6 @@ tape('ready', (t) => {
     });
 });
 
-// TODO: check to see why this was inside the loop...  <28-06-18, boblannon> //
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {

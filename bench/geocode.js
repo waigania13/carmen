@@ -10,7 +10,6 @@ const { queueFeature, buildQueued } = require('../lib/indexer/addfeature');
 const conf = { street: new mem({ maxzoom:14 }, () => {}) };
 const c = new Carmen(conf);
 
-// TODO: use addFeature/buildQueue pattern <29-06-18, boblannon> //
 module.exports = setup;
 
 function setup(cb) {
