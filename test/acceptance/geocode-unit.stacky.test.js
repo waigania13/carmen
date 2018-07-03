@@ -13,7 +13,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
 
 const conf = {
     province: new mem(null, () => {}),
-    postcode: new mem(null, () => {}),
     city: new mem(null, () => {}),
     street: new mem({ maxzoom:6, geocoder_address:1 }, () => {})
 };

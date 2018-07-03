@@ -8,7 +8,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 const conf = {
     country: new mem({ maxzoom: 6, geocoder_name:'country' }, () => {}),
-    region: new mem({ maxzoom: 6, geocoder_name:'region' }, () => {}),
     postcode: new mem({ maxzoom: 6, geocoder_name:'postcode' }, () => {}),
     address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address' }, () => {}),
 };

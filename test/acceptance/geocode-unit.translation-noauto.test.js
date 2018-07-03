@@ -53,7 +53,7 @@ const runTests = (mode) => {
             const cache = c.byidx[0]._geocoder;
 
             ['freq', 'grid'].forEach((type) => {
-                const rocksdb = c.byidx[0].getBaseFilename() + '.' + type + '.rocksdb';
+                const rocksdb = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
 
                 cache[type].pack(rocksdb);
                 cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb);

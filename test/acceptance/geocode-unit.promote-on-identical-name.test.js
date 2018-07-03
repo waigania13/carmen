@@ -13,7 +13,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 const conf = {
     country: new mem({ maxzoom: 6 }, () => {}),
     region: new mem({ maxzoom: 6 }, () => {}),
-    district: new mem({ maxzoom: 6 }, () => {}),
     place: new mem({ maxzoom: 6, geocoder_inherit_score: true }, () => {}),
     poi: new mem({ maxzoom: 14 }, () => {})
 };
@@ -170,7 +169,7 @@ tape('let\'s find new york', (t) => {
 });
 
 tape('ensure POI cannot win', (t) => {
-    c.geocode('new york usa', { types: ['poi', 'district', 'region', 'country'] }, (err, res) => {
+    c.geocode('new york usa', { types: ['poi', 'region', 'country'] }, (err, res) => {
         t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
         t.end();

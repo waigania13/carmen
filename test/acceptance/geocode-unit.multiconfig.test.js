@@ -18,14 +18,26 @@ const confB = {
     region: region,
     place: place
 };
-const pre = new Carmen(confA);
+const carmenA = new Carmen(confA);
+const carmenB = new Carmen(confB);
 
-tape('index province', (t) => {
-    t.ok(pre);
+tape('index country', (t) => {
+    t.ok(carmenA);
     queueFeature(confA.country, {
         id:1,
         properties: {
             'carmen:text':'america',
+            'carmen:zxy':['6/32/32'],
+            'carmen:center':[0,0]
+        }
+    }, t.end);
+});
+tape('index region', (t) => {
+    t.ok(carmenB);
+    queueFeature(confB.region, {
+        id:1,
+        properties: {
+            'carmen:text':'illinois',
             'carmen:zxy':['6/32/32'],
             'carmen:center':[0,0]
         }
@@ -68,7 +80,7 @@ tape('chicago (conf b)', (t) => {
     const b = new Carmen(confB);
     b.geocode('chicago', {}, (err, res) => {
         t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'chicago, america');
+        t.deepEqual(res.features[0].place_name, 'chicago, illinois, america');
         t.deepEqual(res.features[0].id, 'place.1');
         t.end();
     });

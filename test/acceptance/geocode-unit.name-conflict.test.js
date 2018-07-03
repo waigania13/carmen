@@ -12,12 +12,6 @@ const conf = {
     postcode: new mem(null, () => {}),
     place: new mem(null, () => {}),
     neighborhood: new mem(null, () => {}),
-    address: new mem({
-        maxzoom: 6,
-        geocoder_name: 'address',
-        geocoder_type: 'address',
-        geocoder_address: 1
-    }, () => {}),
     poi: new mem({
         maxzoom:6,
         geocoder_name: 'address',

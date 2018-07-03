@@ -6,7 +6,7 @@ const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
 
-const dawgcache = require('./lib/indexer/dawg');
+const fuzzy = require('node-fuzzy-phrase');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
@@ -286,31 +286,30 @@ function Geocoder(indexes, options) {
                 const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
                     return filename.replace('.mbtiles', '');
+                } else if (source._original.tmpFilename) {
+                    return source._original.tmpFilename;
                 } else {
-                    return require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    source._original.tmpFilename = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    return source._original.tmpFilename;
                 }
             };
 
             const q = queue();
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
-                const dawgFile = source.getBaseFilename() + '.dawg';
-                if (source._original._dictcache || !fs.existsSync(dawgFile)) {
-                    // write case: null buf gets passed on and DawgCache acts as a WriteCache
-                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    done();
+                const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
+                if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
+                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
+                    done(null, { path: fuzzySetFile, exists: false });
                 } else {
-                    // read case: file buffer gets passed on and DawgCache acts as a ReadCache
-                    // happens when deploying (when dawg already exists)
-                    // TODO: pass on the file path and a boolean about whether it exists <20-06-18, boblannon> //
-                    fs.readFile(dawgFile, done);
+                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
+                    done(null, { path: fuzzySetFile, exists: true });
                 }
             });
             q.awaitAll((err, loaded) => {
                 if (err) return callback(err);
 
                 let props;
-                // TODO: expect a file path and a boolean for whether it exists, then decide read or write <20-06-18, boblannon> //
                 // if dictcache is already initialized don't recreate
                 if (source._original._dictcache) {
                     props = {
@@ -318,11 +317,25 @@ function Geocoder(indexes, options) {
                         info: loaded[0]
                     };
                 // create dictcache at load time to allow incremental gc
-                } else {
+                } else if (loaded[1].exists) {
+                    // read cache
                     props = {
                         id: id,
                         info: loaded[0],
-                        dictcache: new dawgcache(loaded[1])
+                        dictcache: {
+                            reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
+                            writer: null
+                        }
+                    };
+                } else {
+                    // write cache
+                    props = {
+                        id: id,
+                        info: loaded[0],
+                        dictcache: {
+                            reader: null,
+                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
+                        }
                     };
                 }
 
@@ -335,7 +348,6 @@ function Geocoder(indexes, options) {
     }
 
 }
-
 
 /**
  * Clones the source object. Methods in the cloned object are all bound

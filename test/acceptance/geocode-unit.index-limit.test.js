@@ -28,6 +28,24 @@ tape('index place', (t) => {
         }
     }, t.end);
 });
+
+tape('index country', (t) => {
+    const q = queue();
+    for (let i = 0; i < 127; i++) {
+        q.defer((cb) => {
+            queueFeature(conf['country' + i], {
+                id:1,
+                properties: {
+                    'carmen:text':'USA',
+                    'carmen:zxy':['6/32/32'],
+                    'carmen:center':[0,0]
+                }
+            }, cb);
+        });
+    }
+    q.awaitAll(t.end);
+});
+
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {
@@ -40,7 +58,7 @@ tape('build queued features', (t) => {
 tape('query place', (t) => {
     c.geocode('Chicago', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
+        t.equals(res.features[0].place_name, 'Chicago, USA', 'found Chicago');
         t.equals(res.features[0].relevance, 1.00);
         t.end();
     });
@@ -48,7 +66,7 @@ tape('query place', (t) => {
 tape('reverse place', (t) => {
     c.geocode('0,0', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
-        t.equals(res.features[0].place_name, 'Chicago', 'found Chicago');
+        t.equals(res.features[0].place_name, 'Chicago, USA', 'found Chicago');
         t.equals(res.features[0].relevance, 1);
         t.end();
     });
