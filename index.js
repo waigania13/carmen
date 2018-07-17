@@ -138,8 +138,8 @@ function Geocoder(indexes, options) {
 
             if (info.geocoder_version) {
                 source.version = parseInt(info.geocoder_version, 10);
-                if (source.version !== 8) {
-                    err = new Error('geocoder version is not 8, index: ' + id);
+                if (source.version !== 9) {
+                    err = new Error('geocoder version is not 9, index: ' + id);
                     return;
                 }
             } else {
