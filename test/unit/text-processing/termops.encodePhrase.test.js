@@ -69,33 +69,3 @@ test('termops.encodePhrase', (t) => {
     t.end();
 });
 
-test('termops.encodePhrase collisions', (t) => {
-    let texts = 0;
-    const sample = 1e6;
-    const ids = {};
-    const collisions = [];
-    while (texts < sample) {
-        const text = Math.random().toString(36);
-        const id = termops.encodePhrase(text);
-
-        if (id >= Math.pow(2,52)) {
-            t.fail('Phrase ID exceeded 2^52: ' + text + ' ' + id);
-        } else if (id < 0) {
-            t.fail('Phrase ID < 0: ' + text + ' ' + id);
-        }
-
-        if (ids[id] === text) {
-            continue;
-        } else if (ids[id]) {
-            collisions.push([ids[id], text]);
-        } else {
-            ids[id] = text;
-        }
-        texts++;
-    }
-    const rate = (collisions.length / sample);
-    const thresh = 1 / 1e6;
-    t.equal(rate < thresh, true, 'Collision rate ' + (rate * 100).toFixed(4) + '% < ' + (thresh * 100).toFixed(4) + '%');
-    t.end();
-});
-

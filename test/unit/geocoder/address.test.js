@@ -1,6 +1,7 @@
 'use strict';
 const address = require('../../../lib/geocoder/addressitp');
 const addressCluster = require('../../../lib/geocoder/addresscluster.js');
+const deepRound = require('../util/deepRound');
 const test = require('tape');
 
 test('address.reverse - null ITP', (t) => {
@@ -148,8 +149,9 @@ test('address.getReversePoint', (t) => {
 
     // Partial route travelled
     t.deepEqual(
-        address.getReversePoint([-77.1995061635971,38.94741938611567], [[-77.19998091459274,38.9475549770314],[-77.19883829355238,38.94759461125006]], { units: 'miles' }),
-        { endLine: { geometry: { coordinates: [-77.19883829355238, 38.94759461125006], type: 'Point' }, properties: {}, type: 'Feature' }, lineDist: 0.06146027745733737, pt: { geometry: { coordinates: [-77.19951739502781, 38.9475710551843], type: 'Point' }, properties: { dist: 0.010496699376028774, index: 0, travelled: 0.02493219080121935 }, type: 'Feature' }, startLine: { geometry: { coordinates: [-77.19998091459274, 38.9475549770314], type: 'Point' }, properties: {}, type: 'Feature' } },
+        // slight differences in floating point math in node 6 and 8 require rounding to the nearest 12 places
+        deepRound(address.getReversePoint([-77.1995061635971,38.94741938611567], [[-77.19998091459274,38.9475549770314],[-77.19883829355238,38.94759461125006]], { units: 'miles' })),
+        deepRound({ endLine: { geometry: { coordinates: [-77.19883829355238, 38.94759461125006], type: 'Point' }, properties: {}, type: 'Feature' }, lineDist: 0.06146027745733737, pt: { geometry: { coordinates: [-77.19951739502781, 38.9475710551843], type: 'Point' }, properties: { dist: 0.010496699376028774, index: 0, travelled: 0.02493219080121935 }, type: 'Feature' }, startLine: { geometry: { coordinates: [-77.19998091459274, 38.9475549770314], type: 'Point' }, properties: {}, type: 'Feature' } }),
         'right centre side of line');
 
     // No route Travelled
