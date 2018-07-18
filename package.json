@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "0.21.1",
+    "@mapbox/carmen-cache": "0.21.2",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.9.0",
@@ -25,7 +25,6 @@
     "@turf/nearest-point-on-line": "^6.0.2",
     "@turf/point-on-feature": "^5.1.5",
     "d3-queue": "3.0.x",
-    "dawg-cache": "0.5.0",
     "err-code": "^1.1.2",
     "es6-native-map": "https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz",
     "es6-native-set": "https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz",
@@ -67,7 +66,7 @@
     "build-docs": " $(yarn bin)/documentation build --config docs/documentation.yml --access public --github --format md --output docs/api.md index.js lib/**"
   },
   "engines": {
-    "node": "6.x.x"
+    "node": ">=6.x.x <=8.x.x"
   },
   "repository": {
     "type": "git",
