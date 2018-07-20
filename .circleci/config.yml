@@ -26,6 +26,9 @@ jobs:
 
             - checkout
             - run:
+                name: "install npm for carmen-cache"
+                command: "npm install -g npm"
+            - run:
                 name: "carmen-cache build-from-source"
                 command: "npm config set build_from_source @mapbox/carmen-cache"
             - run:
