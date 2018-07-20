@@ -25,7 +25,9 @@ jobs:
                 command: "apt-get -y update && apt-get install -y yarn postgresql-client && apt-get -y install libstdc++-5-dev"
 
             - checkout
-
+            - run:
+                name: "carmen-cache build-from-source"
+                command: "npm config set build_from_source @mapbox/carmen-cache"
             - run:
                 name: "yarn install"
                 command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
