@@ -3,6 +3,7 @@ version: 2
 jobs:
     node6:
         docker:
+            - image: ubuntu:18.04
             - image: circleci/node:6.10.3
         steps:
             - run:
