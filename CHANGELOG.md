@@ -1,5 +1,9 @@
 # Changelog
 
+## v24.5.3
+
+- Update yarn lockfiles
+
 ## v24.5.2
 
 - Update mapnik & sqlite3 deps to their latest versions
