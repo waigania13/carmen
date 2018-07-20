@@ -9,9 +9,9 @@ test('termops.getWeights', (t) => {
     tokens = ['a','b','c'];
     const freq = {};
     freq['__COUNT__'] = [1002];
-    freq[termops.encodeTerm(tokens[0])] = [1000];
-    freq[termops.encodeTerm(tokens[1])] = [1];
-    freq[termops.encodeTerm(tokens[2])] = [1];
+    freq[tokens[0]] = [1000];
+    freq[tokens[1]] = [1];
+    freq[tokens[2]] = [1];
 
     res = termops.getWeights(tokens, freq);
     t.deepEqual(res, [

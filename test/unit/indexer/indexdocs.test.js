@@ -2,7 +2,6 @@
 const indexdocs = require('../../../lib/indexer/indexdocs.js');
 const grid = require('../../../lib/util/grid.js');
 const tape = require('tape');
-const termops = require('../../../lib/text-processing/termops.js');
 const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
 
@@ -30,8 +29,8 @@ tape('indexdocs.loadDoc', (t) => {
 
     freq['__COUNT__'] = [101];
     freq['__MAX__'] = [200];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
+    freq[tokens[0]] = [1];
+    freq[tokens[1]] = [100];
 
     // Indexes single doc.
     const err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false } }, zoom, token_replacer);
