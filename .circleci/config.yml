@@ -31,17 +31,17 @@ jobs:
             - checkout
             - run:
                 name: "yarn install"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
+                command: "yarn install"
             - run:
                 name: "yarn lint"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run lint"
+                command: "yarn run lint"
             - run:
                 name: "yarn run coverage"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run coverage"
+                command: "yarn run coverage"
                 no_output_timeout: 12000
             - run:
                 name: "yarn run bench"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run bench"
+                command: "yarn run bench"
     node8:
         docker:
             - image: ubuntu:18.04
