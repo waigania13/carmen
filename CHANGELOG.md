@@ -1,6 +1,6 @@
 # Changelog
 
-## v24.4.4
+## v24.5.2
 
 - Update mapnik & sqlite3 deps to their latest versions
 
