@@ -24,11 +24,11 @@ jobs:
             - run:
                 name: "Update APT Cache & Install latest yarn & libstdc++-5-dev"
                 command: "apt-get -y update && apt-get install -y yarn postgresql-client && apt-get -y install libstdc++-5-dev"
+
+            - checkout
             - run:
                 name: "carmen-cache build-from-source"
                 command: "npm config set build_from_source @mapbox/carmen-cache"
-
-            - checkout
             - run:
                 name: "yarn install"
                 command: "yarn install"
