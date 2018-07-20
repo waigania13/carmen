@@ -3,7 +3,7 @@ version: 2
 jobs:
     node6:
         docker:
-            - image: ubuntu:18.04
+            - image: circleci/node:6.10.3
         steps:
             - run:
                 name: "Add ubuntu-toolchain"
@@ -25,9 +25,6 @@ jobs:
                 command: "apt-get -y update && apt-get install -y yarn postgresql-client && apt-get -y install libstdc++-5-dev"
 
             - checkout
-            - run:
-                name: "install npm for carmen-cache"
-                command: "npm install -g npm"
             - run:
                 name: "carmen-cache build-from-source"
                 command: "npm config set build_from_source @mapbox/carmen-cache"
