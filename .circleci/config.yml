@@ -26,11 +26,11 @@ jobs:
 
             - checkout
             - run:
-                name: "carmen-cache build-from-source"
-                command: "npm config set build_from_source @mapbox/carmen-cache"
-            - run:
                 name: "yarn install"
                 command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
+            - run:
+                name: "carmen-cache build-from-source"
+                command: "cd node_modules/@mapbox/carmen-cache && make"
             - run:
                 name: "yarn lint"
                 command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run lint"
