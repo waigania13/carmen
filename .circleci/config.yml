@@ -12,41 +12,35 @@ step-library:
             nvm alias default ${NODE_VERSION}
             echo "[ -s \"${NVM_DIR}/nvm.sh\" ] && . \"${NVM_DIR}/nvm.sh\"" >> $BASH_ENV
 
-  - &build-and-test
+  - &setup-deps
       run:
           name: "Add ubuntu-toolchain"
-          command: "apt-get update -y && apt-get install -y build-essential python software-properties-common && add-apt-repository --yes ppa:ubuntu-toolchain-r/test"
+          command: |
+            set +e
+            apt-get update -y
+            apt-get install -y build-essential python software-properties-common
+            add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+            apt-get update -y && apt-get install -y curl
+            apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
+            apt-get install -y software-properties-common git
+            apt-add-repository -y ppa:ubuntu-toolchain-r/test
+            curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list"
+            apt-get -y update
+            apt-get install -y yarn postgresql-client
+            apt-get -y install libstdc++-5-dev
+
+  - &run-tests
       run:
-          name: "Install cURL"
-          command: "apt-get update -y && apt-get install -y curl"
-      run:
-          name: "Install Compiler for Native Modules"
-          command: "apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8"
-      run:
-          name: "Install node with nvm"
-          command: "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash && export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm install 6.10.3"
-      run:
-          name: "Install Yarn & Ubuntu Toolchain PPAs"
-          command: "apt-get install -y software-properties-common git && apt-add-repository -y ppa:ubuntu-toolchain-r/test && curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list"
-      run:
-          name: "Update APT Cache & Install latest yarn & libstdc++-5-dev"
-          command: "apt-get -y update && apt-get install -y yarn postgresql-client && apt-get -y install libstdc++-5-dev"
-      run:
-          name: "yarn install"
-          command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
-      run:
-          name: "carmen-cache build-from-source"
-          command: "yarn global add node-gyp && cd node_modules/@mapbox/carmen-cache && make"
-      run:
-          name: "yarn lint"
-          command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run lint"
-      run:
-          name: "yarn run coverage"
-          command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run coverage"
+          name: "Add ubuntu-toolchain"
+          command: |
+            yarn install
+            yarn global add node-gyp
+            (cd node_modules/@mapbox/carmen-cache && make)
+            yarn run lint
+            yarn run coverage
+            yarn run bench
           no_output_timeout: 12000
-      run:
-          name: "yarn run bench"
-          command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run bench"
 
 jobs:
     node6:
@@ -57,7 +51,8 @@ jobs:
             - run: echo 'export NODE_VERSION=6' >> $BASH_ENV
             - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
             - *install-node
-            - *build-and-test
+            - *setup-deps
+            - *run-tests
     node8:
         docker:
             - image: ubuntu:16.04
@@ -66,7 +61,8 @@ jobs:
             - run: echo 'export NODE_VERSION=8' >> $BASH_ENV
             - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
             - *install-node
-            - *build-and-test
+            - *setup-deps
+            - *run-tests
 
 workflows:
     version: 2
