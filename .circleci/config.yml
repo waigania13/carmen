@@ -1,43 +1,37 @@
 version: 2
 
 step-library:
-  - &install-node
+  - &install-deps
       run:
-          name: Install node
-          command: |
-            set +e
-            mkdir -p ${NVM_DIR}
-            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-            [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"
-            nvm install ${NODE_VERSION}
-            nvm alias default ${NODE_VERSION}
-            echo "[ -s \"${NVM_DIR}/nvm.sh\" ] && . \"${NVM_DIR}/nvm.sh\"" >> $BASH_ENV
-
-  - &setup-deps
-      run:
-          name: "Add ubuntu-toolchain"
+          name: Install apt dependencies
           command: |
             set +e
             apt-get update -y
-            apt-get install -y build-essential python software-properties-common git curl postgresql-client
-            apt-add-repository -y ppa:ubuntu-toolchain-r/test
+            apt-get install -y build-essential python git curl
             curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list
             apt-get update -y
-            apt-get -y install libstdc++-5-dev yarn
+            apt-get -y install yarn
+            mkdir -p ${NVM_DIR}
+            echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+            echo "[ -s \"${NVM_DIR}/nvm.sh\" ] && . \"${NVM_DIR}/nvm.sh\"" >> $BASH_ENV
 
   - &yarn-install
       run:
-          name: "Add ubuntu-toolchain"
+          name: "Yarn install"
           command: |
+            set +e
             yarn install
-            #yarn global add node-gyp
-            #(cd node_modules/@mapbox/carmen-cache && ./scripts/setup.sh --config local.env && source local.env && make)
+            yarn global add node-gyp
+            # source compile carmen-cache
+            (cd node_modules/@mapbox/carmen-cache && ./scripts/setup.sh --config local.env && source local.env && make)
 
   - &yarn-test
       run:
-          name: "Add ubuntu-toolchain"
+          name: "Yarn lint/coverage/bench"
           command: |
+            set +e
             yarn run lint
             yarn run coverage
             yarn run bench
@@ -48,22 +42,18 @@ jobs:
         docker:
             - image: ubuntu:16.04
         steps:
+            - *install-deps
+            - run: nvm install 6 && npm alias default 6
             - checkout
-            - run: echo 'export NODE_VERSION=6' >> $BASH_ENV
-            - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
-            - *setup-deps
-            - *install-node
             - *yarn-install
             - *yarn-test
     node8:
         docker:
             - image: ubuntu:16.04
         steps:
+            - *install-deps
+            - run: nvm install 6 && npm alias default 6
             - checkout
-            - run: echo 'export NODE_VERSION=8' >> $BASH_ENV
-            - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
-            - *setup-deps
-            - *install-node
             - *yarn-install
             - *yarn-test
 
