@@ -1,7 +1,7 @@
 version: 2
 
 step-library:
-  - &install-deps
+  - &install-apt-deps
       run:
           name: Install apt dependencies
           command: |
@@ -12,12 +12,20 @@ step-library:
             echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list
             apt-get update -y
             apt-get -y install yarn
-            # setup nvm
-            export NVM_DIR=${HOME}/.nvm
+
+  - &install-node
+      run:
+          name: Install node
+          command: |
+            set +e
+            echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
+            source ${BASH_ENV}
             mkdir -p ${NVM_DIR}
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-            echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
             echo "[ -s \"${NVM_DIR}/nvm.sh\" ] && . \"${NVM_DIR}/nvm.sh\"" >> $BASH_ENV
+            source ${BASH_ENV}
+            nvm install ${NODE_VERSION}
+            nvm alias default ${NODE_VERSION}
 
   - &yarn-install
       run:
@@ -43,18 +51,22 @@ jobs:
     node6:
         docker:
             - image: ubuntu:16.04
+        environment:
+            NODE_VERSION: 6
         steps:
-            - *install-deps
-            - run: nvm install 6 && npm alias default 6
+            - *install-apt-deps
+            - *install-node
             - checkout
             - *yarn-install
             - *yarn-test
     node8:
         docker:
             - image: ubuntu:16.04
+        environment:
+            NODE_VERSION: 8
         steps:
-            - *install-deps
-            - run: nvm install 8 && npm alias default 8
+            - *install-apt-deps
+            - *install-node
             - checkout
             - *yarn-install
             - *yarn-test
