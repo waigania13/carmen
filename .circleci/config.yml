@@ -52,7 +52,7 @@ jobs:
             - image: ubuntu:16.04
         steps:
             - *install-deps
-            - run: nvm install 6 && npm alias default 6
+            - run: nvm install 8 && npm alias default 8
             - checkout
             - *yarn-install
             - *yarn-test
