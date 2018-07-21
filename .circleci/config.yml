@@ -31,8 +31,8 @@ step-library:
           name: "Add ubuntu-toolchain"
           command: |
             yarn install
-            yarn global add node-gyp
-            (cd node_modules/@mapbox/carmen-cache && make)
+            #yarn global add node-gyp
+            #(cd node_modules/@mapbox/carmen-cache && make)
 
   - &yarn-test
       run:
