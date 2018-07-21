@@ -30,6 +30,10 @@ jobs:
                 name: "yarn install"
                 command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
             - run:
+                name: "inspect cpu"
+                command: |
+                  objdump -d node_modules/@mapbox/carmen-cache/lib/carmen.node | grep vbroadcastsd | c++filt
+            - run:
                 name: "yarn lint"
                 command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run lint"
             - run:
