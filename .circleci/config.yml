@@ -6,6 +6,7 @@ step-library:
           name: Install node
           command: |
             set +e
+            mkdir -p ${NVM_DIR}
             curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
             [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"
             nvm install ${NODE_VERSION}
