@@ -24,8 +24,7 @@ step-library:
             apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
             apt-get install -y software-properties-common git
             apt-add-repository -y ppa:ubuntu-toolchain-r/test
-            curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-            echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list"
+            curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list"
             apt-get -y update
             apt-get install -y yarn postgresql-client
             apt-get -y install libstdc++-5-dev
