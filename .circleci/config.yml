@@ -18,25 +18,25 @@ step-library:
           command: |
             set +e
             apt-get update -y
-            apt-get install -y build-essential python software-properties-common
-            add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-            apt-get update -y && apt-get install -y curl
-            apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8
-            apt-get install -y software-properties-common git
+            apt-get install -y build-essential python software-properties-common git curl postgresql-client
             apt-add-repository -y ppa:ubuntu-toolchain-r/test
             curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
             echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list
-            apt-get -y update
-            apt-get install -y yarn postgresql-client
-            apt-get -y install libstdc++-5-dev
+            apt-get update -y
+            apt-get -y install libstdc++-5-dev yarn
 
-  - &run-tests
+  - &yarn-install
       run:
           name: "Add ubuntu-toolchain"
           command: |
             yarn install
             yarn global add node-gyp
             (cd node_modules/@mapbox/carmen-cache && make)
+
+  - &yarn-test
+      run:
+          name: "Add ubuntu-toolchain"
+          command: |
             yarn run lint
             yarn run coverage
             yarn run bench
@@ -50,9 +50,10 @@ jobs:
             - checkout
             - run: echo 'export NODE_VERSION=6' >> $BASH_ENV
             - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
-            - *install-node
             - *setup-deps
-            - *run-tests
+            - *install-node
+            - *yarn-install
+            - *yarn-test
     node8:
         docker:
             - image: ubuntu:16.04
@@ -60,9 +61,10 @@ jobs:
             - checkout
             - run: echo 'export NODE_VERSION=8' >> $BASH_ENV
             - run: echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
-            - *install-node
             - *setup-deps
-            - *run-tests
+            - *install-node
+            - *yarn-install
+            - *yarn-test
 
 workflows:
     version: 2
