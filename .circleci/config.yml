@@ -56,9 +56,21 @@ jobs:
             - checkout
             - *yarn-install
             - *yarn-test
+    node8:
+        docker:
+            - image: ubuntu:18.04
+        environment:
+            NODE_VERSION: 8
+        steps:
+            - *install-apt-deps
+            - *install-node
+            - checkout
+            - *yarn-install
+            - *yarn-test
 
 workflows:
     version: 2
     build:
         jobs:
             - node6
+            - node8
