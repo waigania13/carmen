@@ -1,5 +1,13 @@
 # Changelog
 
+## v24.5.3
+
+- Update yarn lockfiles
+
+## v24.5.2
+
+- Update mapnik & sqlite3 deps to their latest versions
+
 ## v24.4.3
 - Fix text indexing issue that caused indexing to fail upon encountering certain kinds of malformed unicode input
 
