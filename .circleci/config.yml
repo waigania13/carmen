@@ -1,41 +1,64 @@
 version: 2
 
+step-library:
+  - &install-apt-deps
+      run:
+          name: Install apt dependencies
+          command: |
+            set +e
+            apt-get update -y
+            apt-get install -y build-essential python git curl
+            curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+            echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list
+            apt-get update -y
+            apt-get -y install yarn
+
+  - &install-node
+      run:
+          name: Install node
+          command: |
+            set +e
+            echo 'export NVM_DIR=${HOME}/.nvm' >> $BASH_ENV
+            source ${BASH_ENV}
+            mkdir -p ${NVM_DIR}
+            curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+            echo "[ -s \"${NVM_DIR}/nvm.sh\" ] && . \"${NVM_DIR}/nvm.sh\"" >> $BASH_ENV
+            source ${BASH_ENV}
+            nvm install ${NODE_VERSION}
+            nvm alias default ${NODE_VERSION}
+
+  - &yarn-install
+      run:
+          name: "Yarn install"
+          command: |
+            set +e
+            yarn install
+
+  - &yarn-test
+      run:
+          name: "Yarn lint/coverage/bench"
+          command: |
+            set +e
+            yarn run lint
+            yarn run coverage
+            yarn run bench
+          no_output_timeout: 12000
+
 jobs:
-    build:
+    node6:
         docker:
             - image: ubuntu:18.04
+        environment:
+            NODE_VERSION: 6
         steps:
-            - run:
-                name: "Add ubuntu-toolchain"
-                command: "apt-get update -y && apt-get install -y build-essential python software-properties-common && add-apt-repository --yes ppa:ubuntu-toolchain-r/test"
-            - run:
-                name: "Install cURL"
-                command: "apt-get update -y && apt-get install -y curl"
-            - run:
-                name: "Install Compiler for Native Modules"
-                command: "apt-get -y install libstdc++-5-dev gcc-4.8 g++-4.8; export CXX=g++-4.8"
-            - run:
-                name: "Install node with nvm"
-                command: "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash && export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm install 6.10.3"
-            - run:
-                name: "Install Yarn & Ubuntu Toolchain PPAs"
-                command: "apt-get install -y software-properties-common git && apt-add-repository -y ppa:ubuntu-toolchain-r/test && curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && echo 'deb http://dl.yarnpkg.com/debian/ stable main' | tee /etc/apt/sources.list.d/yarn.list"
-            - run:
-                name: "Update APT Cache & Install latest yarn & libstdc++-5-dev"
-                command: "apt-get -y update && apt-get install -y yarn postgresql-client && apt-get -y install libstdc++-5-dev"
-
+            - *install-apt-deps
+            - *install-node
             - checkout
+            - *yarn-install
+            - *yarn-test
 
-            - run:
-                name: "yarn install"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn install"
-            - run:
-                name: "yarn lint"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run lint"
-            - run:
-                name: "yarn run coverage"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run coverage"
-                no_output_timeout: 12000
-            - run:
-                name: "yarn run bench"
-                command: "export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && yarn run bench"
+workflows:
+    version: 2
+    build:
+        jobs:
+            - node6
