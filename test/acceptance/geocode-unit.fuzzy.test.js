@@ -46,7 +46,7 @@ tape('parlor - without fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins without fuzzy');
         t.deepEqual(res.features[0].id, 'place.2');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
         t.equal(res.features.length, 1, 'Parlor is only result');
         t.end();
     });
@@ -56,11 +56,11 @@ tape('parlor - with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins on relevance');
         t.deepEqual(res.features[0].id, 'place.2');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
 
         t.deepEqual(res.features[1].place_name, 'Pinball Parlour Arcade', 'Parlour is in second place');
         t.deepEqual(res.features[1].id, 'place.1');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
         t.end();
     });
@@ -70,13 +70,13 @@ tape('parloar - with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlour Arcade', 'Tied on relevance; parlour wins on score');
         t.deepEqual(res.features[0].id, 'place.1');
-        t.assert(res.features[0].relevance < 1, "relevance < 1");
+        t.assert(res.features[0].relevance < 1, 'relevance < 1');
 
         t.deepEqual(res.features[1].place_name, 'Pinball Parlor Arcade', 'Parlor is in second place');
         t.deepEqual(res.features[1].id, 'place.2');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
-        t.equal(res.features[0].relevance, res.features[1].relevance, "Relevances are equal");
+        t.equal(res.features[0].relevance, res.features[1].relevance, 'Relevances are equal');
         t.end();
     });
 });
@@ -86,7 +86,7 @@ tape('parlor - prefix without fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins without fuzzy');
         t.deepEqual(res.features[0].id, 'place.2');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
         t.equal(res.features.length, 1, 'Parlor is only result');
         t.end();
     });
@@ -96,11 +96,11 @@ tape('parlor - prefix with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlor Arcade', 'Parlor wins on relevance');
         t.deepEqual(res.features[0].id, 'place.2');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
 
         t.deepEqual(res.features[1].place_name, 'Pinball Parlour Arcade', 'Parlour is in second place');
         t.deepEqual(res.features[1].id, 'place.1');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
         t.end();
     });
@@ -110,13 +110,13 @@ tape('parloar - prefix with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'Pinball Parlour Arcade', 'Tied on relevance; parlour wins on score');
         t.deepEqual(res.features[0].id, 'place.1');
-        t.assert(res.features[0].relevance < 1, "relevance < 1");
+        t.assert(res.features[0].relevance < 1, 'relevance < 1');
 
         t.deepEqual(res.features[1].place_name, 'Pinball Parlor Arcade', 'Parlor is in second place');
         t.deepEqual(res.features[1].id, 'place.2');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
-        t.equal(res.features[0].relevance, res.features[1].relevance, "Relevances are equal");
+        t.equal(res.features[0].relevance, res.features[1].relevance, 'Relevances are equal');
         t.end();
     });
 });
@@ -213,8 +213,8 @@ tape('100 main st washington dc - without fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '100 Main St, Washington, DC', '100 Main St');
         t.deepEqual(res.features[0].id, 'address.100');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
-        t.assert(res.features.length == 1, "1 feature returned")
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
+        t.assert(res.features.length === 1, '1 feature returned');
         t.end();
     });
 });
@@ -225,13 +225,13 @@ tape('100 main st washington dc - with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '100 Main St, Washington, DC', '100 Main St');
         t.deepEqual(res.features[0].id, 'address.100');
-        t.assert(res.features[0].relevance == 1, "relevance = 1");
+        t.assert(res.features[0].relevance === 1, 'relevance = 1');
 
         t.deepEqual(res.features[1].place_name, '100 Maine St, Washington, DC', '101 Maine St');
         t.deepEqual(res.features[1].id, 'address.101');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
-        t.assert(res.features.length == 2, "2 features returned")
+        t.assert(res.features.length === 2, '2 features returned');
         t.end();
     });
 });
@@ -241,14 +241,14 @@ tape('100 main st warshington dc - with fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '100 Main St, Washington, DC', '100 Main St');
         t.deepEqual(res.features[0].id, 'address.100');
-        t.assert(res.features[0].relevance < 1, "relevance < 1");
+        t.assert(res.features[0].relevance < 1, 'relevance < 1');
 
         t.deepEqual(res.features[1].place_name, '100 Maine St, Washington, DC', '101 Maine St');
         t.deepEqual(res.features[1].id, 'address.101');
-        t.assert(res.features[1].relevance < 1, "relevance < 1");
+        t.assert(res.features[1].relevance < 1, 'relevance < 1');
 
-        t.assert(res.features[1].relevance < res.features[0].relevance, "more typos = worse relevance");
-        t.assert(res.features.length == 2, "2 features returned")
+        t.assert(res.features[1].relevance < res.features[0].relevance, 'more typos = worse relevance');
+        t.assert(res.features.length === 2, '2 features returned');
         t.end();
     });
 });
