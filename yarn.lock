@@ -89,9 +89,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.21.2":
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.21.2.tgz#027bc8f1054dd31bc0958296d91cfb3f8cb27b40"
+"@mapbox/carmen-cache@0.21.3":
+  version "0.21.3"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.21.3.tgz#695e2f89e76c7bf6dde2349fe71c524c1df09121"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
@@ -146,16 +146,16 @@
   dependencies:
     lru-cache "^4.0.1"
 
-"@mapbox/mbtiles@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/mbtiles/-/mbtiles-0.9.0.tgz#35ee164fd96c8b8b2d1d945f2c47e833de8a16f1"
+"@mapbox/mbtiles@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/mbtiles/-/mbtiles-0.10.0.tgz#630549e8eb23e33c412de4bf4bf8b605da38c6bd"
   dependencies:
-    "@mapbox/sphericalmercator" "~1.0.1"
+    "@mapbox/sphericalmercator" "~1.1.0"
     "@mapbox/tiletype" "0.3.x"
     d3-queue "~2.0.3"
-    sqlite3 "3.x"
+    sqlite3 "4.x"
 
-"@mapbox/sphericalmercator@^1.1.0":
+"@mapbox/sphericalmercator@^1.1.0", "@mapbox/sphericalmercator@~1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@mapbox/sphericalmercator/-/sphericalmercator-1.1.0.tgz#f3b1af042620716a1289fc41e1e97f610823aefe"
 
@@ -3915,18 +3915,17 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mapnik-vector-tile@1.6.1:
-  version "1.6.1"
-  resolved "https://registry.yarnpkg.com/mapnik-vector-tile/-/mapnik-vector-tile-1.6.1.tgz#3dff27d5e4f1fcc647d658ea8ac959121f339f59"
+mapnik-vector-tile@2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/mapnik-vector-tile/-/mapnik-vector-tile-2.2.1.tgz#9c70f07f2497ae2728679c7528f07c35bf7a62e9"
 
-mapnik@^3.7.2:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/mapnik/-/mapnik-3.7.2.tgz#df1c97c44da59c7449938f8350bea6745e5ca1f4"
+mapnik@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/mapnik/-/mapnik-4.0.1.tgz#147cf3bd0725abf2f66b1e3fd24751c5598c5ce2"
   dependencies:
-    mapnik-vector-tile "1.6.1"
-    nan "~2.8.0"
-    node-pre-gyp "~0.6.30"
-    protozero "1.5.1"
+    mapnik-vector-tile "2.2.1"
+    nan "~2.10.0"
+    node-pre-gyp "~0.10.0"
 
 markdown-escapes@^1.0.0:
   version "1.0.1"
@@ -4202,17 +4201,13 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.1.0, nan@^2.3.0, nan@^2.3.3, nan@~2.8.0:
+nan@^2.1.0, nan@^2.3.0, nan@^2.3.3:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.8.0.tgz#ed715f3fe9de02b57a5e6252d90a96675e1f085a"
 
 nan@~2.10.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
-
-nan@~2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
 nanomatch@^1.2.5:
   version "1.2.7"
@@ -4293,7 +4288,22 @@ node-fingerprint@0.0.2:
     neon-cli "^0.1.22"
     node-pre-gyp "~0.10.0"
 
-node-pre-gyp@^0.6.39, node-pre-gyp@~0.6.30, node-pre-gyp@~0.6.38:
+node-pre-gyp@^0.10.3, node-pre-gyp@~0.10.1:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
+  dependencies:
+    detect-libc "^1.0.2"
+    mkdirp "^0.5.1"
+    needle "^2.2.1"
+    nopt "^4.0.1"
+    npm-packlist "^1.1.6"
+    npmlog "^4.0.2"
+    rc "^1.2.7"
+    rimraf "^2.6.1"
+    semver "^5.3.0"
+    tar "^4"
+
+node-pre-gyp@^0.6.39:
   version "0.6.39"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.39.tgz#c00e96860b23c0e1420ac7befc5044e1d78d8649"
   dependencies:
@@ -4316,21 +4326,6 @@ node-pre-gyp@~0.10.0:
     detect-libc "^1.0.2"
     mkdirp "^0.5.1"
     needle "^2.2.0"
-    nopt "^4.0.1"
-    npm-packlist "^1.1.6"
-    npmlog "^4.0.2"
-    rc "^1.2.7"
-    rimraf "^2.6.1"
-    semver "^5.3.0"
-    tar "^4"
-
-node-pre-gyp@~0.10.1:
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
-  dependencies:
-    detect-libc "^1.0.2"
-    mkdirp "^0.5.1"
-    needle "^2.2.1"
     nopt "^4.0.1"
     npm-packlist "^1.1.6"
     npmlog "^4.0.2"
@@ -4817,10 +4812,6 @@ protocols@^1.1.0, protocols@^1.4.0:
   version "1.4.6"
   resolved "https://registry.yarnpkg.com/protocols/-/protocols-1.4.6.tgz#f8bb263ea1b5fd7a7604d26b8be39bd77678bf8a"
 
-protozero@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/protozero/-/protozero-1.5.1.tgz#5a27df6fb6e1ed743f510812ae76c082f5b16638"
-
 pseudomap@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/pseudomap/-/pseudomap-1.0.2.tgz#f052a28da70e618917ef0a8ac34c1ae5a68286b3"
@@ -5267,7 +5258,7 @@ request@2.81.0:
     tunnel-agent "^0.6.0"
     uuid "^3.0.0"
 
-request@^2.81.0:
+request@^2.81.0, request@^2.87.0:
   version "2.87.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.87.0.tgz#32f00235cd08d482b4d0d68db93a829c0ed5756e"
   dependencies:
@@ -5716,12 +5707,13 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sqlite3@3.x:
-  version "3.1.13"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.13.tgz#d990a05627392768de6278bafd1a31fdfe907dd9"
+sqlite3@4.x:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-4.0.2.tgz#1bbeb68b03ead5d499e42a3a1b140064791c5a64"
   dependencies:
-    nan "~2.7.0"
-    node-pre-gyp "~0.6.38"
+    nan "~2.10.0"
+    node-pre-gyp "^0.10.3"
+    request "^2.87.0"
 
 sshpk@^1.7.0:
   version "1.13.1"
