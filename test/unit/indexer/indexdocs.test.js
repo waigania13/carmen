@@ -474,7 +474,7 @@ tape('indexdocs.generateFrequency', (t) => {
         geometry: {}
     }];
     const geocoder_tokens = token.createReplacer({ 'street':'st','road':'rd' });
-    t.deepEqual(indexdocs.generateFrequency(docs, {}), {
+    t.deepEqual(indexdocs.generateFrequency(docs, token.createReplacer({})), {
         __COUNT__: [4],
         __MAX__: [2],
         main: [2],
@@ -483,13 +483,11 @@ tape('indexdocs.generateFrequency', (t) => {
     });
     // @TODO should 'main' in this case collapse down to 2?
     t.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
-        __COUNT__: [8],
+        __COUNT__: [4],
         __MAX__: [2],
-        main: [4],
+        main: [2],
         rd: [1],
-        st: [1],
-        street: [1],
-        road: [1]
+        st: [1]
     });
     t.end();
 });
