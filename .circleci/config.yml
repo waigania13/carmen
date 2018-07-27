@@ -67,6 +67,17 @@ jobs:
             - checkout
             - *yarn-install
             - *yarn-test
+    node10:
+        docker:
+            - image: ubuntu:18.04
+        environment:
+            NODE_VERSION: 10
+        steps:
+            - *install-apt-deps
+            - *install-node
+            - checkout
+            - *yarn-install
+            - *yarn-test
 
 workflows:
     version: 2
@@ -74,3 +85,4 @@ workflows:
         jobs:
             - node6
             - node8
+            - node10
