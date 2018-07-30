@@ -89,9 +89,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.21.3":
-  version "0.21.3"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.21.3.tgz#695e2f89e76c7bf6dde2349fe71c524c1df09121"
+"@mapbox/carmen-cache@https://github.com/mapbox/carmen-cache/tarball/5155c74b42e6189df6d152b14b4ef81689492787":
+  version "0.21.3-optimize"
+  resolved "https://github.com/mapbox/carmen-cache/tarball/5155c74b42e6189df6d152b14b4ef81689492787#cb4982dc0755a37f0da03368d6d1508268a2f195"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
@@ -154,6 +154,15 @@
     "@mapbox/tiletype" "0.3.x"
     d3-queue "~2.0.3"
     sqlite3 "4.x"
+
+"@mapbox/node-fuzzy-phrase@https://github.com/mapbox/node-fuzzy-phrase/tarball/v0.1.1":
+  version "0.1.1"
+  resolved "https://github.com/mapbox/node-fuzzy-phrase/tarball/v0.1.1#84a7541bb2c44dc6ae01705dd9b817c4d9f006c3"
+  dependencies:
+    "@mapbox/cfn-config" "^2.15.0"
+    "@mapbox/cloudfriend" "^1.9.1"
+    neon-cli "^0.1.22"
+    node-pre-gyp "~0.10.0"
 
 "@mapbox/sphericalmercator@^1.1.0", "@mapbox/sphericalmercator@~1.1.0":
   version "1.1.0"
@@ -2170,18 +2179,6 @@ es5-ext@0.8.x:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/es5-ext/-/es5-ext-0.8.2.tgz#aba8d9e1943a895ac96837a62a39b3f55ecd94ab"
 
-"es6-native-map@https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz":
-  version "4.0.2"
-  resolved "https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz#140a1c647ea45c0f43bd139a2e6a3b0291c11ee8"
-  dependencies:
-    nan "^2.3.3"
-
-"es6-native-set@https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz":
-  version "3.6.0"
-  resolved "https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz#c3f43c79ccb120bac2aa50b577bdadc622de6ac3"
-  dependencies:
-    nan "^2.1.0"
-
 escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
@@ -3763,7 +3760,7 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
-nan@^2.1.0, nan@^2.3.3, nan@^2.9.2, nan@~2.10.0:
+nan@^2.9.2, nan@~2.10.0:
   version "2.10.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.10.0.tgz#96d0cd610ebd58d4b4de9cc0c6828cda99c7548f"
 
@@ -3795,7 +3792,7 @@ needle@^2.2.1:
     iconv-lite "^0.4.4"
     sax "^1.2.4"
 
-neon-cli@^0.1.23:
+neon-cli@^0.1.22:
   version "0.1.23"
   resolved "https://registry.yarnpkg.com/neon-cli/-/neon-cli-0.1.23.tgz#2eb517bd665718a983b7ef45b2640662fa631741"
   dependencies:
@@ -3819,15 +3816,6 @@ neon-cli@^0.1.23:
 node-fingerprint@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/node-fingerprint/-/node-fingerprint-0.0.2.tgz#31cbabeb71a67ae7dd5a7dc042e51c3c75868501"
-
-"node-fuzzy-phrase@https://github.com/mapbox/node-fuzzy-phrase/tarball/8d7233164294088e89754eaf306114b29b625298":
-  version "0.1.0-n10"
-  resolved "https://github.com/mapbox/node-fuzzy-phrase/tarball/8d7233164294088e89754eaf306114b29b625298#2844cd4cb6c635b654849a3d1255eaf6af16e4b2"
-  dependencies:
-    "@mapbox/cfn-config" "^2.15.0"
-    "@mapbox/cloudfriend" "^1.9.1"
-    neon-cli "^0.1.23"
-    node-pre-gyp "~0.10.0"
 
 node-pre-gyp@^0.10.0, node-pre-gyp@^0.10.3, node-pre-gyp@~0.10.0, node-pre-gyp@~0.10.1:
   version "0.10.3"

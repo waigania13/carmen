@@ -1,7 +1,7 @@
 'use strict';
 const tape = require('tape');
 const tmpdir = require('os').tmpdir();
-const fuzzy = require('node-fuzzy-phrase');
+const fuzzy = require('@mapbox/node-fuzzy-phrase');
 
 tape('create', (t) => {
     const dict = new fuzzy.FuzzyPhraseSetBuilder(tmpdir);

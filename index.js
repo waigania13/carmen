@@ -6,7 +6,7 @@ const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
 
-const fuzzy = require('node-fuzzy-phrase');
+const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
