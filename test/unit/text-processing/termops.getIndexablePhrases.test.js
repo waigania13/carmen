@@ -6,8 +6,8 @@ test('termops.getIndexablePhrases', (t) => {
     const tokens = ['main', 'st'];
     const freq = {};
     freq['__COUNT__'] = [101];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
+    freq[tokens[0]] = [1];
+    freq[tokens[1]] = [100];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         {
@@ -30,10 +30,10 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
     const tokens = ['jose', 'de', 'la', 'casa'];
     const freq = {};
     freq['__COUNT__'] = [202];
-    freq[termops.encodeTerm(tokens[0])] = [1];
-    freq[termops.encodeTerm(tokens[1])] = [100];
-    freq[termops.encodeTerm(tokens[2])] = [100];
-    freq[termops.encodeTerm(tokens[3])] = [1];
+    freq[tokens[0]] = [1];
+    freq[tokens[1]] = [100];
+    freq[tokens[2]] = [100];
+    freq[tokens[3]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq).map((p) => {
         return (p.relev) + '-1-' + p.text;
@@ -51,7 +51,7 @@ test('termops.getIndexablePhrases (京都市)', (t) => {
     const tokens = ['京都市'];
     const freq = {};
     freq['__COUNT__'] = [1];
-    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         { phrase: termops.encodePhrase('京都市', false), relev: 1, text: '京都市' }
@@ -64,7 +64,7 @@ test('termops.getIndexablePhrases (москва)', (t) => {
     const tokens = ['москва'];
     const freq = {};
     freq['__COUNT__'] = [1];
-    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         { phrase: termops.encodePhrase('москва', false), relev: 1, text: 'москва' }
@@ -77,7 +77,7 @@ test('termops.getIndexablePhrases (josé)', (t) => {
     const tokens = ['josé'];
     const freq = {};
     freq['__COUNT__'] = [1];
-    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         { phrase: termops.encodePhrase('josé'), relev: 1, text: 'jose' }
@@ -90,7 +90,7 @@ test('termops.getIndexablePhrases (josé, no degens)', (t) => {
     const tokens = ['josé'];
     const freq = {};
     freq['__COUNT__'] = [1];
-    freq[termops.encodeTerm(tokens[0])] = [1];
+    freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases(tokens, freq), [
         { phrase: termops.encodePhrase('josé'), relev: 1, text: 'jose' }

@@ -32,7 +32,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for relev', (t) => {
-        c.geocode('fake st', { limit_verify: 1 }, (err, res) => {
+        c.geocode('fake st', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement test, fake st');
             t.end();
@@ -65,14 +65,14 @@ const addFeature = require('../../lib/indexer/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for relev', (t) => {
-        c.geocode('avenue du 18e régiment', { limit_verify: 1 }, (err, res) => {
+        c.geocode('avenue du 18e régiment', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'avenue du 18e');
             t.end();
         });
     });
     tape('test address index for relev', (t) => {
-        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1 }, (err, res) => {
+        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'avenue du dix-huitième régiment');
             t.end();
@@ -104,7 +104,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test token replacement', (t) => {
-        c.geocode('qabc', { limit_verify: 1 }, (err, res) => {
+        c.geocode('qabc', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token regex numbered group test, qabc => qcba');
             t.end();
@@ -167,7 +167,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         t.end();
     });
     tape('test address index for relev', (t) => {
-        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
             t.equals(res.features[0].place_name, 'fake street');
@@ -175,7 +175,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         });
     });
     tape('test address index for relev', (t) => {
-        c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main road lot 34 Suite 43', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
@@ -184,21 +184,21 @@ const addFeature = require('../../lib/indexer/addfeature'),
     });
 
     tape('test address index autocomplete + tokens (full)', (t) => {
-        c.geocode('main road', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main road', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });
     tape('test address index autocomplete + tokens (abbrev)', (t) => {
-        c.geocode('main rd', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main rd', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });
     tape('test address index autocomplete + tokens (auto)', (t) => {
-        c.geocode('main roa', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main roa', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
@@ -262,7 +262,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         t.end();
     });
     tape('test address index for relev', (t) => {
-        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+        c.geocode('fake st lot 34 Suite 43', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.query, ['fake', 'st'], 'global tokens removed');
             t.equals(res.features[0].place_name, 'fake street');
@@ -270,7 +270,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         });
     });
     tape('test address index for relev', (t) => {
-        c.geocode('main road lot 34 Suite 43', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main road lot 34 Suite 43', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.query, ['main', 'road'], 'global tokens removed');
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
@@ -279,28 +279,28 @@ const addFeature = require('../../lib/indexer/addfeature'),
     });
 
     tape('test address index autocomplete + tokens (full)', (t) => {
-        c.geocode('main road', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main road', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });
     tape('test address index autocomplete + tokens (abbrev)', (t) => {
-        c.geocode('main rd', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main rd', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });
     tape('test address index autocomplete + tokens (auto)', (t) => {
-        c.geocode('main roa', { limit_verify: 1 }, (err, res) => {
+        c.geocode('main roa', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
         });
     });
     tape('test address index autocomplete + tokens (auto)', (t) => {
-        c.geocode('main road', { limit_verify: 1, autocomplete: false }, (err, res) => {
+        c.geocode('main road', { limit_verify: 1, fuzzyMatch: 0, autocomplete: false }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'main road lot 42 suite 432');
             t.end();
@@ -342,42 +342,42 @@ const addFeature = require('../../lib/indexer/addfeature'),
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Talstrasse', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Talstrasse', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Talstr ', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Talstr ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Tal str ', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Tal str ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Talst ', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Talst ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Tal st ', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Tal st ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
             t.end();
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Talstrassesomthing', { limit_verify: 1 }, (err, res) => {
+        c.geocode('Talstrassesomthing', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features, [], 'strasse token is not replaced when present in between a word');
             t.end();
@@ -469,7 +469,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         'phoenixstras',
     ].forEach((query) => {
         tape(`finds by ${query}`, (t) => {
-            c.geocode(query, { limit_verify: 1 }, (err, res) => {
+            c.geocode(query, { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
                 t.equals(res.features[0].place_name, 'Phoenixstraße');
                 t.end();
             });
@@ -484,7 +484,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     ].forEach((query) => {
         [true, false].forEach((autocomplete) => {
             tape(`finds by ${query} with autocomplete = ${autocomplete}`, (t) => {
-                c.geocode(query, { autocomplete: autocomplete }, (err, res) => {
+                c.geocode(query, { autocomplete: autocomplete, fuzzyMatch: 0 }, (err, res) => {
                     if (query === 'burbarg') {
                         t.equals(res.features.length, 2);
                         t.deepEqual(res.features.map((x) => { return x.place_name; }).sort(), ['Burbarg', 'Bürbarg']);

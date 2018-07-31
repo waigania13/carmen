@@ -6,7 +6,7 @@ const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
 
-const dawgcache = require('./lib/indexer/dawg');
+const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
@@ -14,7 +14,6 @@ const geocode = require('./lib/geocoder/geocode');
 const analyze = require('./lib/util/analyze');
 const token = require('./lib/text-processing/token');
 const index = require('./lib/indexer/index');
-const merge = require('./lib/indexer/merge');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -139,8 +138,8 @@ function Geocoder(indexes, options) {
 
             if (info.geocoder_version) {
                 source.version = parseInt(info.geocoder_version, 10);
-                if (source.version !== 8) {
-                    err = new Error('geocoder version is not 8, index: ' + id);
+                if (source.version !== 9) {
+                    err = new Error('geocoder version is not 9, index: ' + id);
                     return;
                 }
             } else {
@@ -200,12 +199,6 @@ function Geocoder(indexes, options) {
             lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
             lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
             source.lang = lang;
-
-            // decide whether to use the text normalization cache
-            source.use_normalization_cache = typeof info.use_normalization_cache == 'undefined' ? false : info.use_normalization_cache;
-            if (source.use_normalization_cache && fs.existsSync(data.norm) && !source._dictcache.normalizationCache) {
-                source._dictcache.loadNormalizationCache(data.norm);
-            }
 
             // add byname index lookup
             this.byname[name] = this.byname[name] || [];
@@ -293,19 +286,24 @@ function Geocoder(indexes, options) {
                 const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
                     return filename.replace('.mbtiles', '');
+                } else if (source._original.tmpFilename) {
+                    return source._original.tmpFilename;
                 } else {
-                    return require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    source._original.tmpFilename = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    return source._original.tmpFilename;
                 }
             };
 
             const q = queue();
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
-                const dawgFile = source.getBaseFilename() + '.dawg';
-                if (source._original._dictcache || !fs.existsSync(dawgFile)) {
-                    done();
+                const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
+                if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
+                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
+                    done(null, { path: fuzzySetFile, exists: false });
                 } else {
-                    fs.readFile(dawgFile, done);
+                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
+                    done(null, { path: fuzzySetFile, exists: true });
                 }
             });
             q.awaitAll((err, loaded) => {
@@ -319,25 +317,37 @@ function Geocoder(indexes, options) {
                         info: loaded[0]
                     };
                 // create dictcache at load time to allow incremental gc
-                } else {
+                } else if (loaded[1].exists) {
+                    // read cache
                     props = {
                         id: id,
                         info: loaded[0],
-                        dictcache: new dawgcache(loaded[1])
+                        dictcache: {
+                            reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
+                            writer: null
+                        }
+                    };
+                } else {
+                    // write cache
+                    props = {
+                        id: id,
+                        info: loaded[0],
+                        dictcache: {
+                            reader: null,
+                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
+                        }
                     };
                 }
 
                 const filename = source.getBaseFilename();
                 props.freq = filename + '.freq.rocksdb';
                 props.grid = filename + '.grid.rocksdb';
-                props.norm = filename + '.norm.rocksdb';
                 callback(null, props);
             });
         });
     }
 
 }
-
 
 /**
  * Clones the source object. Methods in the cloned object are all bound
@@ -453,49 +463,6 @@ Geocoder.prototype.index = function(from, to, options, callback) {
     this._open((err) => {
         if (err) return callback(err);
         index(self, from, to, options, callback);
-    });
-};
-
-/**
- * Merge two CarmenSources and output to a third.
- * @name Geocoder#merge
- * @memberof Geocoder
- * @see {@link merge} for more details, including `options` properties.
- *
- * @access public
- *
- * @param {CarmenSource} from1 - a source index to be merged
- * @param {CarmenSource} from2 - another source to be merged
- * @param {CarmenSource} to - the destination of the merged sources
- * @param {object} options - options
- * @param {function} callback - a callback function
- */
-Geocoder.prototype.merge = function(from1, from2, to, options, callback) {
-    const self = this;
-    this._open((err) => {
-        if (err) return callback(err);
-        merge(self, from1, from2, to, options, callback);
-    });
-};
-
-/**
- * Merge more than two CarmenSources. Only supports MBTile sources.
- * @name Geocoder#multimerge
- * @memberof Geocoder
- * @see {@link multimerge} for more details, including `options` properties.
- *
- * @access public
- *
- * @param {Array<string>} fromFiles - array of paths to input mbtiles files
- * @param {string} toFile - path to output of merge
- * @param {object} options - options
- * @param {function} callback - a callback function
- */
-Geocoder.prototype.multimerge = function(fromFiles, toFile, options, callback) {
-    const self = this;
-    this._open((err) => {
-        if (err) return callback(err);
-        merge.multimerge(self, fromFiles, toFile, options, callback);
     });
 };
 

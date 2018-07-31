@@ -59,6 +59,21 @@ tape('index country', (t) => {
     queueFeature(conf.country, country, t.end);
 });
 
+tape('index region', (t) => {
+    const region = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [0, 0],
+            'carmen:zxy': ['6/30/30'],
+            'carmen:text': 'Northwestern Federal District,  Severo-Zapadny federalny okrug'
+        },
+        id: 2,
+        geometry: { type: 'MultiPolygon', coordinates: [] },
+        bbox: [-11.25, 5.615, -5.625, 11.1784]
+    };
+    queueFeature(conf.region, region, t.end);
+});
+
 tape('build queued features', (t) => {
     const q = queue();
     Object.keys(conf).forEach((c) => {

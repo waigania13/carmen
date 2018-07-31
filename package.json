@@ -6,10 +6,11 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-cache": "0.21.1",
+    "@mapbox/carmen-cache": "0.21.4",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.10.0",
+    "@mapbox/node-fuzzy-phrase": "0.1.2",
     "@mapbox/sphericalmercator": "^1.1.0",
     "@mapbox/tile-cover": "^3.0.2",
     "@mapbox/tilebelt": "1.0.x",
@@ -25,10 +26,7 @@
     "@turf/nearest-point-on-line": "^6.0.2",
     "@turf/point-on-feature": "^5.1.5",
     "d3-queue": "3.0.x",
-    "dawg-cache": "0.5.0",
     "err-code": "^1.1.2",
-    "es6-native-map": "https://github.com/mapbox/es6-native-map/archive/4.0.2-mapbox.tar.gz",
-    "es6-native-set": "https://github.com/mapbox/node-native-set/archive/3.6.0-mapbox.tar.gz",
     "fs-extra": "^6.0.1",
     "geojson-rewind": "^0.3.1",
     "iter-tools": "^4.1.1",
@@ -36,7 +34,8 @@
     "minimist": "1.2.0",
     "model-un": "0.0.3",
     "split": "^1.0.1",
-    "xregexp": "^4.2.0"
+    "xregexp": "^4.2.0",
+    "yarn": "^1.7.0"
   },
   "devDependencies": {
     "@mapbox/eslint-config-geocoding": "^1.0.0",
@@ -55,8 +54,7 @@
   "bin": {
     "carmen": "./bin/carmen.js",
     "carmen-analyze": "./bin/carmen-analyze.js",
-    "carmen-index": "./bin/carmen-index.js",
-    "carmen-merge": "./bin/carmen-merge.js"
+    "carmen-index": "./bin/carmen-index.js"
   },
   "main": "./index.js",
   "scripts": {
@@ -67,7 +65,7 @@
     "build-docs": " $(yarn bin)/documentation build --config docs/documentation.yml --access public --github --format md --output docs/api.md index.js lib/**"
   },
   "engines": {
-    "node": "6.x.x"
+    "node": ">=6.x.x <=10.x.x"
   },
   "repository": {
     "type": "git",

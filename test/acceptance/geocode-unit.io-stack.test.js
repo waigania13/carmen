@@ -67,15 +67,16 @@ tape('ready', (t) => {
             }
         }, t.end);
     });
-    tape('build queued features', (t) => {
-        const q = queue();
-        Object.keys(conf).forEach((c) => {
-            q.defer((cb) => {
-                buildQueued(conf[c], cb);
-            });
+});
+
+tape('build queued features', (t) => {
+    const q = queue();
+    Object.keys(conf).forEach((c) => {
+        q.defer((cb) => {
+            buildQueued(conf[c], cb);
         });
-        q.awaitAll(t.end);
     });
+    q.awaitAll(t.end);
 });
 
 function reset() {

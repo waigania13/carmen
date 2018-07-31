@@ -67,7 +67,7 @@ test('index.generateStats', (t) => {
         geometry: {}
     }];
     const geocoder_tokens = token.createReplacer({ 'street':'st','road':'rd' });
-    t.deepEqual(indexdocs.generateFrequency(docs, {}), {
+    t.deepEqual(indexdocs.generateFrequency(docs, token.createReplacer({})), {
         __COUNT__: [4],
         __MAX__: [2],
         main: [2],
@@ -76,13 +76,11 @@ test('index.generateStats', (t) => {
     });
     // @TODO should 'main' in this case collapse down to 2?
     t.deepEqual(indexdocs.generateFrequency(docs, geocoder_tokens), {
-        __COUNT__: [8],
+        __COUNT__: [4],
         __MAX__: [2],
-        main: [4],
+        main: [2],
         rd: [1],
-        st: [1],
-        street: [1],
-        road: [1]
+        st: [1]
     });
     t.end();
 });
@@ -198,7 +196,7 @@ test('index', (t) => {
         }, (err) => {
             q.ifError(err);
             // Updates the mem.json fixture on disk.
-            const memJson = __dirname + '/../../fixtures/mem-' + conf.to._dictcache.properties.type + '.json';
+            const memJson = __dirname + '/../../fixtures/mem-fuzzy.json';
             if (UPDATE) fs.writeFileSync(memJson, JSON.stringify(conf.to.serialize(), null, 4));
             q.equal(JSON.stringify(conf.to.serialize()).length, JSON.stringify(require(memJson)).length);
             q.end();
@@ -365,4 +363,3 @@ test('index.cleanDocs', (t) => {
     t.equal(typeof index.cleanDocs(sourceWithAddress, [{ geometry:{},properties: { 'carmen:addressnumber':{} } }])[0]._geometry, 'undefined', 'with carmen:addressnumber: preserves geometry');
     t.end();
 });
-
