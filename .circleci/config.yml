@@ -85,4 +85,3 @@ workflows:
         jobs:
             - node6
             - node8
-            - node10
