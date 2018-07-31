@@ -72,7 +72,7 @@ tape('lessingstrasse koln 50825', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'lessingstrasse, koln, 50825');
         t.deepEqual(res.features[0].id, 'street.1');
-        t.deepEqual(res.features[0].relevance, 1);
+        t.assert(1 - res.features[0].relevance < .01);
         t.end();
     });
 });
@@ -81,7 +81,7 @@ tape('lessingstrasse 50825 koln', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'lessingstrasse, koln, 50825');
         t.deepEqual(res.features[0].id, 'street.1');
-        t.deepEqual(res.features[0].relevance, 0.8333333333333333);
+        t.deepEqual(res.features[0].relevance, 0.83);
         t.end();
     });
 });

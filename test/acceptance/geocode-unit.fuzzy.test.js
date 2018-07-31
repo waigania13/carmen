@@ -209,7 +209,7 @@ tape('build queued features', (t) => {
 });
 
 tape('100 main st washington dc - without fuzzy', (t) => {
-    complex.geocode('100 Main St washington dc', { limit_verify: 2, autocomplete: true, fuzzyMatch: false }, (err, res) => {
+    complex.geocode('100 Main St washington dc', { limit_verify: 2, autocomplete: true, fuzzyMatch: false, types: ['address'] }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '100 Main St, Washington, DC', '100 Main St');
         t.deepEqual(res.features[0].id, 'address.100');
