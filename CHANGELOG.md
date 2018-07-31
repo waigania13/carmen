@@ -1,5 +1,13 @@
 # Changelog
 
+## v25.0.0
+
+- Replace the dawg-cache text backend with the new node-fuzzy-phrase library
+- Add support for fuzzy text matching
+- Significantly refactor the phrasematch operation
+- Move to a new, faster carmen-cache release
+- Add support for node 8 and node 10
+
 ## v24.5.3
 
 - Update yarn lockfiles
