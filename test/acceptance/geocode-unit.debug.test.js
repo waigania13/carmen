@@ -99,9 +99,9 @@ tape('west st, tonawanda, ny', (t) => {
 
         // Found debug feature in spatialmatch results @ position 1
         t.deepEqual(res.debug.spatialmatch.covers[0].text, 'west st');
-        t.deepEqual(res.debug.spatialmatch.covers[0].relev, 0.3333333333333333);
+        t.assert(0.3333333333333333 - res.debug.spatialmatch.covers[0].relev < .01);
         t.deepEqual(res.debug.spatialmatch.covers[1].text, 'ny');
-        t.deepEqual(res.debug.spatialmatch.covers[1].relev, 0.3333333333333333);
+        t.assert(0.3333333333333333 - res.debug.spatialmatch.covers[1].relev < .01);
         t.deepEqual(res.debug.spatialmatch_position, 1);
 
         // Debug feature not found in verifymatch
@@ -134,11 +134,11 @@ tape('west st, tonawanda, ny', (t) => {
         // Found debug feature in spatialmatch results @ position 1
         t.deepEqual(res.debug.spatialmatch.covers[0].id, 5);
         t.deepEqual(res.debug.spatialmatch.covers[0].text, 'west st');
-        t.deepEqual(res.debug.spatialmatch.covers[0].relev, 0.3333333333333333);
+        t.assert(0.3333333333333333 - res.debug.spatialmatch.covers[0].relev < .01);
         t.deepEqual(res.debug.spatialmatch.covers[1].text, 'ny');
-        t.deepEqual(res.debug.spatialmatch.covers[1].relev, 0.3333333333333333);
+        t.assert(0.3333333333333333 - res.debug.spatialmatch.covers[1].relev < .01);
         t.deepEqual(res.debug.spatialmatch.covers[2].text, 'tonawanda');
-        t.deepEqual(res.debug.spatialmatch.covers[2].relev, 0.3333333333333333);
+        t.assert(0.3333333333333333 - res.debug.spatialmatch.covers[2].relev < .01);
         t.deepEqual(res.debug.spatialmatch_position, 0);
 
         // Debug feature not found in verifymatch
