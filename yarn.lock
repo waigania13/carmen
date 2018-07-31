@@ -89,9 +89,9 @@
     lodash "^4.17.5"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@https://github.com/mapbox/carmen-cache/tarball/5155c74b42e6189df6d152b14b4ef81689492787":
-  version "0.21.3-optimize"
-  resolved "https://github.com/mapbox/carmen-cache/tarball/5155c74b42e6189df6d152b14b4ef81689492787#cb4982dc0755a37f0da03368d6d1508268a2f195"
+"@mapbox/carmen-cache@0.21.4":
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.21.4.tgz#e4553ce52c420f9786ddbd2c025c4efb64d53ccc"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
@@ -155,13 +155,13 @@
     d3-queue "~2.0.3"
     sqlite3 "4.x"
 
-"@mapbox/node-fuzzy-phrase@https://github.com/mapbox/node-fuzzy-phrase/tarball/v0.1.1":
-  version "0.1.1"
-  resolved "https://github.com/mapbox/node-fuzzy-phrase/tarball/v0.1.1#84a7541bb2c44dc6ae01705dd9b817c4d9f006c3"
+"@mapbox/node-fuzzy-phrase@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@mapbox/node-fuzzy-phrase/-/node-fuzzy-phrase-0.1.2.tgz#ff55998da5a25432238735fb48e607bb620d815d"
   dependencies:
     "@mapbox/cfn-config" "^2.15.0"
     "@mapbox/cloudfriend" "^1.9.1"
-    neon-cli "^0.1.22"
+    neon-cli "^0.1.23"
     node-pre-gyp "~0.10.0"
 
 "@mapbox/sphericalmercator@^1.1.0", "@mapbox/sphericalmercator@~1.1.0":
@@ -3792,7 +3792,7 @@ needle@^2.2.1:
     iconv-lite "^0.4.4"
     sax "^1.2.4"
 
-neon-cli@^0.1.22:
+neon-cli@^0.1.23:
   version "0.1.23"
   resolved "https://registry.yarnpkg.com/neon-cli/-/neon-cli-0.1.23.tgz#2eb517bd665718a983b7ef45b2640662fa631741"
   dependencies:
