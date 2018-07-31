@@ -9,8 +9,8 @@ This is an implementation of some of the concepts of [Error-Correcting Geocoding
 
 ## Depends
 
-- Node v6.x.x
-- [mapbox/dawg-cache](https://github.com/mapbox/dawg-cache)
+- Node v8.x.x
+- [mapbox/node-fuzzy-phrase](https://github.com/mapbox/node-fuzzy-phrase)
 - [mapbox/carmen-cache](https://github.com/mapbox/carmen-cache)
 
 ## Install
