@@ -110,3 +110,12 @@ tape('serbian fallbacks', (t) => {
 
     t.end();
 });
+
+tape('handle nonmatching text with hypens', (t) => {
+
+    const bad = 'عربى - السعودية';
+
+    t.equal(closestLangLabel.getLanguage(bad), false);
+
+    t.end();
+});
