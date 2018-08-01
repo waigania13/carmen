@@ -242,6 +242,14 @@ const addFeature = require('../../lib/indexer/addfeature'),
         });
     });
 
+    // return nothing on nonexistent with hyphen in string
+    tape('Rossiyskaya => Russian Federation - {language: "nonexistent-nonexistent"}', (t) => {
+        c.geocode('Russian Federation', { limit_verify:1, language: 'nonexistent-nonexistent' }, (err, res) => {
+            t.ok(err, 'throws error');
+            t.end();
+        });
+    });
+
     // also 'translate' the context when available
     tape('St Petersburg => Санкт-Петербу́рг, Северо-Западный федеральный округ, Российская Федерация - {language: "ru"}', (t) => {
         c.geocode('St Petersburg', { language: 'ru' }, (err, res) => {
