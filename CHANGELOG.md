@@ -1,5 +1,10 @@
 # Changelog
 
+## v25.0.1
+
+- Constrain the circumstances under which fuzzy matching is used to improve speed
+- Fix a bug in language parameter parsing that can cause crashes on malformed language tags
+
 ## v25.0.0
 
 - Replace the dawg-cache text backend with the new node-fuzzy-phrase library
