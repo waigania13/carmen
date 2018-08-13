@@ -271,7 +271,7 @@ test('replacer/globalReplacer interaction', (t) => {
     const replacer = token.createReplacer({});
     const doc = { properties: { 'carmen:text': 'constructor' } };
     const texts = [
-        { languages: ['default'], tokens: ['main', 'street'] }
+        { languages: ['default'], tokens: ['constructor'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
     t.end();
