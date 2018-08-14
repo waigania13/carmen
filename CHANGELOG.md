@@ -1,5 +1,9 @@
 # Changelog
 
+## v25.0.2
+
+- Fix a bug in text processing that crashed indexing when the `text` contains reserved words.
+
 ## v25.0.1
 
 - Constrain the circumstances under which fuzzy matching is used to improve speed
