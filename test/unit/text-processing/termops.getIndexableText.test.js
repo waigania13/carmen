@@ -267,7 +267,7 @@ test('replacer/globalReplacer interaction', (t) => {
     t.end();
 });
 
-test('replacer/globalReplacer interaction', (t) => {
+test('Reserved words for inherited functions', (t) => {
     const replacer = token.createReplacer({});
     const doc = { properties: { 'carmen:text': 'constructor' } };
     const texts = [
