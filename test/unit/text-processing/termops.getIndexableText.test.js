@@ -262,3 +262,13 @@ test('replacer/globalReplacer interaction', (t) => {
 
     t.end();
 });
+
+test('Reserved words for inherited functions', (t) => {
+    const replacer = token.createReplacer({});
+    const doc = { properties: { 'carmen:text': 'constructor' } };
+    const texts = [
+        { languages: ['default'], tokens: ['constructor'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
+    t.end();
+});
