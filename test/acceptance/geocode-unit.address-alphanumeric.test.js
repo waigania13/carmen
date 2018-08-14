@@ -30,6 +30,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
     tape('test address index for alphanumerics', (t) => {
+        t.assert(false);
         c.geocode('9B FAKE STREET', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, '9b fake street', 'found 9b fake street');
