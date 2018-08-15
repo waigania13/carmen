@@ -36,7 +36,7 @@ test('ops#toFeature', (t) => {
         }
     }];
     feat._relevance = 1;
-    t.deepEqual(ops.toFeature(feat, '{address._name} {address._number}'), { address: 9, center: [-99.392855, 63.004759], geometry: { coordinates: [-99.392855, 63.004759], type: 'Point' }, id: 'address.1833980151', place_name: 'Fake Street 9', place_type: ['address'], properties: {}, relevance: 1, text: 'Fake Street', type: 'Feature' });
+    t.deepEqual(ops.toFeature(feat, '{address._name} {address._number}'), { address: '9', center: [-99.392855, 63.004759], geometry: { coordinates: [-99.392855, 63.004759], type: 'Point' }, id: 'address.1833980151', place_name: 'Fake Street 9', place_type: ['address'], properties: {}, relevance: 1, text: 'Fake Street', type: 'Feature' });
 
     t.deepEqual(ops.toFeature([{
         properties: {
