@@ -58,7 +58,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "lint": "eslint index.js lib test scripts",
+    "lint": "eslint index.js lib test bin",
     "test": "yarn run lint && (retire -n || echo 'WARNING: retire found insecure packages') && TESTING=true tape './test/**/*.js' && yarn run bench",
     "coverage": "TESTING=true nyc tape 'test/**/*.js' && nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "bench": "./test/run_all_benchmarks.sh",
