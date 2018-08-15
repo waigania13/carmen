@@ -104,7 +104,7 @@ if (argv.reverseMode) {
     if (argv.reverseMode !== 'score' && argv.reverseMode !== 'distance') throw new Error('reverseMode must be one of `score` or `distance`');
 }
 
-if (argv.routing) argv.routing = (argv.routing || false); 
+if (argv.routing) argv.routing = (argv.routing || false);
 
 let load = +new Date();
 
