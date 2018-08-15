@@ -1,5 +1,9 @@
 # Changelog
 
+## v25.0.3
+
+- Ensure all `.address` properties are String values
+
 ## v25.0.2
 
 - Fix a bug in text processing that crashed indexing when the `text` contains reserved words.
