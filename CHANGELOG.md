@@ -1,5 +1,9 @@
 # Changelog
 
+## v25.0.4
+
+- update to caarmen-cache@0.21.5, which reduces the cross-language relevance penalty
+
 ## v25.0.3
 
 - Ensure all `.address` properties are String values
