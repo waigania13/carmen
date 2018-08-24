@@ -367,7 +367,7 @@ test('ops#toFeature + formatter + languageMode=strict + arabic comma', (t) => {
         }
     }];
 
-    let feature;
+    const feature;
 
     feature = ops.toFeature(context, {
         en: '{place._name}, {country._name}',
