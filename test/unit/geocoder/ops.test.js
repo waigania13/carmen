@@ -345,3 +345,36 @@ test('ops#toFeature + formatter + languageMode=strict', (t) => {
     t.end();
 });
 
+test('ops#toFeature + formatter + languageMode=strict + arabic comma', (t) => {
+
+    const context = [{
+        properties: {
+            'carmen:text': 'Cairo',
+            'carmen:text_en': 'Cairo',
+            'carmen:text_ar': 'القاهرة',
+            'carmen:types': ['place'],
+            'carmen:center': [0, 0],
+            'carmen:extid': 'place.1'
+        }
+    }, {
+        properties: {
+            'carmen:text': 'Egypt',
+            'carmen:text_en': 'Egypt',
+            'carmen:text_ar': 'مصر',
+            'carmen:types': ['country'],
+            'carmen:center': [0, 0],
+            'carmen:extid': 'country.1'
+        }
+    }];
+
+    const feature = ops.toFeature(context, {
+        en: '{place._name}, {country._name}',
+        ar: '{place._name}، {country._name}'
+    }, ['ar'], 'strict', true);
+    t.deepEqual(feature.place_name, 'القاهرة، مصر');
+    t.deepEqual(feature.context, [
+        { id: 'country.1', language: 'ar', language_ar: 'ar', text: 'مصر', text_ar: 'مصر' }
+    ]);
+
+    t.end();
+});
