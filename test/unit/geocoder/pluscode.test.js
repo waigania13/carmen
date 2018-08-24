@@ -42,7 +42,7 @@ test('pluscode - validity', (t) => {
     t.end();
 });
 
-test('pluscode - encoding', (t) => {
+test('pluscode - encoding/decode', (t) => {
 
     // Test data for encoding and decoding OpenLocationCodes
     // Format of each array is: [code,lat,lng,latLo,lngLo,latHi,lngHi]
@@ -70,7 +70,10 @@ test('pluscode - encoding', (t) => {
     ];
 
     for (const fixture of fixtures) {
+        const encoded = pluscode.encode(fixture[1], fixture[2], fixture[0].length-1);
         const decoded = pluscode.decode(fixture[0]);
+
+        t.equals(encoded, fixture[0]);
 
         t.ok((decoded.latitudeLo === fixture[3]) || Math.abs(decoded.latitudeLo - fixture[3]) <= 0.0000000001, `${fixture[0]} decoded latitudeLo within expected tol`)
         t.ok((decoded.longitudeLo === fixture[4]) || Math.abs(decoded.longitudeLo - fixture[4]) <= 0.0000000001, `${fixture[0]} decoded longitudeLo within expected tol`)
