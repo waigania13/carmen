@@ -1,5 +1,13 @@
 # Changelog
 
+## v25.0.6
+
+- Fix proximity.scoredist tests
+
+## v25.0.5
+
+- Fix geocoder_format template parsing to handle presence of arabic comma
+
 ## v25.0.4
 
 - update to caarmen-cache@0.21.5, which reduces the cross-language relevance penalty
