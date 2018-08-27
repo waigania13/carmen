@@ -44,4 +44,28 @@ test('termops.getWeights', (t) => {
     t.end();
 });
 
+test('termops.getWeights - sparse set', (t) => {
+    const tokens = ['the', 'ups', 'store'];
+    const freq = {
+        __COUNT__: [100000],
+        the: [1000],
+        ups: [10],
+        store: [50]
+    };
+
+    t.deepEqual(termops.getWeights(tokens, freq, 0), [
+        0.21538845564815207,
+        0.4298528108297949,
+        0.354758733522053
+    ], 'weights terms');
+
+    t.deepEqual(termops.getWeights(tokens, freq, 3), [
+        0.026535360831143863,
+        0.6675993732215327,
+        0.3058652659473235
+    ], 'weights terms');
+
+    t.end();
+});
+
 function sum(memo, val) { return memo + val; }

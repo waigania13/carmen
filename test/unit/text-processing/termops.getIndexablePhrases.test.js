@@ -25,6 +25,30 @@ test('termops.getIndexablePhrases', (t) => {
     t.end();
 });
 
+test('termops.getIndexablePhrases (sparse set)', (t) => {
+    const tokens = ['the', 'ups', 'store'];
+    const freq = {
+        __COUNT__: [100000],
+        the: [1000],
+        ups: [10],
+        store: [50]
+    };
+
+    t.deepEqual(termops.getIndexablePhrases(tokens, freq, 3), [
+        {
+            relev: 1,
+            text: 'the ups store',
+            phrase: 'the ups store'
+        },
+        {
+            relev: 1,
+            text: 'ups store',
+            phrase: 'ups store'
+        }
+    ]);
+
+    t.end();
+});
 
 test('termops.getIndexablePhrases (weight sieve)', (t) => {
     const tokens = ['jose', 'de', 'la', 'casa'];
