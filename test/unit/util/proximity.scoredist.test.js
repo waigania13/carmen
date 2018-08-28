@@ -8,17 +8,18 @@ const ZOOM_LEVELS = {
     poi: 14,
     place: 12,
     region: 6,
-    district: 9
+    district: 9,
+    country: 6
 };
 
 
-function compareCreator(meanScore) {
-    return function compare(a, b) {
-        return proximity.scoredist(meanScore, b.properties.distance, b.properties.zoom, constants.PROXIMITY_RADIUS) - proximity.scoredist(meanScore, a.properties.distance, a.properties.zoom, constants.PROXIMITY_RADIUS);
-    };
-}
-
 test('scoredist', (t) => {
+
+    function compareCreator(meanScore) {
+        return function compare(a, b) {
+            return proximity.scoredist(meanScore, b.properties.distance, b.properties.zoom, constants.PROXIMITY_RADIUS) - proximity.scoredist(meanScore, a.properties.distance, a.properties.zoom, constants.PROXIMITY_RADIUS);
+        };
+    }
 
     t.test('new york', (t) => {
         // --query="new york" --proximity="-122.4234,37.7715"
@@ -147,7 +148,6 @@ test('scoredist', (t) => {
         t.end();
     });
 
-
     t.end();
 });
 
@@ -156,10 +156,72 @@ test('zoom weighting', (t) => {
     const score = 1000;
     const distance = 30; // miles
 
-    t.deepEqual(proximity.scoredist(score, distance, 6, 40), 84027.7778, 'zoom 6');
-    t.deepEqual(proximity.scoredist(score, distance, 8, 40), 79719.3878, 'zoom 8');
-    t.deepEqual(proximity.scoredist(score, distance, 10, 40), 72250, 'zoom 10');
-    t.deepEqual(proximity.scoredist(score, distance, 12, 40), 56250, 'zoom 12');
-    t.deepEqual(proximity.scoredist(score, distance, 14, 40), 6250, 'zoom 14');
+    t.deepEqual(proximity.scoredist(score, distance, 6, 40), 252083.3333, 'zoom 6');
+    t.deepEqual(proximity.scoredist(score, distance, 8, 40), 239158.1633, 'zoom 8');
+    t.deepEqual(proximity.scoredist(score, distance, 10, 40), 216750, 'zoom 10');
+    t.deepEqual(proximity.scoredist(score, distance, 12, 40), 168750, 'zoom 12');
+    t.deepEqual(proximity.scoredist(score, distance, 14, 40), 18750, 'zoom 14');
     t.end();
+});
+
+test('Prefer local results over highly-scored distant results', (t) => {
+
+    function compareScoreDist(a, b) {
+        return b.properties['carmen:scoredist'] - a.properties['carmen:scoredist'];
+    }
+
+    t.test('local results > highly-scored cities/regions', (t) => {
+        // --query="new york" --proximity="-122.4234,37.7715"
+        const input = [
+            { properties: { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, 'carmen:score': 31104, zoom: ZOOM_LEVELS.place } },
+            { properties: { text: 'New Yorker Buffalo Wings', distance: 0.6450163846417221, 'carmen:score': 3, zoom: ZOOM_LEVELS.poi } },
+            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: ZOOM_LEVELS.poi } },
+            { properties: { text: 'New York,NY', distance: 2426.866703400975, 'carmen:score': 79161, zoom: ZOOM_LEVELS.region } }
+        ];
+
+        const meanScore = proximity.meanScore(input);
+
+        input.forEach((feat) => {
+            feat.properties['carmen:scoredist'] = Math.max(
+                feat.properties['carmen:score'],
+                proximity.scoredist(meanScore, feat.properties.distance, feat.properties.zoom, constants.PROXIMITY_RADIUS)
+            );
+        });
+
+        const expected = [
+            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: 14, 'carmen:scoredist': 87517.8314 } },
+            { properties: { text: 'New Yorker Buffalo Wings', distance: 0.6450163846417221, 'carmen:score': 3, zoom: 14, 'carmen:scoredist': 87383.1406 } },
+            { properties: { text: 'New York,NY', distance: 2426.866703400975, 'carmen:score': 79161, zoom: 6, 'carmen:scoredist': 79161 } },
+            { properties: { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, 'carmen:score': 31104, zoom: 12, 'carmen:scoredist': 31104 } }
+        ];
+
+        t.deepEqual(input.sort(compareScoreDist), expected);
+        t.end();
+    });
+
+    t.test('highly-scored countries > local results', (t) => {
+        // --query="United States" --proximity="-77.03361679999999,38.900039899999996"
+        const input = [
+            { properties: { text: 'United States of America, United States, America, USA, US', distance: 1117.3906777683906, 'carmen:score': 1634443, zoom: ZOOM_LEVELS.country } },
+            { properties: { text: 'United States Department of Treasury Annex', distance: 0.11774815645353183, 'carmen:score': 0, zoom: ZOOM_LEVELS.poi } },
+        ];
+
+        const meanScore = proximity.meanScore(input);
+
+        input.forEach((feat) => {
+            feat.properties['carmen:scoredist'] = Math.max(
+                feat.properties['carmen:score'],
+                proximity.scoredist(meanScore, feat.properties.distance, feat.properties.zoom, constants.PROXIMITY_RADIUS)
+            );
+        });
+
+        const expected = [
+            { properties: { text: 'United States of America, United States, America, USA, US', distance: 1117.3906777683906, 'carmen:score': 1634443, zoom: 6, 'carmen:scoredist': 1634443 } },
+            { properties: { text: 'United States Department of Treasury Annex', distance: 0.11774815645353183, 'carmen:score': 0, zoom: 14, 'carmen:scoredist': 383084.5351 } }
+        ];
+
+        t.deepEqual(input.sort(compareScoreDist), expected);
+        t.end();
+    });
+
 });
