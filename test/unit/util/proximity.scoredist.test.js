@@ -156,11 +156,11 @@ test('zoom weighting', (t) => {
     const score = 1000;
     const distance = 30; // miles
 
-    t.deepEqual(proximity.scoredist(score, distance, 6, 40), 252083.3333, 'zoom 6');
-    t.deepEqual(proximity.scoredist(score, distance, 8, 40), 239158.1633, 'zoom 8');
-    t.deepEqual(proximity.scoredist(score, distance, 10, 40), 216750, 'zoom 10');
-    t.deepEqual(proximity.scoredist(score, distance, 12, 40), 168750, 'zoom 12');
-    t.deepEqual(proximity.scoredist(score, distance, 14, 40), 18750, 'zoom 14');
+    t.deepEqual(proximity.scoredist(score, distance, 6, 40), 297433.4584, 'zoom 6');
+    t.deepEqual(proximity.scoredist(score, distance, 8, 40), 295761.3056, 'zoom 8');
+    t.deepEqual(proximity.scoredist(score, distance, 10, 40), 291710.9761, 'zoom 10');
+    t.deepEqual(proximity.scoredist(score, distance, 12, 40), 277163.8598, 'zoom 12');
+    t.deepEqual(proximity.scoredist(score, distance, 14, 40), 114805.0297, 'zoom 14');
     t.end();
 });
 
@@ -189,8 +189,8 @@ test('Prefer local results over highly-scored distant results', (t) => {
         });
 
         const expected = [
-            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: 14, 'carmen:scoredist': 87517.8314 } },
-            { properties: { text: 'New Yorker Buffalo Wings', distance: 0.6450163846417221, 'carmen:score': 3, zoom: 14, 'carmen:scoredist': 87383.1406 } },
+            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: 14, 'carmen:scoredist': 87948.8595 } },
+            { properties: { text: 'New Yorker Buffalo Wings', distance: 0.6450163846417221, 'carmen:score': 3, zoom: 14, 'carmen:scoredist': 87948.3861 } },
             { properties: { text: 'New York,NY', distance: 2426.866703400975, 'carmen:score': 79161, zoom: 6, 'carmen:scoredist': 79161 } },
             { properties: { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, 'carmen:score': 31104, zoom: 12, 'carmen:scoredist': 31104 } }
         ];
@@ -217,7 +217,36 @@ test('Prefer local results over highly-scored distant results', (t) => {
 
         const expected = [
             { properties: { text: 'United States of America, United States, America, USA, US', distance: 1117.3906777683906, 'carmen:score': 1634443, zoom: 6, 'carmen:scoredist': 1634443 } },
-            { properties: { text: 'United States Department of Treasury Annex', distance: 0.11774815645353183, 'carmen:score': 0, zoom: 14, 'carmen:scoredist': 383084.5351 } }
+            { properties: { text: 'United States Department of Treasury Annex', distance: 0.11774815645353183, 'carmen:score': 0, zoom: 14, 'carmen:scoredist': 383535.8447 } }
+        ];
+
+        t.deepEqual(input.sort(compareScoreDist), expected);
+        t.end();
+    });
+
+    t.test('pois 50 miles away > highly-scored cities/regions', (t) => {
+        // --query="new york" --proximity="-122.4234,37.7715"
+        const input = [
+            { properties: { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, 'carmen:score': 31104, zoom: ZOOM_LEVELS.place } },
+            { properties: { text: 'New Yorker Buffalo Wings', distance: 50, 'carmen:score': 3, zoom: ZOOM_LEVELS.poi } },
+            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: ZOOM_LEVELS.poi } },
+            { properties: { text: 'New York,NY', distance: 2426.866703400975, 'carmen:score': 79161, zoom: ZOOM_LEVELS.region } }
+        ];
+
+        const meanScore = proximity.meanScore(input);
+
+        input.forEach((feat) => {
+            feat.properties['carmen:scoredist'] = Math.max(
+                feat.properties['carmen:score'],
+                proximity.scoredist(meanScore, feat.properties.distance, feat.properties.zoom, constants.PROXIMITY_RADIUS)
+            );
+        });
+
+        const expected = [
+            { properties: { text: 'New York Frankfurter Co.', distance: 0.4914344651849769, 'carmen:score': 1, zoom: 14, 'carmen:scoredist': 87948.8595 } },
+            { properties: { text: 'New Yorker Buffalo Wings', distance: 50, 'carmen:score': 3, zoom: 14, 'carmen:scoredist': 81254.7565 } },
+            { properties: { text: 'New York,NY', distance: 2426.866703400975, 'carmen:score': 79161, zoom: 6, 'carmen:scoredist': 79161 } },
+            { properties: { text: 'New York,NY,NYC,New York City', distance: 2567.3550038898834, 'carmen:score': 31104, zoom: 12, 'carmen:scoredist': 31104 } }
         ];
 
         t.deepEqual(input.sort(compareScoreDist), expected);
