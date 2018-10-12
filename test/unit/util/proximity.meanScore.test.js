@@ -13,7 +13,7 @@ test('find the geometric mean of 2 and 8', (t) => {
     t.end();
 });
 
-test('find the geometric mean of 2 and 8', (t) => {
+test('find the geometric mean of 0 and 4', (t) => {
     const input = [
         { properties: { 'carmen:score': 0 } },
         { properties: { 'carmen:score': 4 } }
