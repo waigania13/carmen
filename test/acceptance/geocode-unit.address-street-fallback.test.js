@@ -124,6 +124,22 @@ const buildQueued = addFeature.buildQueued;
         });
     });
 
+    tape('Search for non-existant address - Springfield', (t) => {
+        c.geocode('123444 fake street, Springfield', null, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'fake street Springfield');
+            t.end();
+        });
+    });
+
+    tape('Search for non-existant address - Seneca Rocks', (t) => {
+        c.geocode('123444 fake street, Seneca Rocks', null, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'fake street Seneca Rocks');
+            t.end();
+        });
+    });
+
     tape('teardown', (t) => {
         context.getTile.cache.reset();
         t.end();
