@@ -226,9 +226,9 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('china', (t) => {
         c.geocode('china', { limit_verify:3, allow_dupes: true }, (err, res) => {
             t.ifError(err);
-            t.deepEqual(res.features[0].id, 'province.2');
-            t.deepEqual(res.features[1].id, 'city.3');
-            t.deepEqual(res.features[2].id, 'country.1');
+            t.deepEqual(res.features[0].id, 'country.1');
+            t.deepEqual(res.features[1].id, 'province.2');
+            t.deepEqual(res.features[2].id, 'city.3');
             t.deepEqual(res.features.length, 3);
             t.end();
         });
@@ -236,7 +236,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('china (dedupe)', (t) => {
         c.geocode('china', { limit_verify:3 }, (err, res) => {
             t.ifError(err);
-            t.deepEqual(res.features[0].id, 'province.2');
+            t.deepEqual(res.features[0].id, 'country.1');
             t.deepEqual(res.features.length, 1);
             t.end();
         });
@@ -276,4 +276,3 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
-

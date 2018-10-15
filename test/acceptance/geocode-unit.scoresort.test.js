@@ -140,12 +140,11 @@ const queue = require('d3-queue').queue;
         q.awaitAll(t.end);
     });
 
-    // High-scored feature wins over low-scored features in index with high max score
-    tape('high score beats low score + high scorefactor', (t) => {
+    tape('results sorted by distance regardless of score', (t) => {
         c.geocode('smallville', null, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].id, 'lamplace.1', 'Place (high score) is first result');
-            t.equal(res.features[1].id, 'namplace.1', 'Place (high score) is second result');
+            t.equal(res.features[0].id, 'place.1', 'Closest feature is first result');
+            t.equal(res.features[1].id, 'lamplace.1', 'Second closest feature is second result');
             t.end();
         });
     });
@@ -155,4 +154,3 @@ const queue = require('d3-queue').queue;
     });
 
 })();
-

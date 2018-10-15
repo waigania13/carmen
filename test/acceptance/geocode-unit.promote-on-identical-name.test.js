@@ -162,7 +162,7 @@ tape('build queued features', (t) => {
 
 tape('let\'s find new york', (t) => {
     c.geocode('new york usa', {}, (err, res) => {
-        t.equal(res.features[0].id, 'place.3');
+        t.equal(res.features[0].id, 'region.2');
         t.equal(res.features[0].relevance, 1);
         t.end();
     });
@@ -280,7 +280,7 @@ tape('build queued features', (t) => {
 
 tape('nonthaburi', (t) => {
     c2.geocode('nonthaburi', {}, (err, res) => {
-        t.equal(res.features[0].id.split('.')[0], 'place', 'lead feature is place');
+        t.equal(res.features[0].id.split('.')[0], 'region', 'lead feature is place');
         t.end();
     });
 });

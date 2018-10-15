@@ -62,10 +62,10 @@ const queue = require('d3-queue').queue;
         });
         q.awaitAll(t.end);
     });
-    tape('geocode proximity=10,10 => superscored', (t) => {
+    tape('geocode proximity=10,10 => nearest', (t) => {
         c.geocode('main st', { proximity:[10,10] }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].id, 'address.200', 'found address.200');
+            t.equals(res.features[0].id, 'address.201', 'found address.200');
             t.end();
         });
     });

@@ -95,7 +95,7 @@ tape('build queued features', (t) => {
 
 tape('find new york', (t) => {
     c.geocode('new york usa', {}, (err, res) => {
-        t.equal(res.features[0].id, 'place.1');
+        t.equal(res.features[0].id, 'region.1');
         t.equal(res.features[0].relevance, 1);
         t.end();
     });
@@ -103,7 +103,7 @@ tape('find new york', (t) => {
 
 tape('find nueva york, language=es', (t) => {
     c.geocode('nueva york usa', { language: 'es' }, (err, res) => {
-        t.equal(res.features[0].id, 'place.1');
+        t.equal(res.features[0].id, 'region.1');
         t.equal(res.features[0].relevance, 0.98, "query has penalty applied because 'usa' has no es translation");
         t.end();
     });
@@ -111,7 +111,7 @@ tape('find nueva york, language=es', (t) => {
 
 tape('find nueva york, language=ca', (t) => {
     c.geocode('nueva york', { language: 'ca' }, (err, res) => {
-        t.equal(res.features[0].id, 'place.1');
+        t.equal(res.features[0].id, 'region.1');
         t.equal(res.features[0].relevance, 1.00, "query has full relevance because 'nueva york' has no ca translation but es falls back");
         t.end();
     });
@@ -219,4 +219,3 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
-
