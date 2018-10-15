@@ -243,7 +243,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     tape('Search for an address without a number (multiple layers)', (t) => {
         c.geocode('fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res, { 
+            t.deepEquals(res, {
                 type: 'FeatureCollection',
                 query: ['fake','street'],
                 features: [{
