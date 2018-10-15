@@ -243,7 +243,34 @@ const addFeature = require('../../lib/indexer/addfeature'),
     tape('Search for an address without a number (multiple layers)', (t) => {
         c.geocode('fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.deepEquals(res,  { 'type':'FeatureCollection','query':['fake','street'],'features':[{ 'id':'address.1','type':'Feature','text':'fake street','place_name':'fake street springfield, maine 12345, united states','relevance':0.99,'place_type': ['address'],'properties':{},'center':[0,0],'geometry':{ 'type':'GeometryCollection','geometries':[{ 'type':'MultiPoint','coordinates':[[0,0],[0,0],[0,0]] }] },'context':[{ 'id':'place.1','text':'springfield' },{ 'id':'postcode.1','text':'12345' },{ 'id':'region.1','text':'maine' },{ 'id':'country.1','text':'united states' }] }] });
+            t.deepEquals(res, { 
+                type: 'FeatureCollection',
+                query: ['fake','street'],
+                features: [{
+                    'id':'address.1',
+                    'type':'Feature',
+                    'text':'fake street',
+                    'place_name':'fake street springfield, maine 12345, united states',
+                    'relevance': 1,
+                    'place_type': ['address'],
+                    'properties':{},
+                    'center':[0,0],
+                    'geometry':{ 'type':'GeometryCollection','geometries':[{ 'type':'MultiPoint','coordinates':[[0,0],[0,0],[0,0]] }] },
+                    'context':[{
+                        'id':'place.1',
+                        'text':'springfield'
+                    },{
+                        'id':'postcode.1',
+                        'text':'12345'
+                    },{
+                        'id':'region.1',
+                        'text':'maine'
+                    },{
+                        'id':'country.1',
+                        'text':'united states'
+                    }]
+                }]
+            });
             t.end();
         });
     });
@@ -308,7 +335,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     tape('test address index for DE relev', (t) => {
         c.geocode('fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
