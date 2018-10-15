@@ -3,6 +3,7 @@ const stackable = require('../../../lib/geocoder/spatialmatch.js').stackable;
 const sortByRelevLengthIdx = require('../../../lib/geocoder/spatialmatch.js').sortByRelevLengthIdx;
 const sortByZoomIdx = require('../../../lib/geocoder/spatialmatch.js').sortByZoomIdx;
 const phrasematch = require('../../../lib/geocoder/phrasematch');
+const constants = require('../../../lib/constants');
 const Phrasematch = phrasematch.Phrasematch;
 const PhrasematchResult = phrasematch.PhrasematchResult;
 const test = require('tape');
@@ -14,7 +15,7 @@ test('stackable simple', (t) => {
     let debug = stackable([
         new PhrasematchResult([a1], { idx: 0, bmask: {}, ndx: 0 }),
         new PhrasematchResult([b1, b2], { idx: 1, bmask: {}, ndx: 1 })
-    ]);
+    ], constants.STACKABLE_LIMIT);
 
     debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
@@ -37,7 +38,7 @@ test('stackable nmask', (t) => {
         new PhrasematchResult([a1], { idx: 0, bmask: {}, ndx: 0 }),
         new PhrasematchResult([b1], { idx: 1, bmask: {}, ndx: 1 }),
         new PhrasematchResult([c1], { idx: 2, bmask: {}, ndx: 1 })
-    ]);
+    ], constants.STACKABLE_LIMIT);
 
     debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
@@ -58,7 +59,7 @@ test('stackable bmask', (t) => {
     let debug = stackable([
         new PhrasematchResult([a1], { idx: 0, bmask: [0, 1], ndx: 0 }),
         new PhrasematchResult([b1], { idx: 1, bmask: [1, 0], ndx: 1 })
-    ]);
+    ], constants.STACKABLE_LIMIT);
 
     debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
@@ -84,7 +85,7 @@ test('stackable complex', (t) => {
         new PhrasematchResult([a1, a2], { idx: 0, bmask: [], ndx: 0 }),
         new PhrasematchResult([b1, b2], { idx: 1, bmask: [], ndx: 1 }),
         new PhrasematchResult([c1, c2], { idx: 1, bmask: [], ndx: 2 }),
-    ]);
+    ], constants.STACKABLE_LIMIT);
 
     debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
@@ -120,7 +121,7 @@ test('stackable direction change', (t) => {
         new PhrasematchResult([b1, b2], { idx: 1, bmask: [], ndx: 1 }),
         new PhrasematchResult([c1, c2], { idx: 2, bmask: [], ndx: 2 }),
         new PhrasematchResult([d1, d2], { idx: 3, bmask: [], ndx: 3 }),
-    ]);
+    ], constants.STACKABLE_LIMIT);
 
     debug.forEach((stack) => { stack.sort(sortByZoomIdx); });
     debug.sort(sortByRelevLengthIdx);
@@ -186,7 +187,7 @@ test('stackable bench', (t) => {
             }
         }
         const start = +new Date;
-        stackable(phraseMatches);
+        stackable(phraseMatches, constants.STACKABLE_LIMIT);
         return (+new Date) - start;
     }
     t.end();
