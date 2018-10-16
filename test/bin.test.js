@@ -116,6 +116,15 @@ tape('bin/carmen-index', (t) => {
     });
 });
 
+tape('bin/carmen', (t) => {
+    exec(bin + '/carmen.js --help', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
+        t.end();
+    });
+});
+
+
 tape('bin/carmen DEBUG', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', (err, stdout, stderr) => {
         t.ifError(err);
