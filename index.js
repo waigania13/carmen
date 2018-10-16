@@ -7,6 +7,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
+const termops = require('./lib/text-processing/termops');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
