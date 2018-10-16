@@ -103,6 +103,8 @@ function Geocoder(indexes, options) {
             let stack = info.geocoder_stack || false;
             const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
+
+            const categories = info.geocoder_categories || [];
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
 
@@ -173,6 +175,7 @@ function Geocoder(indexes, options) {
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
             source.stack = stack;
+            source.categories = categories;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
 
             if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
