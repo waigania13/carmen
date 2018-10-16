@@ -1,5 +1,13 @@
 # Changelog
 
+## 25.0.8
+
+- Expose some internal cutoffs as configuration options
+
+## v25.0.7
+
+- Refactor proximity.scoredist tests
+
 ## v25.0.6
 
 - Fix proximity.scoredist tests
