@@ -308,7 +308,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     tape('test address index for DE relev', (t) => {
         c.geocode('fake street', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance, 0.99);
+            t.equals(res.features[0].relevance, 1);
             t.end();
         });
     });
