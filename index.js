@@ -174,19 +174,23 @@ function Geocoder(indexes, options) {
             if (info.geocoder_categories) {
                 source.categories = new Set();
 
-                for (const category of info.geocoder_categories) {
-                    source.categories.add(category);
+                for (let category of info.geocoder_categories) {
+                    category = termops.tokenize(category, true)
 
-                    console.error(source.token_replacer(category));
+                    source.categories.add(category.join(' '), true);
+
+                    category = category.map((cat) => {
+                        return token.replaceToken(source.token_replacer, cat).toLowerCase();
+                    });
+
+                    source.categories.add(category.join(' '), true);
                 }
             }
-
 
             source.maxzoom = info.maxzoom;
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
             source.stack = stack;
-            source.categories = categories;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
 
             if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
