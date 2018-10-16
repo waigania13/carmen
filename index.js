@@ -104,7 +104,15 @@ function Geocoder(indexes, options) {
             const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
 
-            const categories = info.geocoder_categories || [];
+            let categories = false;
+            if (info.geocoder_categories) {
+                categories = new Set();
+
+                for (const category of info.geocoder_categories) {
+                    categories.add(category);
+                }
+            }
+
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
 
