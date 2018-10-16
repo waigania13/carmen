@@ -104,15 +104,6 @@ function Geocoder(indexes, options) {
             const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
 
-            let categories = false;
-            if (info.geocoder_categories) {
-                categories = new Set();
-
-                for (const category of info.geocoder_categories) {
-                    categories.add(category);
-                }
-            }
-
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
 
@@ -178,6 +169,18 @@ function Geocoder(indexes, options) {
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');
             }
+
+            source.categories = false;
+            if (info.geocoder_categories) {
+                source.categories = new Set();
+
+                for (const category of info.geocoder_categories) {
+                    source.categories.add(category);
+
+                    console.error(source.token_replacer(category));
+                }
+            }
+
 
             source.maxzoom = info.maxzoom;
             source.maxscore = info.maxscore;
