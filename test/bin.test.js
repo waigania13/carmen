@@ -231,3 +231,35 @@ tape('bin/carmen query invalid bbox', (t) => {
         t.end();
     });
 });
+
+tape('bin/carmen query autocomplete true', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete="true"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query autocomplete false', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete="false"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), false, 'does not find brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query fuzzyMatch true', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol --fuzzyMatch="true"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query fuzzyMatch false', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol --fuzzyMatch="false"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), false, 'does not find brazil');
+        t.end();
+    });
+});
