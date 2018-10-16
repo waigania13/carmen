@@ -241,6 +241,22 @@ tape('bin/carmen query invalid bbox', (t) => {
     });
 });
 
+tape('bin/carmen query proximity', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --proximity="-78.828,-34.465"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query invalid proximity', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --proximity="-78.828;-34.465"', (err, stdout, stderr) => {
+        t.ok(err, 'Proximity must be LNG,LAT');
+        t.end();
+    });
+});
+
+
 tape('bin/carmen query autocomplete true', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete="true"', (err, stdout, stderr) => {
         t.ifError(err);
