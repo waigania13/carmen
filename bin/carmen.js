@@ -11,7 +11,7 @@ const Carmen = require('..');
 const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],
-    boolean: ['geojson', 'stats', 'help', 'version']
+    boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch']
 });
 
 if (argv.help) {
@@ -30,6 +30,8 @@ if (argv.help) {
     console.log('  --debug="feat id"            Follows a feature through geocode"');
     console.log('  --reverseMode="{mode}"       Sort features in reverse queries by one of `score` or `distance`');
     console.log('  --languageMode="strict"      Only return results with text in a consistent script family');
+    console.log('  --autocomplete="true"        Submit as an autocomplete query');
+    console.log('  --fuzzyMatch="true"          Allow fuzzy matching');
     console.log('  --bbox="minX,minY,maxX,maxY" Limit results to those within the specified bounding box');
     console.log(' --routing=true                Return routable points, if possible');
     console.log('  --help                       Print this report');
@@ -105,6 +107,8 @@ if (argv.reverseMode) {
 }
 
 if (argv.routing) argv.routing = (argv.routing || false);
+if (argv.autocomplete) argv.autocomplete = (argv.autocomplete || false);
+if (argv.fuzzyMatch) argv.fuzzyMatch = (argv.fuzzyMatch || false);
 
 let load = +new Date();
 
@@ -120,7 +124,9 @@ carmen.geocode(argv.query, {
     'reverseMode': argv.reverseMode,
     'languageMode': argv.languageMode,
     'bbox': argv.bbox,
-    'routing': argv.routing
+    'routing': argv.routing,
+    'autocomplete': argv.autocomplete,
+    'fuzzyMatch': argv.fuzzyMatch,
 }, (err, data) => {
     if (err) throw err;
     load = +new Date() - load;
