@@ -181,6 +181,9 @@ carmen.geocode(argv.query, {
     console.log('- warmup:       %sms', load);
     console.log('- phrasematch:  %sms', data.stats.phrasematch.time);
     console.log('- spatialmatch: %sms', data.stats.spatialmatch.time);
+    for (let key in data.stats.spatialmatch.run_times) {
+        console.log(`  - ${key}: ${data.stats.spatialmatch.run_times[key]}ms`);
+    }
     console.log('- verifymatch:  %sms', data.stats.verifymatch.time);
     console.log('- totaltime:    %sms', data.stats.time);
 
