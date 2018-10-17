@@ -1,5 +1,10 @@
 # Changelog
 
+## 25.0.9
+
+- Added `autocomplete` and `fuzzyMatch` boolean CLI options to `bin/carmen.js`
+- Added some missing tests for checking other CLI options like `proximity`, `bbox` and `reverseMode`
+
 ## 25.0.8
 
 - Expose some internal cutoffs as configuration options
