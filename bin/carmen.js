@@ -169,7 +169,10 @@ carmen.geocode(argv.query, {
         console.log('VerifyMatch');
         console.log('-----------');
         console.log('verifymatch position:', data.debug.verifymatch_position);
-        console.log(JSON.stringify(data.debug.verifymatch, null, 2));
+        console.log(JSON.stringify(data.debug.verifymatch_info, null, 2));
+        if (data.features.length && argv.geojson) {
+            console.log(JSON.stringify(data.debug.verifymatch_context, null, 2));
+        }
         console.log();
     }
     else if (!data.debug)
