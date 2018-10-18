@@ -8,7 +8,7 @@ const queueFeature = addFeature.queueFeature;
 const buildQueued = addFeature.buildQueued;
 
 const conf = {
-    place: new mem({ maxzoom: 12 }, () => {})
+    place: new mem({ maxzoom: 12, maxscore: 10000 }, () => {})
 };
 const c = new Carmen(conf);
 const tiles = [];

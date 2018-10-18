@@ -251,6 +251,17 @@ function Geocoder(indexes, options) {
             this.byidx[i].bmask = bmask;
         }
 
+        // come up with a constant that represents the rough order of magnitude
+        // of all the scores. Strategy: look at each type, find the mean score
+        // for that type, and then take the geometric mean of the means of the types
+        let scoreAvgs = [];
+        for (const typename of Object.keys(this.bytype)) {
+            const scores = this.bytype[typename].map((source) => source.maxscore || 0);
+            scoreAvgs.push((scores.reduce((a, b) => a + b) / scores.length) || 1);
+        }
+        this.scoreConstant = Math.pow(scoreAvgs.reduce((a, b) => a * b), 1 / scoreAvgs.length);
+        console.log("SC", this.scoreConstant);
+
         this._error = err;
         this._opened = true;
 
