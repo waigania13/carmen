@@ -3,3 +3,4 @@
 /tiles
 /node_modules
 /example
+/.nyc_output

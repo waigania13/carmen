@@ -7,6 +7,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
+const termops = require('./lib/text-processing/termops');
 const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
@@ -103,6 +104,7 @@ function Geocoder(indexes, options) {
             let stack = info.geocoder_stack || false;
             const languages = info.geocoder_languages || [];
             if (typeof stack === 'string') stack = [stack];
+
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
 
@@ -167,6 +169,23 @@ function Geocoder(indexes, options) {
 
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');
+            }
+
+            source.categories = false;
+            if (info.geocoder_categories) {
+                source.categories = new Set();
+
+                for (let category of info.geocoder_categories) {
+                    category = termops.tokenize(category, true);
+
+                    source.categories.add(category.join(' '), true);
+
+                    category = category.map((cat) => {
+                        return token.replaceToken(source.token_replacer, cat).toLowerCase();
+                    });
+
+                    source.categories.add(category.join(' '), true);
+                }
             }
 
             source.maxzoom = info.maxzoom;
