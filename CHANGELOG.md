@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.1.0
+
+- Added `geocoder_categories` to TileJSON input to allow a small score bump for category queries
+
 ## 25.0.10
 
 - Added `autocomplete` and `fuzzyMatch` boolean CLI options to `bin/carmen.js`
