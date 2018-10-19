@@ -74,7 +74,7 @@ tape('windsor court windsor', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, 'windsor court, windsor');
         t.deepEqual(res.features[0].id, 'street.1');
-        t.deepEqual(res.features[0].relevance, 0.995);
+        t.deepEqual(res.features[0].relevance, 1);
         t.end();
     });
 });
