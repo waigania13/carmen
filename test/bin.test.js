@@ -116,6 +116,15 @@ tape('bin/carmen-index', (t) => {
     });
 });
 
+tape('bin/carmen', (t) => {
+    exec(bin + '/carmen.js --help', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\[options\]:/.test(stdout), true, 'finds help menu');
+        t.end();
+    });
+});
+
+
 tape('bin/carmen DEBUG', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query="canada" --debug="38"', (err, stdout, stderr) => {
         t.ifError(err);
@@ -227,7 +236,65 @@ tape('bin/carmen query bbox', (t) => {
 });
 tape('bin/carmen query invalid bbox', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --bbox="-78.828,-34.465"', (err, stdout, stderr) => {
-        t.ok(err, 'bbox must be minX,minY,maxX,maxY');
+        t.ok(err);
+        t.equal(/bbox must be minX,minY,maxX,maxY/.test(stderr), true, 'error on invalid bbox');
+        t.end();
+    });
+});
+
+tape('bin/carmen query proximity', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --proximity="-78.828,-34.465"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query invalid proximity', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --proximity="-78.828;-34.465"', (err, stdout, stderr) => {
+        t.ok(err);
+        t.equal(/Proximity must be LNG,LAT/.test(stderr), true, 'error on invalid proximity');
+        t.end();
+    });
+});
+
+
+tape('bin/carmen query autocomplete true', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete="true"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query autocomplete false', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete="false"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), false, 'does not find brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query fuzzyMatch true', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol --fuzzyMatch="true"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query fuzzyMatch false', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol --fuzzyMatch="false"', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), false, 'does not find brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query reverseMode nonsense', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazil --reverseMode="nonsense"', (err, stdout, stderr) => {
+        t.ok(err);
+        t.equal(/reverseMode must be one of `score` or `distance`/.test(stderr), true, 'finds brazil');
         t.end();
     });
 });
