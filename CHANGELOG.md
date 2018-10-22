@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.2.0
+
+- Use proximity point (when provided) to bias sort order before spatial match cutoff
+
 ## 25.1.0
 
 - Added `geocoder_categories` to TileJSON input to allow a small score bump for category queries
