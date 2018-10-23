@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.3.0
+
+- Allow streets to be returned as a fallback if no address number match is possible
+
 ## 25.2.0
 
 - Use proximity point (when provided) to bias sort order before spatial match cutoff
