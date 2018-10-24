@@ -13,7 +13,7 @@ const queue = require('d3-queue').queue;
 (() => {
 
     const conf = {
-        address: new mem(null, () => {}),
+        address: new mem({ maxzoom: 6, maxscore: 1670000 }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address (signal 1)', (t) => {
@@ -62,17 +62,17 @@ const queue = require('d3-queue').queue;
         });
         q.awaitAll(t.end);
     });
-    tape('geocode proximity=10,10 => superscored', (t) => {
+    tape('geocode proximity=10,10 => nearest', (t) => {
         c.geocode('main st', { proximity:[10,10] }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].id, 'address.200', 'found address.200');
+            t.equals(res.features[0].id, 'address.201', 'found address.201');
             t.end();
         });
     });
     tape('geocode proximity=20,0 => nearest', (t) => {
-        c.geocode('main st', { proximity:[20,0] }, (err, res) => {
+        c.geocode('main st', { proximity:[-179.99,85] }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].id, 'address.201', 'found address.201');
+            t.equals(res.features[0].id, 'address.200', 'found address.200');
             t.end();
         });
     });

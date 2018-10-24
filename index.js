@@ -271,7 +271,7 @@ function Geocoder(indexes, options) {
         }
 
         // Find the max score of all features in all indexes
-        this.maxScore = this.byidx.reduce((max, source) => Math.max(max, source.maxscore), 0);
+        this.maxScore = this.byidx.reduce((max, source) => Math.max(max, source.maxscore), 0) || 1;
 
         this._error = err;
         this._opened = true;
