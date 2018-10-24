@@ -229,8 +229,8 @@ test('scoreWeight', (t) => {
 });
 
 test('distWeight', (t) => {
-    t.equal(proximity.distWeight(400, 14), 1.0000000273759382, 'dist 4x > scaleRadius => distWeight ~1');
-    t.equal(proximity.distWeight(100, 14), 3.916322598940292, 'dist = scaleRadius => distWeight ~3.92s');
+    t.equal(parseFloat(proximity.distWeight(400, 14).toFixed(4)), 1, 'dist 4x > scaleRadius => distWeight ~1');
+    t.equal(parseFloat(proximity.distWeight(100, 14).toFixed(4)), 3.9163, 'dist = scaleRadius => distWeight ~3.92s');
     t.equal(proximity.distWeight(75, 14), 6, 'dist 3/4 scaleRadius => distWeight 6');
     t.equal(proximity.distWeight(0, 14), 11, 'dist 0 => distWeight 11');
     t.end();
@@ -249,7 +249,7 @@ test('gauss', (t) => {
     const distVariance = proximity.variance(scale, decay);
     t.equal(proximity.gauss(0, distVariance), 1, 'normalized distance 0 => gauss 1');
     t.equal(proximity.gauss(scale, distVariance), decay, 'normalized distance 0.75 => gauss 0.5');
-    t.equal(proximity.gauss(1, distVariance), 0.2916322598940292, 'normalized distance 1 => gauss ~0.29');
+    t.equal(parseFloat(proximity.gauss(1, distVariance).toFixed(4)), 0.2916, 'normalized distance 1 => gauss ~0.29');
     t.equal(proximity.gauss(0.01, distVariance, 0.025), 1, 'normalized distance < offset => gauss 1');
     t.end();
 });
@@ -259,8 +259,8 @@ test('variance', (t) => {
         proximity.variance(0.5, 0);
     }, Error, 'throws on decay of 0');
     // the larger the variance, the more spread out the curve is
-    t.equal(proximity.variance(0.75, 0.5), 0.40575798025002097, 'scale 0.75, decay 0.5 => variance 0.40575798025002097');
-    t.equal(proximity.variance(0.5, 0.5), 0.18033688011112042, 'scale 0.5, decay 0.5 => variance 0.18033688011112042');
-    t.equal(proximity.variance(0.25, 0.5), 0.045084220027780106, 'scale 0.25, decay 0.5 => variance 0.045084220027780106');
+    t.equal(parseFloat(proximity.variance(0.75, 0.5).toFixed(4)), 0.4058, 'scale 0.75, decay 0.5 => variance 0.4058');
+    t.equal(parseFloat(proximity.variance(0.5, 0.5).toFixed(4)), 0.1803, 'scale 0.5, decay 0.5 => variance 0.1803');
+    t.equal(parseFloat(proximity.variance(0.25, 0.5).toFixed(4)), 0.0451, 'scale 0.25, decay 0.5 => variance 0.0451');
     t.end();
 });
