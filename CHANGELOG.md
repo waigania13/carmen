@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.3.1
+
+- Consider nmask earlier in stackable to improve performance
+
 ## 25.3.0
 
 - Allow streets to be returned as a fallback if no address number match is possible
