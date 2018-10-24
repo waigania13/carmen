@@ -20,12 +20,12 @@ function calculteScoreDist(input) {
     for (let k = 0; k < input.length; k++) {
         const feat = input[k];
         if (feat.properties['carmen:score'] >= 0) {
-            feat.properties['carmen:scoredist'] = proximity.scoredist(
+            feat.properties['carmen:scoredist'] = parseFloat(proximity.scoredist(
                 feat.properties['carmen:score'],
                 maxScore,
                 feat.properties['carmen:distance'],
                 feat.properties['carmen:zoom']
-            );
+            ).toFixed(6));
         } else {
             feat.properties['carmen:scoredist'] = feat.properties['carmen:score'];
         }

@@ -13,7 +13,7 @@ const queue = require('d3-queue').queue;
 (() => {
 
     const conf = {
-        address: new mem({ maxzoom: 6, maxscore: 1670000 }, () => {}),
+        address: new mem({ maxzoom: 6, maxscore: 100000 }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address (signal 1)', (t) => {
@@ -22,7 +22,7 @@ const queue = require('d3-queue').queue;
             properties: {
                 'carmen:text':'main st',
                 'carmen:zxy':['6/0/0'],
-                'carmen:score':1000,
+                'carmen:score':80000,
                 'carmen:center':[-179.99,85]
             }
         }, t.end);
@@ -46,7 +46,7 @@ const queue = require('d3-queue').queue;
                 properties: {
                     'carmen:text':'main st',
                     'carmen:zxy':['6/32/32'],
-                    'carmen:scorei':50,
+                    'carmen:score':50,
                     'carmen:center':[0,0]
                 }
             }, done);
@@ -62,17 +62,19 @@ const queue = require('d3-queue').queue;
         });
         q.awaitAll(t.end);
     });
-    tape('geocode proximity=10,10 => nearest', (t) => {
+    // return the farther feature with a higher score
+    tape('geocode proximity=10,10 => superscored', (t) => {
         c.geocode('main st', { proximity:[10,10] }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].id, 'address.201', 'found address.201');
+            t.equals(res.features[0].id, 'address.200', 'found address.200');
             t.end();
         });
     });
-    tape('geocode proximity=20,0 => nearest', (t) => {
-        c.geocode('main st', { proximity:[-179.99,85] }, (err, res) => {
+    // return the closer feature with a lower score
+    tape('geocode proximity=20,5 => nearest', (t) => {
+        c.geocode('main st', { proximity:[20,5] }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].id, 'address.200', 'found address.200');
+            t.equals(res.features[0].id, 'address.201', 'found address.201');
             t.end();
         });
     });
