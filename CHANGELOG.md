@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.4.0
+
+- Calculate `scoredist` in verifymatch.js as a product of score normalized by max score of all features and distance normalized by proximity radius and scaled along a gaussian curve
+
 ## 25.3.1
 
 - Consider nmask earlier in stackable to improve performance
