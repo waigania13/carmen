@@ -119,11 +119,11 @@ test('termops.getIndexableText', (t) => {
         }
     };
     texts = [
+        { languages: ['default'], tokens: ['main', 'street'] },
         { languages: ['default'], tokens: ['2##', 'main', 'street'] },
         { languages: ['default'], tokens: ['1##', 'main', 'street'] },
         { languages: ['default'], tokens: ['##', 'main', 'street'] },
-        { languages: ['default'], tokens: ['#', 'main', 'street'] },
-        { languages: ['default'], tokens: ['main', 'street'] }
+        { languages: ['default'], tokens: ['#', 'main', 'street'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
@@ -135,16 +135,16 @@ test('termops.getIndexableText', (t) => {
         }
     };
     texts = [
+        { tokens: ['main', 'st'],            languages: ['default'] },
         { tokens: ['2##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['1##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['##', 'main', 'st'],      languages: ['default'] },
         { tokens: ['#', 'main', 'st'],       languages: ['default'] },
-        { tokens: ['main', 'st'],            languages: ['default'] },
+        { tokens: ['main', 'street'],        languages: ['default'] },
         { tokens: ['2##', 'main', 'street'], languages: ['default'] },
         { tokens: ['1##', 'main', 'street'], languages: ['default'] },
         { tokens: ['##', 'main', 'street'],  languages: ['default'] },
-        { tokens: ['#', 'main', 'street'],   languages: ['default'] },
-        { tokens: ['main', 'street'],        languages: ['default'] }
+        { tokens: ['#', 'main', 'street'],   languages: ['default'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
