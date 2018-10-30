@@ -237,7 +237,7 @@ test('termops.getIndexableText', (t) => {
     t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'universal text');
 
     replacer = token.createReplacer({});
-    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York'} };
+    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York' } };
     texts = [
         { languages: ['default', 'en'], tokens: ['new', 'york'] },
         { languages: ['es'], tokens: ['nueva', 'york'] }
@@ -245,7 +245,7 @@ test('termops.getIndexableText', (t) => {
     t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate from default works');
 
     replacer = token.createReplacer({});
-    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'text_en': 'The Big Apple'} };
+    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'text_en': 'The Big Apple' } };
     texts = [
         { languages: ['default'], tokens: ['new', 'york'] },
         { languages: ['es'], tokens: ['nueva', 'york'] },
