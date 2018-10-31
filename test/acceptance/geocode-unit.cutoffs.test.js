@@ -151,7 +151,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
     });
 
     tape('stackable_limit=1', (t) => {
-        return t.end();
         // providing parameter stackable_limit=1 determines the number of stacks considered for type filtering
         // only returns place 1 from the United States
         c.geocode('place 1 united', { autocomplete: true, stackable_limit: 1, spatialmatch_stack_limit: 1 }, (err, res) => {
