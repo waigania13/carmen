@@ -11,7 +11,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es', 'ru', 'zh_Latn'], geocoder_languages_from_default: {'ru': ['en']} }, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es', 'ru', 'zh_Latn'], geocoder_languages_from_default: { 'ru': ['en'] } }, () => {}),
 };
 const c = new Carmen(conf);
 
