@@ -245,6 +245,24 @@ test('termops.getIndexableText', (t) => {
     t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate from default works');
 
     replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'New York,NYC,bakery', 'carmen:text_es': 'Nueva York' } };
+    texts = [
+        { tokens: ['new', 'york'], languages: ['default', 'en'] },
+        { tokens: ['nyc'], languages: ['default', 'en'] },
+        { tokens: ['bakery'], languages: ['all'] },
+        { tokens: ['nueva', 'york'], languages: ['es'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'auto-universalize categories works');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'bakery,New York' } };
+    texts = [
+        { tokens: ['bakery'], languages: ['default', 'en'] },
+        { tokens: ['new', 'york'], languages: ['default', 'en'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'display words are not universalized');
+
+    replacer = token.createReplacer({});
     doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'text_en': 'The Big Apple' } };
     texts = [
         { languages: ['default'], tokens: ['new', 'york'] },
