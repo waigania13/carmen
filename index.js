@@ -254,12 +254,14 @@ function Geocoder(indexes, options) {
         for (let i = 0; i < this.byidx.length; i++) {
             const bmask = new TypedFastBitSet();
             const a = this.byidx[i];
-            for (let j = 0; j < this.byidx.length; j++) {
-                const b = this.byidx[j];
+
+            if (a.stack) {
                 const a_stack = new Set(a.stack);
-                let a_it = a.stack.length;
-                if (b.stack.filter((s) => a_stack.has(s)).length === 0) {
-                    bmask.add(j);
+                for (let j = 0; j < this.byidx.length; j++) {
+                    const b = this.byidx[j];
+                    if (b.stack && b.stack.filter((s) => a_stack.has(s)).length === 0) {
+                        bmask.add(j);
+                    }
                 }
             }
             this.byidx[i].bmask = bmask;
