@@ -1,5 +1,10 @@
 # Changelog
 
+## 25.5.0
+
+- Add a mechanism for auto-populating language bitfields based on the assumed language of a given country
+- Improve efficiency of forward queries that use type filters
+
 ## 25.4.0
 
 - Calculate `scoredist` in verifymatch.js as a product of score normalized by max score of all features and distance normalized by proximity radius and scaled along a gaussian curve
