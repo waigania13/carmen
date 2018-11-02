@@ -16,7 +16,11 @@ function compareScoreDist(a, b) {
     return b.properties['carmen:scoredist'] - a.properties['carmen:scoredist'];
 }
 
-function calculteScoreDist(input) {
+function compareRelevanceScore(a, b) {
+    return b.properties['carmen:relevance'] - a.properties['carmen:relevance'];
+}
+
+function calculateScoreDist(input) {
     for (let k = 0; k < input.length; k++) {
         const feat = input[k];
         if (feat.properties['carmen:score'] >= 0) {
@@ -31,6 +35,36 @@ function calculteScoreDist(input) {
         }
     }
 }
+
+function calculateRelevanceScore(input) {
+    for (let k = 0; k < input.length; k++) {
+        const feat = input[k];
+        feat.properties['carmen:relevance'] = proximity.relevanceScore(
+            feat.properties['carmen:spatialmatch'].relev,
+            feat.properties['carmen:scoredist']
+        );
+    }
+}
+
+test('relevanceScore language penalty', (t) => {
+    const input = [
+        { id: 7, properties: { 'carmen:text': 'Planetal', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 1 } },
+        { id: 1, properties: { 'carmen:text': 'Planet Granite', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999139 } },
+        { id: 2, properties: { 'carmen:text': 'Planet Fitness,gym, fitness center', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.916823 } },
+        { id: 3, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.895406 } },
+        { id: 4, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.881766 } },
+        { id: 5, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.828728 } },
+        { id: 6, properties: { 'carmen:text': 'Planet Thai', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.774937 } },
+    ];
+
+    calculateRelevanceScore(input);
+    input.sort(compareRelevanceScore);
+
+    t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7]);
+
+    t.end();
+});
+
 
 test('scoredist', (t) => {
 
@@ -50,7 +84,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'New York,NY,NYC,New York City', 'carmen:distance': 2567.3550038898834, 'carmen:score': 31104, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.190303 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -67,7 +101,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Chicago', 'carmen:distance': 1855.8900334142313, 'carmen:score': 16988, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.104021 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -88,7 +122,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Santiago Metropolitan,METROPOLITANA,Región Metropolitana de Santiago', 'carmen:distance': 6023.053777668511, 'carmen:score': 26709, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.163413 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -105,7 +139,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Santa Cruz de Tenerife', 'carmen:distance': 5811.283048403849, 'carmen:score': 3456, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.021145 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -122,7 +156,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Washington,WA', 'carmen:distance': 2256.6130314083157, 'carmen:score': 33373, 'carmen:zoom': ZOOM_LEVELS.region, 'carmen:scoredist': 2.940293 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -143,7 +177,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Gilmour Avenue, West Dunbartonshire, G81 6AN, West Dunbartonshire, United Kingdom', 'carmen:distance': 3312.294287119006, 'carmen:score': 3, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.000018 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -162,7 +196,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'Cambridgeshire, United Kingdom', 'carmen:distance': 3566.2969841802374, 'carmen:score': 2721, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.016648 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -179,7 +213,7 @@ test('scoredist', (t) => {
             { properties: { 'carmen:text': 'United States Department of Treasury Annex', 'carmen:distance': 0.11774815645353183, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.999983 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -209,7 +243,7 @@ test('scoredist', (t) => {
             { id: 12, properties: { 'carmen:text': 'Mission Pet Hospital', 'carmen:distance': 0.6281933184839765, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         input.sort(compareScoreDist);
         for (let i = 0; i < input.length; i++) {
             const feat = input[i];
