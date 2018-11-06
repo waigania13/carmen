@@ -4,21 +4,42 @@ const tape = require('tape');
 const bigAddress = require('../../fixtures/bigaddress.json');
 
 tape('verifymatch.sortFeature', (t) => {
-    const arr = [
-        { id: 9, properties: { 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null } },
-        { id: 8, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': null } },
-        { id: 7, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26' }, geometry: { omitted: true } },
-        { id: 6, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 2 }, geometry: {} },
-        { id: 5, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 3 }, geometry: {} },
-        { id: 4, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 4, 'carmen:position': 2 }, geometry: {} },
-        { id: 3, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} },
-        { id: 2, properties: { 'carmen:relevance': 0.9, 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} },
-        { id: 1, properties: { 'carmen:relevance': 1.0, 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} }
-    ];
-    arr.sort(verifymatch.sortFeature);
-    t.deepEqual(arr.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8,9]);
+    t.test('generic features', (t) => {
+        const arr = [
+            { id: 11, properties: { 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null } },
+            { id: 10, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': null } },
+            { id: 9, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26' }, geometry: { omitted: true } },
+            { id: 8, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': -1 }, geometry: {} },
+            { id: 7, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 2 }, geometry: {} },
+            { id: 6, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 3 }, geometry: {} },
+            { id: 5, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 4, 'carmen:position': 2 }, geometry: {} },
+            { id: 4, properties: { 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} },
+            { id: 2, properties: { 'carmen:relevance': 0.7783773045, 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': null, 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} },
+            { id: 1, properties: { 'carmen:relevance': 0.7787666879, 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} },
+            { id: 3, properties: { 'carmen:relevance': 0.6, 'carmen:spatialmatch': { relev: 1.0 }, 'carmen:address': '26', 'carmen:scoredist': 5, 'carmen:position': 1 }, geometry: {} }
+        ];
+        arr.sort(verifymatch.sortFeature);
+        t.deepEqual(arr.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8,9,10,11]);
 
-    t.end();
+        t.end();
+    });
+    t.test('planet granite test case', (t) => {
+
+        const input = [
+            { id: 8, properties: { 'carmen:text': 'Planetal', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 1, 'carmen:relevance': 0.6 } },
+            { id: 1, properties: { 'carmen:text': 'Planet Granite', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999139, 'carmen:relevance': 0.6093304633333333 } },
+            { id: 2, properties: { 'carmen:text': 'Planet Fitness,gym, fitness center', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.916823, 'carmen:relevance': 0.6090560766666666 } },
+            { id: 3, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.895406, 'carmen:relevance': 0.6089846866666666 } },
+            { id: 4, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.881766, 'carmen:relevance': 0.60893922 } },
+            { id: 5, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.828728, 'carmen:relevance': 0.6087624266666666 } },
+            { id: 6, properties: { 'carmen:text': 'Planet Thai', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.774937, 'carmen:relevance': 0.6085831233333333 } },
+            { id: 7, properties: { 'carmen:text': 'Planet Street', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999999, 'carmen:relevance': 0.60333333, 'carmen:address': null } }
+        ];
+
+        input.sort(verifymatch.sortFeature);
+        t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8]);
+        t.end();
+    });
 });
 
 tape('verifymatch.sortContext (no distance)', (t) => {
