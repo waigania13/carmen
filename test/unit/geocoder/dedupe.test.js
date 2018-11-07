@@ -2,36 +2,6 @@
 const dedupe = require('../../../lib/geocoder/dedupe');
 const tape = require('tape');
 
-// tape('dedup lowercase vs caps', (t) => {
-//     const features = [
-//         {
-//             place_name: '20 main st',
-//             text: 'main st',
-//             address: 20,
-//             center:[0,0],
-//             geometry: {
-//                 type:'Point',
-//                 coordinates:[0,0]
-//             }
-//         },
-//         {
-//             place_name: '20 MAIN ST',
-//             text: 'MAIN ST',
-//             address: 20,
-//             center:[0,0],
-//             geometry: {
-//                 type:'Point',
-//                 coordinates:[0,0]
-//             }
-//         }
-//     ];
-//     t.deepEqual(dedupe(features), [
-//         features[0]
-//     ], 'dedupes by lowercase vs caps');
-//
-//     t.end();
-// });
-
 tape('dedupe', (t) => {
     let features = [
         {
