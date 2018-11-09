@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.5.1
+
+- Update all deps to latest versions
+
 ## 25.5.0
 
 - Add a mechanism for auto-populating language bitfields based on the assumed language of a given country
