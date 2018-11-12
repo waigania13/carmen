@@ -9,3 +9,5 @@
 <!-- Helpful Info: -->
 <!-- * What you've already done to resolve/understand it -->
 <!-- * Potential fix or path to explore -->
+
+@mapbox/search
