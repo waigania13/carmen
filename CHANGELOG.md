@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.6.0
+
+- Sort final results based on a composite scoredist and relevance score with penalties for features with `carmen:address` of `null`, omitted geometries, or `carmen:score`s of `-1` (ghost features)
+
 ## 25.5.1
 
 - Update all deps to latest versions
