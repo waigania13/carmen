@@ -17,10 +17,6 @@ function compareScoreDist(a, b) {
     return b.properties['carmen:scoredist'] - a.properties['carmen:scoredist'];
 }
 
-function compareRelevanceScore(a, b) {
-    return b.properties['carmen:relevance'] - a.properties['carmen:relevance'];
-}
-
 function calculateScoreDist(input) {
     for (let k = 0; k < input.length; k++) {
         const feat = input[k];
@@ -33,73 +29,6 @@ function calculateScoreDist(input) {
         ).toFixed(6));
     }
 }
-
-function calculateRelevanceScore(input) {
-    for (let k = 0; k < input.length; k++) {
-        const feat = input[k];
-        feat.properties['carmen:relevance'] = proximity.relevanceScore(
-            feat.properties['carmen:spatialmatch'].relev,
-            feat.properties['carmen:scoredist'],
-            feat.properties['carmen:address'],
-            feat.geometry && feat.geometry.omitted ? 1 : 0,
-            feat.properties['carmen:score'] < 0 ? 1 : 0
-        );
-    }
-}
-
-test('relevanceScore', (t) => {
-    t.test('language penalty, planet near planet granite portland, oregon',  (t) => {
-        const input = [
-            { id: 8, properties: { 'carmen:text': 'Planetal', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 1 } },
-            { id: 1, properties: { 'carmen:text': 'Planet Granite', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999139 } },
-            { id: 2, properties: { 'carmen:text': 'Planet Fitness,gym, fitness center', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.916823 } },
-            { id: 3, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.895406 } },
-            { id: 4, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.881766 } },
-            { id: 5, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.828728 } },
-            { id: 6, properties: { 'carmen:text': 'Planet Thai', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.774937 } },
-            { id: 7, properties: { 'carmen:text': 'Planet Street', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999999, 'carmen:address': null } }
-        ];
-
-        calculateRelevanceScore(input);
-        input.sort(compareRelevanceScore);
-        t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8]);
-        t.end();
-    });
-
-    t.test('address = null, waupaca near madison, wisconsin', (t) => {
-        const input = [
-            { id: 2, properties: { 'carmen:text': 'Waupaca Court', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.976215, 'carmen:address': null } },
-            { id: 1, properties: { 'carmen:text': 'Waupaca', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.788564 } },
-            { id: 3, properties: { 'carmen:text': 'Waupaca Street', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 5.954101, 'carmen:address': null } },
-            { id: 4, properties: { 'carmen:text': 'Waupaca High School,primary school, secondary', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.869482 } },
-            { id: 5, properties: { 'carmen:text': 'Waupaca Camping Park, LLC', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.826643 } },
-            { id: 6, properties: { 'carmen:text': 'Waupaca County Fairgrounds', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.810530 } },
-            { id: 7, properties: { 'carmen:text': 'Waupaca Bowl', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.802046 } },
-            { id: 8, properties: { 'carmen:text': 'Waupaca Ale House', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.794998 } }
-        ];
-        calculateRelevanceScore(input);
-        input.sort(compareRelevanceScore);
-        t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8]);
-        t.end();
-    });
-
-    t.test('ghost features, sunset district near san francisco', (t) => {
-        const input = [
-            { id: 2, properties: { 'carmen:text': 'Sunset District','carmen:spatialmatch': { relev: 1 }, 'carmen:distance': 4,'carmen:score': -1,'carmen:scoredist': 10.980303 } },
-            { id: 1, properties: { 'carmen:text': 'Sunset City','carmen:spatialmatch': { relev: 1 }, 'carmen:distance': 4,'carmen:score': 10,'carmen:scoredist': 11.000193 } },
-            { id: 3, properties: { 'carmen:text': 'DTOWN PARTY BUS','carmen:spatialmatch': { relev: 0.99 }, 'carmen:distance': 451,'carmen:score': 0, 'carmen:scoredist': 1.000006 } },
-            { id: 4, properties: { 'carmen:text': 'District Resource Placement Centre','carmen:spatialmatch': { relev: 0.99 }, 'carmen:distance': 790,'carmen:score': 0, 'carmen:scoredist': 1.000006 } },
-            { id: 5, properties: { 'carmen:text': 'District Building','carmen:spatialmatch': { relev: 0.99 }, 'carmen:distance': 794,'carmen:score': 0, 'carmen:scoredist': 1.000006 } }
-        ];
-
-        calculateRelevanceScore(input);
-        input.sort(compareRelevanceScore);
-        t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5]);
-        t.end();
-    });
-
-});
-
 
 test('scoredist', (t) => {
 
@@ -332,20 +261,5 @@ test('variance', (t) => {
     t.equal(parseFloat(proximity.variance(0.75, 0.5).toFixed(4)), 0.4058, 'scale 0.75, decay 0.5 => variance 0.4058');
     t.equal(parseFloat(proximity.variance(0.5, 0.5).toFixed(4)), 0.1803, 'scale 0.5, decay 0.5 => variance 0.1803');
     t.equal(parseFloat(proximity.variance(0.25, 0.5).toFixed(4)), 0.0451, 'scale 0.25, decay 0.5 => variance 0.0451');
-    t.end();
-});
-
-test('relevanceScore', (t) => {
-    const minRelev = 0;
-    const maxRelev = 1;
-    const minScoredist = 1;
-    const maxScoredist = 121;
-    t.equal(proximity.relevanceScore(minRelev, minScoredist), 0, 'min relevanceScore value is 0');
-    t.equal(proximity.relevanceScore(maxRelev, maxScoredist), 1, 'max relevanceScore value is 1');
-    t.ok(proximity.relevanceScore(maxRelev, minScoredist, null) < proximity.relevanceScore(maxRelev, maxScoredist), 'features with carmen:address of null receive a lower relevanceScore');
-    t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, true) < proximity.relevanceScore(maxRelev, maxScoredist), 'features with geometry.ommitted receive a lower relevanceScore');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, null), 0, 'min relevanceScore with carmen:address of null is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, true), 0, 'min relevanceScore with geometry.ommitted is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, null, true), 0, 'min relevanceScore with carmen:address of null and geometry.ommitted is 0');
     t.end();
 });
