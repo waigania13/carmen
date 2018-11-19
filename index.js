@@ -103,6 +103,7 @@ function Geocoder(indexes, options) {
             const types = info.geocoder_types || [type];
             let stack = info.geocoder_stack || false;
             const languages = info.geocoder_languages || [];
+            const autopopulate = info.geocoder_languages_from_default || {};
             if (typeof stack === 'string') stack = [stack];
 
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
@@ -217,6 +218,7 @@ function Geocoder(indexes, options) {
             lang.lang_map = {};
             lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
             lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
+            lang.autopopulate = autopopulate;
             source.lang = lang;
 
             // add byname index lookup
@@ -269,8 +271,8 @@ function Geocoder(indexes, options) {
             }
             this.byidx[i].bmask = bmask;
         }
-
-        // Find the max score of all features in all indexes
+        // Find the min and max score of all features in all indexes
+        this.minScore = this.byidx.reduce((min, source) => Math.min(min, source.minScore), 0) || 0;
         this.maxScore = this.byidx.reduce((max, source) => Math.max(max, source.maxscore), 0) || 1;
 
         this._error = err;

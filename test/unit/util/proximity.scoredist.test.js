@@ -2,6 +2,7 @@
 const test = require('tape');
 const proximity = require('../../../lib/util/proximity');
 
+const minScore = -1;
 const maxScore = 1634443;
 const ZOOM_LEVELS = {
     address: 14,
@@ -16,19 +17,16 @@ function compareScoreDist(a, b) {
     return b.properties['carmen:scoredist'] - a.properties['carmen:scoredist'];
 }
 
-function calculteScoreDist(input) {
+function calculateScoreDist(input) {
     for (let k = 0; k < input.length; k++) {
         const feat = input[k];
-        if (feat.properties['carmen:score'] >= 0) {
-            feat.properties['carmen:scoredist'] = parseFloat(proximity.scoredist(
-                feat.properties['carmen:score'],
-                maxScore,
-                feat.properties['carmen:distance'],
-                feat.properties['carmen:zoom']
-            ).toFixed(6));
-        } else {
-            feat.properties['carmen:scoredist'] = feat.properties['carmen:score'];
-        }
+        feat.properties['carmen:scoredist'] = parseFloat(proximity.scoredist(
+            feat.properties['carmen:score'],
+            minScore,
+            maxScore,
+            feat.properties['carmen:distance'],
+            feat.properties['carmen:zoom']
+        ).toFixed(6));
     }
 }
 
@@ -44,13 +42,13 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'New York Frankfurter Co.', 'carmen:distance': 0.4914344651849769, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.99977 } },
-            { properties: { 'carmen:text': 'New Yorker Buffalo Wings', 'carmen:distance': 0.6450163846417221, 'carmen:score': 3, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.999689 } },
-            { properties: { 'carmen:text': 'New York,NY', 'carmen:distance': 2426.866703400975, 'carmen:score': 79161, 'carmen:zoom': ZOOM_LEVELS.region, 'carmen:scoredist': 3.064512 } },
-            { properties: { 'carmen:text': 'New York,NY,NYC,New York City', 'carmen:distance': 2567.3550038898834, 'carmen:score': 31104, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.190303 } }
+            { properties: { 'carmen:text': 'New York Frankfurter Co.', 'carmen:distance': 0.4914344651849769, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.999837 } },
+            { properties: { 'carmen:text': 'New Yorker Buffalo Wings', 'carmen:distance': 0.6450163846417221, 'carmen:score': 3, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.999757 } },
+            { properties: { 'carmen:text': 'New York,NY', 'carmen:distance': 2426.866703400975, 'carmen:score': 79161, 'carmen:zoom': ZOOM_LEVELS.region, 'carmen:scoredist': 3.064524 } },
+            { properties: { 'carmen:text': 'New York,NY,NYC,New York City', 'carmen:distance': 2567.3550038898834, 'carmen:score': 31104, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.190309 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -63,11 +61,11 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'Chicago Title', 'carmen:distance': 0.14084037845690478, 'carmen:score': 2, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 11.00011 } },
-            { properties: { 'carmen:text': 'Chicago', 'carmen:distance': 1855.8900334142313, 'carmen:score': 16988, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.104021 } }
+            { properties: { 'carmen:text': 'Chicago Title', 'carmen:distance': 0.14084037845690478, 'carmen:score': 2, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 11.000177 } },
+            { properties: { 'carmen:text': 'Chicago', 'carmen:distance': 1855.8900334142313, 'carmen:score': 16988, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.104027 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -82,13 +80,13 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'San Francisco', 'carmen:distance': 74.24466022598429, 'carmen:score': 8015, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.34334 } },
-            { properties: { 'carmen:text': 'Santa Cruz', 'carmen:distance': 133.8263938095184, 'carmen:score': 587, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 10.442749 } },
-            { properties: { 'carmen:text': 'São Paulo', 'carmen:distance': 6547.831697209755, 'carmen:score': 36433, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.222908 } },
-            { properties: { 'carmen:text': 'Santiago Metropolitan,METROPOLITANA,Región Metropolitana de Santiago', 'carmen:distance': 6023.053777668511, 'carmen:score': 26709, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.163413 } }
+            { properties: { 'carmen:text': 'San Francisco', 'carmen:distance': 74.24466022598429, 'carmen:score': 8015, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.343406 } },
+            { properties: { 'carmen:text': 'Santa Cruz', 'carmen:distance': 133.8263938095184, 'carmen:score': 587, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 10.442813 } },
+            { properties: { 'carmen:text': 'São Paulo', 'carmen:distance': 6547.831697209755, 'carmen:score': 36433, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.222914 } },
+            { properties: { 'carmen:text': 'Santiago Metropolitan,METROPOLITANA,Región Metropolitana de Santiago', 'carmen:distance': 6023.053777668511, 'carmen:score': 26709, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.163419 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -101,11 +99,11 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'Santa Cruz', 'carmen:distance': 133.8263938095184, 'carmen:score': 587, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 10.442749 } },
-            { properties: { 'carmen:text': 'Santa Cruz de Tenerife', 'carmen:distance': 5811.283048403849, 'carmen:score': 3456, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.021145 } }
+            { properties: { 'carmen:text': 'Santa Cruz', 'carmen:distance': 133.8263938095184, 'carmen:score': 587, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 10.442813 } },
+            { properties: { 'carmen:text': 'Santa Cruz de Tenerife', 'carmen:distance': 5811.283048403849, 'carmen:score': 3456, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.021151 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -118,11 +116,11 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'Washington,DC', 'carmen:distance': 34.81595024835296, 'carmen:score': 7400, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.454749 } },
-            { properties: { 'carmen:text': 'Washington,WA', 'carmen:distance': 2256.6130314083157, 'carmen:score': 33373, 'carmen:zoom': ZOOM_LEVELS.region, 'carmen:scoredist': 2.940293 } }
+            { properties: { 'carmen:text': 'Washington,DC', 'carmen:distance': 34.81595024835296, 'carmen:score': 7400, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.454816 } },
+            { properties: { 'carmen:text': 'Washington,WA', 'carmen:distance': 2256.6130314083157, 'carmen:score': 33373, 'carmen:zoom': ZOOM_LEVELS.region, 'carmen:scoredist': 2.940307 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -137,13 +135,13 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'Gilmour Ave, Runnymede, Toronto, M6P 3B5, Ontario, Canada, CA', 'carmen:distance': 36.12228253928214, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 9.514727 } },
-            { properties: { 'carmen:text': 'Gilmour Ave, Hillendale, Kingston, K7M 2Y8, Ontario, Canada, CA', 'carmen:distance': 188.29482550861198, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.126642 } },
-            { properties: { 'carmen:text': 'Gilmour Ave, Somerset, 15501, Pennsylvania, United States', 'carmen:distance': 246.29759329605977, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.00567 } },
-            { properties: { 'carmen:text': 'Gilmour Avenue, West Dunbartonshire, G81 6AN, West Dunbartonshire, United Kingdom', 'carmen:distance': 3312.294287119006, 'carmen:score': 3, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.000018 } }
+            { properties: { 'carmen:text': 'Gilmour Ave, Runnymede, Toronto, M6P 3B5, Ontario, Canada, CA', 'carmen:distance': 36.12228253928214, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 9.514785 } },
+            { properties: { 'carmen:text': 'Gilmour Ave, Hillendale, Kingston, K7M 2Y8, Ontario, Canada, CA', 'carmen:distance': 188.29482550861198, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.126649 } },
+            { properties: { 'carmen:text': 'Gilmour Ave, Somerset, 15501, Pennsylvania, United States', 'carmen:distance': 246.29759329605977, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.005676 } },
+            { properties: { 'carmen:text': 'Gilmour Avenue, West Dunbartonshire, G81 6AN, West Dunbartonshire, United Kingdom', 'carmen:distance': 3312.294287119006, 'carmen:score': 3, 'carmen:zoom': ZOOM_LEVELS.address, 'carmen:scoredist': 1.000024 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -157,12 +155,12 @@ test('scoredist', (t) => {
         ];
 
         const expected = [
-            { properties: { 'carmen:text': 'Cambridge, N1R 6A9, Ontario, Canada, CA', 'carmen:distance': 10.73122383596493, 'carmen:score': 294, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.015838 } },
-            { properties: { 'carmen:text': 'Cambridge, 02139, Massachusetts, United States', 'carmen:distance': 464.50390088754625, 'carmen:score': 986, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 5.812925 } },
-            { properties: { 'carmen:text': 'Cambridgeshire, United Kingdom', 'carmen:distance': 3566.2969841802374, 'carmen:score': 2721, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.016648 } }
+            { properties: { 'carmen:text': 'Cambridge, N1R 6A9, Ontario, Canada, CA', 'carmen:distance': 10.73122383596493, 'carmen:score': 294, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 11.015906 } },
+            { properties: { 'carmen:text': 'Cambridge, 02139, Massachusetts, United States', 'carmen:distance': 464.50390088754625, 'carmen:score': 986, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 5.812961 } },
+            { properties: { 'carmen:text': 'Cambridgeshire, United Kingdom', 'carmen:distance': 3566.2969841802374, 'carmen:score': 2721, 'carmen:zoom': ZOOM_LEVELS.place, 'carmen:scoredist': 1.016654 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -176,10 +174,10 @@ test('scoredist', (t) => {
 
         const expected = [
             { properties: { 'carmen:text': 'United States of America, United States, America, USA, US', 'carmen:distance': 1117.3906777683906, 'carmen:score': 1634443, 'carmen:zoom': ZOOM_LEVELS.country, 'carmen:scoredist': 79.416753 } },
-            { properties: { 'carmen:text': 'United States Department of Treasury Annex', 'carmen:distance': 0.11774815645353183, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 10.999983 } }
+            { properties: { 'carmen:text': 'United States Department of Treasury Annex', 'carmen:distance': 0.11774815645353183, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:scoredist': 11.00005 } }
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         t.deepEqual(input.sort(compareScoreDist), expected);
         t.end();
     });
@@ -187,11 +185,11 @@ test('scoredist', (t) => {
     t.test('missi near mission neighborhood san francisco', (t) => {
         // --query="missi" --proximity="-122.4213562,37.75234222"
         const input = [
-            { id: 20, properties: { 'carmen:text': 'Mission District', 'carmen:distance': 0.641155642372423, 'carmen:score': -1, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
-            { id: 14, properties: { 'carmen:text': 'Mission Terrace', 'carmen:distance': 2.0543295828567985, 'carmen:score': 50, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 13, properties: { 'carmen:text': 'Mission District', 'carmen:distance': 0.641155642372423, 'carmen:score': -1, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 16, properties: { 'carmen:text': 'Mission Terrace', 'carmen:distance': 2.0543295828567985, 'carmen:score': 50, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
             { id: 1, properties: { 'carmen:text': 'Mission', 'carmen:distance': 0.5365405586195869, 'carmen:score': 609, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
-            { id: 15, properties: { 'carmen:text': 'Mission Bay', 'carmen:distance': 2.083206525530076, 'carmen:score': 46, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
-            { id: 19, properties: { 'carmen:text': 'Mission Dolores', 'carmen:distance': 0.8734705397622807, 'carmen:score': -1, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 17, properties: { 'carmen:text': 'Mission Bay', 'carmen:distance': 2.083206525530076, 'carmen:score': 46, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 15, properties: { 'carmen:text': 'Mission Dolores', 'carmen:distance': 0.8734705397622807, 'carmen:score': -1, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
             { id: 5, properties: { 'carmen:text': 'Mission Branch Library', 'carmen:distance': 0.09171422623336412, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 9, properties: { 'carmen:text': 'Mission Tires & Service Center', 'carmen:distance': 0.41252770420569307, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 11, properties: { 'carmen:text': 'Mission Dental Care', 'carmen:distance': 0.47809299593103194, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
@@ -202,14 +200,14 @@ test('scoredist', (t) => {
             { id: 4, properties: { 'carmen:text': 'Mission Cultural Center for Latino Arts,college, university', 'carmen:distance': 0.18621060494099984, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 7, properties: { 'carmen:text': 'Mission Critter', 'carmen:distance': 0.24892887064676822, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 6, properties: { 'carmen:text': 'Mission Wishing Tree', 'carmen:distance': 0.10633212084221495, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
-            { id: 18, properties: { 'carmen:text': 'Mississippi', 'carmen:distance': 1873.3273481255542, 'carmen:score': 17955, 'carmen:zoom': ZOOM_LEVELS.region } },
-            { id: 16, properties: { 'carmen:text': 'Mission Bay Mobile Home Park', 'carmen:distance': 15.112097493445267, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
-            { id: 17, properties: { 'carmen:text': 'Mission-Foothill', 'carmen:distance': 19.97574371302543, 'carmen:score': 44, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
-            { id: 13, properties: { 'carmen:text': 'Mission Workshop,bicycle, bike, cycle', 'carmen:distance': 0.821663496329208, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi } },
+            { id: 20, properties: { 'carmen:text': 'Mississippi', 'carmen:distance': 1873.3273481255542, 'carmen:score': 17955, 'carmen:zoom': ZOOM_LEVELS.region } },
+            { id: 18, properties: { 'carmen:text': 'Mission Bay Mobile Home Park', 'carmen:distance': 15.112097493445267, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 19, properties: { 'carmen:text': 'Mission-Foothill', 'carmen:distance': 19.97574371302543, 'carmen:score': 44, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
+            { id: 14, properties: { 'carmen:text': 'Mission Workshop,bicycle, bike, cycle', 'carmen:distance': 0.821663496329208, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 12, properties: { 'carmen:text': 'Mission Pet Hospital', 'carmen:distance': 0.6281933184839765, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
         ];
 
-        calculteScoreDist(input);
+        calculateScoreDist(input);
         input.sort(compareScoreDist);
         for (let i = 0; i < input.length; i++) {
             const feat = input[i];
@@ -221,10 +219,11 @@ test('scoredist', (t) => {
 });
 
 test('scoreWeight', (t) => {
+    const minScore = 0;
     const maxScore = 1000;
-    t.equal(proximity.scoreWeight(0, maxScore), 1, 'score 0 => scoreWeight 1');
-    t.equal(proximity.scoreWeight(maxScore * 0.5, maxScore), 6, ' score 1/2 of maxScore => scoreWeight 6');
-    t.equal(proximity.scoreWeight(maxScore, maxScore), 11, 'score maxScore => scoreWeight 11');
+    t.equal(proximity.scoreWeight(0, minScore, maxScore), 1, 'score minScore => scoreWeight 1');
+    t.equal(proximity.scoreWeight((maxScore - minScore) * 0.5, minScore, maxScore), 6, ' score of midpoint => scoreWeight 6');
+    t.equal(proximity.scoreWeight(maxScore, minScore, maxScore), 11, 'score maxScore => scoreWeight 11');
     t.end();
 });
 

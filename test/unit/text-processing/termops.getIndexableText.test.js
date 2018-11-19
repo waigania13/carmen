@@ -119,11 +119,11 @@ test('termops.getIndexableText', (t) => {
         }
     };
     texts = [
+        { languages: ['default'], tokens: ['main', 'street'] },
         { languages: ['default'], tokens: ['2##', 'main', 'street'] },
         { languages: ['default'], tokens: ['1##', 'main', 'street'] },
         { languages: ['default'], tokens: ['##', 'main', 'street'] },
-        { languages: ['default'], tokens: ['#', 'main', 'street'] },
-        { languages: ['default'], tokens: ['main', 'street'] }
+        { languages: ['default'], tokens: ['#', 'main', 'street'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
@@ -135,16 +135,16 @@ test('termops.getIndexableText', (t) => {
         }
     };
     texts = [
+        { tokens: ['main', 'st'],            languages: ['default'] },
         { tokens: ['2##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['1##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['##', 'main', 'st'],      languages: ['default'] },
         { tokens: ['#', 'main', 'st'],       languages: ['default'] },
-        { tokens: ['main', 'st'],            languages: ['default'] },
+        { tokens: ['main', 'street'],        languages: ['default'] },
         { tokens: ['2##', 'main', 'street'], languages: ['default'] },
         { tokens: ['1##', 'main', 'street'], languages: ['default'] },
         { tokens: ['##', 'main', 'street'],  languages: ['default'] },
-        { tokens: ['#', 'main', 'street'],   languages: ['default'] },
-        { tokens: ['main', 'street'],        languages: ['default'] }
+        { tokens: ['#', 'main', 'street'],   languages: ['default'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
 
@@ -235,6 +235,41 @@ test('termops.getIndexableText', (t) => {
         { languages: ['sv', 'all'], tokens: ['usa'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'universal text');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York' } };
+    texts = [
+        { languages: ['default', 'en'], tokens: ['new', 'york'] },
+        { languages: ['es'], tokens: ['nueva', 'york'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate from default works');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'New York,NYC,bakery', 'carmen:text_es': 'Nueva York' } };
+    texts = [
+        { tokens: ['new', 'york'], languages: ['default', 'en'] },
+        { tokens: ['nyc'], languages: ['default', 'en'] },
+        { tokens: ['bakery'], languages: ['all'] },
+        { tokens: ['nueva', 'york'], languages: ['es'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'auto-universalize categories works');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'bakery,New York' } };
+    texts = [
+        { tokens: ['bakery'], languages: ['default', 'en'] },
+        { tokens: ['new', 'york'], languages: ['default', 'en'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'display words are not universalized');
+
+    replacer = token.createReplacer({});
+    doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'text_en': 'The Big Apple' } };
+    texts = [
+        { languages: ['default'], tokens: ['new', 'york'] },
+        { languages: ['es'], tokens: ['nueva', 'york'] },
+        { languages: ['en'], tokens: ['the', 'big', 'apple'] },
+    ];
+    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate doesn\'t overwrite supplied translation');
 
     t.end();
 });
