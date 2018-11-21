@@ -137,7 +137,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     tape('Search', (assert) => {
         c.geocode('Quincy MA 02169', {}, (err, res) => {
-            console.log(res);
             assert.ifError(err);
             assert.deepEqual(res.features[0].place_name, 'Quincy, Massachusetts 02169', 'should match postcode/place/state first');
             assert.end();
