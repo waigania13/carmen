@@ -158,7 +158,7 @@ function Geocoder(indexes, options) {
                 }
             });
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
-            source.geocoder_backy_exempt = info.geocoder_backy_exempt || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
+            source.geocoder_ignore_order = info.geocoder_ignore_order || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
             source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens || {};
             source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
