@@ -98,6 +98,21 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         }, assert.end);
     });
 
+    tape('index postcode', (assert) => {
+        // 16424 Linesville PA
+        queueFeature(conf.postcode, {
+            id:2,
+            properties: {
+                'carmen:text': '16424',
+                'carmen:center': [0,0]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        }, assert.end);
+    });
+
     tape('index address', (assert) => {
         // 2169 Quincy Lane Linesville PA
         queueFeature(conf.address, {
@@ -126,6 +141,24 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             assert.ifError(err);
             assert.deepEqual(res.features[0].place_name, 'Quincy, Massachusetts 02169', 'should match postcode/place/state first');
             assert.end();
+        });
+    });
+
+    tape('Search', (assert) => {
+        c.geocode('2169 Quincy Lane, 16424 Linesville, Pennsylvania', {}, (err, res) => {
+            assert.ifError(err);
+            c.geocode('2169 Quincy Lane, Linesville, Pennsylvania 16424', {}, (err, res_alt_order) => {
+                assert.ifError(err);
+                assert.deepEqual(res.features[0].place_name,
+                    '2169 Quincy Lane, Linesville, Pennsylvania 16424',
+                    'should match address first');
+                assert.deepEqual(res_alt_order.features[0].place_name,
+                    '2169 Quincy Lane, Linesville, Pennsylvania 16424',
+                    'should match address first');
+                assert.deepEqual(res.features[0].relevance, res_alt_order.features[0].relevance,
+                    'full address searches should not be backy-penalized regardless of postcode position');
+                assert.end();
+            });
         });
     });
 
