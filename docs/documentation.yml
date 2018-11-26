@@ -15,14 +15,14 @@ toc:
           - phrasematch
           - spatialmatch
           - verifymatch
+          - verifyContext
+          - context
     - name: Indexing
       description: |
           Functions dedicated toward building and manipulating indexes.
       children:
           - index
           - analyze
-          - merge
-          - multimerge
     - name: Text Processing
       description: |
           The various utility functions for preparing text while indexing and querying.
