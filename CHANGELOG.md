@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.7.0
+- Added support for the TileJSON property `geocoder_ignore_order`. This can be used to exempt specific indexes from incurring the "backy" penalty in verifymatch, and is useful for address components whose typical written position is contra the hierarchical ordering (eg. US postcodes are typically written at the end of an address, despite not being the highest level of the US address hierarchy.
+- Removed query-time de-duplication based on street address & distance.
+
 ## 25.6.0
 
 - Sort final results based on a composite scoredist and relevance score with penalties for features with `carmen:address` of `null`, omitted geometries, or `carmen:score`s of `-1` (ghost features)
