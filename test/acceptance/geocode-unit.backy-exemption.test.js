@@ -155,8 +155,39 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
                     '2169 Quincy Lane, Linesville, Pennsylvania 16424',
                     'should match address first');
                 assert.deepEqual(res.features[0].relevance, res_alt_order.features[0].relevance,
-                    'full address searches should not be backy-penalized regardless of postcode position');
+                    'full address searches should not be backy-penalized if exempt layer is out of order');
                 assert.end();
+            });
+        });
+    });
+
+    tape('Search', (assert) => {
+        // address, place, region, postcode
+        c.geocode('2169 Quincy Lane, Linesville, Pennsylvania 16424', {}, (err, res) => {
+            assert.ifError(err);
+
+            // address, region, place, postcode
+            c.geocode('2169 Quincy Lane, Pennsylvania Linesville 16424', {}, (err, res_alt_order) => {
+                assert.ifError(err);
+                assert.deepEqual(res.features[0].place_name,
+                    '2169 Quincy Lane, Linesville, Pennsylvania 16424',
+                    'should match address first');
+                assert.deepEqual(res_alt_order.features[0].place_name,
+                    '2169 Quincy Lane, Linesville, Pennsylvania 16424',
+                    'should match address first');
+                assert.ok(res.features[0].relevance > res_alt_order.features[0].relevance,
+                    'full address searches should still be backy-penalized if non-exempt layers are out of order');
+
+                // address, postcode, region, place
+                c.geocode('2169 Quincy Lane, 16424 Pennsylvania Linesville', {}, (err, res_alt_alt_order) => {
+                    assert.ifError(err);
+                    assert.deepEqual(res_alt_alt_order.features[0].place_name,
+                        '2169 Quincy Lane, Linesville, Pennsylvania 16424',
+                        'should match address first');
+                    assert.deepEqual(res_alt_order.features[0].relevance, res_alt_alt_order.features[0].relevance,
+                        'full address searches should still be backy-penalized if non-exempt layers are out of order');
+                    assert.end();
+                });
             });
         });
     });
