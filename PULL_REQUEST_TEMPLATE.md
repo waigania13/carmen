@@ -11,4 +11,4 @@
 <!-- if you're still working on it -->
 
 
-cc @mapbox/geocoding-gang
+cc @mapbox/search
