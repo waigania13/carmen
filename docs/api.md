@@ -2,33 +2,47 @@
 
 ### Table of Contents
 
--   [Main](#main)
-    -   [Geocoder](#geocoder)
-        -   [Geocoder#geocode](#geocodergeocode)
-        -   [Geocoder#index](#geocoderindex)
-        -   [Geocoder#merge](#geocodermerge)
-        -   [Geocoder#multimerge](#geocodermultimerge)
-    -   [CarmenSource](#carmensource)
-    -   [MemSource](#memsource)
-    -   [MemSource](#memsource-1)
-    -   [PatternReplaceMap](#patternreplacemap)
--   [Geocoding](#geocoding)
-    -   [geocode](#geocode)
-    -   [phrasematch](#phrasematch)
-    -   [spatialmatch](#spatialmatch)
-    -   [verifymatch](#verifymatch)
--   [Indexing](#indexing)
-    -   [index](#index)
-    -   [analyze](#analyze)
-    -   [merge](#merge)
-        -   [Document Merge](#document-merge)
-        -   [RocksDB grid and freq caches](#rocksdb-grid-and-freq-caches)
-        -   [DAWG merge](#dawg-merge)
-    -   [multimerge](#multimerge)
--   [Text Processing](#text-processing)
-    -   [ReplaceRule](#replacerule)
-    -   [createGlobalReplacer](#createglobalreplacer)
-    -   [createReplacer](#createreplacer)
+-   [Main][1]
+    -   [Geocoder][2]
+        -   [Parameters][3]
+        -   [Geocoder#geocode][4]
+            -   [Parameters][5]
+        -   [Geocoder#index][6]
+            -   [Parameters][7]
+    -   [CarmenSource][8]
+        -   [Properties][9]
+    -   [MemSource][10]
+        -   [Parameters][11]
+    -   [MemSource][12]
+        -   [Parameters][13]
+    -   [PatternReplaceMap][14]
+-   [Geocoding][15]
+    -   [geocode][16]
+        -   [Parameters][17]
+    -   [phrasematch][18]
+        -   [Parameters][19]
+    -   [spatialmatch][20]
+        -   [Parameters][21]
+    -   [verifymatch][22]
+        -   [Parameters][23]
+    -   [verifyContext][24]
+        -   [squishy][25]
+        -   [backy][26]
+        -   [Parameters][27]
+    -   [context][28]
+        -   [Parameters][29]
+-   [Indexing][30]
+    -   [index][31]
+        -   [Parameters][32]
+    -   [analyze][33]
+        -   [Parameters][34]
+-   [Text Processing][35]
+    -   [ReplaceRule][36]
+        -   [Properties][37]
+    -   [createGlobalReplacer][38]
+        -   [Parameters][39]
+    -   [createReplacer][40]
+        -   [Parameters][41]
 
 ## Main
 
@@ -37,133 +51,102 @@ Central API elements, used in geocoding and indexing
 
 ### Geocoder
 
-[index.js:55-339](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L55-L339 "Source code on GitHub")
+[index.js:55-375][42]
 
 Geocoder is an interface used to submit a single query to
 multiple indexes, returning a single set of ranked results.
 
-**Parameters**
+#### Parameters
 
--   `indexes` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [CarmenSource](#carmensource)>** A one-to-one mapping from index layer name to a [CarmenSource](#carmensource).
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
-    -   `options.tokens` **[PatternReplaceMap](#patternreplacemap)** A [PatternReplaceMap](#patternreplacemap) used to perform custom string replacement at index and query time.
-    -   `options.geocoder_inverse_tokens` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), ([string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function))>** for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [Text Processing](#text-processsing) for details.
+-   `indexes` **[Object][43]&lt;[string][44], [CarmenSource][45]>** A one-to-one mapping from index layer name to a [CarmenSource][8].
+-   `options` **[Object][43]** options
+    -   `options.tokens` **[PatternReplaceMap][46]** A [PatternReplaceMap][14] used to perform custom string replacement at index and query time.
+    -   `options.geocoder_inverse_tokens` **[Object][43]&lt;[string][44], ([string][44] \| [Function][47])>** for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see [Text Processing][48] for details.
 
 #### Geocoder#geocode
 
-[index.js:426-432](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L426-L432 "Source code on GitHub")
+[index.js:461-467][49]
 
--   **See: [gecode](#geocode) for more details, including
+-   **See: [gecode][16] for more details, including
     `options` properties.**
 
 Main entry point for geocoding API. Returns results across all indexes for
 a given query.
 
-**Parameters**
+##### Parameters
 
--   `query` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** a query string, eg "Chester, NJ"
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function, passed on to [geocode](#geocode)
+-   `query` **[string][44]** a query string, eg "Chester, NJ"
+-   `options` **[Object][43]** options
+-   `callback` **[function][47]** a callback function, passed on to [geocode][16]
 
 #### Geocoder#index
 
-[index.js:451-457](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L451-L457 "Source code on GitHub")
+[index.js:486-492][50]
 
--   **See: [index](#index) for more details, including `options` properties.**
+-   **See: [index][31] for more details, including `options` properties.**
 
 Main entry point for indexing. Index a stream of GeoJSON docs.
 
-**Parameters**
+##### Parameters
 
--   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a readable stream of GeoJSON features
--   `to` **[CarmenSource](#carmensource)** the interface to the index's destination
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
-    -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
-    -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
-    -   `options.tokens` **[PatternReplaceMap](#patternreplacemap)** a pattern-based string replacement specification
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function, passed on to [inde](#index)
-
-#### Geocoder#merge
-
-[index.js:473-479](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L473-L479 "Source code on GitHub")
-
--   **See: [merge](#merge) for more details, including `options` properties.**
-
-Merge two CarmenSources and output to a third.
-
-**Parameters**
-
--   `from1` **[CarmenSource](#carmensource)** a source index to be merged
--   `from2` **[CarmenSource](#carmensource)** another source to be merged
--   `to` **[CarmenSource](#carmensource)** the destination of the merged sources
--   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
-
-#### Geocoder#multimerge
-
-[index.js:494-500](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L494-L500 "Source code on GitHub")
-
--   **See: [multimerge](#multimerge) for more details, including `options` properties.**
-
-Merge more than two CarmenSources. Only supports MBTile sources.
-
-**Parameters**
-
--   `fromFiles` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** array of paths to input mbtiles files
--   `toFile` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** path to output of merge
--   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+-   `from` **[stream.Readable][51]** a readable stream of GeoJSON features
+-   `to` **[CarmenSource][45]** the interface to the index's destination
+-   `options` **[Object][43]** options
+    -   `options.zoom` **[number][52]** the max zoom level for the index
+    -   `options.output` **[stream.Writable][53]** the output stream for
+    -   `options.tokens` **[PatternReplaceMap][46]** a pattern-based string replacement specification
+-   `callback` **[function][47]** a callback function, passed on to [inde][31]
 
 ### CarmenSource
 
-[index.js:55-339](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/index.js#L55-L339 "Source code on GitHub")
+[index.js:55-375][54]
 
-An interface to the underlying data that a [Geocoder](#geocoder) instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs](https://github.com/mapbox/tilelive/blob/master/API.md) for more info. Currently, carmen supports the following tilelive modules:
+An interface to the underlying data that a [Geocoder][2] instance is indexing and querying. In addition to the properties described below, instances must satisfy interface requirements for `Tilesource` and `Tilesink`. See tilelive [API Docs][55] for more info. Currently, carmen supports the following tilelive modules:
 
--   [tilelive-s3](https://github.com/mapbox/tilelive-s3)
--   [node-mbtiles](https://github.com/mapbox/node-mbtiles)
--   [MemSource](#memsource)
+-   [tilelive-s3][56]
+-   [node-mbtiles][57]
+-   [MemSource][10]
 
-Type: [function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)
+Type: [function][47]
 
-**Properties**
+#### Properties
 
--   `getGeocoderData` **function ([index](#index), shard, callback)** get carmen record at `shard` in `index` and call callback with `(err, buffer)`
--   `putGeocoderData` **function ([index](#index), shard, [buffer](https://nodejs.org/api/buffer.html), callback)** put buffer into a shard with index `index`, and call callback with `(err)`
+-   `getGeocoderData` **function ([index][58], shard, callback)** get carmen record at `shard` in `index` and call callback with `(err, buffer)`
+-   `putGeocoderData` **function ([index][58], shard, [buffer][59], callback)** put buffer into a shard with index `index`, and call callback with `(err)`
 -   `geocoderDataIterator` **function (type)** custom method for iterating over documents in the source.
 -   `getIndexableDocs` **function (pointer, callback)** get documents needed to create a forward geocoding datasource. `pointer` is an optional object that has different behavior depending on the implementation. It is used to indicate the state of the database, similar to a cursor, and can allow pagination, limiting, etc. `callback` is called with `(error, documents, pointer)` in which `documents` is a list of objects.
 
 ### MemSource
 
-[lib/sources/api-mem.js:27-47](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/sources/api-mem.js#L27-L47 "Source code on GitHub")
+[lib/sources/api-mem.js:27-47][60]
 
-An in-memory tilelive source/sink. Used primarily for testing purposes when instantiating a geocoder. Satisfies API constraints documented [here](https://github.com/mapbox/tilelive/blob/master/API.md). If there are three arguments:
+An in-memory tilelive source/sink. Used primarily for testing purposes when instantiating a geocoder. Satisfies API constraints documented [here][55]. If there are three arguments:
 
-**Parameters**
+#### Parameters
 
--   `docs` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** an array of GeoJSON features to be indexed, or an object with index metadata
--   `info` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** an object with index metadata, or a callback function
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+-   `docs` **[Array][61]** an array of GeoJSON features to be indexed, or an object with index metadata
+-   `info` **[object][43]** an object with index metadata, or a callback function
+-   `callback` **[function][47]** a callback function
 
 ### MemSource
 
-[lib/sources/api-mem.js:27-47](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/sources/api-mem.js#L27-L47 "Source code on GitHub")
+[lib/sources/api-mem.js:27-47][60]
 
 (See above). If there are two arguments:
 
-**Parameters**
+#### Parameters
 
--   `docs` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** an object with index metadata (gets re-assigned to `info`)
--   `info` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function (gets re-assigned to `callback`)
--   `callback` **[undefined](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined)** undefined
+-   `docs` **[object][43]** an object with index metadata (gets re-assigned to `info`)
+-   `info` **[function][47]** a callback function (gets re-assigned to `callback`)
+-   `callback` **[undefined][62]** undefined
 
 ### PatternReplaceMap
 
-[lib/text-processing/token.js:260-275](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/text-processing/token.js#L260-L275 "Source code on GitHub")
+[lib/text-processing/token.js:260-275][63]
 
 A mapping from patterns (keys) to replacements (values).
 
--   The patterns are used in [createGlobalReplacer](#createglobalreplacer) to create `XRegExp`s (case-insensitive)
+-   The patterns are used in [createGlobalReplacer][38] to create `XRegExp`s (case-insensitive)
 -   Patterns can match anywhere in a string, regardless of whether the match is a full word, multiple words, or part of a word.
 -   Matching substrings are replaced with the associated replacement
 
@@ -183,7 +166,7 @@ patternReplaceMap = {
 // "p.o. box 985" -> "pob-985"
 ```
 
-Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String), [string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>
+Type: [Object][43]&lt;[string][44], [string][44]>
 
 ## Geocoding
 
@@ -192,71 +175,161 @@ Functions in use when querying indexes. Most commonly used in a production setti
 
 ### geocode
 
-[lib/geocoder/geocode.js:41-161](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/geocoder/geocode.js#L41-L161 "Source code on GitHub")
+[lib/geocoder/geocode.js:42-170][64]
 
 Main interface for querying an index and returning ranked results.
 
-**Parameters**
+#### Parameters
 
--   `geocoder` **[Geocoder](#geocoder)** the geocoder itself
--   `query` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** a query string. If the query appears to be a longitude, latitude pair (eg "-75.1327,40.0115"), it is assumed to be a reverse query.
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
-    -   `options.proximity` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)>?** a `[ lon, lat ]` array to use for biasing search results. Features closer to the proximity value will be given priority over those further from the proximity value.
-    -   `options.types` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>?** an array of string types. Only features matching one of the types specified will be returned.
-    -   `options.language` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>?** One or more [ISO 639-1 codes](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), separated by commas to be displayed. Only the first language code is used when prioritizing forward geocode results to be matched. If `carmen:text_{lc}` and/or `geocoder_format_{lc}` are available on a features, response will be returned in that language and appropriately formatted.
-    -   `options.languageMode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)?** string. If set to `"strict"` the returned features will be filtered to only those with text matching the language specified by the
-    -   `options.bbox` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)>?** a `[ w, s, e, n ]` bbox array to use for limiting search results. Only features inside the provided bbox will be included.
-    -   `options.limit` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** Adjust the maximium number of features returned. (optional, default `5`)
-    -   `options.allow_dupes` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, carmen will allow features with identical place names to be returned. (optional, default `false`)
-    -   `options.debug` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, the carmen debug object will be returned as part of the results and internal carmen properties will be preserved on feature output. (optional, default `false`)
-    -   `options.stats` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, the carmen stats object will be returned as part of the results. (optional, default `false`)
-    -   `options.indexes` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, indexes will be returned as part of the results. (optional, default `false`)
-    -   `options.autocomplete` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, indexes will be returned as part of the results. (optional, default `true`)
-    -   `options.reverseMode` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** Choices are `'distance'`, `'score'`. Affects the way that a result's context array is built (optional, default `'distance'`)
-    -   `options.routing` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** If true, routable_points will be returned as part of the results for features whose sources are flagged as `geocoder_routable` in the tile json. (optional, default `false`)
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+-   `geocoder` **[Geocoder][65]** the geocoder itself
+-   `query` **[string][44]** a query string. If the query appears to be a longitude, latitude pair (eg "-75.1327,40.0115"), it is assumed to be a reverse query.
+-   `options` **[Object][43]** options
+    -   `options.proximity` **[Array][61]&lt;[number][52]>?** a `[ lon, lat ]` array to use for biasing search results. Features closer to the proximity value will be given priority over those further from the proximity value.
+    -   `options.types` **[Array][61]&lt;[string][44]>?** an array of string types. Only features matching one of the types specified will be returned.
+    -   `options.language` **[Array][61]&lt;[string][44]>?** One or more [ISO 639-1 codes][66], separated by commas to be displayed. Only the first language code is used when prioritizing forward geocode results to be matched. If `carmen:text_{lc}` and/or `geocoder_format_{lc}` are available on a features, response will be returned in that language and appropriately formatted.
+    -   `options.languageMode` **[string][44]?** string. If set to `"strict"` the returned features will be filtered to only those with text matching the language specified by the
+    -   `options.bbox` **[Array][61]&lt;[number][52]>?** a `[ w, s, e, n ]` bbox array to use for limiting search results. Only features inside the provided bbox will be included.
+    -   `options.limit` **[number][52]** Adjust the maximium number of features returned. (optional, default `5`)
+    -   `options.allow_dupes` **[boolean][67]** If true, carmen will allow features with identical place names to be returned. (optional, default `false`)
+    -   `options.debug` **[boolean][67]** If true, the carmen debug object will be returned as part of the results and internal carmen properties will be preserved on feature output. (optional, default `false`)
+    -   `options.stats` **[boolean][67]** If true, the carmen stats object will be returned as part of the results. (optional, default `false`)
+    -   `options.indexes` **[boolean][67]** If true, indexes will be returned as part of the results. (optional, default `false`)
+    -   `options.autocomplete` **[boolean][67]** If true, indexes will be returned as part of the results. (optional, default `true`)
+    -   `options.reverseMode` **[string][44]** Choices are `'distance'`, `'score'`. Affects the way that a result's context array is built (optional, default `'distance'`)
+    -   `options.routing` **[boolean][67]** If true, routable_points will be returned as part of the results for features whose sources are flagged as `geocoder_routable` in the tile json. (optional, default `false`)
+-   `callback` **[function][47]** a callback function
 
 ### phrasematch
 
-[lib/geocoder/phrasematch.js:19-121](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/geocoder/phrasematch.js#L19-L121 "Source code on GitHub")
+[lib/geocoder/phrasematch.js:20-196][68]
 
 phrasematch
 
-**Parameters**
+#### Parameters
 
--   `source` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a Geocoder datasource
+-   `source` **[Object][43]** a Geocoder datasource
 -   `query`  
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
--   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** called with `(err, phrasematches, source)`
--   `a` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** list of terms composing the query to Carmen
+-   `options` **[Object][43]** passed through the geocode function in geocode.js
+-   `callback` **[Function][47]** called with `(err, phrasematches, source)`
+-   `a` **[Array][61]** list of terms composing the query to Carmen
 
 ### spatialmatch
 
-[lib/geocoder/spatialmatch.js:27-124](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/geocoder/spatialmatch.js#L27-L124 "Source code on GitHub")
+[lib/geocoder/spatialmatch.js:27-138][69]
 
 spatialmatch determines whether indexes can be spatially stacked and discards indexes that cannot be stacked together
 
-**Parameters**
+#### Parameters
 
--   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
--   `phrasematchResults` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** for subquery permutations generated by ./lib/phrasematch
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed in with the query
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** callback called with indexes that could be spatially stacked
+-   `query` **[Array][61]** a list of terms composing the query to Carmen
+-   `phrasematchResults` **[Array][61]** for subquery permutations generated by ./lib/phrasematch
+-   `options` **[Object][43]** passed in with the query
+-   `callback` **[function][47]** callback called with indexes that could be spatially stacked
+    \*
 
 ### verifymatch
 
-[lib/geocoder/verifymatch.js:31-94](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/geocoder/verifymatch.js#L31-L94 "Source code on GitHub")
+[lib/geocoder/verifymatch.js:30-93][70]
 
 verifymatch - results from spatialmatch are now verified by querying real geometries in vector tiles
 
-**Parameters**
+#### Parameters
 
--   `query` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)** a list of terms composing the query to Carmen
--   `stats` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** ?
--   `geocoder` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** a geocoder datasource
--   `matched` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** resultant indexes that could be spatially stacked
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** passed through the geocode function in geocode.js
--   `callback` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** callback function which is called with the verified indexes in the correct hierarchical order
+-   `query` **[Array][61]** a list of terms composing the query to Carmen
+-   `stats` **[Object][43]** ?
+-   `geocoder` **[Object][43]** a geocoder datasource
+-   `matched` **[Object][43]** resultant indexes that could be spatially stacked
+-   `options` **[Object][43]** passed through the geocode function in geocode.js
+-   `callback` **[Function][47]** callback function which is called with the verified indexes in the correct hierarchical order
+
+### verifyContext
+
+[lib/geocoder/verifymatch.js:396-540][71]
+
+This function adjusts a result context's `relevance` score. There are
+several bits of business logic here that can boost or penalize the original
+`relevance`. The nicknames for these are _squishy_ and _backy_.
+
+#### squishy
+
+The `squishy` logic checks for nested, identically-named features in indexes
+with geocoder_inherit_score enabled. When they are encountered, avoid
+applying the gappy penalty and combine their scores on the smallest feature.
+
+This ensures that a context of "New York, New York, USA" will return the
+place rather than the region when a query is made for "New York USA".  In
+the absence of this check the place would be gappy-penalized and the region
+feature would be returned as the first result.
+
+#### backy
+
+The _backy_ logic checks to see if the matching substrings of the query are
+in a single ordering, going from low-to-high or high-to-low, as specified by
+the geocoder's index hierarchy. It's helpful to walk through this with an
+example. Here's a result context where the target feature is an address
+(this is pseudocode for simplicity's sake).
+
+    [
+      "123 Main St" (address),
+      "02169" (postcode),
+      "Quincy" (city),
+      "Massachusetts" (state),
+      "United States" (country)
+    ]
+
+Here are three different query strings that could return that context, and
+how the backy penalty would apply (or not).
+
+| query string           | direction  | backy penalty? |
+| ---------------------- | ---------- | -------------- |
+| 123 Main St, Quincy MA | ascending  | no             |
+| MA Quincy 123 Main St  | descending | no             |
+| 123 Main St, MA Quincy | ascending  | yes            |
+
+The first two examples would not be penalized, because each one follows a
+licit ordering with respect to the hierarchy of the geocoder. Not so for the
+third query.
+
+-   The first one is `ascending`, going from hierarchically low (street) to hierarchically high (state).
+-   The second one is `descending`, going from high (state) to low (street).
+-   The third one, however, begins by ascending from street to state, but then descends again,
+    going from state to city. Therefore, a penalty is applied.
+
+It's possible for a layer to be exempted from the _backy_ penalty. This
+affordance is built in because, in some places, the hierarchical order does
+not match the conventional way of writing a full address. For instance,
+postcodes in the United States are often written at the end of an address,
+even though they're hierarchically positioned lower than cities or states.
+
+If a CarmenSource index has `geocoder_ignore_order=true`, then the backy
+penalty is witheld for that layer (but could still apply to other layers).
+
+#### Parameters
+
+-   `context` **[Array][61]** created in [loadContexts][72] the target feature to be returned is context[0] and context[1:] are the features in which the target is contained, ordered by hierarchy of their layers
+-   `peers` **[Object][43]** A mapping from `carmen:tmpid`s to features, used when applying the "squishy" logic for nested, identically-named features.
+-   `strict` **[Object][43]** A mapping from `carmen:tmpid`s to covers matched by some substring of the query
+-   `loose` **[Object][43]** A mapping from `carmen:tmpid`s to the cover with that tmpid whose `relev` value is greatest (across all result contexts).
+-   `indexes` **[Object][43]** the geocoder's indexes
+-   `options` **[Object][43]** optional arguments
+-   `geocoder` **[Geocoder][65]** the carmen [Geocoder][2] instance
+
+Returns **[number][52]** the adjusted relevance of the supplied result
+
+### context
+
+[lib/geocoder/context.js:28-87][73]
+
+Returns a hierarchy of features ("context") for a given lon, lat pair.
+This is used for reverse geocoding: given a point, it returns possible
+regions that contain it.
+
+#### Parameters
+
+-   `geocoder` **[Object][43]** : geocoder instance
+-   `position` **[Array][61]** : [lon, lat]
+-   `options` **[Object][43]** : optional options object
+-   `callback` **[Function][47]** 
 
 ## Indexing
 
@@ -265,24 +338,24 @@ Functions dedicated toward building and manipulating indexes.
 
 ### index
 
-[lib/indexer/index.js:30-97](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/indexer/index.js#L30-L97 "Source code on GitHub")
+[lib/indexer/index.js:30-97][74]
 
 The main interface for building an index
 
-**Parameters**
+#### Parameters
 
--   `geocoder` **[Geocoder](#geocoder)** a [Geocoder](#geocoder) instance
--   `from` **[stream.Readable](https://nodejs.org/api/stream.html#stream_class_stream_readable)** a stream of geojson features
--   `to` **[CarmenSource](#carmensource)** the interface to the index's destinaton
--   `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
-    -   `options.zoom` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** the max zoom level for the index
-    -   `options.output` **[stream.Writable](https://nodejs.org/api/stream.html#stream_class_stream_writable)** the output stream for
-    -   `options.tokens` **[PatternReplaceMap](#patternreplacemap)** a pattern-based string replacement specification
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** A callback function
+-   `geocoder` **[Geocoder][65]** a [Geocoder][2] instance
+-   `from` **[stream.Readable][51]** a stream of geojson features
+-   `to` **[CarmenSource][45]** the interface to the index's destinaton
+-   `options` **[Object][43]** options
+    -   `options.zoom` **[number][52]** the max zoom level for the index
+    -   `options.output` **[stream.Writable][53]** the output stream for
+    -   `options.tokens` **[PatternReplaceMap][46]** a pattern-based string replacement specification
+-   `callback` **[function][47]** A callback function
 
 ### analyze
 
-[lib/util/analyze.js:23-55](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/util/analyze.js#L23-L55 "Source code on GitHub")
+[lib/util/analyze.js:23-55][75]
 
 Generate summary statistics about a source. Used by `scripts/carmen-analyze.js`.
 
@@ -294,65 +367,12 @@ Summary stats include:
 | `byScore` | Object&lt;string, number> | grid counts, grouped by grid score value (from `"1"` to `"6"`)                                                                              |
 | `byRelev` | Object&lt;string, number> | grid counts, grouped by grid revelance. group labels reflect the relevance value, rounded to the nearest tenth ("0.4", "0.6", "0.8", "1.0") |
 
-**Parameters**
+#### Parameters
 
--   `source` **[CarmenSource](#carmensource)** a source whose indexing is complete
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+-   `source` **[CarmenSource][45]** a source whose indexing is complete
+-   `callback` **[function][47]** a callback function
 
-Returns **function ([object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object))** output of `callback(stats)`
-
-### merge
-
-[lib/indexer/merge.js:223-445](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/indexer/merge.js#L223-L445 "Source code on GitHub")
-
-Merge two CarmenSources. The merge happens in three steps
-
-#### Document Merge
-
-The `Feature` documents from each source are joined and merged where
-necessary. The join is a [full outer join](https://www.w3schools.com/sql/sql_join_full.asp),
-meaning that all elements of the two sources are returned. A stream of
-records is returned like:
-
-    { shard: <shard_value>, data1: <from1_document>, data2: <from2_docment> }
-
-The full outer join means:
-
-| if a shard value...              | `data1`     | `data2`     |
-| -------------------------------- | ----------- | ----------- |
-| ...exists in `from1` and `from2` | `Feature`   | `Feature`   |
-| ...only exists in `from1`        | `Feature`   | `undefined` |
-| ...only exists in `from2`        | `undefined` | `Feature`   |
-
-#### RocksDB grid and freq caches
-
-see [RocksDBCache#merge](https://github.com/mapbox/carmen-cache/blob/master/API.md#rocksdbcache).
-
-#### DAWG merge
-
-TODO: document how dawg merge works
-
-**Parameters**
-
--   `geocoder` **[Geocoder](#geocoder)** an instance of carmen Geocoder
--   `from1` **[CarmenSource](#carmensource)** a source index to be merged
--   `from2` **[CarmenSource](#carmensource)** another source to be merged
--   `to` **[CarmenSource](#carmensource)** the destination of the merged sources
--   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
-
-### multimerge
-
-[lib/indexer/merge.js:502-586](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/indexer/merge.js#L502-L586 "Source code on GitHub")
-
-Merge more than two CarmenSources. Used by `scripts/carmen-merge.js`. Only supports MBTile sources.
-
-**Parameters**
-
--   `fromFiles` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)>** array of paths to input mbtiles files
--   `toFile` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** path to output of merge
--   `options` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options
--   `callback` **[function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** a callback function
+Returns **function ([object][43])** output of `callback(stats)`
 
 ## Text Processing
 
@@ -361,40 +381,200 @@ The various utility functions for preparing text while indexing and querying.
 
 ### ReplaceRule
 
-[lib/text-processing/token.js:31-137](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/text-processing/token.js#L31-L137 "Source code on GitHub")
+[lib/text-processing/token.js:31-137][76]
 
 An individual pattern-based replacement configuration.
 
-Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)
+Type: [Object][43]
 
-**Properties**
+#### Properties
 
--   `named` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** does the pattern use a named capturing group?
--   `from` **[RegExp](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp)** pattern to match in a string
--   `to` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** replacement string (possibly including group references)
+-   `named` **[boolean][67]** does the pattern use a named capturing group?
+-   `from` **[RegExp][77]** pattern to match in a string
+-   `to` **[string][44]** replacement string (possibly including group references)
 
 ### createGlobalReplacer
 
-[lib/text-processing/token.js:260-275](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/text-processing/token.js#L260-L275 "Source code on GitHub")
+[lib/text-processing/token.js:260-275][78]
 
-Create an array of [ReplaceRule](#replacerule)s from a [PatternReplaceMap](#patternreplacemap).
+Create an array of [ReplaceRule][36]s from a [PatternReplaceMap][14].
 
-**Parameters**
+#### Parameters
 
--   `tokens` **[PatternReplaceMap](#patternreplacemap)** a pattern-based string replacement specification
+-   `tokens` **[PatternReplaceMap][46]** a pattern-based string replacement specification
 
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[ReplaceRule](#replacerule)>** an array of rules for replacing substrings
+Returns **[Array][61]&lt;[ReplaceRule][79]>** an array of rules for replacing substrings
 
 ### createReplacer
 
-[lib/text-processing/token.js:31-137](https://github.com/mapbox/carmen/blob/3f3492d1b5bec91dd971fbe132ce847502eb99ed/lib/text-processing/token.js#L31-L137 "Source code on GitHub")
+[lib/text-processing/token.js:31-137][80]
 
 Create a per-token replacer
 
-**Parameters**
+#### Parameters
 
--   `tokens` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** tokens
--   `inverseOpts` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options for inverting token replacements
-    -   `inverseOpts.includeUnambiguous` **[object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** options for
+-   `tokens` **[object][43]** tokens
+-   `inverseOpts` **[object][43]** options for inverting token replacements
+    -   `inverseOpts.includeUnambiguous` **[object][43]** options for
 
-Returns **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[ReplaceRule](#replacerule)>** an array of replace rules
+Returns **[Array][61]&lt;[ReplaceRule][79]>** an array of replace rules
+
+[1]: #main
+
+[2]: #geocoder
+
+[3]: #parameters
+
+[4]: #geocodergeocode
+
+[5]: #parameters-1
+
+[6]: #geocoderindex
+
+[7]: #parameters-2
+
+[8]: #carmensource
+
+[9]: #properties
+
+[10]: #memsource
+
+[11]: #parameters-3
+
+[12]: #memsource-1
+
+[13]: #parameters-4
+
+[14]: #patternreplacemap
+
+[15]: #geocoding
+
+[16]: #geocode
+
+[17]: #parameters-5
+
+[18]: #phrasematch
+
+[19]: #parameters-6
+
+[20]: #spatialmatch
+
+[21]: #parameters-7
+
+[22]: #verifymatch
+
+[23]: #parameters-8
+
+[24]: #verifycontext
+
+[25]: #squishy
+
+[26]: #backy
+
+[27]: #parameters-9
+
+[28]: #context
+
+[29]: #parameters-10
+
+[30]: #indexing
+
+[31]: #index
+
+[32]: #parameters-11
+
+[33]: #analyze
+
+[34]: #parameters-12
+
+[35]: #text-processing
+
+[36]: #replacerule
+
+[37]: #properties-1
+
+[38]: #createglobalreplacer
+
+[39]: #parameters-13
+
+[40]: #createreplacer
+
+[41]: #parameters-14
+
+[42]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/index.js#L55-L375 "Source code on GitHub"
+
+[43]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[44]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[45]: #carmensource
+
+[46]: #patternreplacemap
+
+[47]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+
+[48]: #text-processsing
+
+[49]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/index.js#L461-L467 "Source code on GitHub"
+
+[50]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/index.js#L486-L492 "Source code on GitHub"
+
+[51]: https://nodejs.org/api/stream.html#stream_class_stream_readable
+
+[52]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+
+[53]: https://nodejs.org/api/stream.html#stream_class_stream_writable
+
+[54]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/index.js#L22-L39 "Source code on GitHub"
+
+[55]: https://github.com/mapbox/tilelive/blob/master/API.md
+
+[56]: https://github.com/mapbox/tilelive-s3
+
+[57]: https://github.com/mapbox/node-mbtiles
+
+[58]: #index
+
+[59]: https://nodejs.org/api/buffer.html
+
+[60]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/sources/api-mem.js#L27-L47 "Source code on GitHub"
+
+[61]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+
+[62]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined
+
+[63]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/text-processing/token.js#L224-L249 "Source code on GitHub"
+
+[64]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/geocode.js#L42-L170 "Source code on GitHub"
+
+[65]: #geocoder
+
+[66]: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+[67]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[68]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/phrasematch.js#L20-L196 "Source code on GitHub"
+
+[69]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/spatialmatch.js#L27-L138 "Source code on GitHub"
+
+[70]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/verifymatch.js#L30-L93 "Source code on GitHub"
+
+[71]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/verifymatch.js#L396-L540 "Source code on GitHub"
+
+[72]: loadContexts
+
+[73]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/geocoder/context.js#L28-L87 "Source code on GitHub"
+
+[74]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/indexer/index.js#L30-L97 "Source code on GitHub"
+
+[75]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/util/analyze.js#L23-L55 "Source code on GitHub"
+
+[76]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/text-processing/token.js#L8-L17 "Source code on GitHub"
+
+[77]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+
+[78]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/text-processing/token.js#L260-L275 "Source code on GitHub"
+
+[79]: #replacerule
+
+[80]: https://git@github.com/:mapbox/carmen/blob/ebbcec9e6ad343cae626ce6f5b8732f97e504df7/lib/text-processing/token.js#L31-L137 "Source code on GitHub"
