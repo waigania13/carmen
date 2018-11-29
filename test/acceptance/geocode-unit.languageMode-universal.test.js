@@ -59,6 +59,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('10000', {}, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, United States');
+            t.equal(res.features[0].relevance, 1);
             t.end();
         });
     });
@@ -67,6 +68,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('10000', { language: 'es' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features[0].place_name, '10000, Estados Unidos');
+            t.equal(res.features[0].relevance, 1, 'no language penalty is applied for universal-text indexes');
             t.end();
         });
     });
