@@ -239,9 +239,9 @@ test('createReplacer', (q) => {
 });
 
 test('token replacement', (q) => {
-    q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
-    q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
-    q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
+    q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo St NE, sf', lastWord: true });
+    q.deepEqual(token.replaceToken(tokens, 'coolstreet'), { query: 'coolstreet', lastWord: false });
+    q.deepEqual(token.replaceToken(tokens, 'streetwise'), { query: 'streetwise', lastWord: false });
 
     q.deepEqual(
         token.enumerateTokenReplacements(tokens, 'fargo street northeast, san francisco'),
@@ -299,8 +299,8 @@ test('token replacement', (q) => {
 });
 
 test('custom reverse replacement', (q) => {
-    q.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), 'saint thomas st united states');
-    q.deepEqual(token.replaceToken(tokensRC, 'e first st').toLowerCase(), 'east first street');
+    q.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), { query: 'saint thomas st united states', lastWord: false });
+    q.deepEqual(token.replaceToken(tokensRC, 'e first st'), { query: 'East First street', lastWord: true });
 
     q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
         'st thomas st united states',
@@ -363,8 +363,8 @@ test('named/numbered group replacement', (q) => {
         '(1\\d+)': '@@@$1@@@',
         '(?<number>2\\d+)': '###${number}###'
     });
-    q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
-    q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
+    q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), { query: 'xyz @@@123@@@ def', lastWord: false });
+    q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), { query: 'xyz ###234### def', lastWord: false });
 
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
@@ -379,13 +379,13 @@ test('throw on mixed name/num replacement groups', (q) => {
     q.end();
 });
 
-test('make sure word boundaries work right', (q) => {
-    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), 'R de Janeiro', 'phrase-initial token');
-    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), 'de R Janeiro', 'phrase-medial token');
-    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), 'de Janeiro R', 'phrase-terminal token');
-    q.deepEqual(token.replaceToken(tokens, 'de-rio!Janeiro'), 'de-R!Janeiro', 'punctuation-separated token');
-    q.deepEqual(token.replaceToken(tokens, 'deteriorate'), 'deteriorate', "word-medial token (doesn't replace)");
-    q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), 'Rua Oratório', "word-terminal token preceded by accented character (doesn't replace)");
+test('detect word boundaries and compare lastTerms', (q) => {
+    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), { query: 'R de Janeiro', lastWord: false }, 'phrase-initial token');
+    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), { query: 'de R Janeiro', lastWord: false }, 'phrase-medial token');
+    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), { query: 'de Janeiro R', lastWord: true }, 'phrase-terminal token');
+    q.deepEqual(token.replaceToken(tokens, 'de-Janeiro!Rio??'), { query: 'de-Janeiro!R??', lastWord: true }, 'punctuation-separated token');
+    q.deepEqual(token.replaceToken(tokens, 'deteriorate'), { query: 'deteriorate', lastWord: false }, "word-medial token (doesn't replace)");
+    q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), { query: 'Rua Oratório', lastWord: false }, "word-terminal token preceded by accented character (doesn't replace)");
     q.end();
 });
 
@@ -403,5 +403,17 @@ test('test skipDiacritics and skipBoundaries flags', (q) => {
         { named: false, from: /oe/gi, to: 'ö', inverse: true },
         { named: false, from: /ue/gi, to: 'ü', inverse: true }
     ], 'forward and reverse replacers get created for complex objects');
+    q.end();
+});
+
+test('Don\'t detect last word token replacements when only a subset of the word is replaced', (q) => {
+    const replacer = token.createReplacer({
+        'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
+        'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+    });
+    q.deepEqual(token.replaceToken(replacer, 'Mäster'), { query: 'Maester', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'Köln'), { query: 'Koeln', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'Bürbarg'), { query: 'Buerbarg', lastWord: false });
     q.end();
 });

@@ -17,40 +17,42 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     const c = new Carmen(conf);
 
     tape('index poi', (assert) => {
-        queueFeature(conf.poi, {
-            id:1,
-            properties: {
-                'carmen:text': 'DTOWN PARTY BUS',
-                'carmen:center': [0,0]
+        const pois = [
+            {
+                id:1,
+                properties: {
+                    'carmen:text': 'DTOWN PARTY BUS',
+                    'carmen:center': [0,0]
+                },
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: [[0,0]]
+                }
             },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[0,0]]
-            }
-        }, assert.end);
-        queueFeature(conf.poi, {
-            id:2,
-            properties: {
-                'carmen:text': 'District',
-                'carmen:center': [1,0]
+            {
+                id:2,
+                properties: {
+                    'carmen:text': 'District',
+                    'carmen:center': [1,0]
+                },
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: [[1,0]]
+                }
             },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[1,0]]
+            {
+                id:3,
+                properties: {
+                    'carmen:text': 'District Taco',
+                    'carmen:center': [0,1]
+                },
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: [[0,1]]
+                }
             }
-        }, assert.end);
-        queueFeature(conf.poi, {
-            id:3,
-            properties: {
-                'carmen:text': 'District Taco',
-                'carmen:center': [0,1]
-            },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[0,1]]
-            }
-        }, assert.end);
-
+        ];
+        queueFeature(conf.poi, pois, assert.end);
     });
 
     tape('build', (assert) => { buildQueued(conf.poi, assert.end); });
