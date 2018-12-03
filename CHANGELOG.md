@@ -1,6 +1,11 @@
 # Changelog
 
+## 25.7.1
+
+- Fix the behavior of the geocoder_universal_text index flag so it actually skips language penalties for unviversal indexes.
+
 ## 25.7.0
+
 - Added support for the TileJSON property `geocoder_ignore_order`. This can be used to exempt specific indexes from incurring the "backy" penalty in verifymatch, and is useful for address components whose typical written position is contra the hierarchical ordering (eg. US postcodes are typically written at the end of an address, despite not being the highest level of the US address hierarchy.
 - Removed query-time de-duplication based on street address & distance.
 
