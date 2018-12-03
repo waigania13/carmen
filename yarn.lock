@@ -97,10 +97,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.21.5":
-  version "0.21.5"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.21.5.tgz#b1cc3f8bf76f112675d0a14f593ec8c2dc0f9f73"
-  integrity sha512-atmU62ZOb88hMLIgmoWxxtX9Hx+a+2PqIytoDWmfYuGPQgw/M5r/d2YxlRLtmzgIToGXwQoLE2NsoaRu4EJ+Uw==
+"@mapbox/carmen-cache@mapbox/carmen-cache#79850a9101ece8b774657634f17c4cb502bd9b4c":
+  version "0.22.0-rocksdb-update"
+  resolved "https://codeload.github.com/mapbox/carmen-cache/tar.gz/79850a9101ece8b774657634f17c4cb502bd9b4c"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
