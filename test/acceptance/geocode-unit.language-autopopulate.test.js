@@ -35,6 +35,9 @@ tape('index country', (t) => {
 });
 
 tape('index country 2', (t) => {
+    // The test queries below don't actually use this feature, we're just indexing it
+    // here to exercise an indexing-side behavior that the other feature doesn't
+    // (specifically, autopopulation rules involving language tags containing hyphens).
     const country = {
         type: 'Feature',
         properties: {
