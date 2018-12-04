@@ -11,7 +11,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es', 'ru', 'zh_Latn'], geocoder_languages_from_default: { 'ru': ['en'] } }, () => {}),
+    country: new mem({ maxzoom: 6, geocoder_languages: ['en', 'es', 'ru', 'zh-Latn'], geocoder_languages_from_default: { 'ru': ['en'], 'cn': ['zh-Latn'] } }, () => {}),
 };
 const c = new Carmen(conf);
 
@@ -28,6 +28,22 @@ tape('index country', (t) => {
             'carmen:geocoder_stack': 'ru'
         },
         id: 2,
+        geometry: { type: 'MultiPolygon', coordinates: [] },
+        bbox: [-11.25, 5.615, -5.625, 11.1784]
+    };
+    queueFeature(conf.country, country, t.end);
+});
+
+tape('index country 2', (t) => {
+    const country = {
+        type: 'Feature',
+        properties: {
+            'carmen:center': [0, 0],
+            'carmen:zxy': ['6/30/30'],
+            'carmen:text': 'Sweden',
+            'carmen:geocoder_stack': 'cn'
+        },
+        id: 5,
         geometry: { type: 'MultiPolygon', coordinates: [] },
         bbox: [-11.25, 5.615, -5.625, 11.1784]
     };
