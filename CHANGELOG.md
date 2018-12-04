@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.7.2
+
+- Fix a bug in language auto-population rules including language tags containing hyphens.
+
 ## 25.7.1
 
 - Fix the behavior of the geocoder_universal_text index flag so it actually skips language penalties for unviversal indexes.
