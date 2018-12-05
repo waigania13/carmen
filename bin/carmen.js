@@ -106,22 +106,18 @@ if (argv.reverseMode) {
     if (argv.reverseMode !== 'score' && argv.reverseMode !== 'distance') throw new Error('reverseMode must be one of `score` or `distance`');
 }
 
-if (argv.routing) argv.routing = (argv.routing || false);
-if (argv.autocomplete) {
-    if (argv.autocomplete === 'false') {
-        argv.autocomplete = false;
+function string_to_boolean(s) {
+    if (s === 'false') {
+        return false;
     } else {
-        argv.autocomplete = true;
+        return true;
     }
 }
 
-if (argv.fuzzyMatch) {
-    if (argv.fuzzyMatch === 'false') {
-        argv.fuzzyMatch = false;
-    } else {
-        argv.fuzzyMatch = true;
-    }
-}
+
+if (argv.routing) argv.routing = string_to_boolean(argv.routing);
+if (argv.autocomplete) argv.autocomplete = string_to_boolean(argv.autocomplete);
+if (argv.fuzzyMatch) argv.fuzzyMatch = string_to_boolean(argv.fuzzyMatch);
 
 let load = +new Date();
 

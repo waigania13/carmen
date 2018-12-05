@@ -268,6 +268,14 @@ tape('bin/carmen query autocomplete true', (t) => {
 });
 
 tape('bin/carmen query autocomplete unspecified', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=braz --autocomplete', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+tape('bin/carmen query autocomplete undefined', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=braz', (err, stdout, stderr) => {
         t.ifError(err);
         t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
@@ -292,6 +300,15 @@ tape('bin/carmen query fuzzyMatch true', (t) => {
 });
 
 tape('bin/carmen query fuzzyMatch unspecified', (t) => {
+    exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol --fuzzyMatch', (err, stdout, stderr) => {
+        t.ifError(err);
+        t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
+        t.end();
+    });
+});
+
+
+tape('bin/carmen query fuzzyMatch undefined', (t) => {
     exec(bin + '/carmen.js ' + tmpindex + ' --query=brazol', (err, stdout, stderr) => {
         t.ifError(err);
         t.equal(/\d+\.\d+ Brazil/.test(stdout), true, 'finds brazil');
