@@ -111,6 +111,10 @@ if (argv.reverseMode) {
 
 if (argv.routing) argv.routing = (argv.routing || false);
 
+// this has to be done because minimist only allows null as a default value,
+// but carmen checks whether these values `=== undefined`
+if (argv.autocomplete === null) argv.autocomplete = undefined;
+if (argv.fuzzyMatch === null) argv.fuzzyMatch = undefined;
 
 let load = +new Date();
 
