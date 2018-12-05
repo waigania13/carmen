@@ -309,7 +309,6 @@ function Geocoder(indexes, options) {
     function loadIndex(id, source, callback) {
         source.open((err) => {
             if (err) return callback(err);
-
             source.getBaseFilename = function() {
                 const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
@@ -328,7 +327,7 @@ function Geocoder(indexes, options) {
                 const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
                 if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
                     // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
-                    done(null, { path: fuzzySetFile, exists: false });
+                    done(null, { path: fuzzySetFile, exists: false, config: tokenFilter(source._original._info.geocoder_tokens) });
                 } else {
                     // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
                     done(null, { path: fuzzySetFile, exists: true });
@@ -357,12 +356,14 @@ function Geocoder(indexes, options) {
                     };
                 } else {
                     // write cache
+                    console.log(loaded[1]);
                     props = {
                         id: id,
                         info: loaded[0],
                         dictcache: {
                             reader: null,
-                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
+                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path),
+                            config: loaded[1].config
                         }
                     };
                 }
@@ -432,6 +433,29 @@ function tokenValidator(token_replacer) {
             return true;
         }
     }
+}
+
+/**
+*  filters out complex word replacement and creates objects that can be sent to FuzzyPhraseSetBuilder
+*/
+function tokenFilter(token_list) {
+    const wordReplacement = [];
+    let wordReplacementObject;
+    if (token_list !== undefined) {
+        token_list = JSON.parse(JSON.stringify(token_list));
+
+        // filters out named groups and words that are replaced by functions and objects
+        for (const _from in token_list) {
+            if (typeof token_list[_from] === 'string' &&  typeof _from === 'string' && /\$(\d+|{\w+})/.test(token_list[_from]) === false) {
+                wordReplacementObject = {
+                    'from': _from,
+                    'to': token_list[_from]
+                };
+                wordReplacement.push(wordReplacementObject);
+            }
+        }
+    }
+    return wordReplacement;
 }
 
 /**
