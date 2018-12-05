@@ -219,7 +219,10 @@ function Geocoder(indexes, options) {
             lang.lang_map = {};
             lang.languages.forEach((l, idx) => { lang.lang_map[l] = idx; });
             lang.lang_map['unmatched'] = 128; // @TODO verify this is the right approach
-            lang.autopopulate = autopopulate;
+            lang.autopopulate = {};
+            Object.keys(autopopulate).forEach((k) => {
+                lang.autopopulate[k] = autopopulate[k].map((l) => l.replace('-', '_'));
+            });
             source.lang = lang;
 
             // add byname index lookup
