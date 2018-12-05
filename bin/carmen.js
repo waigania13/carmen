@@ -11,8 +11,11 @@ const Carmen = require('..');
 const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],
-    boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch']
+    boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch'],
+    default: {'autocomplete': null, 'fuzzyMatch': null}
 });
+
+console.dir(argv);
 
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
@@ -107,8 +110,7 @@ if (argv.reverseMode) {
 }
 
 if (argv.routing) argv.routing = (argv.routing || false);
-if (argv.autocomplete) argv.autocomplete = (argv.autocomplete || false);
-if (argv.fuzzyMatch) argv.fuzzyMatch = (argv.fuzzyMatch || false);
+
 
 let load = +new Date();
 
