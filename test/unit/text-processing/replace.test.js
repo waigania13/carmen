@@ -300,7 +300,7 @@ test('token replacement', (q) => {
 
 test('custom reverse replacement', (q) => {
     q.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), { query: 'saint thomas st united states', lastWord: false });
-    q.deepEqual(token.replaceToken(tokensRC, 'e first st'), { query: 'East First street', lastWord: true });
+    q.deepEqual(token.replaceToken(tokensRC, 'e first st'), { query: 'East First street', lastWord: false });
 
     q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
         'st thomas st united states',
@@ -365,7 +365,8 @@ test('named/numbered group replacement', (q) => {
     });
     q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), { query: 'xyz @@@123@@@ def', lastWord: false });
     q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), { query: 'xyz ###234### def', lastWord: false });
-
+    q.deepEqual(token.replaceToken(tokens, 'abc 123'), { query: 'xyz @@@123@@@', lastWord: false });
+    q.deepEqual(token.replaceToken(tokens, 'abc 234'), { query: 'xyz ###234###', lastWord: false });
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
     q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
 
@@ -396,24 +397,36 @@ test('test skipDiacritics and skipBoundaries flags', (q) => {
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
     }, { includeUnambiguous: true });
     q.deepEqual(replacer, [
-        { named: false, from: /ä/gi, to: 'ae', inverse: false },
-        { named: false, from: /ö/gi, to: 'oe', inverse: false },
-        { named: false, from: /ü/gi, to: 'ue', inverse: false },
-        { named: false, from: /ae/gi, to: 'ä', inverse: true },
-        { named: false, from: /oe/gi, to: 'ö', inverse: true },
-        { named: false, from: /ue/gi, to: 'ü', inverse: true }
+        { named: false, from: /ä/gi, fromLastWord: false, to: 'ae', inverse: false },
+        { named: false, from: /ö/gi, fromLastWord: false, to: 'oe', inverse: false },
+        { named: false, from: /ü/gi, fromLastWord: false, to: 'ue', inverse: false },
+        { named: false, from: /ae/gi, fromLastWord: false, to: 'ä', inverse: true },
+        { named: false, from: /oe/gi, fromLastWord: false, to: 'ö', inverse: true },
+        { named: false, from: /ue/gi, fromLastWord: false, to: 'ü', inverse: true }
     ], 'forward and reverse replacers get created for complex objects');
     q.end();
 });
 
-test('Don\'t detect last word token replacements when only a subset of the word is replaced', (q) => {
+test('Flag last word token replacements only if the entire word is replaced with a simple token replacement', (q) => {
     const replacer = token.createReplacer({
+        'Street': 'St',
+        '([a-z]+)väg': '$1v',
+        'väg([a-z]+)': 'v$1',
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+        '(?<number>2\\d+)': '###${number}###',
+        'Saint': 'St'
     });
+    q.deepEqual(token.replaceToken(replacer, 'Clancy Street'), { query: 'Clancy St', lastWord: true });
     q.deepEqual(token.replaceToken(replacer, 'Mäster'), { query: 'Maester', lastWord: false });
     q.deepEqual(token.replaceToken(replacer, 'Köln'), { query: 'Koeln', lastWord: false });
     q.deepEqual(token.replaceToken(replacer, 'Bürbarg'), { query: 'Buerbarg', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'Samuelsväg'), { query: 'Samuelsv', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'vägabond'), { query: 'vabond', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'vägabond street'), { query: 'vabond St', lastWord: true });
+    q.deepEqual(token.replaceToken(replacer, 'street vägabond'), { query: 'St vabond', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, '234'), { query: '###234###', lastWord: false });
+    q.deepEqual(token.replaceToken(replacer, 'Bad Saint'), { query: 'Bad St', lastWord: true });
     q.end();
 });
