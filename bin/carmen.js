@@ -11,11 +11,8 @@ const Carmen = require('..');
 const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],
-    boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch'],
-    default: { 'autocomplete': null, 'fuzzyMatch': null }
+    boolean: ['geojson', 'stats', 'help', 'version'],
 });
-
-console.dir(argv);
 
 if (argv.help) {
     console.log('carmen.js --query="<query>" [options]');
@@ -110,11 +107,21 @@ if (argv.reverseMode) {
 }
 
 if (argv.routing) argv.routing = (argv.routing || false);
+if (argv.autocomplete) {
+    if (argv.autocomplete === 'false') {
+        argv.autocomplete = false;
+    } else {
+        argv.autocomplete = true;
+    }
+}
 
-// this has to be done because minimist only allows null as a default value,
-// but carmen checks whether these values `=== undefined`
-if (argv.autocomplete === null) argv.autocomplete = undefined;
-if (argv.fuzzyMatch === null) argv.fuzzyMatch = undefined;
+if (argv.fuzzyMatch) {
+    if (argv.fuzzyMatch === 'false') {
+        argv.fuzzyMatch = false;
+    } else {
+        argv.fuzzyMatch = true;
+    }
+}
 
 let load = +new Date();
 
