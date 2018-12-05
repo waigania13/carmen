@@ -12,7 +12,7 @@ const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],
     boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch'],
-    default: {'autocomplete': null, 'fuzzyMatch': null}
+    default: { 'autocomplete': null, 'fuzzyMatch': null }
 });
 
 console.dir(argv);
