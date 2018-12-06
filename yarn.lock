@@ -105,9 +105,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@mapbox/carmen-cache#82de94e84b374f7dff2001582948dc4dc5665b93":
-  version "0.21.5-word-boundary"
-  resolved "https://codeload.github.com/mapbox/carmen-cache/tar.gz/82de94e84b374f7dff2001582948dc4dc5665b93"
+"@mapbox/carmen-cache@0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.24.0.tgz#a79388e9015fdef095049b3e70d8fa3792e08bf0"
+  integrity sha512-BJvUMfOER/ewH7JES0lEWtp+sugxuGCb4Q52HN5fX1WQI21MDKKaXR/BSUR4orsUhtFKYTCU6CCGxqrCURELmA==
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
