@@ -11,7 +11,12 @@ const Carmen = require('..');
 const settings = require('../package.json');
 const argv = require('minimist')(process.argv, {
     string: ['config', 'proximity', 'query', 'debug', 'types', 'tokens'],
-    boolean: ['geojson', 'stats', 'help', 'version'],
+    boolean: ['geojson', 'stats', 'help', 'version', 'autocomplete', 'fuzzyMatch', 'routing'],
+    default: {
+        'autocomplete': true,
+        'fuzzyMatch': true,
+        'routing': false
+    }
 });
 
 if (argv.help) {
@@ -105,19 +110,6 @@ if (argv.limit) argv.limit = parseInt(argv.limit);
 if (argv.reverseMode) {
     if (argv.reverseMode !== 'score' && argv.reverseMode !== 'distance') throw new Error('reverseMode must be one of `score` or `distance`');
 }
-
-function string_to_boolean(s) {
-    if (s === 'false') {
-        return false;
-    } else {
-        return true;
-    }
-}
-
-
-if (argv.routing) argv.routing = string_to_boolean(argv.routing);
-if (argv.autocomplete) argv.autocomplete = string_to_boolean(argv.autocomplete);
-if (argv.fuzzyMatch) argv.fuzzyMatch = string_to_boolean(argv.fuzzyMatch);
 
 let load = +new Date();
 
