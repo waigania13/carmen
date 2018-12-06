@@ -325,9 +325,20 @@ function Geocoder(indexes, options) {
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
                 const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
+                const categorisedWordReplacements = source._original._info ? categorizeWordReplacement(source._original._info.geocoder_tokens) : [];
+
+                // word replacements categorized into complex or simple
+                // filter out only the simple ones
+                const simpleWordReplacements = categorisedWordReplacements.reduce((simpleArr, i) => {
+                    if (i.simple === true) {
+                        simpleArr.push(i.tokens);
+                    }
+                    return simpleArr;
+                }, []);
+
                 if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
                     // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
-                    done(null, { path: fuzzySetFile, exists: false, config: tokenFilter(source._original._info.geocoder_tokens) });
+                    done(null, { path: fuzzySetFile, exists: false, config: simpleWordReplacements });
                 } else {
                     // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
                     done(null, { path: fuzzySetFile, exists: true });
@@ -356,7 +367,6 @@ function Geocoder(indexes, options) {
                     };
                 } else {
                     // write cache
-                    console.log(loaded[1]);
                     props = {
                         id: id,
                         info: loaded[0],
@@ -436,20 +446,35 @@ function tokenValidator(token_replacer) {
 }
 
 /**
-*  filters out complex word replacement and creates objects that can be sent to FuzzyPhraseSetBuilder
+*
+* Categorizes word replacements into simple and complex
+* Simple and complec word replacements are used during index time
+* Only complex word replacements are used during query time
+*
+* @access private
+*
+* @param {Object} geocoder_tokens - word mapping object, eg: Street => St
+* @returns {Array} wordReplacement - An array of word replacements categorised as simple or complex (simple: false)
 */
-function tokenFilter(token_list) {
+function categorizeWordReplacement(geocoder_tokens) {
     const wordReplacement = [];
     let wordReplacementObject;
-    if (token_list !== undefined) {
-        token_list = JSON.parse(JSON.stringify(token_list));
+    if (geocoder_tokens !== undefined) {
+        geocoder_tokens = JSON.parse(JSON.stringify(geocoder_tokens));
 
         // filters out named groups and words that are replaced by functions and objects
-        for (const _from in token_list) {
-            if (typeof token_list[_from] === 'string' &&  typeof _from === 'string' && /\$(\d+|{\w+})/.test(token_list[_from]) === false) {
+        for (const _from in geocoder_tokens) {
+            if (typeof geocoder_tokens[_from] === 'string' &&  typeof _from === 'string' && /\$(\d+|{\w+})/.test(geocoder_tokens[_from]) === false) {
                 wordReplacementObject = {
-                    'from': _from,
-                    'to': token_list[_from]
+                    'tokens': { 'from': _from, 'to': geocoder_tokens[_from] },
+                    'simple': true
+                };
+                wordReplacement.push(wordReplacementObject);
+            }
+            else {
+                wordReplacementObject = {
+                    'tokens': geocoder_tokens,
+                    'simple': false
                 };
                 wordReplacement.push(wordReplacementObject);
             }
