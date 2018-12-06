@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.7.3
+
+- Updated carmen-cache to 0.23.0 which includes internal refacor and RocksDB update.
+
 ## 25.7.2
 
 - Fix a bug in language auto-population rules including language tags containing hyphens.
