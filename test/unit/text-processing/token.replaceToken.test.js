@@ -204,6 +204,10 @@ const tokenList = {
     'S.': 'S'
 };
 
+// store an original copy of the tokenList object that we can compare against to
+// ensure we don't mutate the tokenList object directly
+const tokenClone = JSON.parse(JSON.stringify(tokenList));
+
 const tokens = token.createReplacer(tokenList);
 const tokensR = token.createReplacer(tokenList, { includeUnambiguous: true });
 
@@ -227,6 +231,13 @@ const tokensRC = token.createReplacer(tokenList, {
             return out;
         }
     }
+});
+
+// We use the same tokens object to create both indexer and runtime token replacers.
+// Test that indexer-only token replacers don't leak into runtime replacers.
+test('createReplacer', (q) => {
+    q.deepEqual(tokenList, tokenClone, 'createReplacer does not mutate tokenList object');
+    q.end();
 });
 
 test('token replacement', (t) => {
