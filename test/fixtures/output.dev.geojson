@@ -303,7 +303,7 @@
                             "scoredist": 1,
                             "scorefactor": 1,
                             "matches_language": true,
-                            "prefix": true,
+                            "prefix": 1,
                             "mask": 1,
                             "text": "toronto",
                             "zoom": 6
@@ -314,7 +314,7 @@
                 "carmen:zoom": 6,
                 "carmen:scoredist": 1,
                 "carmen:matches_language": true,
-                "carmen:prefix": true,
+                "carmen:prefix": 1,
                 "carmen:query_text": "toronto",
                 "carmen:idx": 2
             },
