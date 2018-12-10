@@ -161,13 +161,14 @@ function Geocoder(indexes, options) {
             source.geocoder_ignore_order = info.geocoder_ignore_order || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
             source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens || {};
+            source.simple_token_replacement = categorizeWordReplacement(info.geocoder_tokens);
             source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
             source.geocoder_inherit_score = info.geocoder_inherit_score || false;
             source.geocoder_grant_score = info.hasOwnProperty('geocoder_grant_score') ? info.geocoder_grant_score : true;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
-            source.token_replacer = token.createReplacer(info.geocoder_tokens || {});
-            source.indexing_replacer = token.createReplacer(info.geocoder_tokens || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
+            source.token_replacer = token.createReplacer(source.simple_token_replacement || {});
+            source.indexing_replacer = token.createReplacer(source.simple_token_replacement || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
 
             if (tokenValidator(source.token_replacer)) {
                 throw new Error('Using global tokens');
@@ -473,7 +474,7 @@ function categorizeWordReplacement(geocoder_tokens) {
             }
             else {
                 wordReplacementObject = {
-                    'tokens': geocoder_tokens,
+                    'tokens': { 'from': _from, 'to': geocoder_tokens[_from] },
                     'simple': false
                 };
                 wordReplacement.push(wordReplacementObject);
