@@ -184,7 +184,7 @@ function Geocoder(indexes, options) {
                     source.categories.add(category.join(' '), true);
 
                     category = category.map((cat) => {
-                        return token.replaceToken(source.token_replacer, cat).toLowerCase();
+                        return token.replaceToken(source.token_replacer, cat).query.toLowerCase();
                     });
 
                     source.categories.add(category.join(' '), true);

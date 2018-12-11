@@ -1,5 +1,16 @@
 # Changelog
 
+## 25.8.0
+
+- Updated carmen-cache to 0.24.0 which adds support for word-boundary aware autocomplete
+- Added support for passing carmen-cache an integer value indicating the type of autocomplete to perform for simple token replacements
+- CLI options `--autocomplete` and `--fuzzyMatch` now default to `true` when not explicitly set
+- CLI option `--routing` now defaults to `false` when not explicitly set
+
+## 25.7.3
+
+- Updated carmen-cache to 0.23.0 which includes internal refacor and RocksDB update.
+
 ## 25.7.2
 
 - Fix a bug in language auto-population rules including language tags containing hyphens.

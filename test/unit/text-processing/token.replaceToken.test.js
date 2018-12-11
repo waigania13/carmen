@@ -203,7 +203,9 @@ const tokenList = {
     'Rio': 'R',
     'S.': 'S'
 };
-// store an original copy of the tokenList object that we can compare against
+
+// store an original copy of the tokenList object that we can compare against to
+// ensure we don't mutate the tokenList object directly
 const tokenClone = JSON.parse(JSON.stringify(tokenList));
 
 const tokens = token.createReplacer(tokenList);
@@ -234,16 +236,16 @@ const tokensRC = token.createReplacer(tokenList, {
 // We use the same tokens object to create both indexer and runtime token replacers.
 // Test that indexer-only token replacers don't leak into runtime replacers.
 test('createReplacer', (q) => {
-    q.deepEqual(tokenList, tokenClone, 'createReplacer does not change original value of tokenList');
+    q.deepEqual(tokenList, tokenClone, 'createReplacer does not mutate tokenList object');
     q.end();
 });
 
-test('token replacement', (q) => {
-    q.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'),'fargo St NE, sf');
-    q.deepEqual(token.replaceToken(tokens, 'coolstreet'),'coolstreet');
-    q.deepEqual(token.replaceToken(tokens, 'streetwise'),'streetwise');
+test('token replacement', (t) => {
+    t.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo St NE, sf', lastWord: true });
+    t.deepEqual(token.replaceToken(tokens, 'coolstreet'), { query: 'coolstreet', lastWord: false });
+    t.deepEqual(token.replaceToken(tokens, 'streetwise'), { query: 'streetwise', lastWord: false });
 
-    q.deepEqual(
+    t.deepEqual(
         token.enumerateTokenReplacements(tokens, 'fargo street northeast, san francisco'),
         [
             'fargo St NE, sf',
@@ -255,13 +257,13 @@ test('token replacement', (q) => {
             'fargo street northeast, san francisco'
         ]
     );
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'main st street st st milwaukee lane ln wtf ln'), [
+    t.deepEqual(token.enumerateTokenReplacements(tokens, 'main st street st st milwaukee lane ln wtf ln'), [
         'main st St st st milwaukee Ln ln wtf ln',
         'main st street st st milwaukee Ln ln wtf ln',
         'main st St st st milwaukee lane ln wtf ln',
         'main st street st st milwaukee lane ln wtf ln'
     ]);
-    q.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
+    t.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
         'main st St st st milwaukee Ln ln wtf ln',
         'main st St st st milwaukee Ln ln wtf Lane',
         'main st St st st milwaukee Lane ln wtf Lane',
@@ -276,8 +278,8 @@ test('token replacement', (q) => {
         'main st street st st milwaukee lane Lane wtf ln'
     ]);
 
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
+    t.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
+    t.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
 
     // Demonstrate that replacements can cascade, but our current behavior is
     // quite non-deterministic because token order matters very much for the
@@ -287,26 +289,26 @@ test('token replacement', (q) => {
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
         'uber': 'üb',
     });
-    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['üb cat', 'uber cat'], 'does not cascade replacements');
+    t.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['üb cat', 'uber cat'], 'does not cascade replacements');
     ubTokens = token.createReplacer({
         'uber': 'üb',
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
     });
-    q.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['ueb cat', 'üb cat', 'uber cat'], 'hits all permutations');
+    t.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['ueb cat', 'üb cat', 'uber cat'], 'hits all permutations');
 
 
-    q.end();
+    t.end();
 });
 
-test('custom reverse replacement', (q) => {
-    q.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), 'saint thomas st united states');
-    q.deepEqual(token.replaceToken(tokensRC, 'e first st').toLowerCase(), 'east first street');
+test('custom reverse replacement', (t) => {
+    t.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), { query: 'saint thomas st united states', lastWord: false });
+    t.deepEqual(token.replaceToken(tokensRC, 'e first st'), { query: 'East First street', lastWord: false });
 
-    q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
+    t.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
         'st thomas st united states',
         'saint thomas st united states'
     ]);
-    q.deepEqual(token.enumerateTokenReplacements(tokensRC, 'e first st'), [
+    t.deepEqual(token.enumerateTokenReplacements(tokensRC, 'e first st'), [
         'e 1st st',
         'e 1st street',
         'East 1st st',
@@ -317,91 +319,75 @@ test('custom reverse replacement', (q) => {
         'East first street'
     ]);
 
-    q.end();
+    t.end();
 });
 
-test('replacer', (q) => {
-
-    // deepEqual doesn't compare regex objects intelligently / accurately
-    // so we have to roll our own :-&
-    let rep = token.createReplacer({
-        'Road': 'Rd',
-        'Street': 'St'
-    });
-    const WORD_BOUNDARY = "[\\s\\u2000-\\u206F\\u2E00-\\u2E7F\\\\'!\"#$%&()*+,\\-.\\/:;<=>?@\\[\\]^_`{|}~]";
-    q.deepEqual(rep.map((r) => { return r.named; }), [false, false]);
-    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Rd$2', '$1St$2']);
-    q.deepEqual(
-        rep.map((r) => { return r.from.toString(); }),
-        [
-            '/(' + WORD_BOUNDARY + '|^)Road(' + WORD_BOUNDARY + '|$)/gi',
-            '/(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '|$)/gi'
-        ]
-    );
-
-    rep = token.createReplacer({
-        'Maréchal': 'Mal',
-        'Monsieur': 'M'
-    });
-    q.deepEqual(rep.map((r) => { return r.named; }), [false, false, false]);
-    q.deepEqual(rep.map((r) => { return r.to; }), ['$1Mal$2', '$1Mal$2', '$1M$2']);
-    q.deepEqual(
-        rep.map((r) => { return r.from.toString(); }),
-        [
-            '/(' + WORD_BOUNDARY + '|^)Maréchal(' + WORD_BOUNDARY + '|$)/gi',
-            '/(' + WORD_BOUNDARY + '|^)Marechal(' + WORD_BOUNDARY + '|$)/gi',
-            '/(' + WORD_BOUNDARY + '|^)Monsieur(' + WORD_BOUNDARY + '|$)/gi'
-        ]
-    );
-
-    q.end();
-});
-
-test('named/numbered group replacement', (q) => {
+test('named/numbered group replacement', (t) => {
     const tokens = token.createReplacer({
         'abc': 'xyz',
         '(1\\d+)': '@@@$1@@@',
         '(?<number>2\\d+)': '###${number}###'
     });
-    q.deepEqual(token.replaceToken(tokens, 'abc 123 def'), 'xyz @@@123@@@ def');
-    q.deepEqual(token.replaceToken(tokens, 'abc 234 def'), 'xyz ###234### def');
+    t.deepEqual(token.replaceToken(tokens, 'abc 123 def'), { query: 'xyz @@@123@@@ def', lastWord: false });
+    t.deepEqual(token.replaceToken(tokens, 'abc 234 def'), { query: 'xyz ###234### def', lastWord: false });
+    t.deepEqual(token.replaceToken(tokens, 'abc 123'), { query: 'xyz @@@123@@@', lastWord: false });
+    t.deepEqual(token.replaceToken(tokens, 'abc 234'), { query: 'xyz ###234###', lastWord: false });
+    t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
+    t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
 
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
-    q.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
-
-    q.end();
+    t.end();
 });
 
-test('throw on mixed name/num replacement groups', (q) => {
-    q.throws(() => {
+test('throw on mixed name/num replacement groups', (t) => {
+    t.throws(() => {
         token.createReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
     });
-    q.end();
+    t.end();
 });
 
-test('make sure word boundaries work right', (q) => {
-    q.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), 'R de Janeiro', 'phrase-initial token');
-    q.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), 'de R Janeiro', 'phrase-medial token');
-    q.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), 'de Janeiro R', 'phrase-terminal token');
-    q.deepEqual(token.replaceToken(tokens, 'de-rio!Janeiro'), 'de-R!Janeiro', 'punctuation-separated token');
-    q.deepEqual(token.replaceToken(tokens, 'deteriorate'), 'deteriorate', "word-medial token (doesn't replace)");
-    q.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), 'Rua Oratório', "word-terminal token preceded by accented character (doesn't replace)");
-    q.end();
+test('detect word boundaries and compare lastTerms', (t) => {
+    t.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), { query: 'R de Janeiro', lastWord: false }, 'phrase-initial token');
+    t.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), { query: 'de R Janeiro', lastWord: false }, 'phrase-medial token');
+    t.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), { query: 'de Janeiro R', lastWord: true }, 'phrase-terminal token');
+    t.deepEqual(token.replaceToken(tokens, 'de-Janeiro!Rio??'), { query: 'de-Janeiro!R??', lastWord: true }, 'punctuation-separated token');
+    t.deepEqual(token.replaceToken(tokens, 'deteriorate'), { query: 'deteriorate', lastWord: false }, "word-medial token (doesn't replace)");
+    t.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), { query: 'Rua Oratório', lastWord: false }, "word-terminal token preceded by accented character (doesn't replace)");
+    t.end();
 });
 
-test('test skipDiacritics and skipBoundaries flags', (q) => {
+test('Flag last word token replacements only if the entire word is replaced with a simple token replacement', (t) => {
     const replacer = token.createReplacer({
+        'Street': 'St',
+        '([a-z]+)väg': '$1v',
+        'väg([a-z]+)': 'v$1',
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
-    }, { includeUnambiguous: true });
-    q.deepEqual(replacer, [
-        { named: false, from: /ä/gi, to: 'ae', inverse: false },
-        { named: false, from: /ö/gi, to: 'oe', inverse: false },
-        { named: false, from: /ü/gi, to: 'ue', inverse: false },
-        { named: false, from: /ae/gi, to: 'ä', inverse: true },
-        { named: false, from: /oe/gi, to: 'ö', inverse: true },
-        { named: false, from: /ue/gi, to: 'ü', inverse: true }
-    ], 'forward and reverse replacers get created for complex objects');
-    q.end();
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+        '(?<number>2\\d+)': '###${number}###',
+        'Saint': 'St'
+    });
+    t.deepEqual(token.replaceToken(replacer, 'Clancy Street'), { query: 'Clancy St', lastWord: true });
+    t.deepEqual(token.replaceToken(replacer, 'Mäster'), { query: 'Maester', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'Köln'), { query: 'Koeln', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'Bürbarg'), { query: 'Buerbarg', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'Samuelsväg'), { query: 'Samuelsv', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'vägabond'), { query: 'vabond', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'vägabond street'), { query: 'vabond St', lastWord: true });
+    t.deepEqual(token.replaceToken(replacer, 'street vägabond'), { query: 'St vabond', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, '234'), { query: '###234###', lastWord: false });
+    t.deepEqual(token.replaceToken(replacer, 'Bad Saint'), { query: 'Bad St', lastWord: true });
+    t.end();
+});
+
+test('replace complex global tokens', (t) => {
+    const replacer = token.createGlobalReplacer({
+        '\\b(.+)(strasse|str|straße)\\b': '$1 str'
+    });
+    t.deepEqual(token.replaceToken(replacer, 'talstrasse'), { query: 'tal str', lastWord: false }, 'talstrasse => tal str');
+    t.deepEqual(token.replaceToken(replacer, 'talstraße'), { query: 'tal str', lastWord: false }, 'talstraße => tal str');
+    t.deepEqual(token.replaceToken(replacer, 'talstr'), { query: 'tal str', lastWord: false }, 'talstr => tal str');
+    t.deepEqual(token.replaceToken(replacer, 'talstrasse 3-5'), { query: 'tal str 3-5', lastWord: false }, 'talstrasse 3-5 => tal str 3-5');
+    t.deepEqual(token.replaceToken(replacer, 'talstraße 3-5'), { query: 'tal str 3-5', lastWord: false }, 'talstraße 3-5 => tal str 3-5');
+    t.deepEqual(token.replaceToken(replacer, 'talstr 3-5'), { query: 'tal str 3-5', lastWord: false }, 'talstr 3-5 => tal str 3-5');
+    t.end();
 });

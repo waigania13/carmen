@@ -12,7 +12,7 @@ function benchmark(cb) {
     console.log('# token.replaceToken');
 
     suite.add('token replace', function() {
-        var res = token.replaceToken(replacers, 'kanye west');
+        var res = token.replaceToken(replacers, 'kanye west').query;
     })
     .on('cycle', function(event) {
         console.log(String(event.target));
