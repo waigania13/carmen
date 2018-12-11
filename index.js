@@ -313,6 +313,7 @@ function Geocoder(indexes, options) {
     function loadIndex(id, source, callback) {
         source.open((err) => {
             if (err) return callback(err);
+
             source.getBaseFilename = function() {
                 const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
                 if (filename) {
@@ -365,8 +366,7 @@ function Geocoder(indexes, options) {
                         info: loaded[0],
                         dictcache: {
                             reader: null,
-                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path),
-                            config: loaded[1].config
+                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
                         }
                     };
                 }
