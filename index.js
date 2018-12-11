@@ -15,8 +15,6 @@ const geocode = require('./lib/geocoder/geocode');
 const analyze = require('./lib/util/analyze');
 const token = require('./lib/text-processing/token');
 const index = require('./lib/indexer/index');
-const constants = require('./lib/constants.js');
-const removeDiacritics = require('./lib/text-processing/remove-diacritics');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -169,12 +167,12 @@ function Geocoder(indexes, options) {
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
 
-            source.categorized_replacement_words = categorizeWordReplacement(info.geocoder_tokens);
+            source.categorized_replacement_words = token.categorizeTokenReplacements(info.geocoder_tokens);
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
 
-            if (tokenValidator(source.simple_replacer) || tokenValidator(source.complex_query_replacer)) {
+            if (token.tokenValidator(source.simple_replacer) || token.tokenValidator(source.complex_query_replacer)) {
                 throw new Error('Using global tokens');
             }
 
@@ -422,92 +420,6 @@ function clone(source) {
     // Include reference to original
     cloned._original = source;
     return cloned;
-}
-
-/**
- * Validates token replacer. Ensures that none of the values in from or to include blank space.
- *
- * @access private
- *
- * @param {Object} token_replacer - a token replacer
- * @returns {(null|true)} true if any 'from' or 'to' values contains blank space
- */
-function tokenValidator(token_replacer) {
-    for (let i = 0; i < token_replacer.length; i++) {
-        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || (typeof token_replacer[i].to != 'function' && token_replacer[i].to.toString().indexOf(' ') >= 0)) {
-            return true;
-        }
-    }
-}
-
-/**
-*
-* Categorizes word replacements into simple and complex
-* Simple and complec word replacements are used during index time
-* Only complex word replacements are used during query time
-*
-* @access private
-*
-* @param {Object} geocoder_tokens - word mapping object, eg: Street => St
-* @returns {Array} wordReplacement - An array of word replacements categorised as simple or complex (simple: false)
-*/
-function categorizeWordReplacement(geocoder_tokens) {
-    // make some regexes
-    let nonWordBoundary = "[^" + constants.WORD_BOUNDARY.substr(1);
-    let innerWordBoundary = new RegExp(nonWordBoundary + '+' + constants.WORD_BOUNDARY + '+' + nonWordBoundary + '+');
-    let outerWordBoundary = new RegExp('(^' + constants.WORD_BOUNDARY + '|' + constants.WORD_BOUNDARY + '$)', 'g');
-    const wordReplacements = {
-        'simple': [],
-        'complex': []
-    }
-    let wordReplacementObject;
-    if (geocoder_tokens !== undefined) {
-        geocoder_tokens = JSON.parse(JSON.stringify(geocoder_tokens));
-
-        // filters out named groups and words that are replaced by functions and objects
-        for (const _from in geocoder_tokens) {
-            let orig_from = _from;
-            let orig_to = geocoder_tokens[_from];
-
-            let replacementOpts = {};
-            let to = orig_to;
-            if (typeof orig_to == 'object' && orig_to.text) {
-                replacementOpts = orig_to;
-                to = orig_to.text;
-            }
-
-            const complex = (
-                replacementOpts.skipBoundaries ||
-                replacementOpts.skipDiacriticStripping ||
-                (typeof orig_to == 'string' && (
-                    /\$(\d+|{\w+})/.test(to) ||
-                    innerWordBoundary.test(to)
-                ))
-            ) || false;
-
-
-            if (complex) {
-                wordReplacements.complex.push({ 'from': orig_from, 'to': orig_to });
-            } else {
-                // we want our simple ones to actually be simple:
-                // - lowercase
-                // - no diacritics
-                // - no leading/trailing word boundaries (like periods)
-                let simple_from = removeDiacritics(
-                    orig_from
-                        .replace(outerWordBoundary, '')
-                        .toLowerCase()
-                );
-                let simple_to = removeDiacritics(
-                    orig_to
-                        .replace(outerWordBoundary, '')
-                        .toLowerCase()
-                );
-                wordReplacements.simple.push({ 'from': simple_from, 'to': simple_to });
-            }
-        }
-    }
-    return wordReplacements;
 }
 
 /**
