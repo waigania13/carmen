@@ -15,52 +15,48 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
 
-    replacer = token.createReplacer([{'tokens': { 'from': 'Street', 'to': 'St' }, 'simple': true}]);
+    replacer = token.createReplacer({ 'Street':'St' });
     doc = { properties: { 'carmen:text': 'Main Street' } };
     texts = [
-        { languages: ['default'], tokens: ['main', 'st'] }
+        { languages: ['default'], tokens: ['main', 'st'] },
+        { languages: ['default'], tokens: ['main', 'street'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates contracted phrases using geocoder_tokens');
 
-    replacer = token.createReplacer([{'tokens': { 'from': 'Street', 'to': 'St' }, 'simple': true}]);
+    replacer = token.createReplacer({ 'Street':'St' });
     doc = { properties: { 'carmen:text': 'Main Street, main st' } };
     texts = [
-        { languages: ['default'], tokens: ['main', 'st'] }
+        { languages: ['default'], tokens: ['main', 'st'] },
+        { languages: ['default'], tokens: ['main', 'street'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants');
 
-    const tokenList = [
-        {'tokens': { 'from': 'Street', 'to': 'St' }, 'simple': true},
-        {'tokens': { 'from': 'Lane', 'to': 'Ln' }, 'simple': true}
-    ]
-    replacer = token.createReplacer(tokenList, { includeUnambiguous: true });
+    replacer = token.createReplacer({ 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
 
     doc = { properties: { 'carmen:text': 'Main Street Lane' } };
     texts = [
-        { languages: ['default'], tokens: ['main', 'st', 'ln'] }
+        { languages: ['default'], tokens: ['main', 'st', 'ln'] },
+        { languages: ['default'], tokens: ['main', 'st', 'lane'] },
+        { languages: ['default'], tokens: ['main', 'street', 'ln'] },
+        { languages: ['default'], tokens: ['main', 'street', 'lane'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants 2');
 
     doc = { properties: { 'carmen:text': 'Main Street St Lane Ln' } };
     t.assert(termops.getIndexableText(replacer, [], doc).length <= 8, 'only include 8 permutations');
 
-    replacer = token.createReplacer([
-        {'tokens': { 'from': 'Saint', 'to': 'St'}, 'simple': true},
-        {'tokens': { 'from': 'Street', 'to': 'St'}, 'simple': true},
-        {'tokens': { 'from': 'Lane', 'to': 'Ln'}, 'simple': true}
-    ], { includeUnambiguous: true });
+    replacer = token.createReplacer({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
 
     doc = { properties: { 'carmen:text': 'Main Street St Lane' } };
     texts = [
-        { languages: ['default'], tokens: ['main', 'st', 'st', 'ln'] }
+        { languages: ['default'], tokens: ['main', 'st', 'st', 'ln'] },
+        { languages: ['default'], tokens: ['main', 'st', 'st', 'lane'] },
+        { languages: ['default'], tokens: ['main', 'street', 'st', 'ln'] },
+        { languages: ['default'], tokens: ['main', 'street', 'st', 'lane'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'don\'t expand st if it\'s ambiguous');
 
-    replacer = token.createReplacer([
-        {'tokens': { 'from': 'Saint', 'to': 'St'}, 'simple': true},
-        {'tokens': { 'from': 'Street', 'to': 'St'}, 'simple': true},
-        {'tokens': { 'from': 'Lane', 'to': 'Ln'}, 'simple': true}
-    ], {
+    replacer = token.createReplacer({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, {
         includeUnambiguous: true,
         custom: {
             'St': function() {
@@ -82,7 +78,10 @@ test('termops.getIndexableText', (t) => {
 
     doc = { properties: { 'carmen:text': 'st thomas st' } };
     texts = [
-        { languages: ['default'], tokens: ['st', 'thomas', 'st'] }
+        { languages: ['default'], tokens: ['st', 'thomas', 'st'] },
+        { languages: ['default'], tokens: ['saint', 'thomas', 'st'] },
+        { languages: ['default'], tokens: ['saint', 'thomas', 'street'] },
+        { languages: ['default'], tokens: ['st', 'thomas', 'street'] }
     ];
     t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include st if there\'s a custom reverse function');
 
@@ -276,14 +275,11 @@ test('termops.getIndexableText', (t) => {
 });
 
 test('replacer/globalReplacer interaction', (t) => {
-    const replacer = token.createReplacer([{
-        'tokens': {
-            'from': 'ä', 'to': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
-            'from': 'ö', 'to': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-            'from': 'ü', 'to': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
-        },
-        'simple': false
-    }], { includeUnambiguous: true });
+    const replacer = token.createReplacer({
+        'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
+        'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+    }, { includeUnambiguous: true });
     const globalReplacer = token.createGlobalReplacer({
         '(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)(.+)(strasse|str|straße)(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)': ' $1 str '
     });

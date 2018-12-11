@@ -15,6 +15,8 @@ const geocode = require('./lib/geocoder/geocode');
 const analyze = require('./lib/util/analyze');
 const token = require('./lib/text-processing/token');
 const index = require('./lib/indexer/index');
+const constants = require('./lib/constants.js');
+const removeDiacritics = require('./lib/text-processing/remove-diacritics');
 
 require('util').inherits(Geocoder, EventEmitter);
 module.exports = Geocoder;
@@ -161,22 +163,25 @@ function Geocoder(indexes, options) {
             source.geocoder_ignore_order = info.geocoder_ignore_order || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
             source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
             source.geocoder_tokens = info.geocoder_tokens || {};
-            source.simple_token_replacement = categorizeWordReplacement(info.geocoder_tokens);
             source.geocoder_inverse_tokens = options.geocoder_inverse_tokens || {};
             source.geocoder_inherit_score = info.geocoder_inherit_score || false;
             source.geocoder_grant_score = info.hasOwnProperty('geocoder_grant_score') ? info.geocoder_grant_score : true;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
-            source.token_replacer = token.createReplacer(source.simple_token_replacement || {});
-            source.indexing_replacer = token.createReplacer(source.simple_token_replacement || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
 
-            if (tokenValidator(source.token_replacer)) {
+            source.categorized_replacement_words = categorizeWordReplacement(info.geocoder_tokens);
+            source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
+            source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
+            source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
+
+            if (tokenValidator(source.simple_replacer) || tokenValidator(source.complex_query_replacer)) {
                 throw new Error('Using global tokens');
             }
 
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
+                const catReplacer = source.simple_replacer.concat(source.complex_query_replacer);
 
                 for (let category of info.geocoder_categories) {
                     category = termops.tokenize(category, true);
@@ -184,7 +189,7 @@ function Geocoder(indexes, options) {
                     source.categories.add(category.join(' '), true);
 
                     category = category.map((cat) => {
-                        return token.replaceToken(source.token_replacer, cat).query.toLowerCase();
+                        return token.replaceToken(catReplacer, cat).query.toLowerCase();
                     });
 
                     source.categories.add(category.join(' '), true);
@@ -326,20 +331,9 @@ function Geocoder(indexes, options) {
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
                 const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
-                const categorisedWordReplacements = source._original._info ? categorizeWordReplacement(source._original._info.geocoder_tokens) : [];
-
-                // word replacements categorized into complex or simple
-                // filter out only the simple ones
-                const simpleWordReplacements = categorisedWordReplacements.reduce((simpleArr, i) => {
-                    if (i.simple === true) {
-                        simpleArr.push(i.tokens);
-                    }
-                    return simpleArr;
-                }, []);
-
                 if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
                     // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
-                    done(null, { path: fuzzySetFile, exists: false, config: simpleWordReplacements });
+                    done(null, { path: fuzzySetFile, exists: false });
                 } else {
                     // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
                     done(null, { path: fuzzySetFile, exists: true });
@@ -440,7 +434,7 @@ function clone(source) {
  */
 function tokenValidator(token_replacer) {
     for (let i = 0; i < token_replacer.length; i++) {
-        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
+        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || (typeof token_replacer[i].to != 'function' && token_replacer[i].to.toString().indexOf(' ') >= 0)) {
             return true;
         }
     }
@@ -458,30 +452,62 @@ function tokenValidator(token_replacer) {
 * @returns {Array} wordReplacement - An array of word replacements categorised as simple or complex (simple: false)
 */
 function categorizeWordReplacement(geocoder_tokens) {
-    const wordReplacement = [];
+    // make some regexes
+    let nonWordBoundary = "[^" + constants.WORD_BOUNDARY.substr(1);
+    let innerWordBoundary = new RegExp(nonWordBoundary + '+' + constants.WORD_BOUNDARY + '+' + nonWordBoundary + '+');
+    let outerWordBoundary = new RegExp('(^' + constants.WORD_BOUNDARY + '|' + constants.WORD_BOUNDARY + '$)', 'g');
+    const wordReplacements = {
+        'simple': [],
+        'complex': []
+    }
     let wordReplacementObject;
     if (geocoder_tokens !== undefined) {
         geocoder_tokens = JSON.parse(JSON.stringify(geocoder_tokens));
 
         // filters out named groups and words that are replaced by functions and objects
         for (const _from in geocoder_tokens) {
-            if (typeof geocoder_tokens[_from] === 'string' &&  typeof _from === 'string' && /\$(\d+|{\w+})/.test(geocoder_tokens[_from]) === false) {
-                wordReplacementObject = {
-                    'tokens': { 'from': _from, 'to': geocoder_tokens[_from] },
-                    'simple': true
-                };
-                wordReplacement.push(wordReplacementObject);
+            let orig_from = _from;
+            let orig_to = geocoder_tokens[_from];
+
+            let replacementOpts = {};
+            let to = orig_to;
+            if (typeof orig_to == 'object' && orig_to.text) {
+                replacementOpts = orig_to;
+                to = orig_to.text;
             }
-            else {
-                wordReplacementObject = {
-                    'tokens': { 'from': _from, 'to': geocoder_tokens[_from] },
-                    'simple': false
-                };
-                wordReplacement.push(wordReplacementObject);
+
+            const complex = (
+                replacementOpts.skipBoundaries ||
+                replacementOpts.skipDiacriticStripping ||
+                (typeof orig_to == 'string' && (
+                    /\$(\d+|{\w+})/.test(to) ||
+                    innerWordBoundary.test(to)
+                ))
+            ) || false;
+
+
+            if (complex) {
+                wordReplacements.complex.push({ 'from': orig_from, 'to': orig_to });
+            } else {
+                // we want our simple ones to actually be simple:
+                // - lowercase
+                // - no diacritics
+                // - no leading/trailing word boundaries (like periods)
+                let simple_from = removeDiacritics(
+                    orig_from
+                        .replace(outerWordBoundary, '')
+                        .toLowerCase()
+                );
+                let simple_to = removeDiacritics(
+                    orig_to
+                        .replace(outerWordBoundary, '')
+                        .toLowerCase()
+                );
+                wordReplacements.simple.push({ 'from': simple_from, 'to': simple_to });
             }
         }
     }
-    return wordReplacement;
+    return wordReplacements;
 }
 
 /**
