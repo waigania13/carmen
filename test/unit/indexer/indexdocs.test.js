@@ -6,7 +6,8 @@ const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
 
 tape('indexdocs.loadDoc', (t) => {
-    const token_replacer = token.createReplacer({});
+    const simple_replacer = token.createSimpleReplacer({});
+    const complex_replacer = token.createComplexReplacer({});
 
     const patch = { grid:{}, docs:[], text:[] };
     const freq = {};
@@ -33,7 +34,7 @@ tape('indexdocs.loadDoc', (t) => {
     freq[tokens[1]] = [100];
 
     // Indexes single doc.
-    const err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false, autopopulate: {} } }, zoom, token_replacer);
+    const err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false, autopopulate: {} } }, zoom, simple_replacer, complex_replacer);
     t.ok(typeof err !== 'number', 'no error');
 
     t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
@@ -473,8 +474,8 @@ tape('indexdocs.generateFrequency', (t) => {
         },
         geometry: {}
     }];
-    const geocoder_tokens = token.createReplacer({ 'street':'st','road':'rd' });
-    t.deepEqual(indexdocs.generateFrequency(docs, token.createReplacer({})), {
+    const geocoder_tokens = token.createSimpleReplacer({ 'street':'st','road':'rd' });
+    t.deepEqual(indexdocs.generateFrequency(docs, token.createSimpleReplacer({})), {
         __COUNT__: [4],
         __MAX__: [2],
         main: [2],

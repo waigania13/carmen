@@ -208,74 +208,53 @@ const tokenList = {
 // ensure we don't mutate the tokenList object directly
 const tokenClone = JSON.parse(JSON.stringify(tokenList));
 
-const tokens = token.createReplacer(tokenList);
-const tokensR = token.createReplacer(tokenList, { includeUnambiguous: true });
+const categorized = token.categorizeTokenReplacements(tokenList);
+const simpleTokens = token.createSimpleReplacer(categorized.simple);
+const complexTokens = token.createComplexReplacer(categorized.complex);
+const tokens = simpleTokens.concat(complexTokens);
+const complexTokensR = token.createComplexReplacer(categorized.complex, { includeUnambiguous: true });
 
-// this is a test function that returns "saint" if the match is at the beginning, "street"
-// if it's at the end, or "st" otherwise. In real life you'd want something smarter than this
-const tokensRC = token.createReplacer(tokenList, {
-    includeUnambiguous: true,
-    custom: {
-        'St': function() {
-            const full = arguments[arguments.length - 1];
-            const offset = arguments[arguments.length - 2];
-            const match = arguments[0];
-            const pre = full.slice(0, offset);
-            const post = full.slice(offset + match.length);
-
-            let out;
-            if (pre.trim() === '') out = arguments[1] + 'saint' + arguments[2];
-            else if (post.trim() === '') out = arguments[1] + 'street' + arguments[2];
-            else out = arguments[0];
-
-            return out;
-        }
-    }
-});
+// this function simulates the current typical usage, which is to enumerate
+// using complex replacements, and then perform simple substitution using the
+// simple ones
+const applySimpleAndComplex = function(str) {
+    return token.enumerateTokenReplacements(complexTokensR, str).map((s) => {
+        return token.replaceToken(simpleTokens, s).query;
+    });
+};
 
 // We use the same tokens object to create both indexer and runtime token replacers.
 // Test that indexer-only token replacers don't leak into runtime replacers.
-test('createReplacer', (q) => {
-    q.deepEqual(tokenList, tokenClone, 'createReplacer does not mutate tokenList object');
+test('create*Replacer', (q) => {
+    q.deepEqual(tokenList, tokenClone, 'create*Replacer does not mutate tokenList object');
     q.end();
 });
 
 test('token replacement', (t) => {
-    t.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo St NE, sf', lastWord: true });
+    // lastWord is false because the final replacement is complex
+    t.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo st ne, sf', lastWord: false });
     t.deepEqual(token.replaceToken(tokens, 'coolstreet'), { query: 'coolstreet', lastWord: false });
     t.deepEqual(token.replaceToken(tokens, 'streetwise'), { query: 'streetwise', lastWord: false });
 
     t.deepEqual(
-        token.enumerateTokenReplacements(tokens, 'fargo street northeast, san francisco'),
+        token.enumerateTokenReplacements(complexTokensR, 'fargo street northeast, san francisco'),
         [
-            'fargo St NE, sf',
-            'fargo St NE, san francisco',
-            'fargo street NE, sf', 'fargo street NE, san francisco',
-            'fargo St northeast, sf',
-            'fargo St northeast, san francisco',
             'fargo street northeast, sf',
             'fargo street northeast, san francisco'
         ]
     );
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'main st street st st milwaukee lane ln wtf ln'), [
-        'main st St st st milwaukee Ln ln wtf ln',
-        'main st street st st milwaukee Ln ln wtf ln',
-        'main st St st st milwaukee lane ln wtf ln',
-        'main st street st st milwaukee lane ln wtf ln'
+    t.deepEqual(
+        applySimpleAndComplex('fargo street northeast, san francisco'),
+        [
+            'fargo st ne, sf',
+            'fargo st ne, san francisco'
+        ]
+    );
+    t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
+        'main st st st st milwaukee ln ln wtf ln'
     ]);
-    t.deepEqual(token.enumerateTokenReplacements(tokensR, 'main st street st st milwaukee lane ln wtf ln'), [
-        'main st St st st milwaukee Ln ln wtf ln',
-        'main st St st st milwaukee Ln ln wtf Lane',
-        'main st St st st milwaukee Lane ln wtf Lane',
-        'main st St st st milwaukee Lane Lane wtf Lane',
-        'main st street st st milwaukee Ln ln wtf ln',
-        'main st street st st milwaukee Ln ln wtf Lane',
-        'main st street st st milwaukee Lane ln wtf Lane',
-        'main st street st st milwaukee Lane Lane wtf Lane',
-        'main st St st st milwaukee lane ln wtf ln',
-        'main st St st st milwaukee lane Lane wtf ln',
-        'main st street st st milwaukee lane ln wtf ln',
-        'main st street st st milwaukee lane Lane wtf ln'
+    t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
+        'main st st st st milwaukee ln ln wtf ln'
     ]);
 
     t.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
@@ -285,12 +264,12 @@ test('token replacement', (t) => {
     // quite non-deterministic because token order matters very much for the
     // variants that will actually get hit.
     let ubTokens;
-    ubTokens = token.createReplacer({
+    ubTokens = token.createComplexReplacer({
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
         'uber': 'üb',
     });
     t.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['üb cat', 'uber cat'], 'does not cascade replacements');
-    ubTokens = token.createReplacer({
+    ubTokens = token.createComplexReplacer({
         'uber': 'üb',
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
     });
@@ -300,30 +279,8 @@ test('token replacement', (t) => {
     t.end();
 });
 
-test('custom reverse replacement', (t) => {
-    t.deepEqual(token.replaceToken(tokensRC, 'st thomas st united states'), { query: 'saint thomas st united states', lastWord: false });
-    t.deepEqual(token.replaceToken(tokensRC, 'e first st'), { query: 'East First street', lastWord: false });
-
-    t.deepEqual(token.enumerateTokenReplacements(tokensRC, 'st thomas st united states'), [
-        'st thomas st united states',
-        'saint thomas st united states'
-    ]);
-    t.deepEqual(token.enumerateTokenReplacements(tokensRC, 'e first st'), [
-        'e 1st st',
-        'e 1st street',
-        'East 1st st',
-        'East 1st street',
-        'e first st',
-        'e first street',
-        'East first st',
-        'East first street'
-    ]);
-
-    t.end();
-});
-
 test('named/numbered group replacement', (t) => {
-    const tokens = token.createReplacer({
+    const tokens = token.createComplexReplacer({
         'abc': 'xyz',
         '(1\\d+)': '@@@$1@@@',
         '(?<number>2\\d+)': '###${number}###'
@@ -340,42 +297,8 @@ test('named/numbered group replacement', (t) => {
 
 test('throw on mixed name/num replacement groups', (t) => {
     t.throws(() => {
-        token.createReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
+        token.createComplexReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
     });
-    t.end();
-});
-
-test('detect word boundaries and compare lastTerms', (t) => {
-    t.deepEqual(token.replaceToken(tokens, 'Rio de Janeiro'), { query: 'R de Janeiro', lastWord: false }, 'phrase-initial token');
-    t.deepEqual(token.replaceToken(tokens, 'de rio Janeiro'), { query: 'de R Janeiro', lastWord: false }, 'phrase-medial token');
-    t.deepEqual(token.replaceToken(tokens, 'de Janeiro Rio'), { query: 'de Janeiro R', lastWord: true }, 'phrase-terminal token');
-    t.deepEqual(token.replaceToken(tokens, 'de-Janeiro!Rio??'), { query: 'de-Janeiro!R??', lastWord: true }, 'punctuation-separated token');
-    t.deepEqual(token.replaceToken(tokens, 'deteriorate'), { query: 'deteriorate', lastWord: false }, "word-medial token (doesn't replace)");
-    t.deepEqual(token.replaceToken(tokens, 'Rua Oratório'), { query: 'Rua Oratório', lastWord: false }, "word-terminal token preceded by accented character (doesn't replace)");
-    t.end();
-});
-
-test('Flag last word token replacements only if the entire word is replaced with a simple token replacement', (t) => {
-    const replacer = token.createReplacer({
-        'Street': 'St',
-        '([a-z]+)väg': '$1v',
-        'väg([a-z]+)': 'v$1',
-        'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
-        'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
-        '(?<number>2\\d+)': '###${number}###',
-        'Saint': 'St'
-    });
-    t.deepEqual(token.replaceToken(replacer, 'Clancy Street'), { query: 'Clancy St', lastWord: true });
-    t.deepEqual(token.replaceToken(replacer, 'Mäster'), { query: 'Maester', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'Köln'), { query: 'Koeln', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'Bürbarg'), { query: 'Buerbarg', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'Samuelsväg'), { query: 'Samuelsv', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'vägabond'), { query: 'vabond', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'vägabond street'), { query: 'vabond St', lastWord: true });
-    t.deepEqual(token.replaceToken(replacer, 'street vägabond'), { query: 'St vabond', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, '234'), { query: '###234###', lastWord: false });
-    t.deepEqual(token.replaceToken(replacer, 'Bad Saint'), { query: 'Bad St', lastWord: true });
     t.end();
 });
 
