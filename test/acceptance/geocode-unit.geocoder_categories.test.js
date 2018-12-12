@@ -22,19 +22,29 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     const c = new Carmen(conf);
     tape('index category POI', (t) => {
-        const poi = {
+        queueFeature(conf.poi, [{
             id: 1,
             properties: {
-                'carmen:text': 'delicious,pizza',
+                'carmen:text': 'delicious,tofu',
                 'carmen:center': [0,0],
-                caegory: 'pizza'
+                category: 'vegetarian'
             },
             geometry: {
                 type: 'Point',
                 coordinates: [0,0]
             }
-        };
-        queueFeature(conf.poi, poi, () => { buildQueued(conf.poi, t.end); });
+        }, {
+            id: 2,
+            properties: {
+                'carmen:text': 'delicious,pizza',
+                'carmen:center': [0,0],
+                category: 'pizza'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }], () => buildQueued(conf.poi, t.end));
     });
 
     tape('Ensure categories were tokenized', (t) => {
@@ -46,6 +56,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('test poi for non-category feature query', (t) => {
         c.geocode('delicious', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
+            t.equals(res.features[0].id, 'poi.1', 'found delicious tofu');
             t.equals(res.features[0].place_name, 'delicious', 'found delicious');
             t.equals(res.features[0].relevance, 1.00);
             t.end();
@@ -55,8 +66,9 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('test poi for category feature query', (t) => {
         c.geocode('pizza', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
+            t.equals(res.features[0].id, 'poi.2', 'found delicious pizza');
             t.equals(res.features[0].place_name, 'delicious', 'found delicious');
-            t.equals(res.features[0].relevance, 1.01);
+            t.equals(res.features[0].relevance, 1.00);
             t.end();
         });
     });
