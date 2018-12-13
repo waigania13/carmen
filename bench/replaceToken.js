@@ -3,7 +3,7 @@ var suite = new Benchmark.Suite();
 var token = require('../lib/text-processing/token');
 var tokens = require('./fixtures/tokens.json');
 
-var replacers = token.createReplacer(tokens);
+var replacers = token.createSimpleReplacer(tokens);
 
 module.exports = benchmark;
 
