@@ -6,7 +6,7 @@ const path = require('path');
 let argv = process.argv;
 const Carmen = require('..');
 argv = require('minimist')(process.argv, {
-    string: ['version', 'config', 'index', 'tokens', 'inverse_tokens'],
+    string: ['version', 'config', 'index', 'tokens'],
     boolean: ['help']
 });
 const settings = require('../package.json');
@@ -19,7 +19,6 @@ function help() {
     console.log('  --config="<path>"       path to JSON document with index settings');
     console.log('  --tokens=<tokens.json>  Load global token file');
     console.log('  --index="<path>"        Tilelive path to output index to');
-    console.log('  --inverse_tokens="<path.js>[<path2.js>,...]"');
     console.log('      Paths to JS files with functions for guessing token reversal');
     process.exit(0);
 }
@@ -40,15 +39,6 @@ if (argv.tokens) {
     if (typeof tokens === 'function') {
         tokens = tokens();
     }
-}
-
-const inverseTokens = {};
-if (argv.inverse_tokens) {
-    const rtFiles = argv.inverse_tokens.split(',');
-    rtFiles.forEach((file) => {
-        const data = require(file);
-        for (const key of Object.keys(data)) inverseTokens[key] = data[key];
-    });
 }
 
 let conf;
@@ -81,7 +71,6 @@ function index(err) {
 
     const carmen = new Carmen(conf, {
         tokens: tokens,
-        geocoder_inverse_tokens: inverseTokens
     });
     config.output = process.stdout;
 
