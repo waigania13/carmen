@@ -1,5 +1,9 @@
 # Changelog
 
+## 25.8.1
+
+- Fix a bug where category matches could have a relevence greater than 1.
+
 ## 25.8.0
 
 - Updated carmen-cache to 0.24.0 which adds support for word-boundary aware autocomplete
