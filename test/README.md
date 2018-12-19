@@ -14,9 +14,9 @@ Unit tests in carmen are written to test whether individual functions in a file 
 // from context.test.js
 
 context.contextVector(source, 0, 0, false, { 2:true }, null, false, false, (err, data) => {
-	t.ifError(err);
-	t.equal(data.properties['carmen:text'], 'B');
-	t.end();
+    t.ifError(err);
+    t.equal(data.properties['carmen:text'], 'B');
+    t.end();
 });
 
 ```
