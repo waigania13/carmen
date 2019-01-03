@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/mapbox/carmen.svg?style=svg)](https://circleci.com/gh/mapbox/carmen)
+[![Build Status](https://travis-ci.org/mapbox/carmen.svg?branch=master)](https://travis-ci.org/mapbox/carmen)
 
 [![codecov](https://codecov.io/gh/mapbox/carmen/branch/master/graph/badge.svg)](https://codecov.io/gh/mapbox/carmen)
 
