@@ -1,5 +1,9 @@
 # Changelog
 
+## 26.0.0
+
+- Rewrite carmen token replacement logic to more heavily leverage fuzzy-phrase
+
 ## 25.8.1
 
 - Fix a bug where category matches could have a relevence greater than 1.
