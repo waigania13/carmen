@@ -66,8 +66,8 @@ test('index.generateStats', (t) => {
         },
         geometry: {}
     }];
-    const geocoder_tokens = token.createReplacer({ 'street':'st','road':'rd' });
-    t.deepEqual(indexdocs.generateFrequency(docs, token.createReplacer({})), {
+    const geocoder_tokens = token.createSimpleReplacer({ 'street':'st','road':'rd' });
+    t.deepEqual(indexdocs.generateFrequency(docs, token.createSimpleReplacer({})), {
         __COUNT__: [4],
         __MAX__: [2],
         main: [2],

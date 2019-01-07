@@ -9,20 +9,26 @@ function benchmark(cb) {
     if (!cb) cb = function(){};
     console.log('# token.replaceTokenGroups');
 
-    suite.add('token replace - no group replacement', function() {
-        var replacers = token.createReplacer({
+    suite.add('token replace - simple, no group replacement', function() {
+        var replacers = token.createSimpleReplacer({
+            "\\d+": "###"
+        });
+        var res = token.replaceToken(replacers, 'abc ' + Math.round(Math.random() * 1000) + ' def').query;
+    })
+    suite.add('token replace - complex, no group replacement', function() {
+        var replacers = token.createComplexReplacer({
             "\\d+": "###"
         });
         var res = token.replaceToken(replacers, 'abc ' + Math.round(Math.random() * 1000) + ' def').query;
     })
     suite.add('token replace - numbered groups', function() {
-        var replacers = token.createReplacer({
+        var replacers = token.createComplexReplacer({
             "(\\d+)": "#$1#"
         });
         var res = token.replaceToken(replacers, 'abc ' + Math.round(Math.random() * 1000) + ' def').query;
     })
     .add('token replace - named groups', function() {
-        var replacers = token.createReplacer({
+        var replacers = token.createComplexReplacer({
             "(?<num>\\d+)": "#${num}#"
         });
         var res = token.replaceToken(replacers, 'abc ' + Math.round(Math.random() * 1000) + ' def').query;

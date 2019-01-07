@@ -3,115 +3,85 @@ const termops = require('../../../lib/text-processing/termops');
 const token = require('../../../lib/text-processing/token');
 const test = require('tape');
 
+// test utility function to categorize the tokens, then create two replacers,
+// as we actually do in practice
+const createMultipleReplacers = function(tokens, opts) {
+    const categorized = token.categorizeTokenReplacements(tokens);
+    return {
+        simple: token.createSimpleReplacer(categorized.simple),
+        complex: token.createComplexReplacer(categorized.complex, opts)
+    };
+};
+
 test('termops.getIndexableText', (t) => {
-    let replacer;
+    let replacers;
     let doc;
     let texts;
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'Main Street' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'street'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'creates indexableText');
 
-    replacer = token.createReplacer({ 'Street':'St' });
+    replacers = createMultipleReplacers({ 'Street':'St' });
     doc = { properties: { 'carmen:text': 'Main Street' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'st'] },
-        { languages: ['default'], tokens: ['main', 'street'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates contracted phrases using geocoder_tokens');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'creates contracted phrases using geocoder_tokens');
 
-    replacer = token.createReplacer({ 'Street':'St' });
+    replacers = createMultipleReplacers({ 'Street':'St' });
     doc = { properties: { 'carmen:text': 'Main Street, main st' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'st'] },
-        { languages: ['default'], tokens: ['main', 'street'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'include variants');
 
-    replacer = token.createReplacer({ 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
+    replacers = createMultipleReplacers({ 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
 
     doc = { properties: { 'carmen:text': 'Main Street Lane' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'st', 'ln'] },
-        { languages: ['default'], tokens: ['main', 'st', 'lane'] },
-        { languages: ['default'], tokens: ['main', 'street', 'ln'] },
-        { languages: ['default'], tokens: ['main', 'street', 'lane'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include variants 2');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'include variants 2');
 
     doc = { properties: { 'carmen:text': 'Main Street St Lane Ln' } };
-    t.assert(termops.getIndexableText(replacer, [], doc).length <= 8, 'only include 8 permutations');
+    t.assert(termops.getIndexableText(replacers.simple, replacers.complex, [], doc).length <= 8, 'only include 8 permutations');
 
-    replacer = token.createReplacer({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
+    replacers = createMultipleReplacers({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, { includeUnambiguous: true });
 
     doc = { properties: { 'carmen:text': 'Main Street St Lane' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'st', 'st', 'ln'] },
-        { languages: ['default'], tokens: ['main', 'st', 'st', 'lane'] },
-        { languages: ['default'], tokens: ['main', 'street', 'st', 'ln'] },
-        { languages: ['default'], tokens: ['main', 'street', 'st', 'lane'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'don\'t expand st if it\'s ambiguous');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'don\'t expand st if it\'s ambiguous');
 
-    replacer = token.createReplacer({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, {
-        includeUnambiguous: true,
-        custom: {
-            'St': function() {
-                const full = arguments[arguments.length - 1];
-                const offset = arguments[arguments.length - 2];
-                const match = arguments[0];
-                const pre = full.slice(0, offset);
-                const post = full.slice(offset + match.length);
-
-                let out;
-                if (pre.trim() === '') out = arguments[1] + 'saint' + arguments[2];
-                else if (post.trim() === '') out = arguments[1] + 'street' + arguments[2];
-                else out = arguments[0];
-
-                return out;
-            }
-        }
-    });
-
-    doc = { properties: { 'carmen:text': 'st thomas st' } };
-    texts = [
-        { languages: ['default'], tokens: ['st', 'thomas', 'st'] },
-        { languages: ['default'], tokens: ['saint', 'thomas', 'st'] },
-        { languages: ['default'], tokens: ['saint', 'thomas', 'street'] },
-        { languages: ['default'], tokens: ['st', 'thomas', 'street'] }
-    ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'include st if there\'s a custom reverse function');
-
-    replacer = token.createReplacer({ 'Saint': 'St', 'Street':'St', 'Lane':'Ln' }, {
-        includeUnambiguous: true,
-        custom: {
-            'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
-            'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-            'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
-        }
-    });
+    replacers = createMultipleReplacers({
+        'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
+        'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+    }, { includeUnambiguous: true });
     doc = { properties: { 'carmen:text': 'Äpfelstrüdeln Strasse' } };
     texts = [
-        { languages: ['default'], tokens: ['äpfelstrüdeln', 'strasse'] },
-        { languages: ['default'], tokens: ['äpfelstruedeln', 'strasse'] },
-        { languages: ['default'], tokens: ['aepfelstrüdeln', 'strasse'] },
-        { languages: ['default'], tokens: ['aepfelstruedeln', 'strasse'] }
+        { languages: ['default'], tokens: ['aepfelstruedeln', 'strasse'] },
+        { languages: ['default'], tokens: ['aepfelstrudeln', 'strasse'] },
+        { languages: ['default'], tokens: ['apfelstruedeln', 'strasse'] },
+        { languages: ['default'], tokens: ['apfelstrudeln', 'strasse'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'support custom reverse functions that can skip word boundaries');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'support custom reverse functions that can skip word boundaries');
 
 
-    replacer = token.createReplacer({ 'dix-huitième':'18e' });
+    replacers = createMultipleReplacers({ 'dix-huitième':'18e' });
     doc = { properties: { 'carmen:text': 'Avenue du dix-huitième régiment' } };
     texts = [
-        { languages: ['default'], tokens: ['avenue', 'du', '18e', 'régiment'] },
-        { languages: ['default'], tokens: ['avenue', 'du', 'dix', 'huitième', 'régiment'] }
+        { languages: ['default'], tokens: ['avenue', 'du', '18e', 'regiment'] },
+        { languages: ['default'], tokens: ['avenue', 'du', 'dix', 'huitieme', 'regiment'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'hypenated replacement');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'hypenated replacement');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = {
         properties: {
             'carmen:text':'Main Street',
@@ -125,9 +95,9 @@ test('termops.getIndexableText', (t) => {
         { languages: ['default'], tokens: ['##', 'main', 'street'] },
         { languages: ['default'], tokens: ['#', 'main', 'street'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [],  doc), texts, 'with range');
 
-    replacer = token.createReplacer({ 'street': 'st' });
+    replacers = createMultipleReplacers({ 'street': 'st' });
     doc = {
         properties: {
             'carmen:text':'Main Street',
@@ -139,17 +109,12 @@ test('termops.getIndexableText', (t) => {
         { tokens: ['2##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['1##', 'main', 'st'],     languages: ['default'] },
         { tokens: ['##', 'main', 'st'],      languages: ['default'] },
-        { tokens: ['#', 'main', 'st'],       languages: ['default'] },
-        { tokens: ['main', 'street'],        languages: ['default'] },
-        { tokens: ['2##', 'main', 'street'], languages: ['default'] },
-        { tokens: ['1##', 'main', 'street'], languages: ['default'] },
-        { tokens: ['##', 'main', 'street'],  languages: ['default'] },
-        { tokens: ['#', 'main', 'street'],   languages: ['default'] }
+        { tokens: ['#', 'main', 'st'],       languages: ['default'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'with range');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [],  doc), texts, 'with range');
 
     // test for when token replacement creates 8 variants
-    replacer = token.createReplacer({ 'street': 'st', 'road': 'rd', 'north': 'n' });
+    replacers = createMultipleReplacers({ 'street': 'st', 'road': 'rd', 'north': 'n' });
     doc = {
         properties: {
             'carmen:text':'North Newtown Street Road',
@@ -157,18 +122,11 @@ test('termops.getIndexableText', (t) => {
     };
     texts = [
         { tokens: ['n', 'newtown', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'st', 'road'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'st', 'road'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'street', 'rd'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'street', 'rd'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'street', 'road'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'street', 'road'], languages: ['default'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, '8 variants');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [],  doc), texts, '8 variants');
 
     // test for when token replacement creates more than 8 variants (and gets truncated to 8)
-    replacer = token.createReplacer({ 'street': 'st', 'road': 'rd', 'north': 'n', 'square': 'sq' });
+    replacers = createMultipleReplacers({ 'street': 'st', 'road': 'rd', 'north': 'n', 'square': 'sq' });
     doc = {
         properties: {
             'carmen:text':'North Newtown Square Street Road',
@@ -177,74 +135,67 @@ test('termops.getIndexableText', (t) => {
     // it happens that none of the variants with "street" will be found, since
     // those happen to be the final 8 combinations
     texts = [
-        { tokens: ['n', 'newtown', 'sq', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'square', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'sq', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'square', 'st', 'rd'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'sq', 'st', 'road'], languages: ['default'] },
-        { tokens: ['n', 'newtown', 'square', 'st', 'road'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'sq', 'st', 'road'], languages: ['default'] },
-        { tokens: ['north', 'newtown', 'square', 'st', 'road'], languages: ['default'] }
+        { tokens: ['n', 'newtown', 'sq', 'st', 'rd'], languages: ['default'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [],  doc), texts, 'more than 8 variants');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [],  doc), texts, 'more than 8 variants');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'Main Street', 'carmen:text_es': 'El Main Street' } };
     texts = [
         { languages: ['default'], tokens: ['main', 'street'] },
         { languages: ['es'], tokens: ['el', 'main', 'street'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'in the presence of translations, plain carmen:text has language "default" and translations are language-specific');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, true), texts, 'in the presence of translations, plain carmen:text has language "default" and translations are language-specific');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'San Francisco Airport', 'carmen:text_universal': 'SFO' } };
     texts = [
         { languages: ['default'], tokens: ['san', 'francisco', 'airport'] },
         { languages: ['all'], tokens: ['sfo'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'in the presence of universal text, plain carmen:text and text_universal both have language "all"');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'in the presence of universal text, plain carmen:text and text_universal both have language "all"');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'San Francisco Airport', 'carmen:text_universal': 'SFO', 'carmen:text_es': 'Aeropuerto de San Francisco' } };
     texts = [
         { languages: ['default'], tokens: ['san', 'francisco', 'airport'] },
         { languages: ['all'], tokens: ['sfo'] },
         { languages: ['es'], tokens: ['aeropuerto', 'de', 'san', 'francisco'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'universal text is always indexed across langauges');
-    replacer = token.createReplacer({});
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, true), texts, 'universal text is always indexed across langauges');
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'Latveria,Republic of Latveria' } };
     texts = [
         { languages: ['default'], tokens: ['latveria'] },
         { languages: ['default'], tokens: ['republic', 'of', 'latveria'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText w/ synonyms');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'creates indexableText w/ synonyms');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'carmen:text_en': 'New York' } };
     texts = [
         { languages: ['default', 'en'], tokens: ['new', 'york'] },
         { languages: ['es'], tokens: ['nueva', 'york'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'translations with phrase overlaps are properly grouped');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, true), texts, 'translations with phrase overlaps are properly grouped');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'United States', 'carmen:text_sv': 'USA', 'carmen:text_universal': 'USA' } };
     texts = [
         { languages: ['default'], tokens: ['united', 'states'] },
         { languages: ['sv', 'all'], tokens: ['usa'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, true), texts, 'universal text');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, true), texts, 'universal text');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York' } };
     texts = [
         { languages: ['default', 'en'], tokens: ['new', 'york'] },
         { languages: ['es'], tokens: ['nueva', 'york'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate from default works');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, ['en']), texts, 'auto-populate from default works');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'New York,NYC,bakery', 'carmen:text_es': 'Nueva York' } };
     texts = [
         { tokens: ['new', 'york'], languages: ['default', 'en'] },
@@ -252,30 +203,30 @@ test('termops.getIndexableText', (t) => {
         { tokens: ['bakery'], languages: ['all'] },
         { tokens: ['nueva', 'york'], languages: ['es'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'auto-universalize categories works');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, ['en'], new Set(['bakery'])), texts, 'auto-universalize categories works');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'bakery,New York' } };
     texts = [
         { tokens: ['bakery'], languages: ['default', 'en'] },
         { tokens: ['new', 'york'], languages: ['default', 'en'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en'], new Set(['bakery'])), texts, 'display words are not universalized');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, ['en'], new Set(['bakery'])), texts, 'display words are not universalized');
 
-    replacer = token.createReplacer({});
+    replacers = createMultipleReplacers({});
     doc = { properties: { 'carmen:text': 'New York', 'carmen:text_es': 'Nueva York', 'text_en': 'The Big Apple' } };
     texts = [
         { languages: ['default'], tokens: ['new', 'york'] },
         { languages: ['es'], tokens: ['nueva', 'york'] },
         { languages: ['en'], tokens: ['the', 'big', 'apple'] },
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc, ['en']), texts, 'auto-populate doesn\'t overwrite supplied translation');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, ['en']), texts, 'auto-populate doesn\'t overwrite supplied translation');
 
     t.end();
 });
 
 test('replacer/globalReplacer interaction', (t) => {
-    const replacer = token.createReplacer({
+    const replacers = createMultipleReplacers({
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
@@ -284,26 +235,26 @@ test('replacer/globalReplacer interaction', (t) => {
         '(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|^)(.+)(strasse|str|straße)(?:[\s\u2000-\u206F\u2E00-\u2E7F\\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]|$)': ' $1 str '
     });
 
-    const withUmlaut = termops.getIndexableText(replacer, globalReplacer, { properties: { 'carmen:text': 'Phönixstraße' } });
-    const withOe = termops.getIndexableText(replacer, globalReplacer, { properties: { 'carmen:text': 'Phoenixstraße' } });
+    const withUmlaut = termops.getIndexableText(replacers.simple, replacers.complex, globalReplacer, { properties: { 'carmen:text': 'Phönixstraße' } });
+    const withOe = termops.getIndexableText(replacers.simple, replacers.complex, globalReplacer, { properties: { 'carmen:text': 'Phoenixstraße' } });
 
     t.deepEqual(withUmlaut, withOe, 'umlaut and oe versions get treated the same way');
     t.deepEqual(withUmlaut, [
         { tokens: ['phoenix', 'str'], languages: ['default'] },
-        { tokens: ['phönix', 'str'], languages: ['default'] },
-        { tokens: ['phoenixstraße'], languages: ['default'] },
-        { tokens: ['phönixstraße'], languages: ['default'] }
+        { tokens: ['phonix', 'str'], languages: ['default'] },
+        { tokens: ['phoenixstrasse'], languages: ['default'] },
+        { tokens: ['phonixstrasse'], languages: ['default'] }
     ], 'all variants are generated');
 
     t.end();
 });
 
 test('Reserved words for inherited functions', (t) => {
-    const replacer = token.createReplacer({});
+    const replacers = createMultipleReplacers({});
     const doc = { properties: { 'carmen:text': 'constructor' } };
     const texts = [
         { languages: ['default'], tokens: ['constructor'] }
     ];
-    t.deepEqual(termops.getIndexableText(replacer, [], doc), texts, 'creates indexableText');
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'creates indexableText');
     t.end();
 });

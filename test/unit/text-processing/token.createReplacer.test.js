@@ -11,63 +11,34 @@ function regexEqual(x, y) {
 }
 
 test('createReplacer: simple token replacements', (t) => {
-    const replacer = token.createReplacer({
+    const replacer = token.createSimpleReplacer({
         'Street': 'St',
         'Road': 'Rd',
         'Maréchal': 'Mal'
     });
-    const expected = [{
-        named: false,
-        from: new RegExp('(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '*)$', 'i'),
-        to: '$1St$2',
-        inverse: false
-    }, {
-        named: false,
-        from: new RegExp('(' + WORD_BOUNDARY + '|^)Road(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)Road(' + WORD_BOUNDARY + '*)$', 'i'),
-        to: '$1Rd$2',
-        inverse: false
-    }, {
-        named: false,
-        from: new RegExp('(' + WORD_BOUNDARY + '|^)Maréchal(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)Maréchal(' + WORD_BOUNDARY + '*)$', 'i'),
-        to: '$1Mal$2',
-        inverse: false
-    }, {
-        named: false,
-        from: new RegExp('(' + WORD_BOUNDARY + '|^)Marechal(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)Marechal(' + WORD_BOUNDARY + '*)$', 'i'),
-        to: '$1Mal$2',
-        inverse: false
-    }];
+    const expectedFrom = new RegExp('(' + WORD_BOUNDARY + '|^)((maréchal|road|street)(' + WORD_BOUNDARY + '|$))+', 'gi');
 
-    for (const i in replacer) {
-        t.ok(regexEqual(replacer[i].from, expected[i].from), 'from regexps match');
-        if (replacer[i].fromLastWord) {
-            t.ok(regexEqual(replacer[i].fromLastWord, expected[i].fromLastWord), 'fromLastWord regexps match');
-        } else t.equal(replacer[i].fromLastWord, expected[i].fromLastWord, 'fromLastWord is false');
-    }
-    t.deepEqual(replacer, expected, 'created a regex');
-    t.deepEqual(token.replaceToken(replacer, 'Fake Street'), { query: 'Fake St', lastWord: true }, 'Fake Street => fake St');
+    t.equal(replacer.length, 1);
+    t.ok(regexEqual(replacer[0].from, expectedFrom), 'from regexps match');
+    t.deepEqual(token.replaceToken(replacer, 'Fake Street'), { query: 'Fake st', lastWord: false }, 'Fake Street => fake St');
     t.end();
 });
 
 test('createReplacer: includeUnambiguous', (t) => {
-    const replacer = token.createReplacer({
+    const replacer = token.createComplexReplacer({
         'Street': 'St'
     }, { includeUnambiguous: true });
 
     const expected =  [{
         named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '*)$', 'i'),
+        fromLastWord: false,
         to: '$1St$2',
         inverse: false
     }, {
         named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)St(' + WORD_BOUNDARY + '|$)', 'gi'),
-        fromLastWord: new RegExp('(' + WORD_BOUNDARY + '|^)St(' + WORD_BOUNDARY + '*)$', 'i'),
+        fromLastWord: false,
         to: '$1Street$2',
         inverse: true
     }];
@@ -83,7 +54,7 @@ test('createReplacer: includeUnambiguous', (t) => {
 });
 
 test('createReplacer: substring complex token replacement + diacritics', (t) => {
-    const replacer = token.createReplacer({
+    const replacer = token.createComplexReplacer({
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
@@ -107,7 +78,7 @@ test('createReplacer: substring complex token replacement + diacritics', (t) => 
 });
 
 test('createReplacer: subword complex token replacement', (t) => {
-    const replacer = token.createReplacer({
+    const replacer = token.createComplexReplacer({
         '([a-z]+)gatan': '$1g'
     });
     const expected = [{
@@ -130,7 +101,7 @@ test('createReplacer: subword complex token replacement', (t) => {
 });
 
 test('createReplacer: subword complex token replacement + diacritics', (t) => {
-    const replacer = token.createReplacer({
+    const replacer = token.createComplexReplacer({
         '([a-z]+)vägen': {
             'text': '$1v'
         }

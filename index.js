@@ -166,16 +166,20 @@ function Geocoder(indexes, options) {
             source.geocoder_grant_score = info.hasOwnProperty('geocoder_grant_score') ? info.geocoder_grant_score : true;
             source.geocoder_universal_text = info.geocoder_universal_text || false;
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
-            source.token_replacer = token.createReplacer(info.geocoder_tokens || {});
-            source.indexing_replacer = token.createReplacer(info.geocoder_tokens || {}, { includeUnambiguous: true, custom: source.geocoder_inverse_tokens || {} });
 
-            if (tokenValidator(source.token_replacer)) {
+            source.categorized_replacement_words = token.categorizeTokenReplacements(info.geocoder_tokens);
+            source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
+            source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
+            source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
+
+            if (token.tokenValidator(source.simple_replacer) || token.tokenValidator(source.complex_query_replacer)) {
                 throw new Error('Using global tokens');
             }
 
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
+                const catReplacer = source.simple_replacer.concat(source.complex_query_replacer);
 
                 for (let category of info.geocoder_categories) {
                     category = termops.tokenize(category, true);
@@ -183,7 +187,7 @@ function Geocoder(indexes, options) {
                     source.categories.add(category.join(' '), true);
 
                     category = category.map((cat) => {
-                        return token.replaceToken(source.token_replacer, cat).query.toLowerCase();
+                        return token.replaceToken(catReplacer, cat).query.toLowerCase();
                     });
 
                     source.categories.add(category.join(' '), true);
@@ -416,22 +420,6 @@ function clone(source) {
     // Include reference to original
     cloned._original = source;
     return cloned;
-}
-
-/**
- * Validates token replacer. Ensures that none of the values in from or to include blank space.
- *
- * @access private
- *
- * @param {Object} token_replacer - a token replacer
- * @returns {(null|true)} true if any 'from' or 'to' values contains blank space
- */
-function tokenValidator(token_replacer) {
-    for (let i = 0; i < token_replacer.length; i++) {
-        if (token_replacer[i].from.toString().indexOf(' ') >= 0 || token_replacer[i].to.toString().indexOf(' ') >= 0) {
-            return true;
-        }
-    }
 }
 
 /**

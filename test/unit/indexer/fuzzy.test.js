@@ -16,8 +16,9 @@ tape('fuzzyPhraseSet lookup', (t) => {
     dict.finish();
 
     const set = new fuzzy.FuzzyPhraseSet(tmpdir);
-    t.equal(set.contains(['the', 'quick', 'dog']), false);
-    // thought this would throw an error
-    t.equal(set.contains(['not', 'in', 'set']), false);
+    t.equal(set.contains(['the', 'quick', 'dog'], fuzzy.ENDING_TYPE.nonPrefix), false);
+    t.equal(set.contains(['not', 'in', 'set'], fuzzy.ENDING_TYPE.nonPrefix), false);
+    t.equal(set.contains(['the', 'quick', 'brown'], fuzzy.ENDING_TYPE.nonPrefix), false);
+    t.equal(set.contains(['the', 'quick', 'brown'], fuzzy.ENDING_TYPE.anyPrefix), true);
     t.end();
 });
