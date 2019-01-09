@@ -58,14 +58,14 @@ test('sort features based on relevanceScore', (t) => {
 
     t.test('address = null, waupaca near madison, wisconsin', (t) => {
         const input = [
-            { id: 7, properties: { 'carmen:text': 'Waupaca Court', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.976215, 'carmen:address': null } },
+            { id: 2, properties: { 'carmen:text': 'Waupaca Court', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.976215, 'carmen:address': null } },
             { id: 1, properties: { 'carmen:text': 'Waupaca', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.788564 } },
             { id: 8, properties: { 'carmen:text': 'Waupaca Street', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 5.954101, 'carmen:address': null } },
-            { id: 2, properties: { 'carmen:text': 'Waupaca High School,primary school, secondary', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.869482 } },
-            { id: 3, properties: { 'carmen:text': 'Waupaca Camping Park, LLC', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.826643 } },
-            { id: 4, properties: { 'carmen:text': 'Waupaca County Fairgrounds', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.810530 } },
-            { id: 5, properties: { 'carmen:text': 'Waupaca Bowl', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.802046 } },
-            { id: 6, properties: { 'carmen:text': 'Waupaca Ale House', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.794998 } }
+            { id: 3, properties: { 'carmen:text': 'Waupaca High School,primary school, secondary', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.869482 } },
+            { id: 4, properties: { 'carmen:text': 'Waupaca Camping Park, LLC', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.826643 } },
+            { id: 5, properties: { 'carmen:text': 'Waupaca County Fairgrounds', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.810530 } },
+            { id: 6, properties: { 'carmen:text': 'Waupaca Bowl', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.802046 } },
+            { id: 7, properties: { 'carmen:text': 'Waupaca Ale House', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.794998 } }
         ];
         calculateRelevanceScore(input);
         input.sort(compareRelevanceScore);
