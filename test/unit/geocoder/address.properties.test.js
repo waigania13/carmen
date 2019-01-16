@@ -2,7 +2,7 @@
 const cluster = require('../../../lib/geocoder/addresscluster');
 const test = require('tape');
 
-test('default property', (t) => {
+test('forward: default property', (t) => {
     t.deepEqual(cluster.forward({
         type: 'Feature',
         properties: {
@@ -27,7 +27,7 @@ test('default property', (t) => {
     t.end();
 });
 
-test('default property - duplicate address in cluster', (t) => {
+test('forward: default property - duplicate address in cluster', (t) => {
     t.deepEqual(cluster.forward({
         type: 'Feature',
         properties: {
@@ -58,7 +58,7 @@ test('default property - duplicate address in cluster', (t) => {
     t.end();
 });
 
-test('override property', (t) => {
+test('forward: override property', (t) => {
     t.deepEqual(cluster.forward({
         type: 'Feature',
         properties: {
@@ -89,7 +89,7 @@ test('override property', (t) => {
     t.end();
 });
 
-test('override property - duplicate address in cluster', (t) => {
+test('forward: override property - duplicate address in cluster', (t) => {
     t.deepEqual(cluster.forward({
         type: 'Feature',
         properties: {
