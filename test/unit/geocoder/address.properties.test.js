@@ -17,8 +17,10 @@ test('forward: default property', (t) => {
             }]
         }
     }, 100), [{
-        type: 'Point',
-        coordinates: [1,1],
+        geometry: {
+            type: 'Point',
+            coordinates: [1,1],
+        },
         properties: {
             accuracy: 'building'
         }
@@ -42,14 +44,18 @@ test('forward: default property - duplicate address in cluster', (t) => {
             }]
         }
     }, 100), [{
-        type: 'Point',
-        coordinates: [1,1],
+        geometry: {
+            type: 'Point',
+            coordinates: [1,1],
+        },
         properties: {
             accuracy: 'building'
         }
     },{
-        type: 'Point',
-        coordinates: [10,10],
+        geometry: {
+            type: 'Point',
+            coordinates: [10,10],
+        },
         properties: {
             accuracy: 'building'
         }
@@ -79,8 +85,10 @@ test('forward: override property', (t) => {
             }]
         }
     }, 300), [{
-        type: 'Point',
-        coordinates: [3,3],
+        geometry: {
+            type: 'Point',
+            coordinates: [3,3],
+        },
         properties: {
             accuracy: 'entrance'
         }
@@ -111,14 +119,18 @@ test('forward: override property - duplicate address in cluster', (t) => {
             }]
         }
     }, 300), [{
-        type: 'Point',
-        coordinates: [3,3],
+        geometry: {
+            type: 'Point',
+            coordinates: [3,3],
+        },
         properties: {
             accuracy: 'entrance'
         }
     },{
-        type: 'Point',
-        coordinates: [4,4],
+        geometry: {
+            type: 'Point',
+            coordinates: [4,4],
+        },
         properties: {
             accuracy: 'driveway'
         }
