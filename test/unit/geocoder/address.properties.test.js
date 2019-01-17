@@ -157,12 +157,12 @@ test('reverse: default property', (t) => {
         type: 'Feature',
         properties: {
             accuracy: 'building',
-            'carmen:addressnumber': [ [ 100, 200, 300 ] ],
+            'carmen:addressnumber': [[100, 200, 300]],
             'carmen:address': 100
         },
         geometry: {
             type: 'Point',
-            coordinates: [ 1, 1 ]
+            coordinates: [1, 1]
         }
     }, 'address property');
 
@@ -193,7 +193,7 @@ test('reverse: override property', (t) => {
         type: 'Feature',
         properties: {
             accuracy: 'point',
-            'carmen:addressnumber': [ [ 100, 200, 300 ] ],
+            'carmen:addressnumber': [[100, 200, 300]],
             'carmen:addressprops': {
                 accuracy: {
                     1: 'point',
@@ -204,7 +204,7 @@ test('reverse: override property', (t) => {
         },
         geometry: {
             type: 'Point',
-            coordinates: [ 2, 2 ]
+            coordinates: [2, 2]
         }
     }, 'address property');
 

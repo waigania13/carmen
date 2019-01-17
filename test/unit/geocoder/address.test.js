@@ -436,11 +436,17 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            type:'Point',
-            coordinates:[1,1]
+            properties: { },
+            geometry: {
+                type:'Point',
+                coordinates:[1,1]
+            }
         }, {
-            type:'Point',
-            coordinates:[6,6]
+            properties: { },
+            geometry: {
+                type:'Point',
+                coordinates:[6,6]
+            }
         }]
     );
     t.deepEqual(
@@ -456,8 +462,11 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            type:'Point',
-            coordinates:[1,1]
+            properties: {},
+            geometry: {
+                type:'Point',
+                coordinates:[1,1]
+            }
         }]
     );
     t.end();

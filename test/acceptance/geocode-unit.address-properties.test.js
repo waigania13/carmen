@@ -5,7 +5,6 @@ const tape = require('tape');
 const Carmen = require('../..');
 const context = require('../../lib/geocoder/context');
 const mem = require('../../lib/sources/api-mem');
-const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 (() => {
@@ -43,7 +42,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.end();
         });
     });
-    
+
     tape('test address index for 10C', (t) => {
         c.geocode('10C FAKE STREET', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
@@ -67,7 +66,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.end();
         });
     });
-    
+
     tape('test address index for 1,1', (t) => {
         c.geocode('1,1', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
