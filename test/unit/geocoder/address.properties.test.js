@@ -24,7 +24,7 @@ test('forward: default property', (t) => {
         },
         properties: {
             accuracy: 'building',
-            'carmen:addressnumber': [ [ 100, 200, 300 ] ]
+            'carmen:addressnumber': [[100, 200, 300]]
         }
     }], 'address property');
 

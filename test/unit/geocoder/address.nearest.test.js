@@ -4,6 +4,7 @@ const test = require('tape');
 
 test('nearest', (t) => {
     t.deepEqual(addressItp.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['1000']],
@@ -17,13 +18,22 @@ test('nearest', (t) => {
             }]
         }
     }, 900), {
-        coordinates: [0, 0],
-        interpolated: true,
-        omitted: true, // because nearest endpoint match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [ [ '1000' ] ],
+            'carmen:ltohn': [ [ '1100' ] ] 
+        },
+        geometry: {
+            coordinates: [0, 0],
+            interpolated: true,
+            omitted: true, // because nearest endpoint match
+            type: 'Point'
+        }
     }, 'nearest startpoint');
 
     t.deepEqual(addressItp.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['1000']],
@@ -37,13 +47,22 @@ test('nearest', (t) => {
             }]
         }
     }, 1200), {
-        coordinates: [0, 100],
-        interpolated: true,
-        omitted: true, // because nearest endpoint match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['1000']],
+            'carmen:ltohn': [['1100']]
+        },
+        geometry: {
+            coordinates: [0, 100],
+            interpolated: true,
+            omitted: true, // because nearest endpoint match
+            type: 'Point'
+        }
     }, 'nearest endpoint');
 
     t.deepEqual(addressItp.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['1000']],
