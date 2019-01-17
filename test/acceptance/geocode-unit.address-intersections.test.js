@@ -21,7 +21,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     tape('index intersection', (t) => {
         const address = {
-            id: 3,
+            id: 1,
+            intersections: true,
             properties: {
                 'carmen:text': '9th street northwest and F street northwest,F street northwest and 9th street northwest,9th st nw and F st nw,F st nw and 9th st nw',
                 'carmen:center': [0,0],
@@ -29,6 +30,22 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             geometry: {
                 type: 'Point',
                 coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('index address', (t) => {
+        const address = {
+            id:2,
+            properties: {
+                'carmen:text': '9th street northwest',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': []
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0], [0,0]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -42,6 +59,22 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             });
         });
         q.awaitAll(t.end);
+    });
+
+    tape('Searching for the street - 9th street northwest', (t) => {
+        c.geocode('9th street northwest', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9th street northwest', 'returns street before intersection point');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersections only after and is typed - 9th street northwest and F street northwest', (t) => {
+        c.geocode('9th street northwest and', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '9th street northwest and F street northwest', 'returns street before intersection point');
+            t.end();
+        });
     });
 
     tape('Searching for the intersection - 9th st nw and F st nw', (t) => {
