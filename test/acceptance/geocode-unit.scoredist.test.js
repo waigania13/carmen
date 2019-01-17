@@ -22,7 +22,7 @@ const queue = require('d3-queue').queue;
             properties: {
                 'carmen:text':'main st',
                 'carmen:zxy':['6/0/0'],
-                'carmen:score':80000,
+                'carmen:score':10000,
                 'carmen:center':[-179.99,85]
             }
         }, t.end);
@@ -71,10 +71,66 @@ const queue = require('d3-queue').queue;
         });
     });
     // return the closer feature with a lower score
-    tape('geocode proximity=20,5 => nearest', (t) => {
-        c.geocode('main st', { proximity:[20,5] }, (err, res) => {
+    tape('geocode proximity=20,3 => nearest', (t) => {
+        c.geocode('main st', { proximity:[20,3] }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].id, 'address.201', 'found address.201');
+            t.end();
+        });
+    });
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
+
+})();
+
+(() => {
+
+    const conf = {
+        poi: new mem({ maxzoom: 14, maxscore: 350 }, () => {}),
+    };
+    const c = new Carmen(conf);
+    tape('index poi', (t) => {
+        queueFeature(conf.poi, {
+            id:200,
+            properties: {
+                'carmen:text':'airport',
+                'carmen:zxy':['14/4000/10'],
+                'carmen:score':300,
+                'carmen:center':[-92.098388671875, 85.03118586530456]
+            }
+        }, t.end);
+    });
+    tape('index poi (noise)', (t) => {
+        const q = queue(1);
+        for (let i = 1; i < 100; i++) q.defer((i, done) => {
+            queueFeature(conf.poi, {
+                id:i,
+                properties: {
+                    'carmen:text':'airport',
+                    'carmen:zxy':['14/4000/9'],
+                    'carmen:score': 10,
+                    'carmen:center':[-92.098388671875, 85.03308863057421]
+                }
+            }, done);
+        }, i);
+        q.awaitAll(t.end);
+    });
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+    // return the farther feature with a higher score
+    tape('geocode proximity=-92.09,85.05 => superscored', (t) => {
+        c.geocode('airport', { proximity:[-92.09, 85.05] }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].id, 'poi.200', 'found poi.200');
             t.end();
         });
     });
