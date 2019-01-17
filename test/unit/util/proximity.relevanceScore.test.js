@@ -38,23 +38,6 @@ test('calculate relevanceScore', (t) => {
 
 
 test('sort features based on relevanceScore', (t) => {
-    t.test('language penalty, planet near planet granite portland, oregon',  (t) => {
-        const input = [
-            { id: 8, properties: { 'carmen:text': 'Planet Street', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999999, 'carmen:address': null } },
-            { id: 1, properties: { 'carmen:text': 'Planetal', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 1 } },
-            { id: 2, properties: { 'carmen:text': 'Planet Granite', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.999139 } },
-            { id: 3, properties: { 'carmen:text': 'Planet Fitness,gym, fitness center', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.916823 } },
-            { id: 4, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.895406 } },
-            { id: 5, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.881766 } },
-            { id: 6, properties: { 'carmen:text': 'Planet Fitness', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.828728 } },
-            { id: 7, properties: { 'carmen:text': 'Planet Thai', 'carmen:spatialmatch': { relev: 0.96 }, 'carmen:scoredist': 10.774937 } }
-        ];
-
-        calculateRelevanceScore(input);
-        input.sort(compareRelevanceScore);
-        t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8]);
-        t.end();
-    });
 
     t.test('address = null, waupaca near madison, wisconsin', (t) => {
         const input = [

@@ -229,7 +229,7 @@ test('scoreWeight', (t) => {
 test('distWeight', (t) => {
     t.equal(parseFloat(proximity.distWeight(400, 14).toFixed(4)), 1, 'dist 4x > scaleRadius => distWeight ~1');
     t.equal(parseFloat(proximity.distWeight(100, 14).toFixed(4)), 1.0001, 'dist = scaleRadius => distWeight ~1.0001');
-    t.equal(proximity.distWeight(75, 14).toFixed(4), '1.0176', 'dist 3/4 scaleRadius => distWeight ~1.0176');
+    t.equal(proximity.distWeight(25, 14).toFixed(4), '5.5000', 'dist 1/4 scaleRadius => distWeight ~5.5');
     t.equal(proximity.distWeight(0, 14), 10, 'dist 0 => distWeight 10');
     t.end();
 });
