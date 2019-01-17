@@ -17,12 +17,14 @@ test('forward: default property', (t) => {
             }]
         }
     }, 100), [{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [1,1],
         },
         properties: {
-            accuracy: 'building'
+            accuracy: 'building',
+            'carmen:addressnumber': [ [ 100, 200, 300 ] ]
         }
     }], 'address property');
 
@@ -44,20 +46,24 @@ test('forward: default property - duplicate address in cluster', (t) => {
             }]
         }
     }, 100), [{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [1,1],
         },
         properties: {
-            accuracy: 'building'
+            accuracy: 'building',
+            'carmen:addressnumber': [[100, 200, 300, 100]]
         }
     },{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [10,10],
         },
         properties: {
-            accuracy: 'building'
+            accuracy: 'building',
+            'carmen:addressnumber': [[100, 200, 300, 100]]
         }
     }], 'address property');
 
@@ -85,12 +91,20 @@ test('forward: override property', (t) => {
             }]
         }
     }, 300), [{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [3,3],
         },
         properties: {
-            accuracy: 'entrance'
+            accuracy: 'entrance',
+            'carmen:addressnumber': [[100, 200, 300]],
+            'carmen:addressprops': {
+                accuracy: {
+                    1: 'point',
+                    2: 'entrance'
+                }
+            }
         }
     }], 'address property');
 
@@ -119,20 +133,38 @@ test('forward: override property - duplicate address in cluster', (t) => {
             }]
         }
     }, 300), [{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [3,3],
         },
         properties: {
-            accuracy: 'entrance'
+            accuracy: 'entrance',
+            'carmen:addressnumber': [[100, 200, 300, 300]],
+            'carmen:addressprops': {
+                accuracy: {
+                    1: 'point',
+                    2: 'entrance',
+                    3: 'driveway'
+                }
+            }
         }
     },{
+        type: 'Feature',
         geometry: {
             type: 'Point',
             coordinates: [4,4],
         },
         properties: {
-            accuracy: 'driveway'
+            accuracy: 'driveway',
+            'carmen:addressnumber': [[100, 200, 300, 300]],
+            'carmen:addressprops': {
+                accuracy: {
+                    1: 'point',
+                    2: 'entrance',
+                    3: 'driveway'
+                }
+            }
         }
     }], 'address property');
 
