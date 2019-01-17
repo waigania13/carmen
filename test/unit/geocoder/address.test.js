@@ -414,6 +414,7 @@ test('address interpolation - parity: even + both', (t) => {
 test('address point clustering', (t) => {
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [9,10,7]
             },
@@ -425,6 +426,7 @@ test('address point clustering', (t) => {
     );
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [[9,10,7,9]]
             },
@@ -436,13 +438,19 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            properties: { },
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7,9]]
+            },
             geometry: {
                 type:'Point',
                 coordinates:[1,1]
             }
         }, {
-            properties: { },
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7,9]]
+            },
             geometry: {
                 type:'Point',
                 coordinates:[6,6]
@@ -451,6 +459,7 @@ test('address point clustering', (t) => {
     );
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [[9,10,7]]
             },
@@ -462,7 +471,10 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            properties: {},
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7]]
+            },
             geometry: {
                 type:'Point',
                 coordinates:[1,1]
