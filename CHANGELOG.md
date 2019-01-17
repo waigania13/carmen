@@ -1,5 +1,13 @@
 # Changelog
 
+## 26.1.0
+
+- Update to carmen-cache to 0.25.0
+- Tighened the width of gaussian curved use is proximity scoring by factor of 3.
+- Rescaled distance and weight during proximity scoring. Previously both were put on a 1-11 scale. Now; distance is 1-10, score is 1-500.
+- Fixed a bug where the composite relevance + scoredist value was ignored during a sort if the b value was greater than a.
+- Lessen relevence penalty on street features.
+
 ## 26.0.0
 
 - Rewrite carmen token replacement logic to more heavily leverage fuzzy-phrase
