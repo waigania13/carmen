@@ -126,3 +126,75 @@ test('forward: override property - duplicate address in cluster', (t) => {
 
     t.end();
 });
+
+test('reverse: default property', (t) => {
+    t.deepEqual(cluster.reverse({
+        type: 'Feature',
+        properties: {
+            accuracy: 'building',
+            'carmen:addressnumber': [[100, 200, 300]]
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiPoint',
+                coordinates: [[1,1],[2,2],[3,3]]
+            }]
+        }
+    }, [1,1]), {
+        type: 'Feature',
+        properties: {
+            accuracy: 'building',
+            'carmen:addressnumber': [ [ 100, 200, 300 ] ],
+            'carmen:address': 100
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [ 1, 1 ]
+        }
+    }, 'address property');
+
+    t.end();
+});
+
+test('reverse: override property', (t) => {
+    t.deepEqual(cluster.reverse({
+        type: 'Feature',
+        properties: {
+            accuracy: 'building',
+            'carmen:addressnumber': [[100, 200, 300]],
+            'carmen:addressprops': {
+                accuracy: {
+                    1: 'point',
+                    2: 'entrance'
+                }
+            }
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiPoint',
+                coordinates: [[1,1],[2,2],[3,3]]
+            }]
+        }
+    }, [2,2]), {
+        type: 'Feature',
+        properties: {
+            accuracy: 'point',
+            'carmen:addressnumber': [ [ 100, 200, 300 ] ],
+            'carmen:addressprops': {
+                accuracy: {
+                    1: 'point',
+                    2: 'entrance'
+                }
+            },
+            'carmen:address': 200
+        },
+        geometry: {
+            type: 'Point',
+            coordinates: [ 2, 2 ]
+        }
+    }, 'address property');
+
+    t.end();
+});
