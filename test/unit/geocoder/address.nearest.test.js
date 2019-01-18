@@ -21,8 +21,8 @@ test('nearest', (t) => {
         type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
-            'carmen:lfromhn': [ [ '1000' ] ],
-            'carmen:ltohn': [ [ '1100' ] ] 
+            'carmen:lfromhn': [['1000']],
+            'carmen:ltohn': [['1100']]
         },
         geometry: {
             coordinates: [0, 0],
