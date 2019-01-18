@@ -391,10 +391,19 @@ test('address interpolation - noop', (t) => {
 
 test('address interpolation - parity: even + both', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -573,10 +582,20 @@ test('address point clustering fail', (t) => {
 
 test('parity: even + even', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,10]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,10]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -596,11 +615,21 @@ test('parity: even + even', (t) => {
 
 test('parity: even + odd', (t) => {
     t.deepEqual({
-        coordinates: [0, 9],
-        interpolated: true,
-        omitted: true, // because parity does not match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            coordinates: [0, 9],
+            interpolated: true,
+            omitted: true, // because parity does not match
+            type: 'Point'
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -620,10 +649,20 @@ test('parity: even + odd', (t) => {
 
 test('parity: odd + both', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['B']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1']],
@@ -643,10 +682,20 @@ test('parity: odd + both', (t) => {
 
 test('parity: odd + odd', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['O']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1']],
@@ -666,11 +715,21 @@ test('parity: odd + odd', (t) => {
 
 test('parity: odd + even', (t) => {
     t.deepEqual({
-        coordinates: [0, 9],
-        interpolated: true,
-        omitted: true, // because parity does not match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            coordinates: [0, 9],
+            interpolated: true,
+            omitted: true, // because parity does not match
+            type: 'Point'
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['1']],
@@ -690,10 +749,20 @@ test('parity: odd + even', (t) => {
 
 test('reverse', (t) => {
     t.deepEqual({
-        type: 'Point',
-        interpolated: true,
-        coordinates: [0,90]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['100']],
+            'carmen:ltohn': [['0']],
+            'carmen:parityl': [['E']],
+        },
+        geometry: {
+            type: 'Point',
+            interpolated: true,
+            coordinates: [0,90]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['100']],
@@ -713,10 +782,20 @@ test('reverse', (t) => {
 
 test('seminumber', (t) => {
     t.deepEqual({
-        type: 'Point',
-        interpolated: true,
-        coordinates: [0,10]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['G-0']],
+            'carmen:ltohn': [['G-100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            type: 'Point',
+            interpolated: true,
+            coordinates: [0,10]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['G-0']],
@@ -736,6 +815,7 @@ test('seminumber', (t) => {
 
 test('multi', (t) => {
     t.deepEqual([0,40.981964], address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1002','2']],
@@ -755,6 +835,6 @@ test('multi', (t) => {
                 ]
             }]
         }
-    }, 100).coordinates);
+    }, 100).geometry.coordinates);
     t.end();
 });
