@@ -88,7 +88,7 @@ test('termops.getIndexableText', (t) => {
     doc = {
         properties: {
             'carmen:text':'Main Street',
-            'carmen:addressnumber': [[1, 10, 100, 200]]
+            'carmen:addressnumber': [[1, 10, 100, 200, 'F street Northwest']]
         }
     };
     texts = [

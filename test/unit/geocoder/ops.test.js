@@ -64,6 +64,7 @@ test('ops#toFeature', (t) => {
         }
     }], '{address._number} {address.name}').place_name, '9', 'Address name missing');
 
+// intersection name into the address field 
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],

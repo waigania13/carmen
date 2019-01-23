@@ -17,11 +17,12 @@ test('numTokenize', (t) => {
         withAddress(['5##', 'main', 'street', '20009'], { number: '500', position: 0 }),
         withAddress(['500', 'main', 'street', '20###'], { number: '20009', position: 3 }),
     ], 'two numbers');
+
     t.deepEqual(termops.numTokenize(['500', 'main', 'street', 'apt', '205', '20009'],3), [
         withAddress(['5##', 'main', 'street', 'apt', '205', '20009'], { number: '500', position: 0 }),
         withAddress(['500', 'main', 'street', 'apt', '2##', '20009'], { number: '205', position: 4 }),
         withAddress(['500', 'main', 'street', 'apt', '205', '20###'], { number: '20009', position: 5 }),
     ], 'three numbers');
+
     t.end();
 });
-
