@@ -16,6 +16,9 @@ test('numTokenize', (t) => {
         ['5##', 'main', 'street', '20009'],
         ['500', 'main', 'street', '20###'],
     ], 'two numbers');
+    // intersection
+    t.deepEqual(termops.numTokenize('9th street northwest and f street northwest'), [
+        [ '+++', 'f', 'street', 'northwest', '9th', 'street', 'northwest' ],
+    ], 'does this get tokenized');
     t.end();
 });
-
