@@ -86,6 +86,15 @@ tape('indexdocs.standardize', (t) => {
         ]);
         q.doesNotThrow(() => indexdocs.standardize(brokenUsa, 6, {}));
 
+        const brokenCollection = JSON.parse(usaRow);
+        brokenCollection.geometry = {
+            type: 'GeometryCollection',
+            geometries: [
+                brokenUsa.geometry
+            ]
+        };
+        q.doesNotThrow(() => indexdocs.standardize(brokenCollection, 6, {}));
+
         q.end();
     });
 
