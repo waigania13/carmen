@@ -35,7 +35,6 @@
     "minimist": "1.2.0",
     "model-un": "0.0.3",
     "split": "^1.0.1",
-    "xregexp": "^4.2.0",
     "yarn": "^1.7.0"
   },
   "devDependencies": {
