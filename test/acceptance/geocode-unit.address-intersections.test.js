@@ -22,15 +22,14 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('index address', (t) => {
         const address = {
             id:1,
-            intersections: true,
             properties: {
                 'carmen:text': '9th street northwest',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['f Street northwest']
+                'carmen:addressnumber': ['f Street northwest', 500, 't street northwest']
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0]]
+                coordinates: [[0,0], [0,1], [0,2]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -39,15 +38,14 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('index address', (t) => {
         const address = {
             id:2,
-            intersections: true,
             properties: {
                 'carmen:text': 'F street northwest',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['9th Street northwest']
+                'carmen:addressnumber': ['main street northwest', 500, '10th street northwest']
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0]]
+                coordinates: [[0,0], [0,1], [0,2]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -68,39 +66,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         };
         queueFeature(conf.address, address, t.end);
     });
-
-    tape('index address', (t) => {
-        const address = {
-            id:4,
-            properties: {
-                'carmen:text': '9th street northwest',
-                'carmen:center': [0,0],
-                'carmen:addressnumber': []
-            },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[0,0]]
-            }
-        };
-        queueFeature(conf.address, address, t.end);
-    });
-
-    tape('index address', (t) => {
-        const address = {
-            id:5,
-            properties: {
-                'carmen:text': 'F street northwest',
-                'carmen:center': [0,0],
-                'carmen:addressnumber': []
-            },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[0,0]]
-            }
-        };
-        queueFeature(conf.address, address, t.end);
-    });
-
 
     tape('build queued features', (t) => {
         const q = queue();
@@ -128,18 +93,27 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         });
     });
 
-    tape('Searching for the intersection - F street northwest and 9th street northwest', (t) => {
-        c.geocode('F street northwest and 9th street northwest', {}, (err, res) => {
-            console.log(res.features[0].place_name);
+    tape('Searching for the intersections only after and is typed - F street northwest', (t) => {
+        c.geocode('500 9th street northwest', {}, (err, res) => {
             t.ifError(err);
+            t.equals(res.features[0].place_name, '500 9th street northwest', '500 9th Street Northwest');
             t.end();
         });
     });
 
+
     tape('Searching for the intersection - F street northwest and 9th street northwest', (t) => {
-        c.geocode('9th street northwest and F street northwest', {}, (err, res) => {
-            console.log(res);
+        c.geocode('F street northwest and 9th street northwest', {}, (err, res) => {
             t.ifError(err);
+            t.equals(res.features[0].place_name, 'f street northwest and 9th street northwest', 'F street northwest and 9th street northwest');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - 9th street northwest and F street northwest', (t) => {
+        c.geocode('9th street northwest', {}, (err, res) => {
+            t.ifError(err);
+            console.log(res);
             t.end();
         });
     });

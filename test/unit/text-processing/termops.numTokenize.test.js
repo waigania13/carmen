@@ -18,7 +18,7 @@ test('numTokenize', (t) => {
     ], 'two numbers');
     // intersection
     t.deepEqual(termops.numTokenize('9th street northwest and f street northwest'), [
-        [ '+++', 'f', 'street', 'northwest', '9th', 'street', 'northwest' ],
-    ], 'does this get tokenized');
+        [ '+intersection', '9th', 'street', 'northwest', ',', 'f', 'street', 'northwest' ],
+    ], 'tokenize intersections');
     t.end();
 });
