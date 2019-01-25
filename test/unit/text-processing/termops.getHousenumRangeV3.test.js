@@ -35,15 +35,15 @@ test('termops.getHousenumRangeV3', (t) => {
 
     t.deepEqual(getHousenumRangeV3({
         properties: { 'carmen:addressnumber': [['apt a', 'apt b']] }
-    }), ['apt a +++', 'apt b +++'], 'carmen:addressnumber (non-numeric) => false');
+    }), false, 'carmen:addressnumber (non-numeric) => false');
 
     t.deepEqual(getHousenumRangeV3({
-        properties: { 'carmen:addressnumber': [['F Street Northwest']] }
-    }), ['+intersection F Street Northwest ,'], 'carmen:addressnumber (non-numeric) => false');
+        properties: { 'carmen:intersections': [['9th Street Northwest']] }
+    }), ['+intersection 9th Street Northwest ,'], 'carmen:intersections (non-numeric) => +intersection');
 
     t.deepEqual(getHousenumRangeV3({
-        properties: { 'carmen:addressnumber': [['9th Street Northwest']] }
-    }), ['+intersection 9th Street Northwest ,'], 'carmen:addressnumber (non-numeric) => false');
+        properties: { 'carmen:intersections': [['highway number 2']] }
+    }), ['+intersection highway number 2 ,'], 'carmen:intersections (non-numeric) => +intersection');
 
     t.deepEqual(getHousenumRangeV3({
         properties: {
