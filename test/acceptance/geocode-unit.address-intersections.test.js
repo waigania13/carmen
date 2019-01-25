@@ -23,13 +23,13 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         const address = {
             id:1,
             properties: {
-                'carmen:text': '9th street northwest',
+                'carmen:text': '9th Street Northwest',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['f Street northwest', 500, 't street northwest']
+                'carmen:addressnumber': [500]
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0], [0,1], [0,2]]
+                coordinates: [[0,0]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -39,13 +39,13 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         const address = {
             id:2,
             properties: {
-                'carmen:text': 'F street northwest',
+                'carmen:text': '9th Street Northwest',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': ['main street northwest', 500, '10th street northwest']
+                'carmen:intersections': ['F Street Northwest', 'Highway Number 2']
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0], [0,1], [0,2]]
+                coordinates: [[0,2]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -55,13 +55,61 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         const address = {
             id:3,
             properties: {
-                'carmen:text': 'something and something',
+                'carmen:text': 'F Street Northwest',
+                'carmen:center': [0,0],
+                'carmen:addressnumber': [500]
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('index address', (t) => {
+        const address = {
+            id:4,
+            properties: {
+                'carmen:text': 'F Street Northwest',
+                'carmen:center': [0,0],
+                'carmen:intersections': ['9th Street Northwest']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('index address', (t) => {
+        const address = {
+            id:5,
+            properties: {
+                'carmen:text': 'X place and Y place',
                 'carmen:center': [0,0],
                 'carmen:addressnumber': []
             },
             geometry: {
                 type: 'MultiPoint',
                 coordinates: [[0,0]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('index address', (t) => {
+        const address = {
+            id:6,
+            properties: {
+                'carmen:text': 'F Street Northwest',
+                'carmen:center': [0,0],
+                'carmen:intersections': ['9th Street Northwest', 'Frosted Flakes Avenue']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,2]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -80,7 +128,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the street - 9th street northwest', (t) => {
         c.geocode('9th street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '9th street northwest', 'returns street before intersection point');
+            t.equals(res.features[0].place_name, '9th Street Northwest', 'returns street before intersection point');
             t.end();
         });
     });
@@ -88,56 +136,67 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the intersections only after and is typed - F street northwest', (t) => {
         c.geocode('F street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'F street northwest', 'returns street before intersection point');
+            t.equals(res.features[0].place_name, 'F Street Northwest', 'returns street before intersection point');
             t.end();
         });
     });
 
-    tape('Searching for the intersections only after and is typed - F street northwest', (t) => {
+    tape('Searching for 500 9th street northwest', (t) => {
         c.geocode('500 9th street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '500 9th street northwest', '500 9th Street Northwest');
+            t.equals(res.features[0].place_name, '500 9th Street Northwest', '500 9th Street Northwest');
             t.end();
         });
     });
 
 
     tape('Searching for the intersection - F street northwest and 9th street northwest', (t) => {
-        c.geocode('F street northwest and 9th street northwest', {}, (err, res) => {
+        c.geocode('F Street Northwest and 9th Street Northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'f street northwest and 9th street northwest', 'F street northwest and 9th street northwest');
+            t.equals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F Street Northwest and 9th Street Northwest');
             t.end();
         });
     });
 
     tape('Searching for the intersection - 9th street northwest and F street northwest', (t) => {
-        c.geocode('9th street northwest', {}, (err, res) => {
+        c.geocode('9th Street Northwest and f street northwest', {}, (err, res) => {
             t.ifError(err);
-            console.log(res);
+            t.equals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th street northwest and F street northwest');
             t.end();
         });
     });
 
-    tape('something and something', (t) => {
-        c.geocode('something and something', {}, (err, res) => {
+    tape('X place and Y place', (t) => {
+        c.geocode('X place and Y place', {}, (err, res) => {
+            t.equals(res.features[0].place_name, 'X place and Y place', 'X place and Y place');
             t.ifError(err);
             t.end();
         });
     });
-    //
-    // tape('Searching for the intersection - 9th st nw & F st nw', (t) => {
-    //     c.geocode('9th street northwest & F street northwest', {}, (err, res) => {
-    //         t.deepEquals(res.query, [ '9th', 'street', 'northwest', 'f', 'street', 'northwest' ], 'does not convert & => and');
-    //         t.end();
-    //     });
-    // });
+
+    tape('Searching for the intersection - 9th st nw & F st nw', (t) => {
+        c.geocode('9th st nw and F st nw', {}, (err, res) => {
+            t.equals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw & F st nw');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - synonyms', (t) => {
+        c.geocode('Highway Number 2 and 9th Street Northwest', {}, (err, res) => {
+            t.equals(res.features[0].place_name, 'Highway Number 2 and 9th Street Northwest', 'highway number 2 and 9th street northwest');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - synonyms', (t) => {
+        c.geocode('Frosted Flakes Avenue and F Street Northwest', {}, (err, res) => {
+            t.equals(res.features[0].place_name, 'Frosted Flakes Avenue and F Street Northwest', 'frosted flakes avenue and F street northwest');
+            t.end();
+        });
+    });
 })();
 
 tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
-
-// right now - for every intersection we'll have different features
-// one option is nesting intersection data in feature
-// look at the way we handle house numbers
