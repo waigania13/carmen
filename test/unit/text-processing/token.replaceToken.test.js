@@ -519,12 +519,3 @@ test('replaceTokens - global', (t) => {
     t.end();
 
 });
-
-test('replace complex global tokens', (t) => {
-    const replacer = token.createGlobalReplacer({
-        '&': 'and'
-    });
-    t.deepEqual(token.replaceToken(replacer, '1st st & 2nd street'), { query: '1st st and 2nd street', lastWord: false }, '& => and');
-    t.deepEqual(token.replaceToken(replacer, 'AT&T'), { query: 'AT&T', lastWord: false }, '& => and');
-    t.end();
-});
