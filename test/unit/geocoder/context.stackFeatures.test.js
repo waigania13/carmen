@@ -18,13 +18,13 @@ tape('context.stackFeatures simple', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['country'],
-            'carmen:extid': 'country.1'
+            'internal:extid': 'country.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['region'],
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     }];
     t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked');
@@ -41,13 +41,13 @@ tape('context.stackFeatures type bump', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['country'],
-            'carmen:extid': 'country.1'
+            'internal:extid': 'country.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['country'],
-            'carmen:extid': 'country.2'
+            'internal:extid': 'country.2'
         }
     }];
     t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[0]], '1 feature stacked, 1 bumped');
@@ -65,20 +65,20 @@ tape('context.stackFeatures conflict', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['address'],
-            'carmen:extid': 'address.1'
+            'internal:extid': 'address.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['poi'],
             'carmen:conflict': 'address',
-            'carmen:extid': 'poi.1'
+            'internal:extid': 'poi.1'
         }
     }];
     t.deepEqual(context.stackFeatures(geocoderStub, loaded.slice(0), {}), [loaded[1], loaded[0]], '2 features stacked, 1 bumped');
@@ -96,13 +96,13 @@ tape('context.stackFeatures conflict, dist tiebreak', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['address'],
-            'carmen:extid': 'address.1',
+            'internal:extid': 'address.1',
             'carmen:vtquerydist': 10
         }
     }, {
@@ -110,7 +110,7 @@ tape('context.stackFeatures conflict, dist tiebreak', (t) => {
         properties: {
             'carmen:types': ['poi'],
             'carmen:conflict': 'address',
-            'carmen:extid': 'poi.1',
+            'internal:extid': 'poi.1',
             'carmen:vtquerydist': 1
         }
     }];
@@ -129,12 +129,12 @@ tape('context.stackFeatures multitype', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     }];
     const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
     t.deepEqual(stacked, [loaded[0]], '1 feature stacked, promoted');
-    t.deepEqual(stacked[0].properties['carmen:extid'], 'place.1', 'alters extid');
+    t.deepEqual(stacked[0].properties['internal:extid'], 'place.1', 'alters extid');
     t.end();
 });
 
@@ -150,19 +150,19 @@ tape('context.stackFeatures multitype, gap', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['poi'],
-            'carmen:extid': 'poi.1'
+            'internal:extid': 'poi.1'
         }
     }];
     const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
     t.deepEqual(stacked, [loaded[1],loaded[0]], '2 features stacked, 1 promoted');
-    t.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
-    t.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
+    t.deepEqual(stacked[0].properties['internal:extid'], 'poi.1');
+    t.deepEqual(stacked[1].properties['internal:extid'], 'place.1');
     t.end();
 });
 
@@ -178,28 +178,28 @@ tape('context.stackFeatures multitype, nogap', (t) => {
         type: 'Feature',
         properties: {
             'carmen:types': ['region','place'],
-            'carmen:extid': 'region.1',
+            'internal:extid': 'region.1',
             'carmen:geomtype': 3
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
-            'carmen:extid': 'place.1',
+            'internal:extid': 'place.1',
             'carmen:geomtype': 3
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['poi'],
-            'carmen:extid': 'poi.1'
+            'internal:extid': 'poi.1'
         }
     }];
     const stacked = context.stackFeatures(geocoderStub, loaded.slice(0), {});
     t.deepEqual(stacked, [loaded[2],loaded[1],loaded[0]], '3 features stacked');
-    t.deepEqual(stacked[0].properties['carmen:extid'], 'poi.1');
-    t.deepEqual(stacked[1].properties['carmen:extid'], 'place.1');
-    t.deepEqual(stacked[2].properties['carmen:extid'], 'region.1');
+    t.deepEqual(stacked[0].properties['internal:extid'], 'poi.1');
+    t.deepEqual(stacked[1].properties['internal:extid'], 'place.1');
+    t.deepEqual(stacked[2].properties['internal:extid'], 'region.1');
     t.end();
 });
 

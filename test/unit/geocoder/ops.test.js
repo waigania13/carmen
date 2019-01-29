@@ -8,7 +8,7 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855, 63.004759],
             'carmen:text': 'Canada, CA',
             'carmen:types': ['country'],
-            'carmen:extid': 'country.1833980151',
+            'internal:extid': 'country.1833980151',
             'short_code': 'ca'
         }
     }];
@@ -32,7 +32,7 @@ test('ops#toFeature', (t) => {
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
             'carmen:types': ['address'],
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     }];
     feat._relevance = 1;
@@ -43,7 +43,7 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     }], '{address._number} {address._name}').place_name, '9 Fake Street', 'Address number & name exist');
 
@@ -51,7 +51,7 @@ test('ops#toFeature', (t) => {
         properties: {
             'carmen:center': [-99.392855,63.004759],
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     }], '{address._number} {address._name}').place_name, 'Fake Street', 'Address number missing');
 
@@ -60,7 +60,7 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal.extid': 'address.1833980151'
         }
     }], '{address._number} {address.name}').place_name, '9', 'Address name missing');
 
@@ -69,13 +69,13 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Andor',
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }], '{address._number} {address._name}, {place._name}').place_name, '9 Fake Street, Andor', 'Address & Place');
 
@@ -84,13 +84,13 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Andor',
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }], '{address._number} {address._name}, {place.name}').place_name, '9 Fake Street', 'Address & no Place');
 
@@ -100,13 +100,13 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:address': 9,
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Andor',
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }], '{address._number} {address.name}, {place._name}').place_name, '9, Andor', 'No Address street & Place');
 
@@ -115,13 +115,13 @@ test('ops#toFeature', (t) => {
         properties: {
             'carmen:center': [-99.392855,63.004759],
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
+            'internal:extid': 'address.1833980151'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Andor',
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }], '{address._number} {address.name}, {place._name}').place_name, 'Andor', 'Just place');
 
@@ -130,32 +130,32 @@ test('ops#toFeature', (t) => {
         properties: {
             'carmen:center': [-99.392855,63.004759],
             'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151',
+            'internal:extid': 'address.1833980151',
             'carmen:relevance': 1
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Caemlyn',
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': 'Andor',
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     },{
         properties: {
             'carmen:center': [0,0],
             'carmen:text': '1234',
-            'carmen:extid': 'postcode.1'
+            'internal:extid': 'postcode.1'
         }
     },{
         properties: {
             'carmen:center': [-99.392855, 63.004759],
             'carmen:text': 'Canada',
-            'carmen:extid': 'country.1',
+            'internal:extid': 'country.1',
             'short_code': 'ca'
         }
     }];
@@ -178,7 +178,7 @@ test('ops#toFeature', (t) => {
             // Public carmen properties
             'carmen:types': ['place'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }];
     feat._relevance = 1;
@@ -217,7 +217,7 @@ test('ops#toFeature', (t) => {
             // Public carmen properties
             'carmen:types': ['place'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }];
     feat._relevance = 0.5;
@@ -252,7 +252,7 @@ test('ops#toFeature + no formatter + languageMode=strict', (t) => {
             'carmen:text_zh': '芝加哥',
             'carmen:types': ['place'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }, {
         properties: {
@@ -260,7 +260,7 @@ test('ops#toFeature + no formatter + languageMode=strict', (t) => {
             'carmen:text_en': 'Illinois',
             'carmen:types': ['region'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     }, {
         properties: {
@@ -269,7 +269,7 @@ test('ops#toFeature + no formatter + languageMode=strict', (t) => {
             'carmen:text_zh': '美国',
             'carmen:types': ['country'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'country.1'
+            'internal:extid': 'country.1'
         }
     }];
 
@@ -300,7 +300,7 @@ test('ops#toFeature + formatter + languageMode=strict', (t) => {
             'carmen:text_zh': '芝加哥',
             'carmen:types': ['place'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }, {
         properties: {
@@ -308,7 +308,7 @@ test('ops#toFeature + formatter + languageMode=strict', (t) => {
             'carmen:text_en': 'Illinois',
             'carmen:types': ['region'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'region.1'
+            'internal:extid': 'region.1'
         }
     }, {
         properties: {
@@ -317,7 +317,7 @@ test('ops#toFeature + formatter + languageMode=strict', (t) => {
             'carmen:text_zh': '美国',
             'carmen:types': ['country'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'country.1'
+            'internal:extid': 'country.1'
         }
     }];
 
@@ -354,7 +354,7 @@ test('ops#toFeature + formatter + languageMode=strict + arabic comma', (t) => {
             'carmen:text_ar': 'القاهرة',
             'carmen:types': ['place'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'place.1'
+            'internal:extid': 'place.1'
         }
     }, {
         properties: {
@@ -363,7 +363,7 @@ test('ops#toFeature + formatter + languageMode=strict + arabic comma', (t) => {
             'carmen:text_ar': 'مصر',
             'carmen:types': ['country'],
             'carmen:center': [0, 0],
-            'carmen:extid': 'country.1'
+            'internal:extid': 'country.1'
         }
     }];
 

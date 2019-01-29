@@ -62,8 +62,8 @@ test('contextVector deflate', (t) => {
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
                 'carmen:center': [-99.6932, 37.2453],
-                'carmen:extid': 'test.1',
-                'carmen:index': 'testA',
+                'internal:extid': 'test.1',
+                'internal:index': 'testA',
                 'carmen:geomtype': 1,
                 'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
@@ -124,8 +124,8 @@ test('contextVector gzip', (t) => {
                 'carmen:stack': undefined,
                 'carmen:conflict': undefined,
                 'carmen:center': [-99.6932, 37.2453],
-                'carmen:extid': 'test.1',
-                'carmen:index': 'testA',
+                'internal:extid': 'test.1',
+                'internal:index': 'testA',
                 'carmen:geomtype': 1,
                 'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
@@ -610,14 +610,14 @@ test('contextVector caching', (t) => {
         miss = context.getTile.cacheStats.miss;
         context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
             t.ifError(err);
-            t.equal(data.properties['carmen:extid'], 'test.1');
+            t.equal(data.properties['internal:extid'], 'test.1');
             t.equal(context.getTile.cacheStats.hit - hit, 0, 'hits +0');
             t.equal(context.getTile.cacheStats.miss - miss, 1, 'miss +1');
             hit = context.getTile.cacheStats.hit;
             miss = context.getTile.cacheStats.miss;
             context.contextVector(source, 0, 0, false, {}, null, false, false, undefined, (err, data) => {
                 t.ifError(err);
-                t.equal(data.properties['carmen:extid'], 'test.1');
+                t.equal(data.properties['internal:extid'], 'test.1');
                 t.equal(context.getTile.cacheStats.hit - hit, 1, 'hits +1');
                 t.equal(context.getTile.cacheStats.miss - miss, 0, 'miss +0');
                 t.end();
@@ -671,9 +671,9 @@ test('Context eliminates correct properties', (t) => {
             context(c, [0, 0], { full: false }, (err, contexts) => {
                 t.ifError(err);
                 let contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'carmen:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
                 contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'carmen:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
                 t.end();
             });
         });

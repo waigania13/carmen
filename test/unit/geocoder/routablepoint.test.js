@@ -465,7 +465,7 @@ const routablePoints = require('../../../lib/geocoder/routablepoint.js');
             'carmen:zxy': ['6/14/24'],
             'id': '7654',
             'carmen:types': ['address'],
-            'carmen:index': 'address',
+            'internal:index': 'address',
             'carmen:address': '150'
         },
         geometry: {
@@ -518,7 +518,7 @@ const routablePoints = require('../../../lib/geocoder/routablepoint.js');
             'carmen:zxy': ['6/10/24'],
             'id': 6666777777982370,
             'carmen:types': ['poi'],
-            'carmen:index': 'poi',
+            'internal:index': 'poi',
             'carmen:routable_points': [{ coordinates: [-122.213550, 37.712913] }]
         },
         geometry: {
@@ -559,7 +559,7 @@ tape('routablePoints input validation: POI feature', (assert) => {
             'carmen:zxy': ['6/10/24'],
             'id': 6666777777982370,
             'carmen:types': ['poi'],
-            'carmen:index': 'poi'
+            'internal:index': 'poi'
         },
         // This is slightly artificial since at this point in verifymatch, geometry actually gets stripped out for POIs
         geometry: {
