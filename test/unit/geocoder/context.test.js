@@ -60,12 +60,12 @@ test('contextVector deflate', (t) => {
             properties: {
                 'carmen:types': ['test'],
                 'carmen:stack': undefined,
-                'carmen:conflict': undefined,
+                'internal:conflict': undefined,
                 'carmen:center': [-99.6932, 37.2453],
                 'internal:extid': 'test.1',
                 'internal:index': 'testA',
-                'carmen:geomtype': 1,
-                'carmen:tmpid': 1,
+                'internal:geomtype': 1,
+                'internal:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
                 'iso2': 'US',
                 'population': 307212123,
@@ -121,13 +121,13 @@ test('contextVector gzip', (t) => {
         t.deepEqual(data, {
             properties: {
                 'carmen:types': ['test'],
-                'carmen:stack': undefined,
-                'carmen:conflict': undefined,
+                'internal:stack': undefined,
+                'internal:conflict': undefined,
                 'carmen:center': [-99.6932, 37.2453],
                 'internal:extid': 'test.1',
                 'internal:index': 'testA',
-                'carmen:geomtype': 1,
-                'carmen:tmpid': 1,
+                'internal:geomtype': 1,
+                'internal:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
                 'iso2': 'US',
                 'population': 307212123,
@@ -671,9 +671,9 @@ test('Context eliminates correct properties', (t) => {
             context(c, [0, 0], { full: false }, (err, contexts) => {
                 t.ifError(err);
                 let contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'carmen:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'internal:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
                 contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'carmen:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['internal:extid', 'internal:tmpid', 'internal:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
                 t.end();
             });
         });

@@ -307,9 +307,9 @@ penalty is witheld for that layer (but could still apply to other layers).
 #### Parameters
 
 -   `context` **[Array][61]** created in [loadContexts][72] the target feature to be returned is context[0] and context[1:] are the features in which the target is contained, ordered by hierarchy of their layers
--   `peers` **[Object][43]** A mapping from `carmen:tmpid`s to features, used when applying the "squishy" logic for nested, identically-named features.
--   `strict` **[Object][43]** A mapping from `carmen:tmpid`s to covers matched by some substring of the query
--   `loose` **[Object][43]** A mapping from `carmen:tmpid`s to the cover with that tmpid whose `relev` value is greatest (across all result contexts).
+-   `peers` **[Object][43]** A mapping from `internal:tmpid`s to features, used when applying the "squishy" logic for nested, identically-named features.
+-   `strict` **[Object][43]** A mapping from `internal:tmpid`s to covers matched by some substring of the query
+-   `loose` **[Object][43]** A mapping from `internal:tmpid`s to the cover with that tmpid whose `relev` value is greatest (across all result contexts).
 -   `indexes` **[Object][43]** the geocoder's indexes
 -   `options` **[Object][43]** optional arguments
 -   `geocoder` **[Geocoder][65]** the carmen [Geocoder][2] instance
