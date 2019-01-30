@@ -7,45 +7,83 @@ const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
+/*
+Let's assume we have a street
+1. 9th Street Northwest which is also known as US Road, Highway Number 6
+2. F Street Northwest which is also known as Highway Number 4
+
+9th Street Northwest intersects with F Street Northwest at [0,2] and Highway Number 2 at [0,1]
+The aliases for 9th Street Northwest go in carmen:text separated by a comma. While the streets 9th Street Northwest intersects with goes in the carmen:intersections property.
+The coordinates in the geometry correspond to the point of intersection of the street in carmen:intersections and the feature in carmen:text.
+
+Example data spec for intersections:
+{
+    const address = {
+        id:2,
+        properties: {
+            // Synonyms of the feature go in 'carmen:text'
+            'carmen:text': 'US Road,Highway Number 6,9th Street Northwest',
+            'carmen:center': [0,0],
+            // intersections with the feature go here
+            'carmen:intersections': ['F Street Northwest', 'Highway Number 2']
+        },
+        geometry: {
+            type: 'MultiPoint',
+            // coordinates correspond to the street in 'carmen:intersection'
+            // for example, F Street Northwest and 9th Street Northwest intersect at [0,2]
+            coordinates: [[0,2], [0,1]]
+        }
+    };
+    queueFeature(conf.address, address, t.end);
+});
+
+If there is more than one name for F Street Northwest and it intersects with 9th Street Northwest, the alias is added to carmen:intersections and the corresponding coordinates in the coordinates property of the geometry.
+*/
 
 (() => {
     const conf = {
         address: new mem({
             maxzoom: 14,
             geocoder_address: 1,
-            geocoder_tokens: { st: 'street', nw: 'northwest'}
+            geocoder_tokens: { st: 'street', nw: 'northwest' }
         }, () => {})
     };
 
     const c = new Carmen(conf);
 
+    // regular addressnumber features
     tape('index address', (t) => {
         const address = {
             id:1,
             properties: {
                 'carmen:text': '9th Street Northwest',
                 'carmen:center': [0,0],
-                'carmen:addressnumber': [500]
+                'carmen:addressnumber': [500, 200]
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0]]
+                coordinates: [[0,0], [0,1]]
             }
         };
         queueFeature(conf.address, address, t.end);
     });
 
+    // intersection address data
     tape('index address', (t) => {
         const address = {
             id:2,
             properties: {
-                'carmen:text': '9th Street Northwest',
+                // Synonyms of the feature go in 'carmen:text'
+                'carmen:text': 'US Road,Highway Number 6,9th Street Northwest',
                 'carmen:center': [0,0],
-                'carmen:intersections': ['F Street Northwest', 'Highway Number 2']
+                // intersections with the feature go here
+                'carmen:intersections': ['F Street Northwest', 'Highway Number 4', 'Highway Number 2']
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,2]]
+                // coordinates correspond to the street in 'carmen:intersection'
+                // for example, F Street Northwest and 9th Street Northwest intersect at [0,2]
+                coordinates: [[0,2], [0,2], [0,1]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -56,12 +94,12 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             id:3,
             properties: {
                 'carmen:text': 'F Street Northwest',
-                'carmen:center': [0,0],
+                'carmen:center': [0,1],
                 'carmen:addressnumber': [500]
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0]]
+                coordinates: [[0,1]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -71,18 +109,20 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         const address = {
             id:4,
             properties: {
-                'carmen:text': 'F Street Northwest',
+                'carmen:text': 'F Street Northwest,Highway Number 4',
                 'carmen:center': [0,0],
-                'carmen:intersections': ['9th Street Northwest']
+                'carmen:intersections': ['9th Street Northwest', 'US road', 'Frosted Flakes Avenue', 'Abercrombie and Fitch Avenue']
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0]]
+                // US Road is a synonym of 9th Street Northwest, hence have the same coordinates
+                coordinates: [[0,2], [0,2], [0,1], [0,3]]
             }
         };
         queueFeature(conf.address, address, t.end);
     });
 
+    // regular address point that has and in the name
     tape('index address', (t) => {
         const address = {
             id:5,
@@ -94,22 +134,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             geometry: {
                 type: 'MultiPoint',
                 coordinates: [[0,0]]
-            }
-        };
-        queueFeature(conf.address, address, t.end);
-    });
-
-    tape('index address', (t) => {
-        const address = {
-            id:6,
-            properties: {
-                'carmen:text': 'F Street Northwest',
-                'carmen:center': [0,0],
-                'carmen:intersections': ['9th Street Northwest', 'Frosted Flakes Avenue']
-            },
-            geometry: {
-                type: 'MultiPoint',
-                coordinates: [[0,2]]
             }
         };
         queueFeature(conf.address, address, t.end);
@@ -128,7 +152,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the street - 9th street northwest', (t) => {
         c.geocode('9th street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '9th Street Northwest', 'returns street before intersection point');
+            t.deepEquals(res.features[0].place_name, '9th Street Northwest', 'Returns street before intersection point');
+            t.deepEquals(res.features[0].center, [0,0], 'Returns the right street center');
             t.end();
         });
     });
@@ -136,7 +161,9 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the intersections only after and is typed - F street northwest', (t) => {
         c.geocode('F street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'F Street Northwest', 'returns street before intersection point');
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest', 'Returns street before intersection point');
+            t.deepEquals(res.features[0].center, [0,1], 'Returns the right street center');
+
             t.end();
         });
     });
@@ -144,7 +171,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for 500 9th street northwest', (t) => {
         c.geocode('500 9th street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '500 9th Street Northwest', '500 9th Street Northwest');
+            t.deepEquals(res.features[0].place_name, '500 9th Street Northwest', '500 9th Street Northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,0] }, 'Returns the correct geometry for an addressnumber query');
             t.end();
         });
     });
@@ -153,7 +181,35 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the intersection - F street northwest and 9th street northwest', (t) => {
         c.geocode('F Street Northwest and 9th Street Northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F Street Northwest and 9th Street Northwest');
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F Street Northwest and 9th Street Northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and 9th Street Northwest');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - F street northwest and 9th street northwest', (t) => {
+        c.geocode('F Street Northwest and', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and US Road', 'F Street Northwest and US Road');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and US Road');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - F Street Northwest and US Road (9th Street Northwest synonym)', (t) => {
+        c.geocode('F Street Northwest and US Road', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and US Road', 'F Street Northwest and US Road');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and US Road');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - Highway Number 4 and Highway Number 6', (t) => {
+        c.geocode('Highway Number 4 and Highway Number 6', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'Highway Number 4 and Highway Number 6', 'Highway Number 4 and Highway Number 6');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for Highway Number 4 and Highway Number 6');
             t.end();
         });
     });
@@ -161,36 +217,50 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     tape('Searching for the intersection - 9th street northwest and F street northwest', (t) => {
         c.geocode('9th Street Northwest and f street northwest', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th street northwest and F street northwest');
+            t.deepEquals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th street northwest and F street northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for 9th street northwest and F street northwest');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - US road and Highway Number 4', (t) => {
+        c.geocode('US road and Highway Number 4', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'US road and Highway Number 4', 'US road and Highway Number 4');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for US road and Highway Number 4');
             t.end();
         });
     });
 
     tape('X place and Y place', (t) => {
         c.geocode('X place and Y place', {}, (err, res) => {
-            t.equals(res.features[0].place_name, 'X place and Y place', 'X place and Y place');
+            t.deepEquals(res.features[0].place_name, 'X place and Y place', 'X place and Y place');
+            t.deepEquals(res.features[0].center, [0,0], 'X place and Y place');
             t.ifError(err);
             t.end();
         });
     });
 
-    tape('Searching for the intersection - 9th st nw & F st nw', (t) => {
+    tape('Searching for the intersection - 9th st nw and F st nw', (t) => {
         c.geocode('9th st nw and F st nw', {}, (err, res) => {
-            t.equals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw & F st nw');
-            t.end();
-        });
-    });
-
-    tape('Searching for the intersection - synonyms', (t) => {
-        c.geocode('Highway Number 2 and 9th Street Northwest', {}, (err, res) => {
-            t.equals(res.features[0].place_name, 'Highway Number 2 and 9th Street Northwest', 'highway number 2 and 9th street northwest');
+            t.deepEquals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw and F st nw');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and 9th Street Northwest');
             t.end();
         });
     });
 
     tape('Searching for the intersection - synonyms', (t) => {
         c.geocode('Frosted Flakes Avenue and F Street Northwest', {}, (err, res) => {
-            t.equals(res.features[0].place_name, 'Frosted Flakes Avenue and F Street Northwest', 'frosted flakes avenue and F street northwest');
+            t.deepEquals(res.features[0].place_name, 'Frosted Flakes Avenue and F Street Northwest', 'Frosted flakes avenue and F street northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,1] }, 'Returns the correct geometry for Frosted flakes avenue and F street northwest');
+            t.end();
+        });
+    });
+
+    tape('Returns the correct result when intersections have an and - Abercrombie and Fitch Avenue and F Street Northwest', (t) => {
+        c.geocode('Abercrombie and Fitch Avenue and F Street Northwest', {}, (err, res) => {
+            t.deepEquals(res.features[0].place_name, 'Abercrombie and Fitch Avenue and F Street Northwest', 'Abercrombie and Fitch Avenue and F Street Northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,3] }, 'Returns the correct geometry for Abercrombie and Fitch Avenue and F Street Northwest');
             t.end();
         });
     });

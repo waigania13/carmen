@@ -42,6 +42,14 @@ test('termops.getWeights', (t) => {
     ], 'weights numTokens @ 0.2 and adjusts others');
     t.equal(res.reduce(sum,0), 1, 'weights sum to 1');
 
+    tokens = ['+intersection','a','b'];
+    res = termops.getWeights(tokens, freq);
+    t.deepEqual(res, [
+        0.4,
+        0.05476576248943511,
+        0.5452342375105649
+    ], 'weights intersections @ 0.4 and adjusts others');
+    t.equal(res.reduce(sum,0), 1, 'weights sum to 1');
     t.end();
 });
 
