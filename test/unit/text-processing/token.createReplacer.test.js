@@ -1,7 +1,7 @@
 'use strict';
 const token = require('../../../lib/text-processing/token.js');
 const test = require('tape');
-const WORD_BOUNDARY = require('../../../lib/constants.js').WORD_BOUNDARY;
+const WORD_BOUNDARY = token.WORD_BOUNDARY;
 
 // From https://stackoverflow.com/a/10776635
 function regexEqual(x, y) {
