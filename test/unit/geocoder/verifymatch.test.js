@@ -5,14 +5,14 @@ const bigAddress = require('../../fixtures/bigaddress.json');
 
 tape('verifymatch.sortFeature', (t) => {
     const input = [
-        { id: 8, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null, 'carmen:scoredist': 4, 'carmen:position': 2 }, geometry: { omitted: true } },
-        { id: 7, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null, 'carmen:scoredist': 4, 'carmen:position': 1 }, geometry: { omitted: true } },
-        { id: 6, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null, 'carmen:scoredist': 4 }, geometry: { omitted: true } },
-        { id: 5, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null, 'carmen:scoredist': 5 }, geometry: { omitted: true } },
-        { id: 4, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': null }, geometry: {} },
-        { id: 3, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'carmen:address': '26' } },
-        { id: 2, properties: { 'carmen:relevance': 0.99, 'carmen:spatialmatch': { relev: 1.0 } } },
-        { id: 1, properties: { 'carmen:relevance': 1.0 } }
+        { id: 8, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': null, 'carmen:scoredist': 4, 'carmen:position': 2 }, geometry: { omitted: true } },
+        { id: 7, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': null, 'carmen:scoredist': 4, 'carmen:position': 1 }, geometry: { omitted: true } },
+        { id: 6, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': null, 'carmen:scoredist': 4 }, geometry: { omitted: true } },
+        { id: 5, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': null, 'carmen:scoredist': 5 }, geometry: { omitted: true } },
+        { id: 4, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': null }, geometry: {} },
+        { id: 3, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 0.9 }, 'internal:address': '26' } },
+        { id: 2, properties: { 'internal:relevance': 0.99, 'carmen:spatialmatch': { relev: 1.0 } } },
+        { id: 1, properties: { 'internal:relevance': 1.0 } }
     ];
     input.sort(verifymatch.sortFeature);
     t.deepEqual(input.map((f) => { return f.id; }), [1,2,3,4,5,6,7,8]);
@@ -28,49 +28,49 @@ tape('verifymatch.sortContext (no distance)', (t) => {
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ id: 9, properties: { 'carmen:address': '26' } }];
+    c = [{ id: 9, properties: { 'internal:address': '26' } }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 8, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
+    c = [{ id: 8, properties: { 'internal:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 7, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
+    c = [{ id: 7, properties: { 'internal:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 6, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
+    c = [{ id: 6, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 5, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, _geometry: {} }];
+    c = [{ id: 5, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, _geometry: {} }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 4, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
+    c = [{ id: 4, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 2;
     arr.push(c);
 
-    c = [{ id: 3, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
+    c = [{ id: 3, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     c._distance = 20;
     arr.push(c);
 
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
+    c = [{ id: 2, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     c._distance = 10;
     arr.push(c);
 
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 2 }, geometry: {} }];
+    c = [{ id: 1, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 2 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
 
-    c = [{ id: 0, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 1 }, geometry: {} }];
+    c = [{ id: 0, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 1 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
@@ -89,25 +89,25 @@ tape('verifymatch.sortContext (with distance)', (t) => {
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ id: 5, properties: { 'carmen:address': '26' } }];
+    c = [{ id: 5, properties: { 'internal:address': '26' } }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 4, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
+    c = [{ id: 4, properties: { 'internal:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 3, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
+    c = [{ id: 3, properties: { 'internal:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 2;
     arr.push(c);
 
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
+    c = [{ id: 2, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
 
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
+    c = [{ id: 1, properties: { 'internal:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
     c._relevance = 1.0;
     c._typeindex = 1;
     arr.push(c);
@@ -126,11 +126,11 @@ tape('verifymatch.sortContext (distance vs addresstype)', (t) => {
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:scoredist': 1, 'carmen:addressnumber': [] } }];
+    c = [{ id: 2, properties: { 'internal:address': '26', 'carmen:scoredist': 1, 'carmen:addressnumber': [] } }];
     c._relevance = 1.0;
     arr.push(c);
 
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:scoredist': 2 } }];
+    c = [{ id: 1, properties: { 'internal:address': '26', 'carmen:scoredist': 2 } }];
     c._relevance = 1.0;
     arr.push(c);
 

@@ -283,12 +283,12 @@
                 "carmen:types": [
                     "place"
                 ],
-                "carmen:index": "place",
-                "carmen:extid": "place.1",
-                "carmen:tmpid": 67108865,
-                "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
-                "carmen:reverseMode": false
+                "internal:index": "place",
+                "internal:extid": "place.1",
+                "internal:tmpid": 67108865,
+                "internal:vtquerydist": 0,
+                "internal:geomtype": 3,
+                "internal:reverseMode": false
             },
             "text": "Toronto",
             "place_name": "Toronto, Ontario, Canada",
@@ -595,12 +595,12 @@
                 "carmen:types": [
                     "region"
                 ],
-                "carmen:index": "region",
-                "carmen:extid": "region.1",
-                "carmen:tmpid": 33554433,
-                "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
-                "carmen:reverseMode": false
+                "internal:index": "region",
+                "internal:extid": "region.1",
+                "internal:tmpid": 33554433,
+                "internal:vtquerydist": 0,
+                "internal:geomtype": 3,
+                "internal:reverseMode": false
             },
             "text": "Ontario",
             "place_name": "Ontario, Canada",
@@ -903,12 +903,12 @@
                 "carmen:types": [
                     "country"
                 ],
-                "carmen:index": "country",
-                "carmen:extid": "country.1",
-                "carmen:tmpid": 1,
-                "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
-                "carmen:reverseMode": false
+                "internal:index": "country",
+                "internal:extid": "country.1",
+                "internal:tmpid": 1,
+                "internal:vtquerydist": 0,
+                "internal:geomtype": 3,
+                "internal:reverseMode": false
             },
             "text": "Canada",
             "place_name": "Canada",

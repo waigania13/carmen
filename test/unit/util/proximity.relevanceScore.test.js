@@ -3,16 +3,16 @@ const test = require('tape');
 const proximity = require('../../../lib/util/proximity');
 
 function compareRelevanceScore(a, b) {
-    return b.properties['carmen:relevance'] - a.properties['carmen:relevance'];
+    return b.properties['internal:relevance'] - a.properties['internal:relevance'];
 }
 
 function calculateRelevanceScore(input) {
     for (let k = 0; k < input.length; k++) {
         const feat = input[k];
-        feat.properties['carmen:relevance'] = proximity.relevanceScore(
-            feat.properties['carmen:spatialmatch'].relev,
-            feat.properties['carmen:scoredist'],
-            feat.properties['carmen:address'],
+        feat.properties['internal:relevance'] = proximity.relevanceScore(
+            feat.properties['internal:spatialmatch'].relev,
+            feat.properties['internal:scoredist'],
+            feat.properties['internal:address'],
             feat.geometry && feat.geometry.omitted,
             feat.properties['carmen:score'] < 0
         );
@@ -26,13 +26,13 @@ test('calculate relevanceScore', (t) => {
     const maxScoredist = 5000;
     t.equal(proximity.relevanceScore(minRelev, minScoredist), 0, 'min relevanceScore value is 0');
     t.equal(proximity.relevanceScore(maxRelev, maxScoredist), 1, 'max relevanceScore value is 1');
-    t.ok(proximity.relevanceScore(maxRelev, minScoredist, null) < proximity.relevanceScore(maxRelev, maxScoredist), 'features with carmen:address of null receive a lower relevanceScore');
+    t.ok(proximity.relevanceScore(maxRelev, minScoredist, null) < proximity.relevanceScore(maxRelev, maxScoredist), 'features with internal:address of null receive a lower relevanceScore');
     t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, true) < proximity.relevanceScore(maxRelev, maxScoredist, 123), 'features with geometry.omitted receive a lower relevanceScore');
     t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, null, true) < proximity.relevanceScore(maxRelev, maxScoredist, 123, null), 'ghost features receive a lower relevanceScore');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, null), 0, 'min relevanceScore with carmen:address of null is 0');
+    t.equal(proximity.relevanceScore(minRelev, minScoredist, null), 0, 'min relevanceScore with internal:address of null is 0');
     t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, true), 0, 'min relevanceScore with geometry.omitted is 0');
     t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, null, true), 0, 'min relevanceScore with ghost feature is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, null, true, true), 0, 'min relevanceScore with carmen:address of null, geometry.omitted, and ghost feature is 0');
+    t.equal(proximity.relevanceScore(minRelev, minScoredist, null, true, true), 0, 'min relevanceScore with internal:address of null, geometry.omitted, and ghost feature is 0');
     t.end();
 });
 
@@ -41,9 +41,9 @@ test('sort features based on relevanceScore', (t) => {
 
     t.test('address = null, waupaca near madison, wisconsin', (t) => {
         const input = [
-            { id: 2, properties: { 'carmen:text': 'Waupaca Court', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.976215, 'carmen:address': null } },
+            { id: 2, properties: { 'carmen:text': 'Waupaca Court', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.976215, 'internal:address': null } },
             { id: 1, properties: { 'carmen:text': 'Waupaca', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 10.788564 } },
-            { id: 8, properties: { 'carmen:text': 'Waupaca Street', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 5.954101, 'carmen:address': null } },
+            { id: 8, properties: { 'carmen:text': 'Waupaca Street', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 5.954101, 'internal:address': null } },
             { id: 3, properties: { 'carmen:text': 'Waupaca High School,primary school, secondary', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.869482 } },
             { id: 4, properties: { 'carmen:text': 'Waupaca Camping Park, LLC', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.826643 } },
             { id: 5, properties: { 'carmen:text': 'Waupaca County Fairgrounds', 'carmen:spatialmatch': { relev: 1 }, 'carmen:scoredist': 4.810530 } },

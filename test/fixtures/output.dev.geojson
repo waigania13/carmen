@@ -282,12 +282,12 @@
                 "carmen:types": [
                     "place"
                 ],
-                "carmen:index": "place",
-                "carmen:extid": "place.1",
-                "carmen:tmpid": 67108865,
-                "carmen:distance": 0,
-                "carmen:position": 0,
-                "carmen:spatialmatch": {
+                "internal:index": "place",
+                "internal:extid": "place.1",
+                "internal:tmpid": 67108865,
+                "internal:distance": 0,
+                "internal:position": 0,
+                "internal:spatialmatch": {
                     "relev": 1,
                     "covers": [
                         {
@@ -309,14 +309,14 @@
                         }
                     ]
                 },
-                "carmen:relev": 1,
-                "carmen:geocoder_address_order": "ascending",
-                "carmen:zoom": 6,
-                "carmen:scoredist": 1,
-                "carmen:matches_language": true,
-                "carmen:prefix": 2,
-                "carmen:query_text": "toronto",
-                "carmen:idx": 2
+                "internal:relev": 1,
+                "internal:geocoder_address_order": "ascending",
+                "internal:zoom": 6,
+                "internal:scoredist": 1,
+                "internal:matches_language": true,
+                "internal:prefix": 2,
+                "internal:query_text": "toronto",
+                "internal:idx": 2
             },
             "text": "Toronto",
             "place_name": "Toronto, Ontario, Canada",

@@ -29,7 +29,7 @@ test('ops#toFeature', (t) => {
     feat = [{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'carmen:types': ['address'],
             'internal:extid': 'address.1833980151'
@@ -41,7 +41,7 @@ test('ops#toFeature', (t) => {
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'internal:extid': 'address.1833980151'
         }
@@ -58,7 +58,7 @@ test('ops#toFeature', (t) => {
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'internal.extid': 'address.1833980151'
         }
@@ -67,7 +67,7 @@ test('ops#toFeature', (t) => {
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'internal:extid': 'address.1833980151'
         }
@@ -82,7 +82,7 @@ test('ops#toFeature', (t) => {
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'internal:extid': 'address.1833980151'
         }
@@ -98,7 +98,7 @@ test('ops#toFeature', (t) => {
     t.deepEqual(ops.toFeature([{
         properties: {
             'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
+            'internal:address': 9,
             'carmen:text': 'Fake Street',
             'internal:extid': 'address.1833980151'
         }
@@ -131,7 +131,7 @@ test('ops#toFeature', (t) => {
             'carmen:center': [-99.392855,63.004759],
             'carmen:text': 'Fake Street',
             'internal:extid': 'address.1833980151',
-            'carmen:relevance': 1
+            'internal:relevance': 1
         }
     },{
         properties: {
