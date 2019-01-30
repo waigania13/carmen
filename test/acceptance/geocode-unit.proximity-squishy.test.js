@@ -10,9 +10,9 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // instead prioritize the highest-index feature
 // but local feature should still return first with proximity enabled
 const conf = {
-    country: new mem({ maxzoom: 6, minscore: 0, maxscore: 10000 }, () => {}),
-    place: new mem({ maxzoom: 6, geocoder_inherit_score: true, minscore: 0, maxscore: 10000 }, () => {}),
-    poi: new mem({ maxzoom: 6, minscore: 0, maxscore: 10000 }, () => {})
+    country: new mem({ maxzoom: 6, minscore: 0, maxscore: 1e6 }, () => {}),
+    place: new mem({ maxzoom: 6, geocoder_inherit_score: true, minscore: 0, maxscore: 1e5 }, () => {}),
+    poi: new mem({ maxzoom: 6, minscore: 0, maxscore: 1e4 }, () => {})
 };
 
 const c = new Carmen(conf);
