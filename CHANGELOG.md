@@ -1,5 +1,9 @@
 # Changelog
 
+## 26.2.0
+
+- Add fallback behavior if tilecover fails to calculate covers for geometry
+
 ## 26.1.0
 
 - Update to carmen-cache to 0.25.0

@@ -4,6 +4,8 @@ const grid = require('../../../lib/util/grid.js');
 const tape = require('tape');
 const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
+const fs = require('fs');
+const path = require('path');
 
 tape('indexdocs.loadDoc', (t) => {
     const simple_replacer = token.createSimpleReplacer({});
@@ -69,6 +71,30 @@ tape('indexdocs.standardize', (t) => {
         }, 6, {});
 
         q.deepEquals(res, { geometry: { coordinates: [0, 0], type: 'Point' }, id: 1, properties: { 'carmen:center': [0, 0], 'carmen:text': 'main street', 'carmen:zxy': ['6/32/32'] }, type: 'Feature' });
+        q.end();
+    });
+
+    t.test('indexdocs.standardize - geometry that breaks tilecover is fixed', (q) => {
+        const usaRow = fs.readFileSync(path.resolve(__dirname, '../../fixtures/docs.jsonl'), 'utf8').split('\n')[4];
+        const brokenUsa = JSON.parse(usaRow);
+        // push an empty polygon onto the end of the multypolygon
+        brokenUsa.geometry.coordinates[0].push([
+            [-100, 27],
+            [-100, 27],
+            [-100, 27],
+            [-100, 27]
+        ]);
+        q.doesNotThrow(() => indexdocs.standardize(brokenUsa, 6, {}));
+
+        const brokenCollection = JSON.parse(usaRow);
+        brokenCollection.geometry = {
+            type: 'GeometryCollection',
+            geometries: [
+                brokenUsa.geometry
+            ]
+        };
+        q.doesNotThrow(() => indexdocs.standardize(brokenCollection, 6, {}));
+
         q.end();
     });
 
