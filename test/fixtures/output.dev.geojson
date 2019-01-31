@@ -307,7 +307,8 @@
                             "text": "toronto",
                             "zoom": 6
                         }
-                    ]
+                    ],
+                    "partialNumber": false
                 },
                 "carmen:relev": 1,
                 "carmen:geocoder_address_order": "ascending",
