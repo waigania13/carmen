@@ -291,10 +291,14 @@ test('named/numbered group replacement', (t) => {
     t.end();
 });
 
-test('throw on named replacement groups', (t) => {
-    t.throws(() => {
-        token.createComplexReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}' });
-    });
+test('[node 10] named replacement groups', (t) => {
+    let tokens;
+    try {
+        tokens = token.createComplexReplacer({ '(abc)(?<namedgroup>[\\d]+)': '$<namedgroup>' });
+        t.deepEqual(token.replaceToken(tokens, 'abc123'), { query: '123', lastWord: false });
+    } catch (e) {
+        t.ok(true, 'Named tokens are not supported by this version of Node. Skipping test');
+    }
     t.end();
 });
 
