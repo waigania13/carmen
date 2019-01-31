@@ -87,10 +87,23 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('test address index with double number', (t) => {
-        c.geocode('70 WASHINGTON STREET #501', {}, (err, res) => {
+        c.geocode('70 WASHINGTON STREET #502', {}, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found: 70 WASHINGTON STREET');
+            t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found 70 WASHINGTON STREET with #502');
             t.equals(res.features[0].relevance, 0.50);
+        });
+
+        c.geocode('70 WASHINGTON STREET UNIT 502', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found 70 WASHINGTON STREET with UNIT 502');
+            t.equals(res.features[0].relevance, 0.50);
+        });
+
+        c.geocode('70 WASHINGTON STREET 502', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '70 WASHINGTON STREET', 'Found 70 WASHINGTON STREET with 502');
+            t.equals(res.features[0].relevance, 0.50);
+
             t.end();
         });
     });
