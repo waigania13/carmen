@@ -75,12 +75,12 @@ tape('Network Features', (t) => {
         properties: {
             'carmen:text': 'Main Street Northwest',
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [] ],
-            'carmen:parityr': [ [] ], 
-            'carmen:lfromhn': [ [] ],
-            'carmen:rfromhn': [ [] ],
-            'carmen:ltohn': [ [] ],
-            'carmen:rtohn': [ [] ]
+            'carmen:parityl': [[]],
+            'carmen:parityr': [[]],
+            'carmen:lfromhn': [[]],
+            'carmen:rfromhn': [[]],
+            'carmen:ltohn': [[]],
+            'carmen:rtohn': [[]]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -96,12 +96,12 @@ tape('Network Features', (t) => {
         properties: {
             'carmen:text': 'Main Street Northwest',
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [] ],
-            'carmen:parityr': [ [] ], 
-            'carmen:lfromhn': [ [] ],
-            'carmen:rfromhn': [ [] ],
-            'carmen:ltohn': [ [] ],
-            'carmen:rtohn': [ [] ]
+            'carmen:parityl': [[]],
+            'carmen:parityr': [[]],
+            'carmen:lfromhn': [[]],
+            'carmen:rfromhn': [[]],
+            'carmen:ltohn': [[]],
+            'carmen:rtohn': [[]]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -115,12 +115,12 @@ tape('Network Features', (t) => {
         properties: {
             'carmen:text': 'Main Street Northwest',
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [] ],
-            'carmen:parityr': [ [] ], 
-            'carmen:lfromhn': [ [] ],
-            'carmen:rfromhn': [ [] ],
-            'carmen:ltohn': [ [] ],
-            'carmen:rtohn': [ [] ]
+            'carmen:parityl': [[]],
+            'carmen:parityr': [[]],
+            'carmen:lfromhn': [[]],
+            'carmen:rfromhn': [[]],
+            'carmen:ltohn': [[]],
+            'carmen:rtohn': [[]]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -147,7 +147,8 @@ tape('Intersection Features', (t) => {
         }
     }), {
         type: 'Feature',
-        properties: {
+        properties:
+        {
             'carmen:text': 'Main Street Northwest',
             'carmen:intersections': [['1st Avenue', '2nd Avenue', '3rd Avenue']]
         },
@@ -196,14 +197,14 @@ tape('Combined Features', (t) => {
         type: 'Feature',
         properties: {
             'carmen:text': 'Main Street Northwest',
-            'carmen:addressnumber': [ null, [1, 2, 3]],
+            'carmen:addressnumber': [null, [1, 2, 3]],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [], null ],
-            'carmen:parityr': [ [], null ], 
-            'carmen:lfromhn': [ [], null ],
-            'carmen:rfromhn': [ [], null ],
-            'carmen:ltohn': [ [], null ],
-            'carmen:rtohn': [ [], null ]
+            'carmen:parityl': [[], null],
+            'carmen:parityr': [[], null],
+            'carmen:lfromhn': [[], null],
+            'carmen:rfromhn': [[], null],
+            'carmen:ltohn': [[], null],
+            'carmen:rtohn': [[], null]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -221,12 +222,12 @@ tape('Combined Features', (t) => {
             'carmen:text': 'Main Street Northwest',
             'carmen:addressnumber': [null, [1, 2, 3]],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [], [] ],
-            'carmen:parityr': [ [], [] ], 
-            'carmen:lfromhn': [ [], [] ],
-            'carmen:rfromhn': [ [], [] ],
-            'carmen:ltohn': [ [], [] ],
-            'carmen:rtohn': [ [], [] ]
+            'carmen:parityl': [[], []],
+            'carmen:parityr': [[], []],
+            'carmen:lfromhn': [[], []],
+            'carmen:rfromhn': [[], []],
+            'carmen:ltohn': [[], []],
+            'carmen:rtohn': [[], []]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -244,14 +245,14 @@ tape('Combined Features', (t) => {
         type: 'Feature',
         properties: {
             'carmen:text': 'Main Street Northwest',
-            'carmen:addressnumber': [ [1, 2, 3], null ],
+            'carmen:addressnumber': [[1, 2, 3], null],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ null, [] ],
-            'carmen:parityr': [ null, [] ], 
-            'carmen:lfromhn': [ null, [] ],
-            'carmen:rfromhn': [ null, [] ],
-            'carmen:ltohn': [ null, [] ],
-            'carmen:rtohn': [ null, [] ]
+            'carmen:parityl': [null, []],
+            'carmen:parityr': [null, []],
+            'carmen:lfromhn': [null, []],
+            'carmen:rfromhn': [null, []],
+            'carmen:ltohn': [null, []],
+            'carmen:rtohn': [null, []]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -269,12 +270,12 @@ tape('Combined Features', (t) => {
             'carmen:text': 'Main Street Northwest',
             'carmen:addressnumber': [[1, 2, 3], null],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [], [] ],
-            'carmen:parityr': [ [], [] ], 
-            'carmen:lfromhn': [ [], [] ],
-            'carmen:rfromhn': [ [], [] ],
-            'carmen:ltohn': [ [], [] ],
-            'carmen:rtohn': [ [], [] ]
+            'carmen:parityl': [[], []],
+            'carmen:parityr': [[], []],
+            'carmen:lfromhn': [[], []],
+            'carmen:rfromhn': [[], []],
+            'carmen:ltohn': [[], []],
+            'carmen:rtohn': [[], []]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -292,15 +293,15 @@ tape('Combined Features', (t) => {
         type: 'Feature',
         properties: {
             'carmen:text': 'Main Street Northwest',
-            'carmen:addressnumber': [null, [1, 2, 3], null],
-            'carmen:intersections': [['1st Avenue', '2nd Avenue', '3rd Avenue'], null, null],
+            'carmen:addressnumber': [[1, 2, 3], null, null],
+            'carmen:intersections': [null, ['1st Avenue', '2nd Avenue', '3rd Avenue'], null],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ null, null, [] ],
-            'carmen:parityr': [ null, null, [] ], 
-            'carmen:lfromhn': [ null, null, [] ],
-            'carmen:rfromhn': [ null, null, [] ],
-            'carmen:ltohn': [ null, null, [] ],
-            'carmen:rtohn': [ null, null, [] ]
+            'carmen:parityl': [null, null, []],
+            'carmen:parityr': [null, null, []],
+            'carmen:lfromhn': [null, null, []],
+            'carmen:rfromhn': [null, null, []],
+            'carmen:ltohn': [null, null, []],
+            'carmen:rtohn': [null, null, []]
         },
         geometry: {
             type: 'GeometryCollection',
@@ -319,15 +320,15 @@ tape('Combined Features', (t) => {
         type: 'Feature',
         properties: {
             'carmen:text': 'Main Street Northwest',
-            'carmen:addressnumber': [null, [1, 2, 3], null],
-            'carmen:intersections': [['1st Avenue', '2nd Avenue', '3rd Avenue'], null, null],
+            'carmen:addressnumber': [[1, 2, 3], null, null],
+            'carmen:intersections': [null,['1st Avenue', '2nd Avenue', '3rd Avenue'], null],
             'carmen:rangetype': 'tiger',
-            'carmen:parityl': [ [], [], [] ],
-            'carmen:parityr': [ [], [], [] ], 
-            'carmen:lfromhn': [ [], [], [] ],
-            'carmen:rfromhn': [ [], [], [] ],
-            'carmen:ltohn': [ [], [], [] ],
-            'carmen:rtohn': [ [], [], [] ]
+            'carmen:parityl': [[], [], []],
+            'carmen:parityr': [[], [], []],
+            'carmen:lfromhn': [[], [], []],
+            'carmen:rfromhn': [[], [], []],
+            'carmen:ltohn': [[], [], []],
+            'carmen:rtohn': [[], [], []]
         },
         geometry: {
             type: 'GeometryCollection',
