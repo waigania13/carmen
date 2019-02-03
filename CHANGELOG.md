@@ -1,5 +1,10 @@
 # Changelog
 
+## 27.0.0
+
+- Removed name regex support in token replacement via XRegExp. Native support in node 10+ is still functional.
+- Fix address vs unit number position detection when address and unit numbers exist in different clusters.
+
 ## 26.2.0
 
 - Add fallback behavior if tilecover fails to calculate covers for geometry

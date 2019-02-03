@@ -282,23 +282,23 @@ test('token replacement', (t) => {
 test('named/numbered group replacement', (t) => {
     const tokens = token.createComplexReplacer({
         'abc': 'xyz',
-        '(1\\d+)': '@@@$1@@@',
-        '(?<number>2\\d+)': '###${number}###'
+        '(1\\d+)': '@@@$1@@@'
     });
     t.deepEqual(token.replaceToken(tokens, 'abc 123 def'), { query: 'xyz @@@123@@@ def', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'abc 234 def'), { query: 'xyz ###234### def', lastWord: false });
     t.deepEqual(token.replaceToken(tokens, 'abc 123'), { query: 'xyz @@@123@@@', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'abc 234'), { query: 'xyz ###234###', lastWord: false });
     t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
 
     t.end();
 });
 
-test('throw on mixed name/num replacement groups', (t) => {
-    t.throws(() => {
-        token.createComplexReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
-    });
+test('[node 10] named replacement groups', (t) => {
+    let tokens;
+    try {
+        tokens = token.createComplexReplacer({ '(abc)(?<namedgroup>[\\d]+)': '$<namedgroup>' });
+        t.deepEqual(token.replaceToken(tokens, 'abc123'), { query: '123', lastWord: false });
+    } catch (e) {
+        t.ok(true, 'Named tokens are not supported by this version of Node. Skipping test');
+    }
     t.end();
 });
 
