@@ -1,6 +1,7 @@
 'use strict';
 const tape = require('tape');
 const transform = require('../../../lib/util/feature.js').addrTransform;
+const indexdocs = require('../../../lib/indexer/indexdocs.js');
 
 tape('Address Features', (t) => {
     t.deepEquals(transform({
@@ -346,4 +347,42 @@ tape('Combined Features', (t) => {
     }, 'intersection + address + network => geomcollection');
 
     t.end();
+});
+
+tape('indexdocs.standardize - carmen:intersections parallel arrays must equal', (q) => {
+    q.throws(() => {
+        indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:intersections': ['F street Northwest']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                coordinates: [[0,0], [0,0]]
+            }
+        }, 6, {});
+    }, /carmen:intersections\[i\] array must be equal to geometry.geometries\[i\] array/);
+    q.end();
+});
+
+tape('indexdocs.standardize - carmen:intersections must be MultiPoint or GeometryCollection', (q) => {
+    q.throws(() => {
+        indexdocs.standardize({
+            id: 1,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'main street',
+                'carmen:center': [0,0],
+                'carmen:intersections': ['F street Northwest']
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        }, 6, {});
+    }, /carmen:intersections must be MultiPoint or GeometryCollection/);
+    q.end();
 });
