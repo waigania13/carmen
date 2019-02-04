@@ -1,5 +1,6 @@
 'use strict';
 const token = require('../../../lib/text-processing/token');
+const termops = require('../../../lib/text-processing/termops');
 const test = require('tape');
 
 const tokenList = {
@@ -210,8 +211,6 @@ const tokenClone = JSON.parse(JSON.stringify(tokenList));
 
 const categorized = token.categorizeTokenReplacements(tokenList);
 const simpleTokens = token.createSimpleReplacer(categorized.simple);
-const complexTokens = token.createComplexReplacer(categorized.complex);
-const tokens = simpleTokens.concat(complexTokens);
 const complexTokensR = token.createComplexReplacer(categorized.complex, { includeUnambiguous: true });
 
 // this function simulates the current typical usage, which is to enumerate
@@ -219,7 +218,7 @@ const complexTokensR = token.createComplexReplacer(categorized.complex, { includ
 // simple ones
 const applySimpleAndComplex = function(str) {
     return token.enumerateTokenReplacements(complexTokensR, str).map((s) => {
-        return token.replaceToken(simpleTokens, s).query;
+        return termops.tokenize(s).map((word) => simpleTokens.tokens.get(word) || word).join(' ');
     });
 };
 
@@ -231,10 +230,10 @@ test('create*Replacer', (q) => {
 });
 
 test('token replacement', (t) => {
+    const complexTokens = token.createComplexReplacer(categorized.complex);
+
     // lastWord is false because the final replacement is complex
-    t.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo st ne, sf', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'coolstreet'), { query: 'coolstreet', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'streetwise'), { query: 'streetwise', lastWord: false });
+    t.deepEqual(token.replaceToken(complexTokens, 'fargo street, san francisco'), { query: 'fargo street, sf', lastWord: false });
 
     t.deepEqual(
         token.enumerateTokenReplacements(complexTokensR, 'fargo street northeast, san francisco'),
@@ -246,8 +245,8 @@ test('token replacement', (t) => {
     t.deepEqual(
         applySimpleAndComplex('fargo street northeast, san francisco'),
         [
-            'fargo st ne, sf',
-            'fargo st ne, san francisco'
+            'fargo st ne sf',
+            'fargo st ne san francisco'
         ]
     );
     t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
@@ -256,9 +255,6 @@ test('token replacement', (t) => {
     t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
         'main st st st st milwaukee ln ln wtf ln'
     ]);
-
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
 
     // Demonstrate that replacements can cascade, but our current behavior is
     // quite non-deterministic because token order matters very much for the
@@ -274,7 +270,6 @@ test('token replacement', (t) => {
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
     });
     t.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['ueb cat', 'üb cat', 'uber cat'], 'hits all permutations');
-
 
     t.end();
 });

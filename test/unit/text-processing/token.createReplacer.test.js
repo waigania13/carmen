@@ -16,11 +16,12 @@ test('createReplacer: simple token replacements', (t) => {
         'Road': 'Rd',
         'Maréchal': 'Mal'
     });
-    const expectedFrom = new RegExp('(' + WORD_BOUNDARY + '|^)((maréchal|road|street)(' + WORD_BOUNDARY + '|$))+', 'gi');
 
-    t.equal(replacer.length, 1);
-    t.ok(regexEqual(replacer[0].from, expectedFrom), 'from regexps match');
-    t.deepEqual(token.replaceToken(replacer, 'Fake Street'), { query: 'Fake st', lastWord: false }, 'Fake Street => fake St');
+    t.ok(replacer.tokens instanceof Map);
+    t.equal(typeof replacer.replacer, 'function');
+
+    t.deepEqual(replacer.replacer(['Fake', 'Street']), ['Fake', 'Street'], 'Requires input be lowercase');
+    t.deepEqual(replacer.replacer(['fake', 'street']), ['fake', 'st'], 'fake street => fake St');
     t.end();
 });
 
