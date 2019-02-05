@@ -31,6 +31,9 @@ test('tokenizes basic strings', (t) => {
     t.deepEqual(termops.tokenize('Москва'), ['москва'], 'Cyrillic, converts to lower case');
     t.deepEqual(termops.tokenize('Москва Русский'), ['москва', 'русский'], 'Cyrillic, splits words');
     t.deepEqual(termops.tokenize('京都市'), ['京','都','市'], 'Splits CJK');
+    t.deepEqual(termops.tokenize('++new+york++city++'), ['new', 'york', 'city']);
+    t.deepEqual(termops.tokenize('"new" "york" "city"'), ['new', 'york', 'city']);
+    t.deepEqual(termops.tokenize('new:)york:)city'), ['new', 'york', 'city']);
     t.end();
 });
 test.skip('known failures', (t) => {
