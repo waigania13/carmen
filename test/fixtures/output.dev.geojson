@@ -308,7 +308,8 @@
                             "zoom": 6
                         }
                     ],
-                    "partialNumber": false
+                    "partialNumber": false,
+                    "scoredist": 1
                 },
                 "carmen:relev": 1,
                 "carmen:geocoder_address_order": "ascending",
