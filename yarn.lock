@@ -97,9 +97,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@mapbox/carmen-cache#22258416012ec7222a5c2151968e5733a57cf8d5":
-  version "0.25.0-dedupe-4"
-  resolved "https://codeload.github.com/mapbox/carmen-cache/tar.gz/22258416012ec7222a5c2151968e5733a57cf8d5"
+"@mapbox/carmen-cache@mapbox/carmen-cache#fdbfefdc05d4b1f8149e71478fac336c624903d0":
+  version "0.25.0-dedupe-5"
+  resolved "https://codeload.github.com/mapbox/carmen-cache/tar.gz/fdbfefdc05d4b1f8149e71478fac336c624903d0"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
