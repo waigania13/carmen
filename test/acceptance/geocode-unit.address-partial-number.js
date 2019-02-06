@@ -5,6 +5,7 @@ const mem = require('../../lib/sources/api-mem');
 const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 const extent = require('@turf/bbox').default;
+const cheapRuler = require('cheap-ruler');
 
 const fr_sample = {
     'type':'Feature',
@@ -36,9 +37,13 @@ const us_sample = {
     }
 };
 
+const fr_extent = extent(fr_sample);
+// pad the us extent to give us room to play with bboxes inside
+const us_extent = cheapRuler(0, 'miles').bufferPoint([0, 0], 20);
+
 const conf = {
-    fr_address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address', bounds: extent(fr_sample) }, () => {}),
-    us_address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address', bounds: extent(us_sample) }, () => {})
+    fr_address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address', bounds: fr_extent }, () => {}),
+    us_address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address', bounds: us_extent }, () => {})
 };
 const c = new Carmen(conf);
 
@@ -74,6 +79,17 @@ tape('geocode with in-index prox for us', (t) => {
         t.equal(res.features.length, 1, 'only one result returned');
         t.equal(res.features[0].id, 'address.1', 'result was from expected index');
         t.assert(res.features[0].address.startsWith('7'), 'prefix matches');
+        t.end();
+    });
+});
+
+tape('geocode with in-index prox for us plus bbox', (t) => {
+    c.geocode('7', {
+        proximity: [0,0],
+        bbox: cheapRuler(0, 'miles').bufferPoint([us_extent[0], us_extent[1]], 1)
+    }, (err, res) => {
+        t.ifError(err);
+        t.equal(res.features.length, 0, 'no results returned');
         t.end();
     });
 });
