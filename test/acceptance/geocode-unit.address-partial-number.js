@@ -59,7 +59,7 @@ const us_itp = {
             ]
         }]
     }
-}
+};
 
 const fr_extent = extent(fr_sample);
 // pad the us extent to give us room to play with bboxes inside
