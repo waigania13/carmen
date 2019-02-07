@@ -37,6 +37,30 @@ const us_sample = {
     }
 };
 
+const us_itp = {
+    id: 12,
+    properties: {
+        'carmen:text': 'Main St',
+        'carmen:rangetype': 'tiger',
+        'carmen:lfromhn': [['1002','2']],
+        'carmen:ltohn': [['1998','1000']],
+        'carmen:rfromhn': [['1001','1']],
+        'carmen:rtohn': [['1999','999']],
+        'carmen:parityr': [['O','O']],
+        'carmen:parityl': [['E','E']]
+    },
+    geometry: {
+        type: 'GeometryCollection',
+        geometries: [{
+            type:'MultiLineString',
+            coordinates:[
+                [[0,0],[0,10]],
+                [[0,40],[0,50]]
+            ]
+        }]
+    }
+}
+
 const fr_extent = extent(fr_sample);
 // pad the us extent to give us room to play with bboxes inside
 const us_extent = cheapRuler(0, 'miles').bufferPoint([0, 0], 20);
@@ -49,7 +73,9 @@ const c = new Carmen(conf);
 
 tape('index addresses', (t) => {
     queueFeature(conf.fr_address, fr_sample, () => {
-        queueFeature(conf.us_address, us_sample, t.end);
+        queueFeature(conf.us_address, us_sample, () => {
+            queueFeature(conf.us_address, us_itp, t.end);
+        });
     });
 });
 
@@ -96,6 +122,22 @@ tape('geocode with in-index prox for us plus bbox', (t) => {
 
 tape('geocode with out-of-index prox', (t) => {
     c.geocode('7', { proximity: [-50,-50] }, (err, res) => {
+        t.ifError(err);
+        t.equal(res.features.length, 0, 'no results returned');
+        t.end();
+    });
+});
+
+tape('geocode with no matching numbers', (t) => {
+    c.geocode('76', { proximity: [0,0] }, (err, res) => {
+        t.ifError(err);
+        t.equal(res.features.length, 0, 'no results returned');
+        t.end();
+    });
+});
+
+tape('geocode with itp only', (t) => {
+    c.geocode('1', { proximity: [0,0] }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 0, 'no results returned');
         t.end();
