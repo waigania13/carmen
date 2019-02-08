@@ -97,10 +97,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.25.0.tgz#b7e359bbddd7b64ac9a938ae429e9fce59d95aa8"
-  integrity sha512-2Vpjh6ocZCEpCkoPQ3LsjMXFnS6qGb7zABHoSokZs5ay3bZqca72EESrymwRBmVTxQ6gm69fasUo8fE/dBFXuA==
+"@mapbox/carmen-cache@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.26.0.tgz#4da8cff40654c2ccf7b1f0200a5d445cc441959a"
+  integrity sha512-2zK+o9kDTPZo9vtyOC5SY4EivCqLUaBV5F8h4SXoMejd0xYWDbR0x31LZw4RFyzGwoxpmHMYd/ad7bcb4nOnYA==
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
@@ -1788,6 +1788,11 @@ chardet@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
+
+cheap-ruler@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/cheap-ruler/-/cheap-ruler-2.5.1.tgz#1c47ece27fc14bc95e817e16d49ceb5009a7e987"
+  integrity sha512-5x22zeBDPIXdDDiqIsC8tkOY1HEBD6FCRCfsvgwNg9yelClCpvfNGk0L2MotxTDEL4aoXOUUgdm3rPOBSLF+jA==
 
 chokidar@^2.0.0:
   version "2.0.4"
@@ -4083,10 +4088,10 @@ mapnik-vector-tile@2.2.1:
   resolved "https://registry.yarnpkg.com/mapnik-vector-tile/-/mapnik-vector-tile-2.2.1.tgz#9c70f07f2497ae2728679c7528f07c35bf7a62e9"
   integrity sha512-+oasa2DfqArIMC7F71ca8CXpDt0rEcq9sJDv+AuhBCZJg+3m2ikDAs/oskEpPpUOwta1hH48Qr+0deCkyB/0Jg==
 
-mapnik@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/mapnik/-/mapnik-4.0.1.tgz#147cf3bd0725abf2f66b1e3fd24751c5598c5ce2"
-  integrity sha512-iVlsplv9fAJG6E3+hAUT5eNDZ5ZuEr4+Libc70C8On+Sh381rnbh56Q5dxO89DQw6Zhd4sKD5QtIxtyncWddjA==
+mapnik@^4.0.2:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/mapnik/-/mapnik-4.2.1.tgz#b1c4532527a8313f898c9d08a35f670fd0994582"
+  integrity sha512-xRGIzwPu3n9T1L8V0izZ7694nWMiHxe9PGy4ghL4PDr/koIqCN0JDD9wsrvt52m53ZZC+zdeXFtuS84JqU74lQ==
   dependencies:
     mapnik-vector-tile "2.2.1"
     nan "~2.10.0"
