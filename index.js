@@ -179,18 +179,17 @@ function Geocoder(indexes, options) {
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
-                const catReplacer = source.simple_replacer.concat(source.complex_query_replacer);
 
                 for (let category of info.geocoder_categories) {
-                    category = termops.tokenize(category, true);
+                    category = termops.tokenize(category);
 
-                    source.categories.add(category.join(' '), true);
+                    source.categories.add(category.join(' '));
 
                     category = category.map((cat) => {
-                        return token.replaceToken(catReplacer, cat).query.toLowerCase();
+                        return token.replaceToken(source.complex_query_replacer, source.simple_replacer.tokens.get(cat) || cat).query;
                     });
 
-                    source.categories.add(category.join(' '), true);
+                    source.categories.add(category.join(' '));
                 }
             }
 

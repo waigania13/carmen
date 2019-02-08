@@ -1,7 +1,7 @@
 'use strict';
 const token = require('../../../lib/text-processing/token.js');
 const test = require('tape');
-const WORD_BOUNDARY = require('../../../lib/constants.js').WORD_BOUNDARY;
+const WORD_BOUNDARY = token.WORD_BOUNDARY;
 
 // From https://stackoverflow.com/a/10776635
 function regexEqual(x, y) {
@@ -16,11 +16,12 @@ test('createReplacer: simple token replacements', (t) => {
         'Road': 'Rd',
         'Maréchal': 'Mal'
     });
-    const expectedFrom = new RegExp('(' + WORD_BOUNDARY + '|^)((maréchal|road|street)(' + WORD_BOUNDARY + '|$))+', 'gi');
 
-    t.equal(replacer.length, 1);
-    t.ok(regexEqual(replacer[0].from, expectedFrom), 'from regexps match');
-    t.deepEqual(token.replaceToken(replacer, 'Fake Street'), { query: 'Fake st', lastWord: false }, 'Fake Street => fake St');
+    t.ok(replacer.tokens instanceof Map);
+    t.equal(typeof replacer.replacer, 'function');
+
+    t.deepEqual(replacer.replacer(['Fake', 'Street']), ['Fake', 'Street'], 'Requires input be lowercase');
+    t.deepEqual(replacer.replacer(['fake', 'street']), ['fake', 'st'], 'fake street => fake St');
     t.end();
 });
 
