@@ -77,7 +77,7 @@ If there is more than one name for F Street Northwest and it intersects with 9th
         address: new mem({
             maxzoom: 14,
             geocoder_address: 1,
-            geocoder_tokens: { st: 'street', nw: 'northwest' }
+            geocoder_tokens: { street: 'st', northwest: 'nw' }
         }, () => {})
     };
 
