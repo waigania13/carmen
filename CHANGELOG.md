@@ -1,5 +1,12 @@
 # Changelog
 
+## 27.1.0
+
+- Added support for performing autocomplete queries on partial housenumbers (e.g., querying for "51" and getting "510 Main St.") if proximity is enabled
+- Moved to a new carmen-cache release (0.26.0) that generates more compact indexes in some circumstances, and supports new fast-path operations to make partial-housenumber search more performant
+- Added support for indexes with index bounds that cross the antimeridian
+- Refactored tokenization to logic to facilitate future feature work around cardinality-changing token replacements
+
 ## 27.0.0
 
 - Removed name regex support in token replacement via XRegExp. Native support in node 10+ is still functional.
