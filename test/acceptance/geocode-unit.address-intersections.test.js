@@ -107,7 +107,7 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             id:2,
             properties: {
                 // Synonyms of the feature go in 'carmen:text'
-                'carmen:text': 'Highway Number 6,Huckleberry Finn Road,9th Street Northwest',
+                'carmen:text': 'Highway Number 6,Huckleberry Finn Road,9th Street Northwest,US HWY 1',
                 'carmen:center': [0,0],
                 // intersections with the feature go here
                 'carmen:intersections': ['F Street Northwest', 'Highway Number 4', 'Highway Number 2']
@@ -229,7 +229,6 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             t.ifError(err);
             t.deepEquals(res.features[0].place_name, 'F Street Northwest', 'Returns street before intersection point');
             t.deepEquals(res.features[0].center, [0,1], 'Returns the right street center');
-
             t.end();
         });
     });
@@ -258,6 +257,15 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             t.ifError(err);
             t.deepEquals(res.features[0].place_name, 'F Street Northwest and Huckleberry Finn Road', 'F Street Northwest and Huckleberry Finn Road');
             t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and Huckleberry Finn Road');
+            t.end();
+        });
+    });
+
+    tape('Searching for the intersection - F Street Northwest and US HWY 1 (9th Street Northwest synonym)', (t) => {
+        c.geocode('F Street Northwest and US HWY 1', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and US HWY 1', 'F Street Northwest and US HWY 1');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and US HWY 1');
             t.end();
         });
     });
@@ -306,14 +314,14 @@ If there is more than one name for F Street Northwest and it intersects with 9th
     });
 
     tape('Searching for the intersection - 9th st nw and F', (t) => {
-        c.geocode('9th st nw and F s', {}, (err, res) => {
-            t.deepEquals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw and F');
-            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for 9th Street Northwest and F Street Northwest');
+        c.geocode('9th st nw and F', {}, (err, res) => {
+            t.deepEquals(res.features[0].place_name, '9th Street Northwest', '9th st nw and F, returns 9th Street Northwest');
+            t.deepEquals(res.features[0].center, [0,0], 'Returns the correct geometry for 9th Street Northwest and F Street Northwest');
             t.end();
         });
     });
 
-    tape('Searching for the intersection - F st nw and 9th', (t) => {
+    tape('Searching for the intersection - F st nw and 9th st', (t) => {
         c.geocode('F st nw and 9th st', {}, (err, res) => {
             t.deepEquals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F st nw and 9th st');
             t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and 9th Street Northwest');
@@ -321,10 +329,10 @@ If there is more than one name for F Street Northwest and it intersects with 9th
         });
     });
 
-    tape('Searching for the intersection - F st nw and 9th', (t) => {
+    tape('Searching for the intersection - F st nw and 9th (should favour returning the street over the intersection)', (t) => {
         c.geocode('F st nw and 9th', {}, (err, res) => {
-            t.deepEquals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F st nw and 9th');
-            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F Street Northwest and 9th Street Northwest');
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest', 'F st nw and 9th');
+            t.deepEquals(res.features[0].geometry, { type: 'GeometryCollection', geometries: [{ type: 'MultiPoint', coordinates: [[0,1]] }] }, 'Returns the correct geometry for F st nw and 9th');
             t.end();
         });
     });
