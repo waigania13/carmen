@@ -20,122 +20,69 @@ tape('verifymatch.sortFeature', (t) => {
     t.end();
 });
 
-tape('verifymatch.sortContext (no distance)', (t) => {
+tape('verifymatch.sortContext', (t) => {
     let c;
     const arr = [];
 
-    c = [{ id: 10, properties: {} }];
+    c = [{ id: 11, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1, 'carmen:position': 1 }, geometry: { interpolated: true, omitted: true } }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 10, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1, 'carmen:position': 1 }, geometry: { interpolated: true, omitted: true } }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 9, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1, 'carmen:position': 0 }, geometry: { interpolated: true, omitted: true } }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 8, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1 }, geometry: { interpolated: true, omitted: true } }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 7, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1 }, geometry: { interpolated: true } }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 6, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1 }, geometry: {} }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 5, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 1, 'carmen:addressnumber': [] }, geometry: {} }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 4, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9, 'carmen:address': '26', 'carmen:addresspos': 0 }, geometry: {} }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 3, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 9 }, geometry: {} }];
+    c._relevance = 0.9;
+    c._typeindex = 1;
+    arr.push(c);
+
+    c = [{ id: 2, properties: { 'carmen:relevance': 0.9, 'carmen:scoredist': 10 }, geometry: {} }];
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ id: 9, properties: { 'carmen:address': '26' } }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 8, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 7, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 6, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 5, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, _geometry: {} }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 4, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 2;
-    arr.push(c);
-
-    c = [{ id: 3, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    c._distance = 20;
-    arr.push(c);
-
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    c._distance = 10;
-    arr.push(c);
-
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 2 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    arr.push(c);
-
-    c = [{ id: 0, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2, 'carmen:position': 1 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    arr.push(c);
-
-    arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map((c) => { return c[0].id; }), [0,1,2,3,4,5,6,7,8,9,10]);
-
-    t.end();
-});
-
-tape('verifymatch.sortContext (with distance)', (t) => {
-    let c;
-    const arr = [];
-
-    c = [{ id: 6 }];
+    c = [{ id: 1, properties: { 'carmen:relevance': 1.0 }, geometry: {} }];
     c._relevance = 0.9;
     arr.push(c);
 
-    c = [{ id: 5, properties: { 'carmen:address': '26' } }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 4, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: { omitted: true } }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 3, properties: { 'carmen:address': '26', 'carmen:addressnumber': [] }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 2;
-    arr.push(c);
-
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 1 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    arr.push(c);
-
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:addressnumber': [], 'carmen:scoredist': 2 }, geometry: {} }];
-    c._relevance = 1.0;
-    c._typeindex = 1;
-    arr.push(c);
-
-    arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map((c) => { return c[0].id; }), [1,2,3,4,5,6]);
-
-    t.end();
-});
-
-tape('verifymatch.sortContext (distance vs addresstype)', (t) => {
-    let c;
-    const arr = [];
-
-    c = [{ id: 3 }];
-    c._relevance = 0.9;
-    arr.push(c);
-
-    c = [{ id: 2, properties: { 'carmen:address': '26', 'carmen:scoredist': 1, 'carmen:addressnumber': [] } }];
-    c._relevance = 1.0;
-    arr.push(c);
-
-    c = [{ id: 1, properties: { 'carmen:address': '26', 'carmen:scoredist': 2 } }];
+    c = [{ id: 0, properties: {}, geometry: {} }];
     c._relevance = 1.0;
     arr.push(c);
 
     arr.sort(verifymatch.sortContext);
-    t.deepEqual(arr.map((c) => { return c[0].id; }), [1,2,3]);
+    t.deepEqual(arr.map((c) => { return c[0].id; }), [0,1,2,3,4,5,6,7,8,9,10,11]);
 
     t.end();
 });
