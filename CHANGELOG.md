@@ -1,5 +1,9 @@
 # Changelog
 
+## 27.2.0
+
+- Sort non-interpolated address results over interpolated address results given the same relevance.
+
 ## 27.1.0
 
 - Added support for performing autocomplete queries on partial housenumbers (e.g., querying for "51" and getting "510 Main St.") if proximity is enabled
