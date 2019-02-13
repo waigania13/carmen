@@ -225,6 +225,19 @@ test('termops.getIndexableText', (t) => {
     ];
     t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc, ['en']), texts, 'auto-populate doesn\'t overwrite supplied translation');
 
+    replacers = createMultipleReplacers({ 'street': 'st', 'northwest': 'nw' });
+    doc = {
+        properties: {
+            'carmen:text':'Main Street Northwest',
+            'carmen:intersections': [null, null, ['O Street Northwest']]
+        }
+    };
+    // indexes docs with intersections in the following way:
+    texts = [
+        { tokens: ['main', 'st', 'nw'], languages: ['default'] },
+        { tokens: ['+intersection', 'o', 'st', 'nw', ',', 'main', 'st', 'nw'], languages: ['default'] }
+    ];
+    t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [],  doc), texts, 'intersection indexing');
     t.end();
 });
 
