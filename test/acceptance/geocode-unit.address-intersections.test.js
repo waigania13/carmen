@@ -78,6 +78,7 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             maxzoom: 14,
             geocoder_address: 1,
             geocoder_tokens: { street: 'st', northwest: 'nw', road: 'rd' },
+            geocoder_intersection_token: 'and',
             geocoder_format: '{address._number} {address._name}{locality._name}, {place._name}, {region._name} {postcode._name}, {country._name}'
         }, () => {})
     };
