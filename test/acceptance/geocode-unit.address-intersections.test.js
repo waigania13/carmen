@@ -330,6 +330,14 @@ If there is more than one name for F Street Northwest and it intersects with 9th
         });
     });
 
+    tape('Searching for the intersection - 1st and Main Street Northwest', (t) => {
+        c.geocode('1st and Main Street Northwest', {}, (err, res) => {
+            t.deepEquals(res.features[0].place_name, 'Main Street Northwest', '1st and Main Street Northwest returns Main Street Northwest');
+            t.deepEquals(res.features[0].center,  [2,2], 'retruns the correct center for Main Street Northwest');
+            t.end();
+        });
+    });
+
     tape('Searching for the intersection - F st nw and 9th (should favour returning the street over the intersection)', (t) => {
         c.geocode('F st nw and 9th', {}, (err, res) => {
             t.deepEquals(res.features[0].place_name, 'F Street Northwest', 'F st nw and 9th');
