@@ -248,9 +248,9 @@ test('replaceTokens - complex', (t) => {
     t.deepEqual(replaceToken('talstrasse'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstrasse => tal str');
     t.deepEqual(replaceToken('talstraße'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstraße => tal str');
     t.deepEqual(replaceToken('talstr'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true  }, 'talstr => tal str');
-    t.deepEqual(replaceToken('talstrasse 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1] }, 'talstrasse 3-5 => tal str 3-5');
-    t.deepEqual(replaceToken('talstraße 3-5'), {  tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1] }, 'talstraße 3-5 => tal str 3-5');
-    t.deepEqual(replaceToken('talstr 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1] }, 'talstr 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('talstrasse 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false }, 'talstrasse 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('talstraße 3-5'), {  tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstraße 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('talstr 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstr 3-5 => tal str 3-5');
 
     t.deepEqual(replaceToken('fake st lot 34 Suite 43'), {
         tokens: ['fake', 'st', '', '', '', ''],
@@ -268,7 +268,7 @@ test('replaceTokens - complex, numeric replacement groups', (t) => {
     const replaceToken = function(query) {
         return token.replaceToken(replacer, termops.tokenize(query));
     };
-    t.deepEqual(replaceToken('abc 123 def'), { tokens: ['xyz', '@@@123@@@', 'def'], separators: [' ', ' ', ''], owner: [0,1,2] });
+    t.deepEqual(replaceToken('abc 123 def'), { tokens: ['xyz', '@@@123@@@', 'def'], separators: [' ', ' ', ''], owner: [0,1,2], lastWord: false  });
     t.deepEqual(replaceToken('abc 123'), { tokens: ['xyz', '@@@123@@@'], separators: [' ', ''], owner: [0,1], lastWord: true });
     t.end();
 });
