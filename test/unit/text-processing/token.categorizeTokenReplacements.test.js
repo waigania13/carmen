@@ -17,12 +17,12 @@ test('categorizeTokenReplacements', (t) => {
             simple: [
                 { from: 'street', to: 'st' },
                 { from: 'lane', to: 'ln' },
+                { from: 'piazza', to: 'pzza' },
                 { from: 'three', to: '3' },
                 { from: 'residence', to: 'res' },
-                { from: 'san', to: 's.' } // TODO why is the period new?
+                { from: 'san', to: 's' }
             ],
             complex: [
-                { from: 'Piazza', to: 'P.zza' },
                 { from: '([a-z]+)väg', to: '$1v' }
             ]
         }
