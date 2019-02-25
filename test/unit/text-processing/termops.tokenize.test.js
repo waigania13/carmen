@@ -41,22 +41,6 @@ test('tokenizes basic strings', (t) => {
     t.end();
 });
 
-test('tokenizes lonlat', (t) => {
-    t.deepEqual(termops.tokenize('40,0', true).tokens, [40,0]);
-    t.deepEqual(termops.tokenize('40.00000,-40.31200', true).tokens, [40,-40.312]);
-    t.deepEqual(termops.tokenize('-120.9129102983109, 45.312312', true).tokens, [-120.9129102983109,45.312312]);
-    // Housenumber like pairs are left alone
-    t.deepEqual(termops.tokenize('1400 15', true).tokens, ['1400','15']);
-    t.deepEqual(termops.tokenize('14th 15th', true).tokens, ['14th','15th']);
-
-    // ParseFloat can think a string is a reverse query as `9 Street` is a valid Float - enforce numeric input
-    t.deepEqual(termops.tokenize('9 rue Alphonse Penaud Paris, 75020 France', true).tokens, ['9', 'rue', 'alphonse', 'penaud', 'paris', '75020', 'france']);
-    t.deepEqual(termops.tokenize('9 a, 10 b', true).tokens, ['9', 'a', '10', 'b']);
-    t.deepEqual(termops.tokenize('9 a, 10', true).tokens, ['9', 'a', '10']);
-    t.deepEqual(termops.tokenize('9,10 b', true).tokens, ['9', '10', 'b']);
-
-    t.end();
-});
 test('edge cases - empty string', (t) => {
     t.deepEqual(termops.tokenize('').tokens, []);
     t.end();
