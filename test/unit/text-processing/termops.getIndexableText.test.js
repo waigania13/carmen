@@ -1,3 +1,4 @@
+/* eslint: no-require-jsdoc */
 'use strict';
 const termops = require('../../../lib/text-processing/termops');
 const token = require('../../../lib/text-processing/token');
@@ -65,9 +66,9 @@ test('termops.getIndexableText', (t) => {
     }, { includeUnambiguous: true });
     doc = { properties: { 'carmen:text': 'Äpfelstrüdeln Strasse' } };
     texts = [
-        { languages: ['default'], tokens: ['apfelstruedeln', 'strasse'] },
         { languages: ['default'], tokens: ['aepfelstruedeln', 'strasse'] },
         { languages: ['default'], tokens: ['aepfelstrudeln', 'strasse'] },
+        { languages: ['default'], tokens: ['apfelstruedeln', 'strasse'] },
         { languages: ['default'], tokens: ['apfelstrudeln', 'strasse'] }
     ];
     t.deepEqual(termops.getIndexableText(replacers.simple, replacers.complex, [], doc), texts, 'support custom reverse functions that can skip word boundaries');
@@ -247,9 +248,9 @@ test('replacer/previously-globalReplacer interaction', (t) => {
         { tokens: ['phonixstrasse'], languages: ['default'] }
     ], 'all variants are generated');
     t.deepEqual(withUmlaut, [
-        { tokens: ['phoenixstrasse'], languages: ['default'] },
         { tokens: ['phoenix', 'str'], languages: ['default'] },
         { tokens: ['phonix', 'str'], languages: ['default'] },
+        { tokens: ['phoenixstrasse'], languages: ['default'] },
         { tokens: ['phonixstrasse'], languages: ['default'] }
     ], 'all variants are generated');
 

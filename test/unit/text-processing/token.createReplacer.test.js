@@ -1,3 +1,4 @@
+/* eslint: no-require-jsdoc */
 'use strict';
 const token = require('../../../lib/text-processing/token.js');
 const termops = require('../../../lib/text-processing/termops.js');
@@ -63,12 +64,12 @@ test('createReplacer: substring complex token replacement + diacritics', (t) => 
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
     }, { includeUnambiguous: true });
     const expected = [
-        { from: /ä/giu, fromLastWord: false, to: 'ae', inverse: false, _from: 'ä' },
-        { from: /ö/giu, fromLastWord: false, to: 'oe', inverse: false, _from: 'ö' },
-        { from: /ü/giu, fromLastWord: false, to: 'ue', inverse: false, _from: 'ü' },
         { from: /ae/giu, fromLastWord: false, to: 'ä', inverse: true, _from: 'ae' },
         { from: /oe/giu, fromLastWord: false, to: 'ö', inverse: true, _from: 'oe' },
-        { from: /ue/giu, fromLastWord: false, to: 'ü', inverse: true, _from: 'ue' }
+        { from: /ue/giu, fromLastWord: false, to: 'ü', inverse: true, _from: 'ue' },
+        { from: /ä/giu, fromLastWord: false, to: 'ae', inverse: false, _from: 'ä' },
+        { from: /ö/giu, fromLastWord: false, to: 'oe', inverse: false, _from: 'ö' },
+        { from: /ü/giu, fromLastWord: false, to: 'ue', inverse: false, _from: 'ü' }
     ];
     for (const i in replacer) {
         t.ok(regexEqual(replacer[i].from, expected[i].from), 'from regexps match');

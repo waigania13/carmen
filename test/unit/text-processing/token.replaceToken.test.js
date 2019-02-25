@@ -362,8 +362,8 @@ test('enumerateTokenReplacement cascades', (t) => {
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Jüdenstraße 17')),
         [
-            'jüden str 17',
             'jueden str 17',
+            'jüden str 17',
             'juedenstraße 17',
             'jüdenstraße 17'
         ],
@@ -377,9 +377,9 @@ test('enumerateTokenReplacement cascades', (t) => {
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Jüdenstraße 17')),
         [
-            'juedenstraße 17',
             'jueden str 17',
             'jüden str 17',
+            'juedenstraße 17',
             'jüdenstraße 17'
         ],
         'Jüdenstraße 17 - correct permutations, reversed replacement order'
@@ -393,10 +393,10 @@ test('enumerateTokenReplacement cascades', (t) => {
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Kölnerstraße 27 40211 Düsseldorf')),
         [
-            'kölner str 27 40211 duesseldorf',
-            'kölner str 27 40211 düsseldorf',
             'koelner str 27 40211 duesseldorf',
             'koelner str 27 40211 düsseldorf',
+            'kölner str 27 40211 duesseldorf',
+            'kölner str 27 40211 düsseldorf',
             'koelnerstraße 27 40211 duesseldorf',
             'koelnerstraße 27 40211 düsseldorf',
             'kölnerstraße 27 40211 duesseldorf',
@@ -465,17 +465,17 @@ test('enumerateTokenReplacement limits', (t) => {
 
     query = new Array(1).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.equal(enumerated[1], 'koelner str'); // TODO would be nice if this was position 0
+    t.equal(enumerated[0], 'koelner str');
     t.deepEqual(enumerated.length, 4, '1 double replaced input');
 
     query = new Array(2).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.equal(enumerated[5], 'koelner str koelner str'); // TODO would be nice if this was position 0
+    t.equal(enumerated[0], 'koelner str koelner str');
     t.deepEqual(enumerated.length, 8, '2 double replaced inputs');
 
     query = new Array(4).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    // t.equal(enumerated[0], 'koelner str koelner str koelner str koelner str'); sadly this isn't in the list
+    t.equal(enumerated[0], 'koelner str koelner str koelner str koelner str');
     t.deepEqual(enumerated.length, 8, '4 double replaced inputs');
 
     t.end();
