@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 'use strict';
 const proximity = require('../../../lib/util/proximity');
 const deepRound = require('./deepRound');

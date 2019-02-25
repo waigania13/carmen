@@ -1,4 +1,4 @@
-/* eslint-disable: require-jsdoc */
+/* eslint-disable require-jsdoc */
 'use strict';
 const token = require('../../../lib/text-processing/token');
 const termops = require('../../../lib/text-processing/termops');
