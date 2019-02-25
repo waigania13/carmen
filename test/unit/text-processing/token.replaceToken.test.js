@@ -465,31 +465,18 @@ test('enumerateTokenReplacement limits', (t) => {
 
     query = new Array(1).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
+    t.equal(enumerated[1], 'koelner str'); // TODO would be nice if this was position 0
     t.deepEqual(enumerated.length, 4, '1 double replaced input');
 
     query = new Array(2).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 16, '2 double replaced inputs');
-
-    query = new Array(3).fill('Kölnerstraße').join(' ');
-    enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 64, '3 double replaced inputs');
+    t.equal(enumerated[5], 'koelner str koelner str'); // TODO would be nice if this was position 0
+    t.deepEqual(enumerated.length, 8, '2 double replaced inputs');
 
     query = new Array(4).fill('Kölnerstraße').join(' ');
     enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 64, '4 double replaced inputs');
-
-    query = new Array(8).fill('Kölnerstraße').join(' ');
-    enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 64, '8 double replaced inputs');
-
-    query = new Array(20).fill('Kölnerstraße').join(' ');
-    enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 64, '20 double replaced inputs');
-
-    query = new Array(40).fill('Kölnerstraße').join(' ');
-    enumerated = token.enumerateTokenReplacements(replacements, termops.tokenize(query));
-    t.deepEqual(enumerated.length, 64, '40 double replaced inputs');
+    // t.equal(enumerated[0], 'koelner str koelner str koelner str koelner str'); sadly this isn't in the list
+    t.deepEqual(enumerated.length, 8, '4 double replaced inputs');
 
     t.end();
 });
