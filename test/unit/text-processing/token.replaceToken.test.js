@@ -1,3 +1,4 @@
+/* eslint-disable: require-jsdoc */
 'use strict';
 const token = require('../../../lib/text-processing/token');
 const termops = require('../../../lib/text-processing/termops');
@@ -201,8 +202,7 @@ const tokenList = {
     'Walkway': 'Wlky',
     'West': 'W',
     'San Francisco': 'sf',
-    'Rio': 'R',
-    // 'S.': 'S'
+    'Rio': 'R'
 };
 
 // store an original copy of the tokenList object that we can compare against to
@@ -229,7 +229,7 @@ test('replaceTokens - complex', (t) => {
 
     const replacer = token.createComplexReplacer([
         {
-            from: '(.+)(strasse|str|straße)',
+            from: '([^ ]+)(strasse|str|straße)',
             to: { text: '$1 str', skipDiacriticStripping: true, spanBoundaries: 0 },
         },
         {

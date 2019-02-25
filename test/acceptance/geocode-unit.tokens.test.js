@@ -43,13 +43,11 @@ const addFeature = require('../../lib/indexer/addfeature'),
 (() => {
     const conf = {
         address: new mem({
-            maxzoom: 6
+            maxzoom: 6,
+            geocoder_tokens: { 'dix-huitième': { text: '18e', spanBoundaries: 1 } }
         }, () => {})
     };
-    const opts = {
-        tokens: { 'dix-huitième': { text: '18e', spanBoundaries: 1 } }
-    };
-    const c = new Carmen(conf, opts);
+    const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
         const address = {
             id:1,
@@ -71,14 +69,13 @@ const addFeature = require('../../lib/indexer/addfeature'),
             t.end();
         });
     });
-    // BREAKING CHANGE. Global replacements are no longer considered in token enumeration!
-    // tape('test address index for relev', (t) => {
-    //    c.geocode('avenue du dix-huitième régiment', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
-    //        t.ifError(err);
-    //        t.equals(res.features[0].relevance, 1.00, 'avenue du dix-huitième régiment');
-    //        t.end();
-    //    });
-    // });
+    tape('test address index for relev', (t) => {
+        c.geocode('avenue du dix-huitième régiment', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1.00, 'avenue du dix-huitième régiment');
+            t.end();
+        });
+    });
 })();
 
 // RegExp captures have been put on hiatus per https://github.com/mapbox/carmen/pull/283.
@@ -398,19 +395,14 @@ const addFeature = require('../../lib/indexer/addfeature'),
             geocoder_tokens: {
                 'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
                 'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-                'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+                'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+                '([^ ]+)(str|straße)': '$1 str'
             }
         }, () => {})
     };
-    // Global tokens
-    const opts = {
-        tokens: {
-            '(?:\\b|^)(.+)(strasse|str|straße)(?:\\b|$)': '$1 str'
-        }
-    };
-    const c = new Carmen(conf, opts);
+    const c = new Carmen(conf);
     tape('set opts', (t) => {
-        addFeature.setOptions(opts);
+        addFeature.setOptions({});
         t.end();
     });
     tape('geocoder token test -- Burbarg', (t) => {
@@ -455,26 +447,25 @@ const addFeature = require('../../lib/indexer/addfeature'),
         };
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
     });
-    // TODO refactor this into a test of complex replacements
-    // [
-    //    'phönixstraße',
-    //    'phönixstrasse',
-    //    'phoenixstraße',
-    //    'phoenixstrasse',
-    //    'phö',
-    //    'phönixstraß',
-    //    'phönixstras',
-    //    'phoe',
-    //    'phoenixstraß',
-    //    'phoenixstras',
-    // ].forEach((query) => {
-    //    tape(`finds by ${query}`, (t) => {
-    //        c.geocode(query, { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
-    //            t.equals(res.features[0].place_name, 'Phoenixstraße');
-    //            t.end();
-    //        });
-    //    });
-    // });
+    [
+        'phönixstraße',
+        'phönixstrasse',
+        'phoenixstraße',
+        'phoenixstrasse',
+        'phö',
+        'phönixstraß',
+        'phönixstras',
+        'phoe',
+        'phoenixstraß',
+        'phoenixstras',
+    ].forEach((query) => {
+        tape(`finds by ${query}`, (t) => {
+            c.geocode(query, { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
+                t.equals(res.features[0].place_name, 'Phoenixstraße');
+                t.end();
+            });
+        });
+    });
     // what we expect here is for it to learn that burbarg could mean burbarg but also bürbarg or buerbarg
     // but that bürbarg and buerbarg are equivalent but don't mean burbarg
     [
