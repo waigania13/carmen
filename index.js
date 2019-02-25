@@ -172,10 +172,6 @@ function Geocoder(indexes, options) {
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
 
-            if (token.tokenValidator(source.simple_replacer) || token.tokenValidator(source.complex_query_replacer)) {
-                throw new Error('Using global tokens');
-            }
-
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
