@@ -244,12 +244,11 @@ test('replacer/previously-globalReplacer interaction', (t) => {
     const withUmlaut = termops.getIndexableText(replacers.simple, replacers.complex, [], { properties: { 'carmen:text': 'Phönixstraße' } });
     const withOe = termops.getIndexableText(replacers.simple, replacers.complex, [], { properties: { 'carmen:text': 'Phoenixstraße' } });
 
-    // TODO order was the same. is not now... and both are kinda off the long forms should be last
-    // t.deepEqual(withUmlaut, withOe, 'umlaut and oe versions get treated the same way');
+    t.deepEqual(withUmlaut, withOe, 'umlaut and oe versions get treated the same way');
     t.deepEqual(withOe, [
         { tokens: ['phoenix', 'str'], languages: ['default'] },
-        { tokens: ['phoenixstrasse'], languages: ['default'] },
         { tokens: ['phonix', 'str'], languages: ['default'] },
+        { tokens: ['phoenixstrasse'], languages: ['default'] },
         { tokens: ['phonixstrasse'], languages: ['default'] }
     ], 'all variants are generated');
     t.deepEqual(withUmlaut, [
@@ -262,7 +261,6 @@ test('replacer/previously-globalReplacer interaction', (t) => {
     t.end();
 });
 
-// BREAKING CHANGE! global replacers are no longer enumerated
 test('replacer/globalReplacer interaction', (t) => {
     const replacers = createMultipleReplacers({
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
@@ -276,8 +274,7 @@ test('replacer/globalReplacer interaction', (t) => {
     const withUmlaut = termops.getIndexableText(replacers.simple, replacers.complex, globalReplacer, { properties: { 'carmen:text': 'Phönixstraße' } });
     const withOe = termops.getIndexableText(replacers.simple, replacers.complex, globalReplacer, { properties: { 'carmen:text': 'Phoenixstraße' } });
 
-    // TODO order was the same. is not now... and both are kinda off the long forms should be last
-    // t.deepEqual(withUmlaut, withOe, 'umlaut and oe versions get treated the same way');
+    // Global replacers are not enumerated
     t.deepEqual(withOe, [
         { tokens: ['phoenix', 'str'], languages: ['default'] },
         { tokens: ['phonix', 'str'], languages: ['default'] },
