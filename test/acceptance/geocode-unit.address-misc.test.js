@@ -183,7 +183,12 @@ const addFeature = require('../../lib/indexer/addfeature'),
             maxzoom: 6,
             geocoder_address: 1,
             geocoder_tokens: {
-                '(.+)stra(?:ß|ss)e':'$1 str',
+                '([^ ]+)(strasse|str|straße)': {
+                    text: '$1 str',
+                    regex: true,
+                    skipDiacriticStripping: true,
+                    spanBoundaries: 0
+                },
                 'strasse': 'str',
                 'straße':'str'
             }

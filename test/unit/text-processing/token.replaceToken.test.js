@@ -230,7 +230,7 @@ test('replaceTokens - complex', (t) => {
     const replacer = token.createComplexReplacer([
         {
             from: '([^ ]+)(strasse|str|straße)',
-            to: { text: '$1 str', skipDiacriticStripping: true, spanBoundaries: 0 },
+            to: { text: '$1 str', skipDiacriticStripping: true, spanBoundaries: 0, regex: true },
         },
         {
             from: 'Suite [0-9]+',
@@ -352,12 +352,16 @@ test('enumerateTokenReplacement', (t) => {
 
 test('enumerateTokenReplacement cascades', (t) => {
     // Demonstrate that replacements can cascade, but our current behavior is
-    // quite non-deterministic because token order matters very much for the
-    // variants that will actually get hit.
+    // relatively deterministic
     let ubTokens;
     ubTokens = token.createComplexReplacer({
-        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
-        '(.+)(straße)': '$1 str'
+        '([^ ]+)(strasse|str|straße)': {
+            text: '$1 str',
+            regex: true,
+            skipDiacriticStripping: true,
+            spanBoundaries: 0
+        },
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
     });
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Jüdenstraße 17')),
@@ -371,8 +375,13 @@ test('enumerateTokenReplacement cascades', (t) => {
     );
 
     ubTokens = token.createComplexReplacer({
-        '(.+)(straße)': '$1 str',
-        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
+        'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+        '([^ ]+)(strasse|str|straße)': {
+            text: '$1 str',
+            regex: true,
+            skipDiacriticStripping: true,
+            spanBoundaries: 0
+        },
     });
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Jüdenstraße 17')),
@@ -388,7 +397,12 @@ test('enumerateTokenReplacement cascades', (t) => {
     ubTokens = token.createComplexReplacer({
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-        '(.+)(straße)': '$1 str'
+        '([^ ]+)(strasse|str|straße)': {
+            text: '$1 str',
+            regex: true,
+            skipDiacriticStripping: true,
+            spanBoundaries: 0
+        }
     });
     t.deepEqual(
         token.enumerateTokenReplacements(ubTokens, termops.tokenize('Kölnerstraße 27 40211 Düsseldorf')),
@@ -459,7 +473,12 @@ test('enumerateTokenReplacement limits', (t) => {
     const replacements = token.createComplexReplacer({
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-        '(.+)(straße)': '$1 str'
+        '([^ ]+)(strasse|str|straße)': {
+            text: '$1 str',
+            regex: true,
+            skipDiacriticStripping: true,
+            spanBoundaries: 0
+        }
     });
     let query, enumerated;
 

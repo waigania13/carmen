@@ -230,7 +230,12 @@ test('termops.getIndexableText', (t) => {
 
 test('replacer/previously-globalReplacer interaction', (t) => {
     const replacers = createMultipleReplacers({
-        '(.+)(strasse|str|straße)': '$1 str',
+        '([^ ]+)(strasse|str|straße)': {
+            text: '$1 str',
+            regex: true,
+            skipDiacriticStripping: true,
+            spanBoundaries: 0
+        },
         'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
         'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }

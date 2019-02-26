@@ -358,14 +358,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
             t.end();
         });
     });
-    // BREAKING CHANGE. Global replacements are no longer considered in token enumeration!
-    // tape('test token replacement', (t) => {
-    //    c.geocode('Talst ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
-    //        t.ifError(err);
-    //        t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
-    //        t.end();
-    //    });
-    // });
     tape('test token replacement', (t) => {
         c.geocode('Tal st ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
@@ -396,7 +388,12 @@ const addFeature = require('../../lib/indexer/addfeature'),
                 'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
                 'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
                 'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
-                '([^ ]+)(str|straße)': '$1 str'
+                '([^ ]+)(strasse|str|straße)': {
+                    text: '$1 str',
+                    regex: true,
+                    skipDiacriticStripping: true,
+                    spanBoundaries: 0
+                }
             }
         }, () => {})
     };
