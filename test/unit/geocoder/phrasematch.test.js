@@ -315,3 +315,52 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
         t.end();
     });
 });
+
+tape.only('fuzzyMatchMulti - masks for removed terms', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchMulti: (a, b, c, d) => {
+            const results = fakeFuzzyMatches(a);
+            const expected = [
+                [{ phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['1##', 'main', 'springfield'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['100'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['main'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['springfield'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0 }]
+            ];
+            t.deepEqual(results, expected);
+            return results;
+        }
+    });
+    c.geocoder_address = true;
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from:'unit [0-9]+',
+            to: { text: '', regex: true, spanBoundaries: 1 }
+        }
+    ]);
+
+    phrasematch(c, termops.tokenize('100 Main Unit 2 Springfield'), {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 9);
+        const expected = {
+            '100 main springfield': { mask: 31, weight: 1 },
+            '1## main springfield': { mask: 31, weight: 1 },
+            '100 main': { mask: 3, weight: 0.4 },
+            '1## main': { mask: 3, weight: 0.4 },
+            'main springfield': { mask: 30, weight: 0.8 },
+            'main': { mask: 2, weight: 0.2 },
+            '100': { mask: 1, weight: 0.2 },
+            '1##': { mask: 1, weight: 0.2 },
+            'springfield': { mask: 16, weight: 0.2 }
+        };
+        results.phrasematches.forEach((v) => {
+            t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
+            t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
+        });
+        t.end();
+    });
+});
