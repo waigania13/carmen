@@ -81,6 +81,20 @@ tape('requiredMasks', (t) => {
     t.end();
 });
 
+tape('gapMasks', (t) => {
+    const gapMasks = phrasematch.gapMasks;
+    t.deepEqual(gapMasks({ tokens: ['a','b','c','d','e'] }), [], 'No masks for no removals');
+    t.deepEqual(gapMasks({ tokens: ['','b','c','d','e'] }), [3], 'First token removed');
+    t.deepEqual(gapMasks({ tokens: ['a','b','c','d',''] }), [24], 'last token removed');
+    t.deepEqual(gapMasks({ tokens: ['a','b','','d','e'] }), [6, 12], 'single middle token removed');
+    t.deepEqual(gapMasks({ tokens: ['a','','','d','e'] }), [7, 14], 'two middle tokens removed');
+    t.deepEqual(gapMasks({ tokens: ['a','','','','e'] }), [15, 30], 'three middle tokens removed');
+    t.deepEqual(gapMasks({ tokens: ['a','','c','','e'] }), [3, 6, 12, 24], 'two gaps');
+    t.deepEqual(gapMasks({ tokens: ['','','c','',''] }), [7, 28], 'two large gaps');
+    t.end();
+
+});
+
 tape('fuzzyMatchWindows', (t) => {
     let args;
     const c = fakeCarmen({
@@ -338,21 +352,25 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, termops.tokenize('100 Main Unit 2 Springfield'), {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 9);
-        const expected = {
-            '100 main springfield': { mask: 31, weight: 1 },
-            '1## main springfield': { mask: 31, weight: 1 },
-            '100 main': { mask: 3, weight: 0.4 },
-            '1## main': { mask: 3, weight: 0.4 },
-            'main springfield': { mask: 30, weight: 0.8 },
-            'main': { mask: 2, weight: 0.2 },
-            '100': { mask: 1, weight: 0.2 },
-            '1##': { mask: 1, weight: 0.2 },
-            'springfield': { mask: 16, weight: 0.2 }
-        };
+        t.equal(results.phrasematches.length, 13);
+        const expected = new Set([
+            '100 main springfield - 31 - 1',
+            '1## main springfield - 31 - 1',
+            '100 main - 3 - 0.4',
+            '100 main - 15 - 0.8',
+            '1## main - 3 - 0.4',
+            '1## main - 15 - 0.8',
+            'main springfield - 30 - 0.8',
+            'main - 2 - 0.2',
+            'main - 14 - 0.6',
+            '100 - 1 - 0.2',
+            '1## - 1 - 0.2',
+            'springfield - 16 - 0.2',
+            'springfield - 28 - 0.6',
+        ]);
         results.phrasematches.forEach((v) => {
-            t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
-            t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
+            const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
+            t.ok(expected.has(k), `has "${k}"`);
         });
         t.deepEqual(query, clone, 'replacements did not altery query');
         t.end();
