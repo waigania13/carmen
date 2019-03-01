@@ -239,18 +239,24 @@ test('replaceTokens - complex', (t) => {
         {
             from: 'Lot [0-9]+',
             to: { text: '', regex: true }
+        },
+        {
+            from: 'Zone d\'activité',
+            to: 'Za'
         }
     ]);
     const replaceToken = function(query) {
         return token.replaceToken(replacer, termops.tokenize(query));
     };
 
-    t.deepEqual(replaceToken('talstrasse'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstrasse => tal str');
-    t.deepEqual(replaceToken('talstraße'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstraße => tal str');
-    t.deepEqual(replaceToken('talstr'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true  }, 'talstr => tal str');
-    t.deepEqual(replaceToken('talstrasse 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false }, 'talstrasse 3-5 => tal str 3-5');
-    t.deepEqual(replaceToken('talstraße 3-5'), {  tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstraße 3-5 => tal str 3-5');
-    t.deepEqual(replaceToken('talstr 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstr 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('Talstrasse'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstrasse => tal str');
+    t.deepEqual(replaceToken('Talstraße'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true }, 'talstraße => tal str');
+    t.deepEqual(replaceToken('Talstr'), { tokens: ['tal str'], separators: [''], owner: [0], lastWord: true  }, 'talstr => tal str');
+    t.deepEqual(replaceToken('Talstrasse 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false }, 'talstrasse 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('Talstraße 3-5'), {  tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstraße 3-5 => tal str 3-5');
+    t.deepEqual(replaceToken('Talstr 3-5'), { tokens: ['tal str', '3-5'], separators: [' ', ''], owner: [0, 1], lastWord: false  }, 'talstr 3-5 => tal str 3-5');
+
+    t.deepEqual(replaceToken('Zone d\'activité Bourmicht'), { tokens: ['za', '', 'bourmicht'], separators: [' ',' ', ''], owner: [0, 0, 2], lastWord: false  }, 'Zone d\'activité Bourmicht');
 
     t.deepEqual(replaceToken('fake st lot 34 Suite 43'), {
         tokens: ['fake', 'st', '', '', '', ''],
@@ -326,9 +332,9 @@ test('enumerateTokenReplacement', (t) => {
         token.enumerateTokenReplacements(replacer, termops.tokenize('fargo street ne, sf')),
         [
             'fargo street ne sf',
-            'fargo street ne San Francisco',
-            'fargo street Northeast sf',
-            'fargo street Northeast San Francisco'
+            'fargo street ne san francisco',
+            'fargo street northeast sf',
+            'fargo street northeast san francisco'
         ],
         'fargo street ne sf - inverse, correct permutations'
     );

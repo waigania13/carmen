@@ -34,14 +34,14 @@ test('createReplacer: includeUnambiguous', (t) => {
     const expected =  [{
         from: new RegExp('Street$', 'iuy'),
         fromLastWord: false,
-        to: 'St',
+        to: 'st',
         inverse: false,
         spanBoundaries: 0,
         _from: 'Street'
     }, {
         from: new RegExp('St$', 'iuy'),
         fromLastWord: false,
-        to: 'Street',
+        to: 'street',
         inverse: true,
         spanBoundaries: 0,
         _from: 'St'

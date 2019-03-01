@@ -16,7 +16,9 @@ test('categorizeTokenReplacements', (t) => {
             'San': 'S.',
             'Strada Provinciale': { text: 'SP', spanBoundaries: 1 },
             'Strada Statale': 'SS',
-            'P\\.? O\\.? Box [0-9]+': { text: '', spanBoundaries: 2, regex: true }
+            'P\\.? O\\.? Box [0-9]+': { text: '', spanBoundaries: 2, regex: true },
+            'Zone d\'activité': 'Za',
+            'N.T.': 'NT' // Will be dropped b/c it makes no changes
         }),
         {
             simple: [
@@ -33,7 +35,8 @@ test('categorizeTokenReplacements', (t) => {
                 { from: '([^ ]+)(strasse|str|straße)', to: { text: '$1 str', regex: true, skipDiacriticStripping: true, spanBoundaries: 0 } },
                 { from: 'Strada Provinciale', to: { text: 'SP', spanBoundaries: 1 } },
                 { from: 'Strada Statale', to: 'SS' },
-                { from: 'P\\.? O\\.? Box [0-9]+', to: { text: '', spanBoundaries: 2, regex: true } }
+                { from: 'P\\.? O\\.? Box [0-9]+', to: { text: '', spanBoundaries: 2, regex: true } },
+                { from: 'Zone d\'activité', to: 'Za' }
             ]
         }
     );
