@@ -70,24 +70,21 @@ tape('requiredMasks', (t) => {
     t.deepEqual(requiredMasks({ owner: [0,1,2,3,3] }), [24], 'replaced into 2 tokens, at end');
     t.deepEqual(requiredMasks({ owner: [0,0,0,1,1] }), [7,24], '2 replacement expanded tokens');
 
-    // TODO decide what the behavior should be when tokens are removed.
+    // Currently removed tokens don't put any special contraints on the results
+    // but this may change in the future.
     t.deepEqual(requiredMasks({ owner: [0,1,3,4,5] }), []);
     t.deepEqual(requiredMasks({ owner: [0,0,2,3,4] }), [3]);
     t.deepEqual(requiredMasks({ owner: [0,0,0,3,4] }), [7]);
     t.deepEqual(requiredMasks({ owner: [0,2,2,2,4] }), [14]);
     t.deepEqual(requiredMasks({ owner: [0,3,4,5,8] }), []);
-    t.deepEqual(requiredMasks({ owner: [1,2,3,4,5] }), []);
 
     t.end();
 });
 
 tape('fuzzyMatchWindows', (t) => {
     let args;
-    let envokedCnt = 0;
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
-            envokedCnt++;
-            if (envokedCnt > 1) throw new Error('fuzzyMatchWindows called more than once');
             args = [a, b, c, d];
             return [];
         }
@@ -100,11 +97,8 @@ tape('fuzzyMatchWindows', (t) => {
 });
 
 tape('fuzzyMatchWindows - expanded tokens', (t) => {
-    let envokedCnt = 0;
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
-            envokedCnt++;
-            if (envokedCnt > 1) throw new Error('fuzzyMatchWindows called more than once');
             t.deepEqual(a, ['100', 'herman', 'str']);
             const expected = [
                 { start_position: 0, phrase: ['100', 'herman', 'str'], edit_distance: 0, ending_type: 0 },
@@ -141,11 +135,8 @@ tape('fuzzyMatchWindows - expanded tokens', (t) => {
 
 tape('fuzzyMatchMulti - correct address permutations', (t) => {
     let args;
-    let envokedCnt = 0;
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
-            envokedCnt++;
-            if (envokedCnt > 1) throw new Error('fuzzyMatchMulti called more than once');
             args = [a, b, c];
             const r = [];
             for (let i = 0; i < a.length; i++) r.push([]);
@@ -175,11 +166,8 @@ tape('fuzzyMatchMulti - correct address permutations', (t) => {
 
 tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
     let args;
-    let envokedCnt = 0;
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
-            envokedCnt++;
-            if (envokedCnt > 1) throw new Error('fuzzyMatchMulti called more than once');
             args = [a, b, c];
             const r = [];
             for (let i = 0; i < a.length; i++) r.push([]);
@@ -298,7 +286,9 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
         }
     ]);
 
-    phrasematch(c, termops.tokenize('hermanstrasse 100'), {}, (err, results, source) => {
+    const query = termops.tokenize('hermanstrasse 100');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
         t.equal(results.phrasematches.length, 5);
         const expected = {
@@ -312,11 +302,12 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
+        t.deepEqual(query, clone, 'replacements did not altery query');
         t.end();
     });
 });
 
-tape.only('fuzzyMatchMulti - masks for removed terms', (t) => {
+tape('fuzzyMatchMulti - masks for removed terms', (t) => {
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
@@ -343,6 +334,8 @@ tape.only('fuzzyMatchMulti - masks for removed terms', (t) => {
         }
     ]);
 
+    const query = termops.tokenize('100 Main Unit 2 Springfield');
+    const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, termops.tokenize('100 Main Unit 2 Springfield'), {}, (err, results, source) => {
         t.error(err);
         t.equal(results.phrasematches.length, 9);
@@ -361,6 +354,7 @@ tape.only('fuzzyMatchMulti - masks for removed terms', (t) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
+        t.deepEqual(query, clone, 'replacements did not altery query');
         t.end();
     });
 });
