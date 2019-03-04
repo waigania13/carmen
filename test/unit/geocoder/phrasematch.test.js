@@ -147,6 +147,94 @@ tape('fuzzyMatchWindows - expanded tokens', (t) => {
     });
 });
 
+tape('fuzzyMatchWindows - removed term', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchWindows: (a, b, c, d) => {
+            t.deepEqual(a, ['100', 'main', 'springfield']);
+            const expected = [
+                { start_position: 0, phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0 },
+                { start_position: 0, phrase: ['100', 'main'], edit_distance: 0, ending_type: 0 },
+                { start_position: 1, phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0 },
+                { start_position: 2, phrase: ['springfield'], edit_distance: 0, ending_type: 0 },
+                { start_position: 1, phrase: ['main'], edit_distance: 0, ending_type: 0 },
+                { start_position: 0, phrase: ['100'], edit_distance: 0, ending_type: 0 }
+            ];
+            return expected;
+        }
+    });
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from:'unit [0-9]+',
+            to: { text: '', regex: true, spanBoundaries: 1 }
+        }
+    ]);
+    const query = termops.tokenize('100 Main Unit 2 Springfield');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 6);
+        const expected = new Set([
+            '100 main springfield - 31 - 1',
+            'main springfield - 30 - 0.8',
+            '100 main - 3 - 0.4',
+            'main - 2 - 0.2',
+            'main - 16 - 0.6',
+            '100 - 1 - 0.2',
+            'springfield - 16 - 0.2',
+            'springfield - 2 - 0.6'
+        ]);
+        results.phrasematches.forEach((v) => {
+            const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
+            t.ok(expected.has(k), `has "${k}"`);
+        });
+        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.end();
+    });
+});
+
+tape('fuzzyMatchWindows - removed term at the end of a query', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchWindows: (a, b, c, d) => {
+            t.deepEqual(a, ['roma', 'termini', 'rs']);
+            const expected = [
+                { start_position: 0, 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0 },
+                { start_position: 0, 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0 },
+                { start_position: 2, 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0 },
+                { start_position: 0, 'phrase':['roma'],'edit_distance':0,'ending_type':0 },
+                { start_position: 1, 'phrase':['termini'],'edit_distance':0,'ending_type':0 },
+                { start_position: 2, 'phrase':['rs'],'edit_distance':0,'ending_type':0 }
+            ];
+            return expected;
+        }
+    });
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from:'railway station',
+            to: { text: 'rs', spanBoundaries: 1 }
+        }
+    ]);
+    const query = termops.tokenize('Roma Termini Railway Station');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 5);
+        const expected = {
+            'roma termini rs': { mask: 15, weight: 1 },
+            'roma termini': { mask: 3, weight: 0.5 },
+            'termini rs': { mask: 14, weight: 0.75 },
+            'rs': { mask: 12, weight: 0.5 },
+            'termini': { mask: 2, weight: 0.25 },
+            'roma': { mask: 1, weight: 0.25 },
+        };
+        results.phrasematches.forEach((v) => {
+            t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
+            t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
+        });
+        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.end();
+    });
+});
+
 tape('fuzzyMatchMulti - correct address permutations', (t) => {
     let args;
     const c = fakeCarmen({
@@ -350,7 +438,7 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
 
     const query = termops.tokenize('100 Main Unit 2 Springfield');
     const clone = JSON.parse(JSON.stringify(query));
-    phrasematch(c, termops.tokenize('100 Main Unit 2 Springfield'), {}, (err, results, source) => {
+    phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
         t.equal(results.phrasematches.length, 13);
         const expected = new Set([
@@ -367,6 +455,52 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
             '1## - 1 - 0.2',
             'springfield - 16 - 0.2',
             'springfield - 28 - 0.6',
+        ]);
+        results.phrasematches.forEach((v) => {
+            const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
+            t.ok(expected.has(k), `has "${k}"`);
+        });
+        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.end();
+    });
+});
+
+tape('fuzzyMatchMulti - masks for removed terms at the end of a query', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchMulti: (a, b, c, d) => {
+            const results = fakeFuzzyMatches(a);
+            const expected = [
+                [{ 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0 }],
+                [{ 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0 }],
+                [{ 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0 }],
+                [{ 'phrase':['roma'],'edit_distance':0,'ending_type':0 }],
+                [{ 'phrase':['termini'],'edit_distance':0,'ending_type':0 }],
+                [{ 'phrase':['rs'],'edit_distance':0,'ending_type':0 }]
+            ];
+            t.deepEqual(results, expected);
+            return results;
+        }
+    });
+    c.geocoder_address = true;
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from:'railway station',
+            to: { text: 'rs', spanBoundaries: 1 }
+        }
+    ]);
+
+    const query = termops.tokenize('Roma Termini Railway Station');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 6);
+        const expected = new Set([
+            'roma termini rs - 15 - 1',
+            'roma termini - 3 - 0.5',
+            'termini rs - 14 - 0.75',
+            'roma - 1 - 0.25',
+            'termini - 2 - 0.25',
+            'rs - 12 - 0.5'
         ]);
         results.phrasematches.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
