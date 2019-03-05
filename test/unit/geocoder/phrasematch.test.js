@@ -97,7 +97,6 @@ tape('gapMasks', (t) => {
 });
 
 tape('fuzzyMatchWindows', (t) => {
-    let args;
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'street']);
@@ -331,6 +330,55 @@ tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
     c.geocoder_address = true;
 
     phrasematch(c, termops.tokenize('100 200 300'), {}, (err, results, source) => {
+        t.error(err);
+        t.end();
+    });
+});
+
+
+tape('fuzzyMatchMulti - autocomplete sets word_boundary', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchMulti: (a, b, c, d) => {
+            const results = fakeFuzzyMatches(a);
+            const expected = [
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 2 }]
+            ];
+            t.deepEqual(results, expected);
+            return results;
+        }
+    });
+    c.geocoder_address = true;
+    c.complex_query_replacer = token.createComplexReplacer([
+        { from:'street', to: 'st' } // Not actually complex, won't be seen in the wild
+    ]);
+
+    phrasematch(c, termops.tokenize('street'), {
+        autocomplete: true
+    }, (err, results, source) => {
+        t.error(err);
+        t.end();
+    });
+});
+
+tape('fuzzyMatchMulti - autocomplete sets enabled', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchMulti: (a, b, c, d) => {
+            const results = fakeFuzzyMatches(a);
+            const expected = [
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 1 }]
+            ];
+            t.deepEqual(results, expected);
+            return results;
+        }
+    });
+    c.geocoder_address = true;
+    c.complex_query_replacer = token.createComplexReplacer([
+        { from:'street', to: 'st' } // Not actually complex, won't be seen in the wild
+    ]);
+
+    phrasematch(c, termops.tokenize('st'), {
+        autocomplete: true
+    }, (err, results, source) => {
         t.error(err);
         t.end();
     });
