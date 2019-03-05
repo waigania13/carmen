@@ -277,69 +277,61 @@ tape('fuzzyMatchWindows - removed term at the end of a query', (t) => {
 });
 
 tape('fuzzyMatchMulti - correct address permutations', (t) => {
-    let args;
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
-            args = [a, b, c];
-            const r = [];
-            for (let i = 0; i < a.length; i++) r.push([]);
-            return r;
+            const expected = [
+                { phrase: ['100','main','street'], mask: 7, ender: true, endingType: 0 },
+                { phrase: ['1##','main','street'], mask: 7, ender: true, endingType: 0 },
+                { phrase: ['100','main'], mask: 3, ender: false, endingType: 0 },
+                { phrase: ['main','street'], mask: 6, ender: true, endingType: 0 },
+                { phrase: ['1##','main'], mask: 3, ender: false, endingType: 0 },
+                { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
+                { phrase: ['main'], mask: 2, ender: false, endingType: 0 },
+                { phrase: ['street'], mask: 4, ender: true, endingType: 0 },
+                { phrase: ['1##'], mask: 1, ender: false, endingType: 0 }
+            ];
+            const actual = bearablePermutations(a);
+            t.deepEqual(actual, expected);
+            return new Array(a.length).fill([]);
         }
     });
     c.geocoder_address = true;
 
     phrasematch(c, termops.tokenize('100 Main Street'), {}, (err, results, source) => {
         t.error(err);
-        const expected = [
-            { phrase: ['100','main','street'], mask: 7, ender: true, endingType: 0 },
-            { phrase: ['1##','main','street'], mask: 7, ender: true, endingType: 0 },
-            { phrase: ['100','main'], mask: 3, ender: false, endingType: 0 },
-            { phrase: ['main','street'], mask: 6, ender: true, endingType: 0 },
-            { phrase: ['1##','main'], mask: 3, ender: false, endingType: 0 },
-            { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
-            { phrase: ['main'], mask: 2, ender: false, endingType: 0 },
-            { phrase: ['street'], mask: 4, ender: true, endingType: 0 },
-            { phrase: ['1##'], mask: 1, ender: false, endingType: 0 }
-        ];
-        const actual = bearablePermutations(args[0]);
-        t.deepEqual(actual, expected);
         t.end();
     });
 });
 
 tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
-    let args;
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
-            args = [a, b, c];
-            const r = [];
-            for (let i = 0; i < a.length; i++) r.push([]);
-            return r;
+            const expected = [
+                { phrase: ['100', '200', '300'], mask: 7, ender: true, endingType: 0 },
+                { phrase: ['3##', '100', '200'], mask: 7, ender: false, endingType: 0 },
+                { phrase: ['1##', '200', '300'], mask: 7, ender: true, endingType: 0 },
+                { phrase: ['3##', '200'], mask: 6, ender: false, endingType: 0 },
+                { phrase: ['1##', '200'], mask: 3, ender: false, endingType: 0 },
+                { phrase: ['2##', '300'], mask: 6, ender: true, endingType: 0 },
+                { phrase: ['200', '300'], mask: 6, ender: true, endingType: 0 },
+                { phrase: ['100', '200'], mask: 3, ender: false, endingType: 0 },
+                { phrase: ['2##', '100'], mask: 3, ender: false, endingType: 0 },
+                { phrase: ['1##'], mask: 1, ender: false, endingType: 0 },
+                { phrase: ['300'], mask: 4, ender: true, endingType: 0 },
+                { phrase: ['2##'], mask: 2, ender: false, endingType: 0 },
+                { phrase: ['200'], mask: 2, ender: false, endingType: 0 },
+                { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
+                { phrase: ['3##'], mask: 4, ender: true, endingType: 0 }
+            ];
+            const actual = bearablePermutations(a);
+            t.deepEqual(actual, expected);
+            return new Array(a.length).fill([]);
         }
     });
     c.geocoder_address = true;
 
     phrasematch(c, termops.tokenize('100 200 300'), {}, (err, results, source) => {
         t.error(err);
-        const expected = [
-            { phrase: ['100', '200', '300'], mask: 7, ender: true, endingType: 0 },
-            { phrase: ['3##', '100', '200'], mask: 7, ender: false, endingType: 0 },
-            { phrase: ['1##', '200', '300'], mask: 7, ender: true, endingType: 0 },
-            { phrase: ['3##', '200'], mask: 6, ender: false, endingType: 0 },
-            { phrase: ['1##', '200'], mask: 3, ender: false, endingType: 0 },
-            { phrase: ['2##', '300'], mask: 6, ender: true, endingType: 0 },
-            { phrase: ['200', '300'], mask: 6, ender: true, endingType: 0 },
-            { phrase: ['100', '200'], mask: 3, ender: false, endingType: 0 },
-            { phrase: ['2##', '100'], mask: 3, ender: false, endingType: 0 },
-            { phrase: ['1##'], mask: 1, ender: false, endingType: 0 },
-            { phrase: ['300'], mask: 4, ender: true, endingType: 0 },
-            { phrase: ['2##'], mask: 2, ender: false, endingType: 0 },
-            { phrase: ['200'], mask: 2, ender: false, endingType: 0 },
-            { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
-            { phrase: ['3##'], mask: 4, ender: true, endingType: 0 }
-        ];
-        const actual = bearablePermutations(args[0]);
-        t.deepEqual(actual, expected);
         t.end();
     });
 });
