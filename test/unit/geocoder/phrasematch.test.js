@@ -4,6 +4,7 @@ const tape = require('tape');
 const phrasematch = require('../../../lib/geocoder/phrasematch');
 const termops = require('../../../lib/text-processing/termops');
 const token = require('../../../lib/text-processing/token');
+const PREFIX_SCAN = require('@mapbox/carmen-cache').PREFIX_SCAN;
 
 function bearablePermutations(permutations) {
     return permutations.map((v) => {
@@ -99,13 +100,53 @@ tape('fuzzyMatchWindows', (t) => {
     let args;
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
-            args = [a, b, c, d];
+            t.deepEqual(a, ['100', 'main', 'street']);
+            t.deepEqual(b, 0);
+            t.deepEqual(c, 0);
+            t.deepEqual(c, PREFIX_SCAN.disabled);
             return [];
         }
     });
     phrasematch(c, termops.tokenize('100 Main Street'), {}, (err, results, source) => {
         t.error(err);
-        t.deepEqual(args, [['100', 'main', 'street'], 0, 0, 0]);
+        t.end();
+    });
+});
+
+tape('fuzzyMatchWindows - autocomplete sets word_boundary', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchWindows: (a, b, c, d) => {
+            t.deepEqual(a, ['100', 'main', 'st'], 'Got replaced query');
+            t.deepEqual(d, PREFIX_SCAN.word_boundary, 'Query has expected prefix scan type');
+            return [];
+        }
+    });
+    c.complex_query_replacer = token.createComplexReplacer([
+        { from:'street', to: 'st' } // Not actually complex, won't be seen in the wild
+    ]);
+    phrasematch(c, termops.tokenize('100 Main Street'), {
+        autocomplete: true
+    }, (err, results, source) => {
+        t.error(err);
+        t.end();
+    });
+});
+
+tape('fuzzyMatchWindows - autocomplete sets enabled', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchWindows: (a, b, c, d) => {
+            t.deepEqual(a, ['100', 'main', 'st', 'ohio'], 'Got replaced query');
+            t.deepEqual(d, PREFIX_SCAN.enabled, 'Query has expected prefix scan type');
+            return [];
+        }
+    });
+    c.complex_query_replacer = token.createComplexReplacer([
+        { from:'street', to: 'st' } // Not actually complex, won't be seen in the wild
+    ]);
+    phrasematch(c, termops.tokenize('100 Main Street Ohio'), {
+        autocomplete: true
+    }, (err, results, source) => {
+        t.error(err);
         t.end();
     });
 });
