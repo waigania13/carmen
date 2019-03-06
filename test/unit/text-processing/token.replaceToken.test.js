@@ -1,5 +1,6 @@
 'use strict';
 const token = require('../../../lib/text-processing/token');
+const termops = require('../../../lib/text-processing/termops');
 const test = require('tape');
 
 const tokenList = {
@@ -210,8 +211,6 @@ const tokenClone = JSON.parse(JSON.stringify(tokenList));
 
 const categorized = token.categorizeTokenReplacements(tokenList);
 const simpleTokens = token.createSimpleReplacer(categorized.simple);
-const complexTokens = token.createComplexReplacer(categorized.complex);
-const tokens = simpleTokens.concat(complexTokens);
 const complexTokensR = token.createComplexReplacer(categorized.complex, { includeUnambiguous: true });
 
 // this function simulates the current typical usage, which is to enumerate
@@ -219,7 +218,7 @@ const complexTokensR = token.createComplexReplacer(categorized.complex, { includ
 // simple ones
 const applySimpleAndComplex = function(str) {
     return token.enumerateTokenReplacements(complexTokensR, str).map((s) => {
-        return token.replaceToken(simpleTokens, s).query;
+        return termops.tokenize(s).map((word) => simpleTokens.tokens.get(word) || word).join(' ');
     });
 };
 
@@ -231,10 +230,10 @@ test('create*Replacer', (q) => {
 });
 
 test('token replacement', (t) => {
+    const complexTokens = token.createComplexReplacer(categorized.complex);
+
     // lastWord is false because the final replacement is complex
-    t.deepEqual(token.replaceToken(tokens, 'fargo street northeast, san francisco'), { query: 'fargo st ne, sf', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'coolstreet'), { query: 'coolstreet', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'streetwise'), { query: 'streetwise', lastWord: false });
+    t.deepEqual(token.replaceToken(complexTokens, 'fargo street, san francisco'), { query: 'fargo street, sf', lastWord: false });
 
     t.deepEqual(
         token.enumerateTokenReplacements(complexTokensR, 'fargo street northeast, san francisco'),
@@ -246,8 +245,8 @@ test('token replacement', (t) => {
     t.deepEqual(
         applySimpleAndComplex('fargo street northeast, san francisco'),
         [
-            'fargo st ne, sf',
-            'fargo st ne, san francisco'
+            'fargo st ne sf',
+            'fargo st ne san francisco'
         ]
     );
     t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
@@ -256,9 +255,6 @@ test('token replacement', (t) => {
     t.deepEqual(applySimpleAndComplex('main st street st st milwaukee lane ln wtf ln'), [
         'main st st st st milwaukee ln ln wtf ln'
     ]);
-
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'coolstreet'),['coolstreet']);
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'streetwise'),['streetwise']);
 
     // Demonstrate that replacements can cascade, but our current behavior is
     // quite non-deterministic because token order matters very much for the
@@ -275,30 +271,29 @@ test('token replacement', (t) => {
     });
     t.deepEqual(token.enumerateTokenReplacements(ubTokens, 'uber cat'),['ueb cat', 'üb cat', 'uber cat'], 'hits all permutations');
 
-
     t.end();
 });
 
 test('named/numbered group replacement', (t) => {
     const tokens = token.createComplexReplacer({
         'abc': 'xyz',
-        '(1\\d+)': '@@@$1@@@',
-        '(?<number>2\\d+)': '###${number}###'
+        '(1\\d+)': '@@@$1@@@'
     });
     t.deepEqual(token.replaceToken(tokens, 'abc 123 def'), { query: 'xyz @@@123@@@ def', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'abc 234 def'), { query: 'xyz ###234### def', lastWord: false });
     t.deepEqual(token.replaceToken(tokens, 'abc 123'), { query: 'xyz @@@123@@@', lastWord: false });
-    t.deepEqual(token.replaceToken(tokens, 'abc 234'), { query: 'xyz ###234###', lastWord: false });
     t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 123 def'), ['xyz @@@123@@@ def', 'xyz 123 def', 'abc @@@123@@@ def', 'abc 123 def']);
-    t.deepEqual(token.enumerateTokenReplacements(tokens, 'abc 234 def'), ['xyz ###234### def', 'xyz 234 def', 'abc ###234### def', 'abc 234 def']);
 
     t.end();
 });
 
-test('throw on mixed name/num replacement groups', (t) => {
-    t.throws(() => {
-        token.createComplexReplacer({ '(abc)(?<namedgroup>def)': '${namedgroup}$1' });
-    });
+test('[node 10] named replacement groups', (t) => {
+    let tokens;
+    try {
+        tokens = token.createComplexReplacer({ '(abc)(?<namedgroup>[\\d]+)': '$<namedgroup>' });
+        t.deepEqual(token.replaceToken(tokens, 'abc123'), { query: '123', lastWord: false });
+    } catch (e) {
+        t.ok(true, 'Named tokens are not supported by this version of Node. Skipping test');
+    }
     t.end();
 });
 

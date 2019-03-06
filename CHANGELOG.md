@@ -1,5 +1,25 @@
 # Changelog
 
+## 27.2.0
+
+- Sort non-interpolated address results over interpolated address results given the same relevance.
+
+## 27.1.0
+
+- Added support for performing autocomplete queries on partial housenumbers (e.g., querying for "51" and getting "510 Main St.") if proximity is enabled
+- Moved to a new carmen-cache release (0.26.0) that generates more compact indexes in some circumstances, and supports new fast-path operations to make partial-housenumber search more performant
+- Added support for indexes with index bounds that cross the antimeridian
+- Refactored tokenization to logic to facilitate future feature work around cardinality-changing token replacements
+
+## 27.0.0
+
+- Removed name regex support in token replacement via XRegExp. Native support in node 10+ is still functional.
+- Fix address vs unit number position detection when address and unit numbers exist in different clusters.
+
+## 26.2.0
+
+- Add fallback behavior if tilecover fails to calculate covers for geometry
+
 ## 26.1.0
 
 - Update to carmen-cache to 0.25.0

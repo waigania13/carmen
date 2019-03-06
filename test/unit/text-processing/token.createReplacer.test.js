@@ -1,7 +1,7 @@
 'use strict';
 const token = require('../../../lib/text-processing/token.js');
 const test = require('tape');
-const WORD_BOUNDARY = require('../../../lib/constants.js').WORD_BOUNDARY;
+const WORD_BOUNDARY = token.WORD_BOUNDARY;
 
 // From https://stackoverflow.com/a/10776635
 function regexEqual(x, y) {
@@ -16,11 +16,12 @@ test('createReplacer: simple token replacements', (t) => {
         'Road': 'Rd',
         'Maréchal': 'Mal'
     });
-    const expectedFrom = new RegExp('(' + WORD_BOUNDARY + '|^)((maréchal|road|street)(' + WORD_BOUNDARY + '|$))+', 'gi');
 
-    t.equal(replacer.length, 1);
-    t.ok(regexEqual(replacer[0].from, expectedFrom), 'from regexps match');
-    t.deepEqual(token.replaceToken(replacer, 'Fake Street'), { query: 'Fake st', lastWord: false }, 'Fake Street => fake St');
+    t.ok(replacer.tokens instanceof Map);
+    t.equal(typeof replacer.replacer, 'function');
+
+    t.deepEqual(replacer.replacer(['Fake', 'Street']), ['Fake', 'Street'], 'Requires input be lowercase');
+    t.deepEqual(replacer.replacer(['fake', 'street']), ['fake', 'st'], 'fake street => fake St');
     t.end();
 });
 
@@ -30,13 +31,11 @@ test('createReplacer: includeUnambiguous', (t) => {
     }, { includeUnambiguous: true });
 
     const expected =  [{
-        named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)Street(' + WORD_BOUNDARY + '|$)', 'gi'),
         fromLastWord: false,
         to: '$1St$2',
         inverse: false
     }, {
-        named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)St(' + WORD_BOUNDARY + '|$)', 'gi'),
         fromLastWord: false,
         to: '$1Street$2',
@@ -60,12 +59,12 @@ test('createReplacer: substring complex token replacement + diacritics', (t) => 
         'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
     }, { includeUnambiguous: true });
     const expected = [
-        { named: false, from: /ä/gi, fromLastWord: false, to: 'ae', inverse: false },
-        { named: false, from: /ö/gi, fromLastWord: false, to: 'oe', inverse: false },
-        { named: false, from: /ü/gi, fromLastWord: false, to: 'ue', inverse: false },
-        { named: false, from: /ae/gi, fromLastWord: false, to: 'ä', inverse: true },
-        { named: false, from: /oe/gi, fromLastWord: false, to: 'ö', inverse: true },
-        { named: false, from: /ue/gi, fromLastWord: false, to: 'ü', inverse: true }
+        { from: /ä/gi, fromLastWord: false, to: 'ae', inverse: false },
+        { from: /ö/gi, fromLastWord: false, to: 'oe', inverse: false },
+        { from: /ü/gi, fromLastWord: false, to: 'ue', inverse: false },
+        { from: /ae/gi, fromLastWord: false, to: 'ä', inverse: true },
+        { from: /oe/gi, fromLastWord: false, to: 'ö', inverse: true },
+        { from: /ue/gi, fromLastWord: false, to: 'ü', inverse: true }
     ];
     for (const i in replacer) {
         t.ok(regexEqual(replacer[i].from, expected[i].from), 'from regexps match');
@@ -82,7 +81,6 @@ test('createReplacer: subword complex token replacement', (t) => {
         '([a-z]+)gatan': '$1g'
     });
     const expected = [{
-        named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)([a-z]+)gatan(' + WORD_BOUNDARY + '|$)', 'gi'),
         fromLastWord: false,
         to: '$1$2g$3',
@@ -107,13 +105,11 @@ test('createReplacer: subword complex token replacement + diacritics', (t) => {
         }
     });
     const expected = [{
-        named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)([a-z]+)vägen(' + WORD_BOUNDARY + '|$)', 'gi'),
         fromLastWord: false,
         to: '$1$2v$3',
         inverse: false
     }, {
-        named: false,
         from: new RegExp('(' + WORD_BOUNDARY + '|^)([a-z]+)vagen(' + WORD_BOUNDARY + '|$)', 'gi'),
         fromLastWord: false,
         to: '$1$2v$3',

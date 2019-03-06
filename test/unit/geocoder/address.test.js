@@ -838,3 +838,55 @@ test('multi', (t) => {
     }, 100).geometry.coordinates);
     t.end();
 });
+
+test('prefix', (t) => {
+    const cluster = {
+        properties: {
+            'carmen:addressnumber': [[15, 16, 17, '17a', 20, 21, 90, 150, 151, 1500]]
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiPoint',
+                coordinates: [[1,1], [2,2], [0,0], [5,5], [6,6], [11,1], [12,2], [13,3], [14,4], [15,5]]
+            }]
+        }
+    };
+    t.deepEqual(
+        addressCluster.forwardPrefix(cluster, 1),
+        [
+            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { number: 16, numberAsInt: 16, geometry: { type: 'Point', coordinates: [2, 2] } },
+            { number: 17, numberAsInt: 17, geometry: { type: 'Point', coordinates: [0, 0] } },
+            { number: '17a', numberAsInt: 17, geometry: { type: 'Point', coordinates: [5, 5] } },
+            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+        ],
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(cluster, 15),
+        [
+            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+        ],
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(cluster, '15'),
+        [
+            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+        ],
+        'only works on numbers'
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(cluster, 7),
+        [],
+        'nothing starts with 7'
+    );
+    t.end();
+});
