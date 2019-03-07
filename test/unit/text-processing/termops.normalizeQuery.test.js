@@ -26,4 +26,17 @@ test('termops.normalizeQuery', (t) => {
     r = termops.normalizeQuery(termops.tokenize(decodeURIComponent('%E2%98%BA %E2%98%BA')));
     t.deepEqual(r.tokens, [], 'encodes an emoji to an actually empty string');
     t.end();
+
+    r = termops.normalizeQuery({
+        tokens: ['鳥', '栖', '市', '弥', '生', 'が', '丘', '八丁目', '', '', '1'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 10],
+        separators: ['', '', '', '', '', '', '', '', '', '', ''],
+        lastWord: false
+    });
+    t.deepEqual(r, {
+        tokens: ['鳥', '栖', '市', '弥', '生', 'が', '丘', '八', '丁', '目', '1'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 10],
+        separators: ['', '', '', '', '', '', '', '', '', '', ''],
+        lastWord: false
+    }, 'normalizes multi char CJK replacements');
 });
