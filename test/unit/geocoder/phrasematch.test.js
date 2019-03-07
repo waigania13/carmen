@@ -212,16 +212,69 @@ tape('fuzzyMatchWindows - removed term', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 6);
+        t.equal(results.phrasematches.length, 9);
         const expected = new Set([
             '100 main springfield - 31 - 1',
             'main springfield - 30 - 0.8',
             '100 main - 3 - 0.4',
+            '100 main - 15 - 0.8',
             'main - 2 - 0.2',
-            'main - 16 - 0.6',
+            'main - 14 - 0.6',
             '100 - 1 - 0.2',
             'springfield - 16 - 0.2',
-            'springfield - 2 - 0.6'
+            'springfield - 28 - 0.6'
+        ]);
+        results.phrasematches.forEach((v) => {
+            const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
+            t.ok(expected.has(k), `has "${k}"`);
+        });
+        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.end();
+    });
+});
+
+tape('fuzzyMatchWindows - expanded & removed term', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchWindows: (a, b, c, d) => {
+            t.deepEqual(a, ['herman', 'str', '100', 'berlin']);
+            const expected = [
+                { start_position: 0, phrase: ['herman', 'str', '100', 'berlin'], edit_distance: 0, ending_type: 0 },
+                { start_position: 0, phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0 },
+                { start_position: 0, phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0 },
+                { start_position: 2, phrase: ['100', 'berlin'], edit_distance: 0, ending_type: 0 },
+                { start_position: 3, phrase: ['berlin'], edit_distance: 0, ending_type: 0 },
+                { start_position: 0, phrase: ['herman'], edit_distance: 0, ending_type: 0 },
+                { start_position: 1, phrase: ['str'], edit_distance: 0, ending_type: 0 },
+                { start_position: 2, phrase: ['100'], edit_distance: 0, ending_type: 0 }
+            ];
+            return expected;
+        }
+    });
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from:'junk',
+            to: { text: '', spanBoundaries: 0 }
+        },
+        {
+            from:'([^ ]+)(strasse|str|straße)',
+            to: { text: '$1 str', regex: true, skipDiacriticStripping: true, spanBoundaries: 0 }
+        }
+    ]);
+    const query = termops.tokenize('hermanstrasse 100 junk berlin');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 9);
+        const expected = new Set([
+            'herman str 100 berlin - 15 - 1',
+            'herman str 100 - 7 - 0.75',
+            'herman str 100 - 3 - 0.5',
+            'herman str - 1 - 0.25',
+            '100 berlin - 14 - 0.75',
+            'berlin - 12 - 0.5',
+            'berlin - 8 - 0.25',
+            '100 - 6 - 0.5',
+            '100 - 2 - 0.25'
         ]);
         results.phrasematches.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
