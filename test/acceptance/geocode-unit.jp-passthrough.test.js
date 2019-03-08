@@ -22,7 +22,7 @@ const tokens = {
     '[７7]丁目': { regex: true, spanBoundaries: 2, text: '七丁目' },
     '[８8]丁目': { regex: true, spanBoundaries: 2, text: '八丁目' },
     '[９9]丁目': { regex: true, spanBoundaries: 2, text: '九丁目' }
-}
+};
 
 const conf = {
     place: new mem({ maxzoom: 6, geocoder_tokens: tokens }, () => {}),
@@ -37,23 +37,23 @@ const conf = {
 const c = new Carmen(conf);
 tape('index address', (t) => {
     const address = {
-        "type": "Feature",
-        "id": 12345,
-        "geometry": {
-            "type": "MultiPoint",
-            "coordinates": [
-                [ 130.001, 33.001 ],
-                [ 130.002, 33.002 ],
-                [ 130.003, 33.003 ],
-                [ 130.004, 33.004 ]
+        'type': 'Feature',
+        'id': 12345,
+        'geometry': {
+            'type': 'MultiPoint',
+            'coordinates': [
+                [130.001, 33.001],
+                [130.002, 33.002],
+                [130.003, 33.003],
+                [130.004, 33.004]
             ]
         },
-        "properties": {
-            "carmen:score": 1,
-            "carmen:geocoder_stack": "jp",
-            "carmen:addressnumber": [ "6", "1", "16", "26" ],
-            "carmen:center": [ 130.002, 33.002 ],
-            "carmen:text": "弥生が丘八丁目"
+        'properties': {
+            'carmen:score': 1,
+            'carmen:geocoder_stack': 'jp',
+            'carmen:addressnumber': ['6', '1', '16', '26'],
+            'carmen:center': [130.002, 33.002],
+            'carmen:text': '弥生が丘八丁目'
         }
     };
     queueFeature(conf.address, address, t.end);
@@ -63,16 +63,16 @@ tape('index address', (t) => {
         id: 2,
         properties: {
             'carmen:text': '鳥栖市',
-            'carmen:center': [ 130, 33 ]
+            'carmen:center': [130, 33]
         },
         geometry: {
             type: 'Polygon',
             coordinates: [[
-                [ 128, 31 ],
-                [ 132, 31 ],
-                [ 132, 35 ],
-                [ 128, 35 ],
-                [ 128, 31 ]
+                [128, 31],
+                [132, 31],
+                [132, 35],
+                [128, 35],
+                [128, 31]
             ]]
         }
     };
@@ -93,7 +93,7 @@ tape('full address', (t) => {
         t.ifError(err);
         t.ok(res.features.length);
         t.equal(res.features[0].id, 'address.12345', 'found correct feature');
-        t.equal(res.features[0].address, '1', 'interpreted 1 as address number')
+        t.equal(res.features[0].address, '1', 'interpreted 1 as address number');
         t.end();
     });
 });
