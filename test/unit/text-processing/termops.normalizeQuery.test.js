@@ -25,7 +25,6 @@ test('termops.normalizeQuery', (t) => {
 
     r = termops.normalizeQuery(termops.tokenize(decodeURIComponent('%E2%98%BA %E2%98%BA')));
     t.deepEqual(r.tokens, [], 'encodes an emoji to an actually empty string');
-    t.end();
 
     r = termops.normalizeQuery({
         tokens: ['鳥', '栖', '市', '弥', '生', 'が', '丘', '八丁目', '', '', '1'],
@@ -39,4 +38,71 @@ test('termops.normalizeQuery', (t) => {
         separators: ['', '', '', '', '', '', '', '', '', '', ''],
         lastWord: false
     }, 'normalizes multi char CJK replacements');
+
+    t.end();
+});
+
+test('termops.normalizeQuery - limits', (t) => {
+    let r;
+    r = termops.normalizeQuery(termops.tokenize('a b c d e f g h i j k l m n o p q r s t'));
+    t.deepEqual(r, {
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    }, 'Allows 20 tokens');
+
+    r = termops.normalizeQuery({
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's t'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    });
+    t.deepEqual(r, {
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], // TODO not sure we want this last entry to be a space
+        lastWord: false
+    }, 'Expands to 20 tokens');
+
+    r = termops.normalizeQuery({
+        tokens: ['a b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    });
+    t.deepEqual(r, {
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+        owner: [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    }, 'Expands to 20 tokens');
+
+    r = termops.normalizeQuery({
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's t u'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    });
+    t.deepEqual(r, {
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's t u'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',  ''],
+        lastWord: false
+    }, 'Refuses to expand beyond 20 tokens');
+
+    r = termops.normalizeQuery({
+        tokens: ['a b c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u'],
+        owner: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ''],
+        lastWord: false
+    });
+    t.deepEqual(r, {
+        tokens: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'],
+        owner: [0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+        separators: [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        lastWord: false
+    }, 'Truncates tokens to prevent it from growing beyond 20 tokens');
+
+    t.end();
 });
