@@ -172,21 +172,19 @@ function Geocoder(indexes, options) {
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
 
-            if (token.tokenValidator(source.simple_replacer) || token.tokenValidator(source.complex_query_replacer)) {
-                throw new Error('Using global tokens');
-            }
-
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
 
                 for (let category of info.geocoder_categories) {
-                    category = termops.tokenize(category);
+                    category = termops.tokenize(category).tokens;
 
                     source.categories.add(category.join(' '));
 
                     category = category.map((cat) => {
-                        return token.replaceToken(source.complex_query_replacer, source.simple_replacer.tokens.get(cat) || cat).query;
+                        let text = termops.tokenize(cat);
+                        text = token.replaceToken(source.complex_query_replacer, text);
+                        return source.simple_replacer.replacer(text.tokens).join(' ');
                     });
 
                     source.categories.add(category.join(' '));

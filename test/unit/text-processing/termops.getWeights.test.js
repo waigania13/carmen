@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 'use strict';
 const termops = require('../../../lib/text-processing/termops');
 const test = require('tape');
