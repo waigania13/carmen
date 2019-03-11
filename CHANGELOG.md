@@ -1,5 +1,13 @@
 # Changelog
 
+## 28.0.0
+
+- Allow source replacements to change the ‘cardinality’ of a query, including splitting, combining and removing tokens.
+- Global replacements are no longer enumerated at index time when generating index-able variants.
+- Improved address number parsing, now recognizes formats like `2/3-4`
+- Improved CJK numeric tokenization doesn’t stop parsing text after the first number.
+- Fixed a bug where we could detect an address number early in processing but fail to locate it again before presenting results
+
 ## 27.2.0
 
 - Sort non-interpolated address results over interpolated address results given the same relevance.

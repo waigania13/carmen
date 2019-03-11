@@ -43,13 +43,11 @@ const addFeature = require('../../lib/indexer/addfeature'),
 (() => {
     const conf = {
         address: new mem({
-            maxzoom: 6
+            maxzoom: 6,
+            geocoder_tokens: { 'dix-huitième': { text: '18e', spanBoundaries: 1 } }
         }, () => {})
     };
-    const opts = {
-        tokens: { 'dix-huitième': '18e' }
-    };
-    const c = new Carmen(conf, opts);
+    const c = new Carmen(conf);
     tape('geocoder token test', (t) => {
         const address = {
             id:1,
@@ -85,7 +83,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: { 'q([a-z])([a-z])([a-z])': '$3$2$1' }
+            geocoder_tokens: { 'q([a-z])([a-z])([a-z])': { text: '$3$2$1', regex: true } }
         }, () => {})
     };
     const c = new Carmen(conf);
@@ -213,8 +211,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
             geocoder_tokens: {
                 'Road': 'Rd',
                 'Street': 'St'
-            },
-            use_normalization_cache: true
+            }
         }, () => {})
     };
     const opts = {
@@ -312,8 +309,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     const conf = {
         address: new mem({
             maxzoom: 6,
-            geocoder_tokens: { 'strasse':'str' },
-            use_normalization_cache: true
+            geocoder_tokens: { 'strasse':'str' }
         }, () => {})
     };
     const opts = {
@@ -363,13 +359,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
         });
     });
     tape('test token replacement', (t) => {
-        c.geocode('Talst ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
-            t.ifError(err);
-            t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
-            t.end();
-        });
-    });
-    tape('test token replacement', (t) => {
         c.geocode('Tal st ', { limit_verify: 1, fuzzyMatch: 0 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].relevance, 1.00, 'token replacement for str -> strasse');
@@ -398,20 +387,19 @@ const addFeature = require('../../lib/indexer/addfeature'),
             geocoder_tokens: {
                 'ä': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ae' },
                 'ö': { skipBoundaries: true, skipDiacriticStripping: true, text: 'oe' },
-                'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' }
-            },
-            use_normalization_cache: true
+                'ü': { skipBoundaries: true, skipDiacriticStripping: true, text: 'ue' },
+                '([^ ]+)(strasse|str|straße)': {
+                    text: '$1 str',
+                    regex: true,
+                    skipDiacriticStripping: true,
+                    spanBoundaries: 0
+                }
+            }
         }, () => {})
     };
-    // Global tokens
-    const opts = {
-        tokens: {
-            '\\b(.+)(strasse|str|straße)\\b': '$1 str'
-        }
-    };
-    const c = new Carmen(conf, opts);
+    const c = new Carmen(conf);
     tape('set opts', (t) => {
-        addFeature.setOptions(opts);
+        addFeature.setOptions({});
         t.end();
     });
     tape('geocoder token test -- Burbarg', (t) => {
