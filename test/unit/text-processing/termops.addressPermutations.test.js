@@ -10,6 +10,10 @@ test('termops.addressPermutations', (t) => {
     function debug(v) {
         return v.join(' ') + (v.relev ? ' - ' + v.relev : '');
     }
+    function withAddress(array, address) {
+        array.address = address;
+        return array;
+    }
     t.deepEqual(termops.addressPermutations(a).length, 6, 'a: 6 uniq permutations');
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         'a b c - 1',
@@ -31,7 +35,7 @@ test('termops.addressPermutations', (t) => {
         'c - 0.8'
     ]);
 
-    a = termops.permutations(['##','b','c']);
+    a = termops.permutations(withAddress(['##','b','c'], { number: 12, position: 0 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '## b c',
         '## b',
@@ -41,7 +45,7 @@ test('termops.addressPermutations', (t) => {
         'c'
     ], '## leading housenum');
 
-    a = termops.permutations(['2##','b','c']);
+    a = termops.permutations(withAddress(['2##','b','c'], { number: 200, position: 0 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '2## b c',
         '2## b',
@@ -51,7 +55,7 @@ test('termops.addressPermutations', (t) => {
         'c'
     ], '2## leading housenum');
 
-    a = termops.permutations(['a','b','##']);
+    a = termops.permutations(withAddress(['a','b','##'], { number: 12, position: 2 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '## a b',
         'a b',
@@ -61,7 +65,7 @@ test('termops.addressPermutations', (t) => {
         '##'
     ], 'trailing housenum ##');
 
-    a = termops.permutations(['a','b','2##']);
+    a = termops.permutations(withAddress(['a','b','2##'], { number: 200, position: 2 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '2## a b',
         'a b',
@@ -71,7 +75,7 @@ test('termops.addressPermutations', (t) => {
         '2##'
     ], 'trailing housenum 2##');
 
-    a = termops.permutations(['a','##','c']);
+    a = termops.permutations(withAddress(['a','##','c'], { number: 12, position: 1 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '## a',
         '## c',
@@ -80,7 +84,7 @@ test('termops.addressPermutations', (t) => {
         'c'
     ], 'landlocked housenum ##');
 
-    a = termops.permutations(['a','2##','c']);
+    a = termops.permutations(withAddress(['a','2##','c'], { number: 200, position: 1 }));
     t.deepEqual(termops.addressPermutations(a).map(debug), [
         '2## a',
         '2## c',
