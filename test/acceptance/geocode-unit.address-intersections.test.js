@@ -301,7 +301,7 @@ If there is more than one name for F Street Northwest and it intersects with 9th
     tape('Searching for the intersection - 9th st nw and F st nw', (t) => {
         c.geocode('9th st nw and F st nw', {}, (err, res) => {
             t.deepEquals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw and F st nw');
-            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for9th Street Northwest and F Street Northwest');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for 9th Street Northwest and F Street Northwest');
             t.end();
         });
     });
@@ -316,8 +316,8 @@ If there is more than one name for F Street Northwest and it intersects with 9th
 
     tape('Searching for the intersection - 9th st nw and F', (t) => {
         c.geocode('9th st nw and F', {}, (err, res) => {
-            t.deepEquals(res.features[0].place_name, '9th Street Northwest', '9th st nw and F, returns 9th Street Northwest');
-            t.deepEquals(res.features[0].center, [0,0], 'Returns the correct geometry for 9th Street Northwest and F Street Northwest');
+            t.deepEquals(res.features[0].place_name, '9th Street Northwest and F Street Northwest', '9th st nw and F, returns 9th Street Northwest and F Street Northwest');
+            t.deepEquals(res.features[0].center, [0,2], 'Returns the correct geometry for 9th Street Northwest and F Street Northwest');
             t.end();
         });
     });
@@ -340,8 +340,8 @@ If there is more than one name for F Street Northwest and it intersects with 9th
 
     tape('Searching for the intersection - F st nw and 9th (should favour returning the street over the intersection)', (t) => {
         c.geocode('F st nw and 9th', {}, (err, res) => {
-            t.deepEquals(res.features[0].place_name, 'F Street Northwest', 'F st nw and 9th');
-            t.deepEquals(res.features[0].geometry, { type: 'GeometryCollection', geometries: [{ type: 'MultiPoint', coordinates: [[0,1]] }] }, 'Returns the correct geometry for F st nw and 9th');
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F st nw and 9th');
+            t.deepEquals(res.features[0].geometry, { type: 'Point', coordinates: [0,2] }, 'Returns the correct geometry for F st nw and 9th');
             t.end();
         });
     });
