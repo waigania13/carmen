@@ -855,31 +855,31 @@ test('prefix', (t) => {
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, 1),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 16, numberAsInt: 16, geometry: { type: 'Point', coordinates: [2, 2] } },
-            { number: 17, numberAsInt: 17, geometry: { type: 'Point', coordinates: [0, 0] } },
-            { number: '17a', numberAsInt: 17, geometry: { type: 'Point', coordinates: [5, 5] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 1, number: 16, numberAsInt: 16, geometry: { type: 'Point', coordinates: [2, 2] } },
+            { idx: 2, number: 17, numberAsInt: 17, geometry: { type: 'Point', coordinates: [0, 0] } },
+            { idx: 3, number: '17a', numberAsInt: 17, geometry: { type: 'Point', coordinates: [5, 5] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
     );
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, 15),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
     );
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, '15'),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
         'only works on numbers'
     );
