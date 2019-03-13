@@ -23,10 +23,5 @@ test('numTokenize', (t) => {
         withAddress(['500', 'main', 'street', 'apt', '2##', '20009'], { number: '205', position: 4 }),
         withAddress(['500', 'main', 'street', 'apt', '205', '20###'], { number: '20009', position: 5 }),
     ], 'three numbers');
-
-    // intersection
-    t.deepEqual(termops.numTokenize(['9th', 'street', 'northwest', 'and', 'f', 'street', 'northwest'], 3, 'and'), [
-        ['+intersection', '9th', 'street', 'northwest', ',', 'f', 'street', 'northwest'],
-    ], 'tokenize intersections');
     t.end();
 });
