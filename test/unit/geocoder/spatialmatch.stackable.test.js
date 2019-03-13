@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 'use strict';
 const stackable = require('../../../lib/geocoder/spatialmatch.js').stackable;
 const sortByRelevLengthIdx = require('../../../lib/geocoder/spatialmatch.js').sortByRelevLengthIdx;
