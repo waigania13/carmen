@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 'use strict';
 // Unit tests for IO-deduping when loading grid shards during spatialmatch.
 // Setups up multiple indexes representing logical equivalents.

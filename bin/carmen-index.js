@@ -11,6 +11,9 @@ argv = require('minimist')(process.argv, {
 });
 const settings = require('../package.json');
 
+/**
+ * Display CLI help message
+ */
 function help() {
     console.log('carmen-index.js --config=<path> --index=<path> [options]');
     console.log('[options]:');
@@ -54,16 +57,25 @@ argv.index = Carmen.auto(argv.index, () => {
     conf.to.startWriting(writeMeta);
 });
 
+/**
+ * @param {Error} err - error
+ */
 function writeMeta(err) {
     if (err) throw err;
     conf.to.putInfo(config, stopWriting);
 }
 
+/**
+ * @param {Error} err - error
+ */
 function stopWriting(err) {
     if (err) throw err;
     conf.to.stopWriting(index);
 }
 
+/**
+ * @param {Error} err - error
+ */
 function index(err) {
     if (err) throw err;
 
