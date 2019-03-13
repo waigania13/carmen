@@ -15,17 +15,31 @@ function bearablePermutations(permutations) {
 }
 
 test('termops.intersectionPermutations', (t) => {
-    let results;
-    const intersectionArray = ['main', 'street', 'and', 'first', 'street', 'springfield', 'IL', '62700'];
-    results = termops.intersectionPermutations(intersectionArray, 'intersection');
+    let results, expected;
+    const query = termops.tokenize('main street and first street springfield IL 62700');
+    results = termops.intersectionPermutations(query, 'intersection');
     t.equal(results.length, 0);
-    results = termops.intersectionPermutations(intersectionArray, 'and');
-    const expected = [
+    results = termops.intersectionPermutations(query, 'and');
+    expected = [
         { phrase: ['+intersection', 'main', 'street', ',', 'first'], mask: 15, ender: false, relev: 0 },
         { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street'], mask: 31, ender: false, relev: 0 },
         { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street', 'springfield'], mask: 63, ender: false, relev: 0 },
-        { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street', 'springfield', 'IL'], mask: 127, ender: false, relev: 0 },
-        { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street', 'springfield', 'IL', '62700'], mask: 255, ender: true, relev: 0 },
+        { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street', 'springfield', 'il'], mask: 127, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'main', 'street', ',', 'first', 'street', 'springfield', 'il', '62700'], mask: 255, ender: true, relev: 0 },
+    ];
+    t.deepEqual(bearablePermutations(results), expected);
+
+
+    // tokens: 'hermannstrasse and allerstrasse berlin'
+    results = termops.intersectionPermutations({
+        tokens: ['hermann', 'str', 'und', 'aller', 'str', 'berlin'],
+        separators: ['', ' ', ' ', ' ', ' ', ''],
+        owner: [0, 0, 1, 2, 2, 3]
+    }, 'und');
+    expected = [
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller'], mask: 7, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str'], mask: 7, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str', 'berlin'], mask: 15, ender: true, relev: 0 },
     ];
     t.deepEqual(bearablePermutations(results), expected);
     t.end();
