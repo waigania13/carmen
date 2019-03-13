@@ -61,8 +61,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('test address index for 3452 (partial)', (t) => {
-        c.geocode('34', { 
-            proximity: [ 3, 3 ] 
+        c.geocode('34', {
+            proximity: [3, 3]
         }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].properties.accuracy, 'partial');
