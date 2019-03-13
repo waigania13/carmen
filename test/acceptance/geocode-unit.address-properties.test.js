@@ -18,18 +18,19 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             properties: {
                 'carmen:text': 'fake street',
                 'carmen:center': [0, 0],
-                'carmen:addressnumber': ['9B', '10C', '7'],
+                'carmen:addressnumber': ['9B', '10C', '7', '3452'],
                 accuracy: 'rooftop',
                 'carmen:addressprops': {
                     'accuracy': {
                         1: 'driveway',
-                        2: 'parcel'
+                        2: 'parcel',
+                        3: 'partial'
                     }
                 }
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0],[1,1],[2,2]]
+                coordinates: [[0,0],[1,1],[2,2],[3,3]]
             }
         };
         queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
@@ -59,6 +60,16 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         });
     });
 
+    tape('test address index for 3452 (partial)', (t) => {
+        c.geocode('34', { 
+            proximity: [ 3, 3 ] 
+        }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].properties.accuracy, 'partial');
+            t.end();
+        });
+    });
+
     tape('test address index for 0,0', (t) => {
         c.geocode('0,0', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
@@ -79,6 +90,14 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         c.geocode('2,2', { limit_verify: 1 }, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].properties.accuracy, 'parcel');
+            t.end();
+        });
+    });
+
+    tape('test address index for 3,3', (t) => {
+        c.geocode('3,3', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].properties.accuracy, 'partial');
             t.end();
         });
     });
