@@ -41,7 +41,7 @@ const us_itp = {
     id: 12,
     properties: {
         'carmen:text': 'Main St',
-        'carmen:center': [ 0, 10 ],
+        'carmen:center': [0, 10],
         'carmen:rangetype': 'tiger',
         'carmen:lfromhn': [['1002','2']],
         'carmen:ltohn': [['1998','1000']],
