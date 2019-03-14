@@ -1,6 +1,5 @@
 'use strict';
-// Test to make sure identified house numbers in Japan are properly passed along
-// rather than being misidentified in verifymatch
+// Test that address indexes can express a preferred housenumber order
 
 const tape = require('tape');
 const Carmen = require('../..');
