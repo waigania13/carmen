@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.2.0
+
+- Add a mechanism for address indexes to express their expected housenumber order (before or after the street name) and use it to rank otherwise-tied results.
+
 ## 28.1.0
 
 - Add support for individual address properties using the `carmen:addressprops` tag
