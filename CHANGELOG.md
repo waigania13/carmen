@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.1.0
+
+- Add support for individual address properties using the `carmen:addressprops` tag
+
 ## 28.0.0
 
 - Allow source replacements to change the ‘cardinality’ of a query, including splitting, combining and removing tokens.

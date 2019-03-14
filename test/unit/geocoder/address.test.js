@@ -391,10 +391,19 @@ test('address interpolation - noop', (t) => {
 
 test('address interpolation - parity: even + both', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -414,6 +423,7 @@ test('address interpolation - parity: even + both', (t) => {
 test('address point clustering', (t) => {
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [9,10,7]
             },
@@ -425,6 +435,7 @@ test('address point clustering', (t) => {
     );
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [[9,10,7,9]]
             },
@@ -436,15 +447,28 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            type:'Point',
-            coordinates:[1,1]
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7,9]]
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[1,1]
+            }
         }, {
-            type:'Point',
-            coordinates:[6,6]
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7,9]]
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[6,6]
+            }
         }]
     );
     t.deepEqual(
         addressCluster.forward({
+            type: 'Feature',
             properties: {
                 'carmen:addressnumber': [[9,10,7]]
             },
@@ -456,8 +480,14 @@ test('address point clustering', (t) => {
                 }]
             }
         },9), [{
-            type:'Point',
-            coordinates:[1,1]
+            type: 'Feature',
+            properties: {
+                'carmen:addressnumber': [[9,10,7]]
+            },
+            geometry: {
+                type:'Point',
+                coordinates:[1,1]
+            }
         }]
     );
     t.end();
@@ -552,10 +582,20 @@ test('address point clustering fail', (t) => {
 
 test('parity: even + even', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,10]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,10]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -575,11 +615,21 @@ test('parity: even + even', (t) => {
 
 test('parity: even + odd', (t) => {
     t.deepEqual({
-        coordinates: [0, 9],
-        interpolated: true,
-        omitted: true, // because parity does not match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['0']],
+            'carmen:ltohn': [['100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            coordinates: [0, 9],
+            interpolated: true,
+            omitted: true, // because parity does not match
+            type: 'Point'
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['0']],
@@ -599,10 +649,20 @@ test('parity: even + odd', (t) => {
 
 test('parity: odd + both', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['B']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1']],
@@ -622,10 +682,20 @@ test('parity: odd + both', (t) => {
 
 test('parity: odd + odd', (t) => {
     t.deepEqual({
-        type:'Point',
-        interpolated: true,
-        coordinates:[0,9]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['O']]
+        },
+        geometry: {
+            type:'Point',
+            interpolated: true,
+            coordinates:[0,9]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1']],
@@ -645,11 +715,21 @@ test('parity: odd + odd', (t) => {
 
 test('parity: odd + even', (t) => {
     t.deepEqual({
-        coordinates: [0, 9],
-        interpolated: true,
-        omitted: true, // because parity does not match
-        type: 'Point'
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['1']],
+            'carmen:ltohn': [['101']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            coordinates: [0, 9],
+            interpolated: true,
+            omitted: true, // because parity does not match
+            type: 'Point'
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['1']],
@@ -669,10 +749,20 @@ test('parity: odd + even', (t) => {
 
 test('reverse', (t) => {
     t.deepEqual({
-        type: 'Point',
-        interpolated: true,
-        coordinates: [0,90]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype':'tiger',
+            'carmen:lfromhn': [['100']],
+            'carmen:ltohn': [['0']],
+            'carmen:parityl': [['E']],
+        },
+        geometry: {
+            type: 'Point',
+            interpolated: true,
+            coordinates: [0,90]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype':'tiger',
             'carmen:lfromhn': [['100']],
@@ -692,10 +782,20 @@ test('reverse', (t) => {
 
 test('seminumber', (t) => {
     t.deepEqual({
-        type: 'Point',
-        interpolated: true,
-        coordinates: [0,10]
+        type: 'Feature',
+        properties: {
+            'carmen:rangetype': 'tiger',
+            'carmen:lfromhn': [['G-0']],
+            'carmen:ltohn': [['G-100']],
+            'carmen:parityl': [['E']]
+        },
+        geometry: {
+            type: 'Point',
+            interpolated: true,
+            coordinates: [0,10]
+        }
     }, address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['G-0']],
@@ -715,6 +815,7 @@ test('seminumber', (t) => {
 
 test('multi', (t) => {
     t.deepEqual([0,40.981964], address.forward({
+        type: 'Feature',
         properties: {
             'carmen:rangetype': 'tiger',
             'carmen:lfromhn': [['1002','2']],
@@ -734,7 +835,7 @@ test('multi', (t) => {
                 ]
             }]
         }
-    }, 100).coordinates);
+    }, 100).geometry.coordinates);
     t.end();
 });
 
@@ -754,31 +855,31 @@ test('prefix', (t) => {
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, 1),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 16, numberAsInt: 16, geometry: { type: 'Point', coordinates: [2, 2] } },
-            { number: 17, numberAsInt: 17, geometry: { type: 'Point', coordinates: [0, 0] } },
-            { number: '17a', numberAsInt: 17, geometry: { type: 'Point', coordinates: [5, 5] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 1, number: 16, numberAsInt: 16, geometry: { type: 'Point', coordinates: [2, 2] } },
+            { idx: 2, number: 17, numberAsInt: 17, geometry: { type: 'Point', coordinates: [0, 0] } },
+            { idx: 3, number: '17a', numberAsInt: 17, geometry: { type: 'Point', coordinates: [5, 5] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
     );
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, 15),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
     );
     t.deepEqual(
         addressCluster.forwardPrefix(cluster, '15'),
         [
-            { number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
-            { number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
-            { number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
-            { number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
+            { idx: 0, number: 15, numberAsInt: 15, geometry: { type: 'Point', coordinates: [1, 1] } },
+            { idx: 7, number: 150, numberAsInt: 150, geometry: { type: 'Point', coordinates: [13, 3] } },
+            { idx: 8, number: 151, numberAsInt: 151, geometry: { type: 'Point', coordinates: [14, 4] } },
+            { idx: 9, number: 1500, numberAsInt: 1500, geometry: { type: 'Point', coordinates: [15, 5] } }
         ],
         'only works on numbers'
     );
