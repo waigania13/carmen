@@ -198,7 +198,7 @@ function Geocoder(indexes, options) {
             source.minscore = info.minscore;
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
-            source.radius = info.radius;
+            source.geocoder_coalesce_radius = info.geocoder_coalesce_radius;
 
             if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
                 throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
