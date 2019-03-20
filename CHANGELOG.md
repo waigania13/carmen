@@ -1,5 +1,8 @@
 # Changelog
 
+## 28.3.0
+- Add intersection search support which allows users to search for "Street A and Street B"
+
 ## 28.2.0
 
 - Add a mechanism for address indexes to express their expected housenumber order (before or after the street name) and use it to rank otherwise-tied results.
