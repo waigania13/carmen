@@ -95,6 +95,21 @@ tape('putFeatures', (t) => {
                 coordinates: [0, 0]
             }
         },
+        {
+            id: 28889879879028,
+            type: 'Feature',
+            properties: {
+                'carmen:text': 'Street A',
+                'carmen:center': [0, 0],
+                'carmen:intersection': ['Street B'],
+                'carmen:zxy': ['6/32/32'],
+                'carmen:score': 0
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0, 0]
+            }
+        }
     ], (err) => {
         t.ifError(err);
         t.equal(source._shards.feature[1], '{"1":{"id":1,"type":"Feature","properties":{"carmen:text":"a","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}},"1048577":{"id":1048577,"type":"Feature","properties":{"carmen:text":"c","carmen:center":[5.626,0],"carmen:zxy":["6/33/32"]},"geometry":{"type":"Point","coordinates":[5.626,0]}}}', 'has feature shard 1');
@@ -124,10 +139,16 @@ tape('getFeatureByCover, collision', (t) => {
     });
 });
 
+tape('getFeatureByCover, collision', (t) => {
+    feature.getFeatureByCover(conf.source, { id:466292, x:32, y:32, score:2000, text:'+intersection street a , b' }, (err, data) => {
+        t.equal(data.id, 28889879879028);
+        t.end();
+    });
+});
+
 tape('getFeatureById', (t) => {
     feature.getFeatureById(conf.source, 1, (err, data) => {
         t.equal(data.id, 1);
         t.end();
     });
 });
-
