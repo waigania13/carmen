@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.4.1
+
+- Fix error condition when attempting to resolve ID collisions involving intersection features
+
 ## 28.4.0
 
 - Output `feature.geometry.intersection: true` on intersection features
