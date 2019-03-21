@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.4.0
+
+- Output `feature.geometry.intersection: true` on intersection features
+
 ## 28.3.0
 - Add intersection search support which allows users to search for "Street A and Street B"
 
