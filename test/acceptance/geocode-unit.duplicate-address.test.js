@@ -81,7 +81,7 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
-tape('101 Main st - allow dupes, has none', (t) => {
+tape('101 Main st - allow dupes', (t) => {
     c.geocode('101 Main st', { allow_dupes: true }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 2);
@@ -102,8 +102,8 @@ tape('100 Main st - allow dupes', (t) => {
 tape('100 Main st - no dupes', (t) => {
     c.geocode('100 Main st', { allow_dupes: false }, (err, res) => {
         t.ifError(err);
-        t.deepEqual(res.features.map((v) => v.place_name), ['100 Main st', 'Main street']);
-        t.equals(res.features.length, 2);
+        t.deepEqual(res.features.map((v) => v.place_name), ['100 Main st']);
+        t.equals(res.features.length, 1);
         t.end();
     });
 });
@@ -138,9 +138,9 @@ tape('103 Main street - allow dupes', (t) => {
 tape('103 Main street - no dupes', (t) => {
     c.geocode('103 Main street', { allow_dupes: false }, (err, res) => {
         t.ifError(err);
-        t.deepEqual(res.features.map((v) => v.place_name), ['103 Main st', 'Main street']);
+        t.deepEqual(res.features.map((v) => v.place_name), ['103 Main st']);
         t.equals(res.features[0].id, 'address.101', 'Prefer non-omitted');
-        t.equals(res.features.length, 2);
+        t.equals(res.features.length, 1);
         t.end();
     });
 });
