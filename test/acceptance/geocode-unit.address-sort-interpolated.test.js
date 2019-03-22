@@ -100,13 +100,23 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 
     tape('Return non-interpolated address before interpolated address', (t) => {
-        c.geocode('150 Main St', { limit_verify: 2 }, (err, res) => {
+        c.geocode('150 Main St', { limit_verify: 2, allow_dupes:true }, (err, res) => {
             t.ifError(err);
             t.deepEquals(res.features.length, 2);
             t.deepEquals(res.features[0].id, 'address.2');
             t.deepEquals(res.features[0].geometry.interpolated, undefined);
             t.deepEquals(res.features[1].id, 'address.1');
             t.deepEquals(res.features[1].geometry.interpolated, true);
+            t.end();
+        });
+    });
+
+    tape('De-duplicate -interpolated address', (t) => {
+        c.geocode('150 Main St', { limit_verify: 2 }, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features.length, 1);
+            t.deepEquals(res.features[0].id, 'address.2');
+            t.deepEquals(res.features[0].geometry.interpolated, undefined);
             t.end();
         });
     });
