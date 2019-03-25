@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.4.2
+
+- Add support for Russian-style address numbers, including Korpus and Stroenie
+
 ## 28.4.1
 
 - Fix error condition when attempting to resolve ID collisions involving intersection features
