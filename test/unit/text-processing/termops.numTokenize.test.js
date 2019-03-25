@@ -22,6 +22,9 @@ test('numTokenize', (t) => {
         withAddress(['500', 'main', 'street', 'apt', '2##', '20009'], { number: '205', position: 4 }),
         withAddress(['500', 'main', 'street', 'apt', '205', '20###'], { number: '20009', position: 5 }),
     ], 'three numbers');
+    t.deepEqual(termops.numTokenize(['697к4'],3), [withAddress(['6##'], { number: '697к4', position: 0 })], 'russian-style address numbers with korpus');
+    t.deepEqual(termops.numTokenize(['697с20'],3), [withAddress(['6##'], { number: '697с20', position: 0 })], 'russian-style address numbers with stroenie');
+    t.deepEqual(termops.numTokenize(['697к4с20'],3), [withAddress(['6##'], { number: '697к4с20', position: 0 })], 'russian-style address numbers with korpus and stroenie');
     t.end();
 });
 
