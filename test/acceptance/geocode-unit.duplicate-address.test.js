@@ -35,7 +35,7 @@ tape('index address', (t) => {
             properties: {
                 'carmen:text':'Main st',
                 'carmen:center':[0,0],
-                'carmen:addressnumber': ['100','101','102','103','100']
+                'carmen:addressnumber': ['100','101','102','103', '100']
             },
             geometry: {
                 type: 'MultiPoint',
@@ -81,11 +81,39 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
+
+tape('Main st - allow dupes', (t) => {
+    c.geocode('Main st', { allow_dupes: true }, (err, res) => {
+        t.ifError(err);
+        t.equals(res.features.length, 2);
+        t.deepEqual(res.features.map((v) => v.place_name), ['Main st', 'Main street']);
+        t.end();
+    });
+});
+
+tape('Main st - no dupes', (t) => {
+    c.geocode('Main st', { allow_dupes: false }, (err, res) => {
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.deepEqual(res.features.map((v) => v.place_name), ['Main st']);
+        t.end();
+    });
+});
+
 tape('101 Main st - allow dupes', (t) => {
     c.geocode('101 Main st', { allow_dupes: true }, (err, res) => {
         t.ifError(err);
         t.equals(res.features.length, 2);
         t.deepEqual(res.features.map((v) => v.place_name), ['101 Main st', 'Main street']);
+        t.end();
+    });
+});
+
+tape('101 Main st - no dupes', (t) => {
+    c.geocode('101 Main st', { allow_dupes: false }, (err, res) => {
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.deepEqual(res.features.map((v) => v.place_name), ['101 Main st']);
         t.end();
     });
 });
