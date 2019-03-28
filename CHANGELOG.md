@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.4.3
+
+- De-duplicate address results based on matched text and context
+
 ## 28.4.2
 
 - Add support for Russian-style address numbers, including Korpus and Stroenie
