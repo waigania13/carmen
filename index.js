@@ -168,6 +168,7 @@ function Geocoder(indexes, options) {
             source.geocoder_reverse_mode = info.geocoder_reverse_mode || false;
             source.geocoder_expected_number_order = info.geocoder_expected_number_order || false;
             source.geocoder_intersection_token = info.geocoder_intersection_token || '';
+            source.geocoder_coalesce_radius = info.geocoder_coalesce_radius;
 
             source.categorized_replacement_words = token.categorizeTokenReplacements(info.geocoder_tokens);
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
@@ -198,7 +199,6 @@ function Geocoder(indexes, options) {
             source.minscore = info.minscore;
             source.stack = stack;
             source.zoom = info.maxzoom + parseInt(info.geocoder_resolution || 0,10);
-            source.geocoder_coalesce_radius = info.geocoder_coalesce_radius;
 
             if (info.scoreranges && ((!info.maxscore && info.maxscore !== 0) || (!info.minscore && info.minscore !== 0))) {
                 throw new Error('Indexes using scoreranges must also provide min/maxscore attribute');
