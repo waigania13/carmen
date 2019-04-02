@@ -1,5 +1,11 @@
 # Changelog
 
+## 28.5.0
+
+
+- Allow properties with an `override:<index name>` property to replace the calculated value
+  that would be returned in the context array otherwise
+
 ## 28.4.3
 
 - De-duplicate address results based on matched text and context
