@@ -904,10 +904,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.26.0":
+"@mapbox/carmen-cache@github:mapbox/carmen-cache#7de8014b7a94683ceb07128fe101319f567fc2a9":
   version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.26.0.tgz#4da8cff40654c2ccf7b1f0200a5d445cc441959a"
-  integrity sha512-2zK+o9kDTPZo9vtyOC5SY4EivCqLUaBV5F8h4SXoMejd0xYWDbR0x31LZw4RFyzGwoxpmHMYd/ad7bcb4nOnYA==
+  resolved "https://codeload.github.com/mapbox/carmen-cache/tar.gz/7de8014b7a94683ceb07128fe101319f567fc2a9"
   dependencies:
     nan "~2.10.0"
     node-pre-gyp "~0.10.1"
