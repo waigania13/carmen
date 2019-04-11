@@ -1,7 +1,12 @@
 # Changelog
 
-## 28.5.0
+## 28.6.0
 
+- Pass a proximity radius specified on an index through to coalesce
+- Slightly increase the penalty for features where an address number isn't found (e.g. street fallbacks), since more of these make it into final results when address indexes have a higher proximity radius
+- Use carmen-cache version 0/27.0 that specifies a distance floor
+
+## 28.5.0
 
 - Allow properties with an `override:<index name>` property to replace the calculated value
   that would be returned in the context array otherwise
