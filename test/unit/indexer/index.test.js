@@ -105,8 +105,7 @@ test('index.update -- error', (t) => {
             }
         }], { zoom: 6 }, (err) => {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [2]);
-            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
+            q.deepEqual(conf.to._geocoder.grid.list(),[['main st', [0]]]);
             q.end();
         });
     });
@@ -125,8 +124,7 @@ test('index.update -- error', (t) => {
             }
         }], { zoom: 6 }, (err) => {
             q.ifError(err);
-            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [4]);
-            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
+            q.deepEqual(conf.to._geocoder.grid.list(),[['main st', [0]]]);
             q.end();
         });
     });
