@@ -12,7 +12,13 @@ const buildQueued = addFeature.buildQueued;
 (() => {
     const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, () => {}),
-        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {})
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {}),
+        poi: new mem({
+            maxzoom: 14,
+            geocoder_categories: [
+                'coffee'
+            ],
+        }, () => {})
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
@@ -53,6 +59,22 @@ const buildQueued = addFeature.buildQueued;
         };
         queueFeature(conf.region, region, t.end);
     });
+    tape('index poi', (t) => {
+        const poi = {
+            type: 'Feature',
+            properties: {
+                'carmen:center': [0,0],
+                'carmen:zxy': ['14/8192/8192'],
+                'carmen:text': 'Cool Beans,coffee'
+            },
+            id: 1,
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.poi, poi, t.end);
+    });
     tape('build queued features', (t) => {
         const q = queue();
         Object.keys(conf).forEach((c) => {
@@ -86,6 +108,14 @@ const buildQueued = addFeature.buildQueued;
             t.equal(res.features[0].place_name, 'Kansas United States');
             t.equal(res.features[0].matching_text, 'Jayhawks');
             t.equal(res.features[0].matching_place_name, 'Jayhawks United States');
+            t.end();
+        });
+    });
+    tape('coffee, Jayhawks', (t) => {
+        c.geocode('coffee, Jayhawks', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err, 'No errors');
+            t.equal(res.features[0].place_name, 'Cool Beans, Kansas, United States', 'Place name should be the poi name and context');
+            t.equal(res.features[0].matching_place_name, 'coffee, Jayhawks, United States', 'Matching place name should be the poi name and matching context');
             t.end();
         });
     });
