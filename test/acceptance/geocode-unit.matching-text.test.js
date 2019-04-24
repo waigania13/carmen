@@ -65,7 +65,7 @@ const buildQueued = addFeature.buildQueued;
             properties: {
                 'carmen:center': [0,0],
                 'carmen:zxy': ['14/8192/8192'],
-                'carmen:text': 'Cool Beans,coffee'
+                'carmen:text': 'Cool Beans,CB cafe,coffee'
             },
             id: 1,
             geometry: {
@@ -111,11 +111,12 @@ const buildQueued = addFeature.buildQueued;
             t.end();
         });
     });
-    tape('coffee, Jayhawks', (t) => {
-        c.geocode('coffee, Jayhawks', { limit_verify: 1 }, (err, res) => {
+    tape('CB Cafe, Jayhawks - poi synonym and place synonym', (t) => {
+        c.geocode('CB cafe, Jayhawks', { limit_verify: 1 }, (err, res) => {
             t.ifError(err, 'No errors');
-            t.equal(res.features[0].place_name, 'Cool Beans, Kansas, United States', 'Place name should be the poi name and context');
-            t.equal(res.features[0].matching_place_name, 'coffee, Jayhawks, United States', 'Matching place name should be the poi name and matching context');
+            t.equal(res.features[0].place_name, 'Cool Beans, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].matching_text, 'CB cafe', 'matching_text should be the matching poi synonym.');
+            t.equal(res.features[0].matching_place_name, 'CB cafe, Jayhawks, United States', 'matching_place_name should be the poi name and matching context');
             t.end();
         });
     });
