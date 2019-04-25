@@ -52,12 +52,10 @@ const runTests = (mode) => {
         tape('reload cache', (t) => {
             const cache = c.byidx[0]._geocoder;
 
-            ['grid'].forEach((type) => {
-                const rocksdb = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+            const rocksdb = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
 
-                cache[type].pack(rocksdb);
-                cache[type] = new cxxcache.RocksDBCache(cache[type].id, rocksdb);
-            });
+            cache['grid'].pack(rocksdb);
+            cache['grid'] = new cxxcache.RocksDBCache(cache['grid'].id, rocksdb);
 
             t.end();
         });
