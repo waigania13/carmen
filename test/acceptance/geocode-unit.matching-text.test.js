@@ -66,7 +66,7 @@ const buildQueued = addFeature.buildQueued;
             properties: {
                 'carmen:center': [0,0],
                 'carmen:zxy': ['14/8192/8192'],
-                'carmen:text': 'Cool Beans,CB cafe,coffee'
+                'carmen:text': 'Cool Beans,CB cafe, coffee'
             },
             id: 1,
             geometry: {
