@@ -1,5 +1,9 @@
 # Changelog
 
+## 28.7.0
+
+- Do not include categories as part of the matching_text
+
 ## 28.6.0
 
 - Pass a proximity radius specified on an index through to coalesce
