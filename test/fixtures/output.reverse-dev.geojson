@@ -287,7 +287,7 @@
                 "carmen:extid": "place.1",
                 "carmen:tmpid": 67108865,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
+                "carmen:geomtype": "Polygon",
                 "carmen:reverseMode": false
             },
             "text": "Toronto",
@@ -599,7 +599,7 @@
                 "carmen:extid": "region.1",
                 "carmen:tmpid": 33554433,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
+                "carmen:geomtype": "Polygon",
                 "carmen:reverseMode": false
             },
             "text": "Ontario",
@@ -907,7 +907,7 @@
                 "carmen:extid": "country.1",
                 "carmen:tmpid": 1,
                 "carmen:vtquerydist": 0,
-                "carmen:geomtype": 3,
+                "carmen:geomtype": "Polygon",
                 "carmen:reverseMode": false
             },
             "text": "Canada",
