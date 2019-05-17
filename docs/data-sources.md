@@ -52,7 +52,7 @@ The following metadata keys have special consequences for a CarmenSource when se
 ## Document Structure
 
 Each document is a valid geojson `Feature`. Each feature should contain a unique `id` field
-as well as the following settings in the `properties` object.
+and may contain the following settings in the `properties` object.
 
 | attribute                     | description                                                                                                                                                                                                                                                                                                                    |
 |-------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -61,7 +61,7 @@ as well as the following settings in the `properties` object.
 | `carmen:geocoder_stack`       | Stack of the feature. At the time of writing, this corresponds roughly to the countries associated with it.                                                                                                                                                                                                                    |
 | `carmen:center`               | Optional. An array in the form [lon,lat]. center must be on the geometry surface, or the center will be recalculated.                                                                                                                                                                                                          |
 | `carmen:score`                | Optional. A float or integer to sort equally relevant results by. Higher values appear first. Docs with negative scores can contribute to a final result but are only returned if included in matches of a forward search query.                                                                                               |
-| `carmen:addressnumber`        | Optional. Used with `geocoder_address`. An array of addresses corresponding to the order of their geometries in the `GeometryCollection`                                                                                                                                                                                       |
+| `carmen:addressnumber`        | Optional. Used with indexes that have `geocoder_address` set to 1. An array of addresses corresponding to the order of their geometries in the `GeometryCollection`                                                                                                                                                                                       |
 | `carmen:types`                | Optional. An array of types associating this feature with one or more feature classes defined by the source-level `geocoder_type` key. By setting multiple types a feature can move between various feature levels depending on the query and results. If omitted, defaults to the `geocoder_type` set by the feature's index. |
 
 ### Example Documents
@@ -163,4 +163,3 @@ Here's an example:
   }
 }
 ```
-

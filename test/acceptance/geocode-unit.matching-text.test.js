@@ -12,7 +12,14 @@ const buildQueued = addFeature.buildQueued;
 (() => {
     const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, () => {}),
-        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {})
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {}),
+        poi: new mem({
+            maxzoom: 14,
+            geocoder_categories: [
+                'coffee',
+                'arena'
+            ],
+        }, () => {})
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {
@@ -53,6 +60,39 @@ const buildQueued = addFeature.buildQueued;
         };
         queueFeature(conf.region, region, t.end);
     });
+    tape('index poi', (t) => {
+        const poi = {
+            type: 'Feature',
+            properties: {
+                'carmen:center': [0,0],
+                'carmen:zxy': ['14/8192/8192'],
+                'carmen:text': 'Cool Beans,CB cafe, coffee'
+            },
+            id: 1,
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        const poi2 = {
+            type: 'Feature',
+            properties: {
+                'carmen:center': [0,0],
+                'carmen:zxy': ['14/8192/8192'],
+                'carmen:text': 'Sand,restaurant',
+                'carmen:text_es': 'arena'
+            },
+            id: 2,
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        const q = queue();
+        q.defer(queueFeature, conf.poi, poi);
+        q.defer(queueFeature, conf.poi, poi2);
+        q.awaitAll(t.end);
+    });
     tape('build queued features', (t) => {
         const q = queue();
         Object.keys(conf).forEach((c) => {
@@ -62,30 +102,57 @@ const buildQueued = addFeature.buildQueued;
         });
         q.awaitAll(t.end);
     });
-    tape('kansas america', (t) => {
+    tape('kansas america - region primary name and country synonym', (t) => {
         c.geocode('kansas america', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].place_name, 'Kansas United States');
-            t.equal(res.features[0].matching_text, undefined, 'feature.matching_text');
-            t.equal(res.features[0].matching_place_name, 'Kansas America');
+            t.equal(res.features[0].place_name, 'Kansas United States', 'place_name should be the primary region name and country name');
+            t.equal(res.features[0].matching_text, undefined, 'matching_text should be empty');
+            t.equal(res.features[0].matching_place_name, 'Kansas America', 'matching_place_name should include matching context name');
             t.end();
         });
     });
-    tape('america', (t) => {
+    tape('america - country synonym', (t) => {
         c.geocode('america', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].place_name, 'United States');
-            t.equal(res.features[0].matching_text, 'America');
+            t.equal(res.features[0].place_name, 'United States', 'place_name should be the primary country name');
+            t.equal(res.features[0].matching_text, 'America', 'matching_text should be the country synonym');
             t.equal(res.features[0].matching_place_name, 'America');
             t.end();
         });
     });
-    tape('jayhawks', (t) => {
+    tape('jayhawks - region synonym', (t) => {
         c.geocode('jayhawks', { limit_verify:1 }, (err, res) => {
             t.ifError(err);
-            t.equal(res.features[0].place_name, 'Kansas United States');
-            t.equal(res.features[0].matching_text, 'Jayhawks');
-            t.equal(res.features[0].matching_place_name, 'Jayhawks United States');
+            t.equal(res.features[0].place_name, 'Kansas United States', 'place_name should be the primary region and context name');
+            t.equal(res.features[0].matching_text, 'Jayhawks', 'matching_text should be the region synonym');
+            t.equal(res.features[0].matching_place_name, 'Jayhawks United States', 'matching_place_name should be the matching region synonym and primary context name');
+            t.end();
+        });
+    });
+    tape('CB Cafe, Jayhawks - poi synonym and region synonym', (t) => {
+        c.geocode('CB cafe, Jayhawks', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err, 'No errors');
+            t.equal(res.features[0].place_name, 'Cool Beans, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].matching_text, 'CB cafe', 'matching_text should be the matching poi synonym.');
+            t.equal(res.features[0].matching_place_name, 'CB cafe, Jayhawks, United States', 'matching_place_name should be the matching poi synonym and matching context');
+            t.end();
+        });
+    });
+    tape('coffee, Jayhawks - poi category and region synonym', (t) => {
+        c.geocode('coffee, Jayhawks', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err, 'No errors');
+            t.equal(res.features[0].place_name, 'Cool Beans, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].matching_text, undefined, 'matching_text should be undefined for category matches');
+            t.equal(res.features[0].matching_place_name, 'Cool Beans, Jayhawks, United States', 'matching_place_name should be the primary poi name and matching context');
+            t.end();
+        });
+    });
+    tape('arena, Jayhawks - poi translation that looks like a category and region synonym', (t) => {
+        c.geocode('arena, Jayhawks', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err, 'No errors');
+            t.equal(res.features[0].place_name, 'Sand, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].matching_text, 'arena', 'matching_text should be the matching translation, even if the translation is the same as a category name');
+            t.equal(res.features[0].matching_place_name, 'arena, Jayhawks, United States', 'matching_place_name should be the primary poi name and matching context');
             t.end();
         });
     });
