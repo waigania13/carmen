@@ -179,14 +179,14 @@ tape('context.stackFeatures multitype, nogap', (t) => {
         properties: {
             'carmen:types': ['region','place'],
             'carmen:extid': 'region.1',
-            'carmen:geomtype': 'Polygon'
+            'carmen:geomtype': 'Point'
         }
     }, {
         type: 'Feature',
         properties: {
             'carmen:types': ['place'],
             'carmen:extid': 'place.1',
-            'carmen:geomtype': 'Polygon'
+            'carmen:geomtype': 'Point'
         }
     }, {
         type: 'Feature',
