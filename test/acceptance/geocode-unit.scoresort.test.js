@@ -10,11 +10,11 @@ const queue = require('d3-queue').queue;
 
 (() => {
     const conf = {
-        region: new mem({ maxzoom: 6 }, () => {}),
-        place: new mem({ maxzoom: 6 }, () => {}),
-        lamplace: new mem({ maxzoom: 6 }, () => {}),
-        namplace: new mem({ maxzoom: 6 }, () => {}),
-        locality: new mem({ maxzoom: 6 }, () => {})
+        region: new mem(null, () => {}),
+        place: new mem(null, () => {}),
+        lamplace: new mem(null, () => {}),
+        namplace: new mem(null, () => {}),
+        locality: new mem(null, () => {})
     };
     const c = new Carmen(conf);
     // very high max score in region index
