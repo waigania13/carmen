@@ -205,6 +205,15 @@ const buildQueued = addFeature.buildQueued;
             t.end();
         });
     });
+    tape('243 Main St East', (t) => {
+        c.geocode('243 Main St East', {}, (err, res) => {
+            t.ifError(err);
+            t.equal(res.features[0].place_name, '243 US Highway 123');
+            t.equal(res.features[0].matching_text, 'Main St East');
+            t.equal(res.features[0].matching_place_name, '243 Main St East');
+            t.end();
+        });
+    });
 })();
 
 tape('teardown', (t) => {
