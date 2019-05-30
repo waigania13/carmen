@@ -1,5 +1,12 @@
 # Changelog
 
+## 29.0.0
+
+- No longer generate or read the frequency.rocksdb file
+- Demand that the `maxscore` is in index metadata
+- Remove out-of-date `bin/tokenize.js` script
+- Correctly return matching_text for address numbers longer than 2 digits
+
 ## 28.7.0
 
 - Do not include categories as part of the matching_text
