@@ -85,55 +85,7 @@ test('index.generateStats', (t) => {
     t.end();
 });
 
-test('index.update -- error', (t) => {
-    const memdocs = require('../../fixtures/mem-docs.json');
-    const conf = { to: new mem(memdocs, null, () => {}) };
-    const carmen = new Carmen(conf);
-    t.ok(carmen);
-    t.test('update 1', (q) => {
-        index.update(conf.to, [{
-            id: 1,
-            type: 'Feature',
-            properties: {
-                'carmen:text': 'main st',
-                'carmen:score': 10,
-                'carmen:center': [0,0]
-            },
-            geometry: {
-                type:'Point',
-                coordinates:[0,0]
-            }
-        }], { zoom: 6 }, (err) => {
-            q.ifError(err);
-            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [2]);
-            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
-            q.end();
-        });
-    });
-    t.test('update 2', (q) => {
-        index.update(conf.to, [{
-            id: 1,
-            type: 'Feature',
-            properties: {
-                'carmen:text': 'main st',
-                'carmen:score': 0,
-                'carmen:center': [0,0],
-            },
-            geometry: {
-                type:'Point',
-                coordinates:[0,0]
-            }
-        }], { zoom: 6 }, (err) => {
-            q.ifError(err);
-            q.deepEqual(conf.to._geocoder.freq.get('__COUNT__'), [4]);
-            q.deepEqual(conf.to._geocoder.freq.get('__MAX__'), [10]);
-            q.end();
-        });
-    });
-    t.end();
-});
-
-test('index.update freq', (t) => {
+test('index.update errors', (t) => {
     const conf = { to: new mem(null, () => {}) };
     const carmen = new Carmen(conf);
     t.ok(carmen);
