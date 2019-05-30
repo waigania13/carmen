@@ -42,5 +42,18 @@ test('termops.intersectionPermutations', (t) => {
         { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str', 'berlin'], mask: 15, ender: true, relev: 0 },
     ];
     t.deepEqual(bearablePermutations(results), expected);
+
+    // tokens: 'first & main st'
+    results = termops.intersectionPermutations({
+        tokens: ['first', 'and', 'main', 'st'],
+        separators: ['', ' ', ' '],
+        owner: [0, 0, 0, 2]
+    }, 'and');
+    expected = [
+        { phrase: ['+intersection', 'first', ',', 'main'], mask: 1, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'first', ',', 'main', 'st'], mask: 7, ender: true, relev: 0 },
+    ];
+    t.deepEqual(bearablePermutations(results), expected);
+
     t.end();
 });

@@ -644,3 +644,49 @@ tape('fuzzyMatchMulti - masks for removed terms at the end of a query', (t) => {
         t.end();
     });
 });
+
+tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
+    const c = fakeCarmen({
+        fuzzyMatchMulti: (a, b, c, d) => {
+            const results = fakeFuzzyMatches(a);
+            const expected = [
+                [ { phrase: [ '1st', 'and', 'main', 'st' ], edit_distance: 0, ending_type: 0 } ],
+                [ { phrase: [ '1st', 'and', 'main' ], edit_distance: 0, ending_type: 0 } ],
+                [ { phrase: [ 'st' ], edit_distance: 0, ending_type: 0 } ],
+                [ { phrase: [ '+intersection', '1st', ',', 'main', 'st' ], edit_distance: 0, ending_type: 0 } ]
+            ];
+            t.deepEqual(results, expected);
+            return results;
+        }
+    });
+    c.geocoder_address = true;
+    c.geocoder_intersection_token = 'and';
+    c.complex_query_replacer = token.createComplexReplacer([
+        {
+            from: '(.+) & (.+)',
+            to: { regex: true, spanBoundaries: 1, text: '$1 and $2' }
+        }
+    ]);
+
+    const query = termops.tokenize('1st & main st');
+    const clone = JSON.parse(JSON.stringify(query));
+    phrasematch(c, query, {}, (err, results, source) => {
+        t.error(err);
+        t.equal(results.phrasematches.length, 7);
+        const expected = new Set([
+            'st - 4 - 0.3333333333333333',
+            'st - 6 - 0.6666666666666666',
+            '1st and main - 1 - 0.3333333333333333',
+            '1st and main - 3 - 0.6666666666666666',
+            '1st and main st - 7 - 1',
+            '+intersection 1st , main st - 1 - 0.3333333333333333',
+            '+intersection 1st , main st - 7 - 1'
+        ]);
+        results.phrasematches.forEach((v) => {
+            const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
+            t.ok(expected.has(k), `has "${k}"`);
+        });
+        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.end();
+    });
+});
