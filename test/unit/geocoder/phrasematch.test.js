@@ -34,7 +34,7 @@ function fakeCarmen(reader) {
         _geocoder: {
             freq: new Map()
         },
-        _dictcache: { reader }
+        _fuzzyset: { reader }
     };
 }
 
@@ -102,7 +102,7 @@ tape('fuzzyMatchWindows', (t) => {
             t.deepEqual(a, ['100', 'main', 'street']);
             t.deepEqual(b, 0);
             t.deepEqual(c, 0);
-            t.deepEqual(c, PREFIX_SCAN.disabled);
+            t.deepEqual(c, ENDING_TYPE.nonPrefix);
             return [];
         }
     });
@@ -116,7 +116,7 @@ tape('fuzzyMatchWindows - autocomplete sets word_boundary', (t) => {
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'st'], 'Got replaced query');
-            t.deepEqual(d, PREFIX_SCAN.word_boundary, 'Query has expected prefix scan type');
+            t.deepEqual(d, ENDING_TYPE.wordBoundaryPrefix, 'Query has expected prefix scan type');
             return [];
         }
     });
@@ -135,7 +135,7 @@ tape('fuzzyMatchWindows - autocomplete sets enabled', (t) => {
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'st', 'ohio'], 'Got replaced query');
-            t.deepEqual(d, PREFIX_SCAN.enabled, 'Query has expected prefix scan type');
+            t.deepEqual(d, ENDING_TYPE.anyPrefix, 'Query has expected prefix scan type');
             return [];
         }
     });

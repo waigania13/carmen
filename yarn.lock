@@ -904,13 +904,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.27.0.tgz#4c764163def25c746e59933781d6380afd70a2e4"
-  integrity sha512-PYVhnHLF8AttSPLRE60hKE9XKE+oIsV24VYEhgfsDWkTFwIKy1cxm0oNPQGg5mbNSM4yifZ5z0ZhgXzopbDkaA==
-  dependencies:
-    nan "~2.10.0"
-    node-pre-gyp "~0.10.1"
+"@mapbox/carmen-core@github:mapbox/carmen-core#7a901cc73f34b15bdaf43079687ec0912da43e47":
+  version "0.1.0"
+  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/7a901cc73f34b15bdaf43079687ec0912da43e47"
 
 "@mapbox/cfn-config@^2.15.0":
   version "2.20.1"
@@ -978,10 +974,9 @@
     d3-queue "~2.0.3"
     sqlite3 "4.x"
 
-"@mapbox/node-fuzzy-phrase@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/node-fuzzy-phrase/-/node-fuzzy-phrase-0.2.0.tgz#0d8d1d4355584da6de2a28de8eea81ca73e53452"
-  integrity sha512-AXu0LQZ55UWDE/gbqQW8XmZgDDBoC2/TdeyTAMGSj+tgqk8DH72HTcCkBnCd/PjUZdNYCusTe7XnYu5VYWARGg==
+"@mapbox/node-fuzzy-phrase@github:mapbox/node-fuzzy-phrase#e0d15e05f205705ca2255ebeb4fa91b99698982f":
+  version "0.2.0-phrase-id"
+  resolved "https://codeload.github.com/mapbox/node-fuzzy-phrase/tar.gz/e0d15e05f205705ca2255ebeb4fa91b99698982f"
   dependencies:
     "@mapbox/cfn-config" "^2.15.0"
     "@mapbox/cloudfriend" "^1.9.1"
@@ -4367,7 +4362,7 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0, node-pre-gyp@~0.10.1:
+node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   integrity sha512-d1xFs+C/IPS8Id0qPTZ4bUT8wWryfR/OzzAFxweG+uLN85oPzyo2Iw6bVlLQ/JOdgNonXLCoRyqDzDWq4iw72A==
