@@ -650,10 +650,11 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [ { phrase: [ '1st', 'and', 'main', 'st' ], edit_distance: 0, ending_type: 0 } ],
-                [ { phrase: [ '1st', 'and', 'main' ], edit_distance: 0, ending_type: 0 } ],
-                [ { phrase: [ 'st' ], edit_distance: 0, ending_type: 0 } ],
-                [ { phrase: [ '+intersection', '1st', ',', 'main', 'st' ], edit_distance: 0, ending_type: 0 } ]
+                [{ phrase: ['1st', 'and', 'main', 'st'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['1st', 'and', 'main'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['+intersection', '1st', ',', 'main'], edit_distance: 0, ending_type: 0 }],
+                [{ phrase: ['+intersection', '1st', ',', 'main', 'st'], edit_distance: 0, ending_type: 0 }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -672,14 +673,15 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 7);
+        t.equal(results.phrasematches.length, 8);
         const expected = new Set([
             'st - 4 - 0.3333333333333333',
             'st - 6 - 0.6666666666666666',
             '1st and main - 1 - 0.3333333333333333',
             '1st and main - 3 - 0.6666666666666666',
             '1st and main st - 7 - 1',
-            '+intersection 1st , main st - 1 - 0.3333333333333333',
+            '+intersection 1st , main - 1 - 0.3333333333333333',
+            '+intersection 1st , main - 3 - 0.6666666666666666',
             '+intersection 1st , main st - 7 - 1'
         ]);
         results.phrasematches.forEach((v) => {

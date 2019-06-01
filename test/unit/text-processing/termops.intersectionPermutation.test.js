@@ -34,24 +34,24 @@ test('termops.intersectionPermutations', (t) => {
     results = termops.intersectionPermutations({
         tokens: ['hermann', 'str', 'und', 'aller', 'str', 'berlin'],
         separators: ['', ' ', ' ', ' ', ' ', ''],
-        owner: [0, 0, 1, 2, 2, 3]
+        // owner: [0, 0, 1, 2, 2, 3]
     }, 'und');
     expected = [
-        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller'], mask: 7, ender: false, relev: 0 },
-        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str'], mask: 7, ender: false, relev: 0 },
-        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str', 'berlin'], mask: 15, ender: true, relev: 0 },
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller'], mask: 15, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str'], mask: 31, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'hermann', 'str', ',', 'aller', 'str', 'berlin'], mask: 63, ender: true, relev: 0 },
     ];
     t.deepEqual(bearablePermutations(results), expected);
 
     // tokens: 'first & main st'
     results = termops.intersectionPermutations({
         tokens: ['first', 'and', 'main', 'st'],
-        separators: ['', ' ', ' '],
-        owner: [0, 0, 0, 2]
+        separators: [' ', ' ', ' ', ''],
+        // owner: [0, 0, 0, 2]
     }, 'and');
     expected = [
-        { phrase: ['+intersection', 'first', ',', 'main'], mask: 1, ender: false, relev: 0 },
-        { phrase: ['+intersection', 'first', ',', 'main', 'st'], mask: 7, ender: true, relev: 0 },
+        { phrase: ['+intersection', 'first', ',', 'main'], mask: 7, ender: false, relev: 0 },
+        { phrase: ['+intersection', 'first', ',', 'main', 'st'], mask: 15, ender: true, relev: 0 },
     ];
     t.deepEqual(bearablePermutations(results), expected);
 
