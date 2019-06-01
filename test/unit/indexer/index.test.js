@@ -268,8 +268,8 @@ test('index phrase collection', (t) => {
     index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
     function afterUpdate(err) {
         t.ifError(err);
-        t.deepEqual(conf.test._geocoder.grid.list(), [['a', [0]]], '1 phrase');
-        t.deepEqual(conf.test._geocoder.grid.get('a', [0]), [6755949230424066, 6755949230424065], 'grid has 2 zxy+feature ids');
+        t.deepEqual(conf.test._gridstore.reader.list(), [['a', [0]]], '1 phrase');
+        t.deepEqual(conf.test._gridstore.reader.get('a', [0]), [6755949230424066, 6755949230424065], 'grid has 2 zxy+feature ids');
         t.end();
     }
 });
