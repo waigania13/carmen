@@ -56,19 +56,25 @@ const addFeature = require('../../lib/indexer/addfeature'),
         q.awaitAll(t.end);
     });
 
-    // tape('make sure indexes contain pre-computed fallbacks', (t) => {
-    //     t.deepEquals(
-    //         conf.country._gridstore.reader.list(),
-    //         [
-    //             ['india', [0]],
-    //             ['united states', [0, 1]],
-    //             ['بھارت', [3]],
-    //             ['هندوستان', [2]]
-    //         ],
-    //         'fallbacks have been properly computed'
-    //     );
-    //     t.end();
-    // });
+    tape('make sure indexes contain pre-computed fallbacks', (t) => {
+        let keys = Array.from(conf.country._gridstore.reader.keys()).map((k) => {
+            return [
+                conf.country._fuzzyset.reader.getByPhraseId(k.phrase_id).join(' '),
+                k.lang_set
+            ];
+        });
+        t.deepEquals(
+            keys,
+            [
+                ['india', [0]],
+                ['united states', [0, 1]],
+                ['بھارت', [3]],
+                ['هندوستان', [2]]
+            ],
+            'fallbacks have been properly computed'
+        );
+        t.end();
+    });
 
     tape('query: United States', (t) => {
         c.geocode('United States', { language: 'ar' }, (err, res) => {
