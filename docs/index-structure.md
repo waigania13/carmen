@@ -1,58 +1,47 @@
 # Index structure
 
-There are two types of index stores in Carmen.
+There several types of stores used in each Carmen index:
 
-- `cxxcache` is used for storing the `grid`, and `freq` indexes.
-  Each index is sharded and each shard contains a one-to-many
-  hash with 64-bit integer keys that map to arrays of arbitrary length
-  containing 64-bit integer elements.
-- `feature` is used to store feature docs. Each index is sharded and each shard
-  contains a one-to-many hash with 32-bit integer keys that map to a bundle of
-  features. Each bundle contains feature documents keyed by their original, full
-  id.
+- `fuzzy-phrase` is used for storing all the phrases that occur as normalized labels for any feature in the index. Phrases are stored sorted lexicographically, and each phrase is assigned in ID corresponding to its lexicographical position. This index also supports fuzzy querying for fast spelling correction.
+- `carmen-core` provides the `gridstore` structure, which maps from a tuple of a phrase ID and set of language IDs to a list of tuples of feature ID, spatial location, and relevance/score for each occurrence of that phrase in the index.
+- `MBTiles` is a vector tile representation of all the features in the index, used for reverse geocoding, and for determining geospatial context in forward geocodes.
+- `feature` is used to store full feature documents, and maps a feature ID and spatial location to each document.
 
-Unsigned integers are widely used in the Carmen codebase because of their
-performance and memory efficiency. To convert arbitrary text (like tokenized
-text) to integers the murmur hash is used and sometimes truncated to make room
-for additional encoded data.
+## fuzzy-phrase
 
-## freq
+The [fuzzy-phrase](https://github.com/mapbox/fuzzy-phrase) library provides a space-efficient mapping from phrase text to phrase IDs that represents all phrases in an index as a set of interrelated finite state automata. It can efficiently perform exact lookups, prefix lookups for autocomplete queries (which return ranges of lexicographical IDs representing all phrases that begin with a given prefix, rather than exact IDs), fuzzy matches that find phrases within a given Damerau-Levenshtein distance, and windowed lookups that can search within a given query for occurrences of any phrase (exact, fuzzy, or prefix) that match any element in the store. For more information on the structure of this store, see its README.
 
-Stores a mapping of term frequencies for all docs in an index. Terms are ID'd using a [`murmur`](https://en.wikipedia.org/wiki/MurmurHash) hash.
+## carmen-core gridstore
 
-    term_id => [ count ]
+The [carmen-core](https://github.com/mapbox/carmen-core) library provides the `gridstore` structure, which stores a mapping of phrase IDs and language metadata to spatial occurrences of that phrase (hereinafter "grids").
 
-Conceptual exapmle with actual text rather than `murmur` hashes for readability:
+    [phrase_id, language_set] => [ grid, grid, grid, grid ... ]
 
-    street => [ 103120 ]
-    main   => [ 503 ]
-    market => [ 31 ]
-
-## grid
-
-Stores a mapping of phrase/phrase degenerate to feature cover grids.
-
-    phrase_id => [ grid, grid, grid, grid ... ]
+The phrase ID is as supplied by `fuzzy-phrase`. The language set is the list of the IDs of all languages for which the given label is a valid descriptor of the features in the grid list (for example, the phrase "londres" is a valid descriptor of London in French but not English). Internally this is represented as a 128-bit bitfield, but it's exposed as an array of language IDs to and from Javascript. Language ID 0 is conventionally used as the default language ("carmen:text"). Mappings from other languages to language IDs are the responsibility of Carmen.
 
 A lookup against this index effectively answers the question: what and where are all the features that match (whole or partially) a given text phrase?
 
-Grids are encoded as 53-bit integers (largest possible JS integer) storing the following information:
+Grids are encoded representations of the following information:
 
-info | bits | description
----- |------|------------
-x    | 14   | x tile cover coordinate, up to z14
-y    | 14   | y tile cover coordinate, up to z14
-relev| 2    | relev between 0.4 and 1.0 (possible values: 0.4, 0.6, 0.8, 1.0)
-score| 3    | score scaled to a value between 0-7
-id   | 20   | feature id, truncated to 20 bits
+| info               | bits | description |
+| -------------------|------|-------------|
+| x                  | 14   | x tile cover coordinate, up to z14 |
+| y                  | 14   | y tile cover coordinate, up to z14 |
+| relev              | 2    | relev between 0.4 and 1.0 (possible values: 0.4, 0.6, 0.8, 1.0) |
+| score              | 3    | score scaled to a value between 0-7 |
+| id                 | 20   | feature id, truncated to 20 bits |
+| source_phrase_hash | 8    | one-byte extract of a hash of the original phrase on this feature that was normalized into the current phrase |
 
-## phrase_id
+Internally, the `gridstore` uses a RocksDB database to store its data, with each key being a binary representation of the composite of the phrase ID and 128-bit language set, and each value being a nested structure that deduplicates fields across adjacent entries, stored using a custom [FlatBuffers](https://google.github.io/flatbuffers/) schema.
 
-phrase | degen
------- |------
-51-1   | 0
+## MBTiles
 
-The first 51 bits of a phrase ID are the `murmur` hash of the phrase text. The last remaining bit is used to store whether the `phrase_id` is for a complete or degenerate phrase.
+Each index also includes a vector-tile representation of all features within the index, in MBTiles format. This representation is used in reverse geocodes for efficiently finding the nearest features at each level in the hierarchy to the user's query point, as well as for filling in elements of a result's geospatial context in forward queries. Carmen itself has tooling for generating these tiles, or then can be generated with an external tool such as `tippecanoe`.
+
+## feature
+
+Each feature is stored, keyed by feature ID, gzip-compressed in an extra table in the index's MBTiles file. Full features are retrieved at a late phase in querying, and used for creating final content to be returned to users, for filling in geospatial contexts, and for extrapolating specific special locations for individual matches within complex features (for example, for performing address interpolation).
+
 
 ## geocoder_name, geocoder_type and combining indexes
 
