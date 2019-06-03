@@ -11,7 +11,7 @@ tape('indexdocs.loadDoc', (t) => {
     const simple_replacer = token.createSimpleReplacer({});
     const complex_replacer = token.createComplexReplacer({});
 
-    const patch = { grid:{}, docs:[], text:[] };
+    const patch = { grid:{}, docs:[] };
     const freq = {};
     const tokens = ['main', 'st'];
     const zoom = 12;
@@ -42,16 +42,17 @@ tape('indexdocs.loadDoc', (t) => {
     t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
     t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), ['default'], '1 language in patch.grid[0]');
     t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('default').length, 2, '2 grids for language "all" in patch.grid[0]');
-    t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('default')[0]), {
+    t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('default')[0], {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
         x: 32,
-        y: 32
+        y: 32,
+        source_phrase_hash: 0
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);
-    t.deepEqual(patch.text, ['main st', 'main']);
+    t.deepEqual(Object.keys(patch.grid), ['main st', 'main']);
 
     t.end();
 });

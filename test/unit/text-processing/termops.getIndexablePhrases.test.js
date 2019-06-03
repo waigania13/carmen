@@ -12,12 +12,10 @@ test('termops.getIndexablePhrases', (t) => {
     t.deepEqual(termops.getIndexablePhrases({ tokens } , freq), [
         {
             'relev': 1,
-            'text': 'main st',
             'phrase': 'main st',
         },
         {
             'relev': 0.8,
-            'text': 'main',
             'phrase': 'main'
         }
     ]);
@@ -36,7 +34,7 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
     freq[tokens[3]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases({ tokens }, freq).map((p) => {
-        return (p.relev) + '-1-' + p.text;
+        return (p.relev) + '-1-' + p.phrase;
     }), [
         '1-1-jose de la casa',
         '1-1-jose de casa',
@@ -54,7 +52,7 @@ test('termops.getIndexablePhrases (京都市)', (t) => {
     freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: '京都市', relev: 1, text: '京都市' }
+        { phrase: '京都市', relev: 1 }
     ]);
 
     t.end();
@@ -67,7 +65,7 @@ test('termops.getIndexablePhrases (москва)', (t) => {
     freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'москва', relev: 1, text: 'москва' }
+        { phrase: 'москва', relev: 1 }
     ]);
 
     t.end();
@@ -80,7 +78,7 @@ test('termops.getIndexablePhrases (josé)', (t) => {
     freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'jose', relev: 1, text: 'jose' }
+        { phrase: 'jose', relev: 1 }
     ]);
 
     t.end();
@@ -94,7 +92,7 @@ test('termops.getIndexablePhrases (josé, no degens)', (t) => {
     freq[tokens[0]] = [1];
 
     t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'jose', relev: 1, text: 'jose' }
+        { phrase: 'jose', relev: 1 }
     ]);
 
     t.end();
