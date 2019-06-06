@@ -6,11 +6,11 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-core": "github:mapbox/carmen-core#fa4319c4e6c4bebf0a34c285709ebaf82b0f7c26",
+    "@mapbox/carmen-core": "github:mapbox/carmen-core#3904933b25d9c15875cf6fc644fcd27ebade0eaf",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.10.0",
-    "@mapbox/node-fuzzy-phrase": "github:mapbox/node-fuzzy-phrase#d7b6c8764b252f5bed0c459496bd2f13e6c72653",
+    "@mapbox/node-fuzzy-phrase": "github:mapbox/node-fuzzy-phrase#a20437cff682bd03a8413d28e0284e2fc1250d84",
     "@mapbox/sphericalmercator": "^1.1.0",
     "@mapbox/tile-cover": "^3.0.2",
     "@mapbox/tilebelt": "1.0.x",
