@@ -2,7 +2,7 @@
 
 A user searches for
 
-> West Lake View Rd Englewood
+> West Lake View Road Englewood
 
 How does the Carmen geocoder come up with its results in a forward geocode?
 
@@ -35,13 +35,13 @@ This structure holds the geometries of all features in the index in Mapbox vecto
 
 ### How indexing occurs
 
-The heavy lifting in Carmen occurs when indexes are generated. As an index is generated for a datasource, Carmen tokenizes each label the feature has into distinct terms. For example, for a street feature:
+The heavy lifting in Carmen occurs when indexes are generated. As an index is generated for a datasource, Carmen tokenizes each label the feature has into distinct terms, and normalizes some terms to select a standard abbreviation or spelling for words that can be represented more than one way. For example, for a street feature:
 
-    "West Lake View Rd" => ["west", "lake", "view", "rd"]
+    "West Lake View Road" => ["west", "lake", "view", "rd"]
 
 If the feature has multiple valid names, or names in multiple languages, it might have multiple labels, all of which will be processed this way.
 
-Each term in the dataset is tallied, generating a frequency table which can be used to determine the relative importance of terms against each other. In this example, because `west` and `rd` are very common terms while `lake` and `view` are comparatively less common the following weights might be assigned:
+Each term in the dataset is tallied, generating a temporary frequency table which can be used to determine the relative importance of terms against each other. In this example, because `west` and `rd` are very common terms while `lake` and `view` are comparatively less common the following weights might be assigned:
 
     west lake view rd
     0.2  0.5  0.2  0.1
@@ -89,50 +89,60 @@ This is done for both our `01 place` and `02 street` indexes. Now we're ready to
 
 ## 1. Phrasematch
 
-Okay, so what happens at runtime when a user searches? We start by tokenizing it. We then ask the fuzzy-phrase store for each index "are there any subsequences of tokens in this query that correspond to phrases you know about?" Each index can then report if it contains any feature containing, for example, "west lake", or "englewood". `fuzzy-phrase` contains a graph structure that makes this lookup efficient, and it can also detect if there are phrases that are similar in spelling to the query, even if they aren't exact matches. Additionally, it can determine of a token subsequence at the end of the query might form the *start* of a phrase it knows about, even if it's not the whole thing, to allow for autocomplete matches.
+Okay, so what happens at runtime when a user searches? We start by tokenizing it, and standardizing any potentially abbreviated or varied words (so, e.g., replacing "road" with "rd"). We then ask the fuzzy-phrase store for each index "are there any subsequences of tokens in this query that correspond to phrases you know about?" Each index can then report if it contains any feature containing, for example, "west lake", or "englewood". `fuzzy-phrase` contains a graph structure that makes this lookup efficient, and it can also detect if there are phrases that are similar in spelling to the query, even if they aren't exact matches. Additionally, it can determine of a token subsequence at the end of the query might form the *start* of a phrase it knows about, even if it's not the whole thing, to allow for autocomplete matches.
 
 For each result, we end up with a phrase ID for each match (or a range of IDs, in the case of prefix matches), as well as a bitmask representing which tokens from the original query the result matches.
 
 For our query of:
 
-> West Lake View Englewood USA
+> West Lake View Road Englewood USA
 
 We might return matches like:
 
     street
     ------
-    52  west lake view   11100
-    51  west lake        11000
-    30  lake view        01100
-    49  west             10000
-    29  lake             01000
-    59  view             00100
-    14  englewood        00010
+    | phrase_id | phrase            | mask   |
+    |-----------|-------------------|--------|
+    | 52        | west lake view rd | 111100 |
+    | 51        | west lake         | 110000 |
+    | 30        | lake view         | 011000 |
+    | 49        | west              | 100000 |
+    | 29        | lake              | 010000 |
+    | 59        | view              | 001000 |
+    | 14        | englewood         | 000010 |
 
     place
     ------
-    29 west             10000
-    24 lake             01000
-    12 englewood        00010
+    | phrase_id | phrase         | mask   |
+    |-----------|----------------|--------|
+    | 29        | west           | 100000 |
+    | 24        | lake           | 010000 |
+    | 12        | englewood      | 000010 |
 
     country
     ------
-    18 west             10000
-    11 usa              00001
+    | phrase_id | phrase         | mask   |
+    |-----------|----------------|--------|
+    | 18        | west           | 100000 |
+    | 11        | usa            | 000001 |
 
 By assigning a bitmask to each subquery representing the positions of the input query it represents we can evaluate all the permutations that *could* be "stacked" to match the input query more completely. We can also calculate a *potential* max relevance score that would result from each permutation if the features matched by these subqueries do indeed stack spatially. Examples:
 
-    52 west lake view   11100 street
-    12 englewood        00010 place
-    11 usa              00001 country
+    | phrase_id | phrase            | mask   | layer   |
+    |-----------|-------------------|--------|---------|
+    | 52        | west lake view rd | 111100 | street  |
+    | 12        | englewood         | 000010 | place   |
+    | 11        | usa               | 000001 | country |
 
-    potential relev 5/5 query terms = 1
+    potential relev 6/6 query terms = 1
 
-    14 englewood        00010 street
-    29 west             10000 place
-    11 usa              00001 country
+    | phrase_id | phrase         | mask   | layer   |
+    |-----------|----------------|--------|---------|
+    | 14        | englewood      | 000010 | street  |
+    | 29        | west           | 100000 | place   |
+    | 11        | usa            | 000001 | country |
 
-    potential relev 3/5 query terms = 0.6
+    potential relev 3/6 query terms = 0.5
 
     etc.
 
@@ -166,17 +176,21 @@ To make sense of the "result soup" from step 1 -- sometimes thousands of potenti
 
 Features which overlap in the grid store are candidates to have their subqueries combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with, leading to a lower total relevance.
 
-    52 west lake view   11100 street
-    12 englewood        00010 place
-    11 usa              00001 country
+    | phrase_id | phrase            | mask   | layer   |
+    |-----------|-------------------|--------|---------|
+    | 52        | west lake view rd | 111100 | street  |
+    | 12        | englewood         | 000010 | place   |
+    | 11        | usa               | 000001 | country |
 
     All three features stack, relev = 1
 
-    14 englewood        00010 street
-    29 west             10000 place
-    11 usa              00001 country
+    | phrase_id | phrase         | mask   | layer   |
+    |-----------|----------------|--------|---------|
+    | 14        | englewood      | 000010 | street  |
+    | 29        | west           | 100000 | place   |
+    | 11        | usa            | 000001 | country |
 
-    Englewood St does not overlap others, relev = 0.2
+    Englewood St does not overlap others, relev = 0.1666
 
 The stack of subqueries has has a score of 1.0 if,
 
@@ -223,5 +237,6 @@ Unfortunately, the Carmen codebase is more complex than this explanation.
 
 1. There's more code cleanup, organization, and documentation to do.
 2. Much of the performance-critical work now lives outside of Carmen, in `fuzzy-phrase` and `carmen-core`, so that it can be implemented in Rust, and optionally run in a multi-threaded way.
-3. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it challenging to identify the semantic equivalents in the middle of a geocode.
+3. Text normalization and word replacement was only briefly touched on here; we actually have more than one kind of word replacement, depending on whether the replacement is a one-for-one swap (this simple class can be handled by fuzzy-phrase) or a more complex one that changes the total number of tokens in a query, perhaps dropping words, combining words together, splitting words apart, etc. (these are handled by Carmen). For more information on the kinds of replacements we do, see the [geocoder-abbreviations](https://github.com/mapbox/geocoder-abbreviations) repository.
+4. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it challenging to identify the semantic equivalents in the middle of a geocode.
 

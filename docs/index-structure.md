@@ -36,7 +36,7 @@ Internally, the `gridstore` uses a RocksDB database to store its data, with each
 
 ## MBTiles
 
-Each index also includes a vector-tile representation of all features within the index, in MBTiles format. This representation is used in reverse geocodes for efficiently finding the nearest features at each level in the hierarchy to the user's query point, as well as for filling in elements of a result's geospatial context in forward queries. Carmen itself has tooling for generating these tiles, or then can be generated with an external tool such as `tippecanoe`.
+Each index also includes a vector-tile representation of all features within the index, in MBTiles format. This representation is used in reverse geocodes for efficiently finding the nearest features at each level in the hierarchy to the user's query point, as well as for filling in elements of a result's geospatial context in forward queries. Carmen itself has tooling for generating these tiles, or they can be generated with an external tool such as `tippecanoe`.
 
 ## feature
 
