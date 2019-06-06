@@ -1,5 +1,9 @@
 # Changelog
 
+## 29.0.1
+
+- Ensure `carmen:text` is stringified before entering `clostest-lang`
+
 ## 29.0.0
 
 - No longer generate or read the frequency.rocksdb file

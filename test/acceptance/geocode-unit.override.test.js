@@ -79,7 +79,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
                 'carmen:addressprops': {
                     // Addresses that differ from the default postcode
                     // live in the addressprops fields
-                    'override:postcode': { 0: '20002', 1: '20003' }
+                    'override:postcode': { 0: '20002', 1: 20003 }
                     // After the address
                     // parsing section of verifymatch - the correct postcode will be populated
                     // in the `override:<type>` field. Do not access carmenaddressprops directly
