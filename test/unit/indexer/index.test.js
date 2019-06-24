@@ -278,8 +278,8 @@ test('index phrase collection', (t) => {
         t.deepEqual(
             conf.test._gridstore.reader.get({ phrase_id: 0, lang_set: [0] }),
             [
-                { relev: 1, score: 0, x: 32, y: 32, id: 2, source_phrase_hash: 0 },
-                { relev: 1, score: 0, x: 32, y: 32, id: 1, source_phrase_hash: 0 }
+                { relev: 1, score: 0, x: 32, y: 32, id: 2, source_phrase_hash: 60 },
+                { relev: 1, score: 0, x: 32, y: 32, id: 1, source_phrase_hash: 60 }
             ], 'grid has 2 zxy+feature ids');
         t.end();
     }
