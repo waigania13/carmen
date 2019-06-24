@@ -35,6 +35,7 @@
     "mapnik": "^4.0.2",
     "minimist": "1.2.0",
     "model-un": "0.0.3",
+    "murmurhash-native": "^3.4.1",
     "split": "^1.0.1",
     "yarn": "^1.7.0"
   },

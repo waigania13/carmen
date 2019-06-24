@@ -9,14 +9,16 @@ test('termops.getIndexablePhrases', (t) => {
     freq[tokens[0]] = [1];
     freq[tokens[1]] = [100];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens } , freq), [
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens } , freq), [
         {
             'relev': 1,
             'phrase': 'main st',
+            'hash': 0
         },
         {
             'relev': 0.8,
-            'phrase': 'main'
+            'phrase': 'main',
+            'hash': 0
         }
     ]);
 
@@ -33,7 +35,7 @@ test('termops.getIndexablePhrases (weight sieve)', (t) => {
     freq[tokens[2]] = [100];
     freq[tokens[3]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens }, freq).map((p) => {
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens }, freq).map((p) => {
         return (p.relev) + '-1-' + p.phrase;
     }), [
         '1-1-jose de la casa',
@@ -51,8 +53,8 @@ test('termops.getIndexablePhrases (京都市)', (t) => {
     freq['__COUNT__'] = [1];
     freq[tokens[0]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: '京都市', relev: 1 }
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens }, freq), [
+        { hash: 0, phrase: '京都市', relev: 1 }
     ]);
 
     t.end();
@@ -64,8 +66,8 @@ test('termops.getIndexablePhrases (москва)', (t) => {
     freq['__COUNT__'] = [1];
     freq[tokens[0]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'москва', relev: 1 }
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens }, freq), [
+        { hash: 0, phrase: 'москва', relev: 1 }
     ]);
 
     t.end();
@@ -77,8 +79,8 @@ test('termops.getIndexablePhrases (josé)', (t) => {
     freq['__COUNT__'] = [1];
     freq[tokens[0]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'jose', relev: 1 }
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens }, freq), [
+        { hash: 0, phrase: 'jose', relev: 1 }
     ]);
 
     t.end();
@@ -91,8 +93,8 @@ test('termops.getIndexablePhrases (josé, no degens)', (t) => {
     freq['__COUNT__'] = [1];
     freq[tokens[0]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens }, freq), [
-        { phrase: 'jose', relev: 1 }
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens }, freq), [
+        { hash: 0, phrase: 'jose', relev: 1 }
     ]);
 
     t.end();
