@@ -345,7 +345,7 @@ function Geocoder(indexes, options) {
             q.awaitAll((err, loaded) => {
                 if (err) return callback(err);
 
-                let props = {
+                const props = {
                     id: id,
                     info: loaded[0]
                 };

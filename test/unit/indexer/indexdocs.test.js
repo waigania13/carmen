@@ -1,6 +1,5 @@
 'use strict';
 const indexdocs = require('../../../lib/indexer/indexdocs.js');
-const grid = require('../../../lib/util/grid.js');
 const tape = require('tape');
 const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
