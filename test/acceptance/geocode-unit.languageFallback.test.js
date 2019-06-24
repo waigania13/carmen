@@ -57,7 +57,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     });
 
     tape('make sure indexes contain pre-computed fallbacks', (t) => {
-        let keys = Array.from(conf.country._gridstore.reader.keys()).map((k) => {
+        const keys = Array.from(conf.country._gridstore.reader.keys()).map((k) => {
             return [
                 conf.country._fuzzyset.reader.getByPhraseId(k.phrase_id).join(' '),
                 k.lang_set

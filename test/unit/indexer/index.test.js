@@ -265,10 +265,10 @@ test('index phrase collection', (t) => {
             coordinates: [0,0]
         }
     }];
-    index.update(conf.test, docs, { zoom: 6 }, () => { index.store(conf.test, afterUpdate) });
+    index.update(conf.test, docs, { zoom: 6 }, () => { index.store(conf.test, afterUpdate); });
     function afterUpdate(err) {
         t.ifError(err);
-        let keys = Array.from(conf.test._gridstore.reader.keys()).map((k) => {
+        const keys = Array.from(conf.test._gridstore.reader.keys()).map((k) => {
             return [
                 conf.test._fuzzyset.reader.getByPhraseId(k.phrase_id).join(' '),
                 k.lang_set

@@ -34,7 +34,7 @@ function fakeCarmen(reader) {
         geocoder_universal_text: true,
         complex_query_replacer: [],
         _gridstore: {
-            "reader": true
+            'reader': true
         },
         _fuzzyset: { reader }
     };
