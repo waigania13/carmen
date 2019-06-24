@@ -652,11 +652,11 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['1st', 'and', 'main', 'st'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1st', 'and', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['st'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['+intersection', '1st', ',', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['+intersection', '1st', ',', 'main', 'st'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['1st', 'and', 'main', 'st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1st', 'and', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['+intersection', '1st', ',', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['+intersection', '1st', ',', 'main', 'st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
