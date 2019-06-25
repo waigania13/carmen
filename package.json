@@ -32,6 +32,7 @@
     "fs-extra": "^7.0.0",
     "geojson-rewind": "^0.3.1",
     "iter-tools": "^6.1.6",
+    "leven": "^3.1.0",
     "mapnik": "^4.0.2",
     "minimist": "1.2.0",
     "model-un": "0.0.3",
