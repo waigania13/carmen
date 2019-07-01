@@ -109,6 +109,22 @@ tape('putFeatures', (t) => {
                 type: 'Point',
                 coordinates: [0, 0]
             }
+        },
+        {
+            id: 341283364286,
+            type: 'Feature',
+            properties: {
+                // 'Avenue D7' hash-collides with 'Street A'
+                'carmen:text': 'Avenue D7',
+                'carmen:center': [0, 0],
+                'carmen:intersection': ['Street B'],
+                'carmen:zxy': ['6/32/32'],
+                'carmen:score': 1000
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0, 0]
+            }
         }
     ], (err) => {
         t.ifError(err);
@@ -133,15 +149,15 @@ tape('getFeatureByCover', (t) => {
 });
 
 tape('getFeatureByCover, collision', (t) => {
-    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'Mr Hyde' }, (err, data) => {
+    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'Mr Hyde', source_phrase_hash: 14 }, (err, data) => {
         t.equal(data.id, 2065683849600446);
         t.end();
     });
 });
 
 tape('getFeatureByCover, intersection collision', (t) => {
-    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'+intersection street a , b' }, (err, data) => {
-        t.pass('doesn\'t crash');
+    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'+intersection street a , b', source_phrase_hash: 145 }, (err, data) => {
+        t.equal(data.id, 136439250738622);
         t.end();
     });
 });
