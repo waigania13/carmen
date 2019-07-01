@@ -115,9 +115,6 @@ function Geocoder(indexes, options) {
 
             if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
                 source._geocoder = {
-                    freq: (data.freq && fs.existsSync(data.freq)) ?
-                        new cxxcache.RocksDBCache(name + '.freq', data.freq) :
-                        new cxxcache.MemoryCache(name + '.freq'),
                     grid: (data.grid && fs.existsSync(data.grid)) ?
                         new cxxcache.RocksDBCache(name + '.grid', data.grid) :
                         new cxxcache.MemoryCache(name + '.grid')
@@ -372,7 +369,6 @@ function Geocoder(indexes, options) {
                 }
 
                 const filename = source.getBaseFilename();
-                props.freq = filename + '.freq.rocksdb';
                 props.grid = filename + '.grid.rocksdb';
                 callback(null, props);
             });
