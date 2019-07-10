@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 29.0.3
 
 - Convert numeric `override:*` values to strings before indexing.
 
