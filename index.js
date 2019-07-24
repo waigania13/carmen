@@ -96,7 +96,7 @@ function Geocoder(indexes, options) {
         if (results) results.forEach((data, i) => {
             const id = data.id;
             const info = data.info;
-            const dictcache = data.dictcache;
+            const fuzzyset = data.fuzzyset;
             const gridstore = data.gridstore;
             const source = indexes[id];
             const name = info.geocoder_name || id;
@@ -112,7 +112,7 @@ function Geocoder(indexes, options) {
 
             if (names.indexOf(name) === -1) names.push(name);
 
-            source._fuzzyset = source._original._fuzzyset || dictcache;
+            source._fuzzyset = source._original._fuzzyset || fuzzyset;
             source._gridstore = source._original._gridstore || gridstore;
 
             // Set references to _geocoder, _fuzzyset on original source to
@@ -335,10 +335,10 @@ function Geocoder(indexes, options) {
             q.defer((done) => {
                 const gridStoreFile = source.getBaseFilename() + '.gridstore.rocksdb';
                 if (source._original._gridstore || !fs.existsSync(gridStoreFile)) {
-                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _fuzzyset.writer
+                    // write case: we'll be creating a GridStoreBuilder and storing it in _gridstore.writer
                     done(null, { path: gridStoreFile, exists: false });
                 } else {
-                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _fuzzyset.reader
+                    // read case: we'll be creating a GridStore and storing it in _gridstore.reader
                     done(null, { path: gridStoreFile, exists: true });
                 }
             });
@@ -349,19 +349,19 @@ function Geocoder(indexes, options) {
                     id: id,
                     info: loaded[0]
                 };
-                // if dictcache is already initialized don't recreate
+                // if fuzzyset is already initialized don't recreate
                 if (source._original._fuzzyset) {
-                    props.dictcache = source._original._fuzzyset;
-                // create dictcache at load time to allow incremental gc
+                    props.fuzzyset = source._original._fuzzyset;
+                // create fuzzyset at load time to allow incremental gc
                 } else if (loaded[1].exists) {
                     // read cache
-                    props.dictcache = {
+                    props.fuzzyset = {
                         reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
                         writer: null
                     };
                 } else {
                     // write cache
-                    props.dictcache = {
+                    props.fuzzyset = {
                         reader: null,
                         writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
                     };
