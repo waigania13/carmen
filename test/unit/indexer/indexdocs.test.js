@@ -47,7 +47,7 @@ tape('indexdocs.loadDoc', (t) => {
         score: 7, // log scales score of 100 based on max score value of 200
         x: 32,
         y: 32,
-        source_phrase_hash: 0
+        source_phrase_hash: 112
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);

@@ -302,6 +302,7 @@
                             "scoredist": 1,
                             "scorefactor": 1,
                             "matches_language": true,
+                            "source_phrase_hash": 82,
                             "prefix": 2,
                             "mask": 1,
                             "text": "toronto",
@@ -317,6 +318,7 @@
                 "carmen:zoom": 6,
                 "carmen:scoredist": 1,
                 "carmen:matches_language": true,
+                "carmen:source_phrase_hash": 82,
                 "carmen:prefix": 2,
                 "carmen:query_text": "toronto",
                 "carmen:idx": 2
