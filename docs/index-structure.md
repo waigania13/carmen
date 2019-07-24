@@ -2,7 +2,7 @@
 
 There are two types of index stores in Carmen.
 
-- `cxxcache` is used for storing the `grid`, and `freq` indexes.
+- `gridstore` is used for storing the `grid` index.
   Each index is sharded and each shard contains a one-to-many
   hash with 64-bit integer keys that map to arrays of arbitrary length
   containing 64-bit integer elements.

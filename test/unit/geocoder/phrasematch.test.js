@@ -4,7 +4,7 @@ const tape = require('tape');
 const phrasematch = require('../../../lib/geocoder/phrasematch');
 const termops = require('../../../lib/text-processing/termops');
 const token = require('../../../lib/text-processing/token');
-const PREFIX_SCAN = require('@mapbox/carmen-cache').PREFIX_SCAN;
+const ENDING_TYPE = require('@mapbox/node-fuzzy-phrase').ENDING_TYPE;
 
 function bearablePermutations(permutations) {
     return permutations.map((v) => {
@@ -12,7 +12,8 @@ function bearablePermutations(permutations) {
             phrase: Array.from(v[0]),
             mask: v[0].mask,
             ender: v[0].ender,
-            endingType: v[1]
+            ending_type: v[1],
+            phrase_id_range: [0, 0]
         };
     });
 }
@@ -22,7 +23,8 @@ function fakeFuzzyMatches(permutations) {
         return  [{
             phrase: v.phrase,
             edit_distance: 0,
-            ending_type: v.endingType
+            ending_type: v.ending_type,
+            phrase_id_range: [0, 0]
         }];
     });
 }
@@ -31,10 +33,10 @@ function fakeCarmen(reader) {
     return {
         geocoder_universal_text: true,
         complex_query_replacer: [],
-        _geocoder: {
-            freq: new Map()
+        _gridstore: {
+            'reader': true
         },
-        _dictcache: { reader }
+        _fuzzyset: { reader }
     };
 }
 
@@ -102,7 +104,7 @@ tape('fuzzyMatchWindows', (t) => {
             t.deepEqual(a, ['100', 'main', 'street']);
             t.deepEqual(b, 0);
             t.deepEqual(c, 0);
-            t.deepEqual(c, PREFIX_SCAN.disabled);
+            t.deepEqual(c, ENDING_TYPE.nonPrefix);
             return [];
         }
     });
@@ -116,7 +118,7 @@ tape('fuzzyMatchWindows - autocomplete sets word_boundary', (t) => {
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'st'], 'Got replaced query');
-            t.deepEqual(d, PREFIX_SCAN.word_boundary, 'Query has expected prefix scan type');
+            t.deepEqual(d, ENDING_TYPE.wordBoundaryPrefix, 'Query has expected prefix scan type');
             return [];
         }
     });
@@ -135,7 +137,7 @@ tape('fuzzyMatchWindows - autocomplete sets enabled', (t) => {
     const c = fakeCarmen({
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'st', 'ohio'], 'Got replaced query');
-            t.deepEqual(d, PREFIX_SCAN.enabled, 'Query has expected prefix scan type');
+            t.deepEqual(d, ENDING_TYPE.anyPrefix, 'Query has expected prefix scan type');
             return [];
         }
     });
@@ -155,12 +157,12 @@ tape('fuzzyMatchWindows - expanded tokens', (t) => {
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'herman', 'str']);
             const expected = [
-                { start_position: 0, phrase: ['100', 'herman', 'str'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['100', 'herman'], edit_distance: 0, ending_type: 0 },
-                { start_position: 1, phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0 },
-                { start_position: 1, phrase: ['herman'], edit_distance: 0, ending_type: 0 },
-                { start_position: 2, phrase: ['str'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['100'], edit_distance: 0, ending_type: 0 }
+                { start_position: 0, phrase: ['100', 'herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 0, phrase: ['100', 'herman'], edit_distance: 0, ending_type: 0, phrase_id_range: [1, 1] },
+                { start_position: 1, phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [2, 2] },
+                { start_position: 1, phrase: ['herman'], edit_distance: 0, ending_type: 0, phrase_id_range: [3, 3] },
+                { start_position: 2, phrase: ['str'], edit_distance: 0, ending_type: 0, phrase_id_range: [4, 4] },
+                { start_position: 0, phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [5, 5] }
             ];
             return expected;
         }
@@ -192,12 +194,12 @@ tape('fuzzyMatchWindows - removed term', (t) => {
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['100', 'main', 'springfield']);
             const expected = [
-                { start_position: 0, phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['100', 'main'], edit_distance: 0, ending_type: 0 },
-                { start_position: 1, phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0 },
-                { start_position: 2, phrase: ['springfield'], edit_distance: 0, ending_type: 0 },
-                { start_position: 1, phrase: ['main'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['100'], edit_distance: 0, ending_type: 0 }
+                { start_position: 0, phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 0, phrase: ['100', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [1, 1] },
+                { start_position: 1, phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [2, 2] },
+                { start_position: 2, phrase: ['springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [3, 3] },
+                { start_position: 1, phrase: ['main'], edit_distance: 0, ending_type: 0, phrase_id_range: [4, 4] },
+                { start_position: 0, phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [5, 5] }
             ];
             return expected;
         }
@@ -238,14 +240,14 @@ tape('fuzzyMatchWindows - expanded & removed term', (t) => {
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['herman', 'str', '100', 'berlin']);
             const expected = [
-                { start_position: 0, phrase: ['herman', 'str', '100', 'berlin'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0 },
-                { start_position: 2, phrase: ['100', 'berlin'], edit_distance: 0, ending_type: 0 },
-                { start_position: 3, phrase: ['berlin'], edit_distance: 0, ending_type: 0 },
-                { start_position: 0, phrase: ['herman'], edit_distance: 0, ending_type: 0 },
-                { start_position: 1, phrase: ['str'], edit_distance: 0, ending_type: 0 },
-                { start_position: 2, phrase: ['100'], edit_distance: 0, ending_type: 0 }
+                { start_position: 0, phrase: ['herman', 'str', '100', 'berlin'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 0, phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 0, phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 2, phrase: ['100', 'berlin'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 3, phrase: ['berlin'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 0, phrase: ['herman'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 1, phrase: ['str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] },
+                { start_position: 2, phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }
             ];
             return expected;
         }
@@ -290,12 +292,12 @@ tape('fuzzyMatchWindows - removed term at the end of a query', (t) => {
         fuzzyMatchWindows: (a, b, c, d) => {
             t.deepEqual(a, ['roma', 'termini', 'rs']);
             const expected = [
-                { start_position: 0, 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0 },
-                { start_position: 0, 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0 },
-                { start_position: 2, 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0 },
-                { start_position: 0, 'phrase':['roma'],'edit_distance':0,'ending_type':0 },
-                { start_position: 1, 'phrase':['termini'],'edit_distance':0,'ending_type':0 },
-                { start_position: 2, 'phrase':['rs'],'edit_distance':0,'ending_type':0 }
+                { start_position: 0, 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] },
+                { start_position: 0, 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] },
+                { start_position: 2, 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] },
+                { start_position: 0, 'phrase':['roma'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] },
+                { start_position: 1, 'phrase':['termini'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] },
+                { start_position: 2, 'phrase':['rs'],'edit_distance':0,'ending_type':0, phrase_id_range: [0, 0] }
             ];
             return expected;
         }
@@ -332,15 +334,15 @@ tape('fuzzyMatchMulti - correct address permutations', (t) => {
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
             const expected = [
-                { phrase: ['100','main','street'], mask: 7, ender: true, endingType: 0 },
-                { phrase: ['1##','main','street'], mask: 7, ender: true, endingType: 0 },
-                { phrase: ['100','main'], mask: 3, ender: false, endingType: 0 },
-                { phrase: ['main','street'], mask: 6, ender: true, endingType: 0 },
-                { phrase: ['1##','main'], mask: 3, ender: false, endingType: 0 },
-                { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
-                { phrase: ['main'], mask: 2, ender: false, endingType: 0 },
-                { phrase: ['street'], mask: 4, ender: true, endingType: 0 },
-                { phrase: ['1##'], mask: 1, ender: false, endingType: 0 }
+                { phrase: ['100','main','street'], mask: 7, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##','main','street'], mask: 7, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['100','main'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['main','street'], mask: 6, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##','main'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['100'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['main'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['street'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] }
             ];
             const actual = bearablePermutations(a);
             t.deepEqual(actual, expected);
@@ -359,21 +361,21 @@ tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
     const c = fakeCarmen({
         fuzzyMatchMulti: (a, b, c, d) => {
             const expected = [
-                { phrase: ['100', '200', '300'], mask: 7, ender: true, endingType: 0 },
-                { phrase: ['3##', '100', '200'], mask: 7, ender: false, endingType: 0 },
-                { phrase: ['1##', '200', '300'], mask: 7, ender: true, endingType: 0 },
-                { phrase: ['3##', '200'], mask: 6, ender: false, endingType: 0 },
-                { phrase: ['1##', '200'], mask: 3, ender: false, endingType: 0 },
-                { phrase: ['2##', '300'], mask: 6, ender: true, endingType: 0 },
-                { phrase: ['200', '300'], mask: 6, ender: true, endingType: 0 },
-                { phrase: ['100', '200'], mask: 3, ender: false, endingType: 0 },
-                { phrase: ['2##', '100'], mask: 3, ender: false, endingType: 0 },
-                { phrase: ['1##'], mask: 1, ender: false, endingType: 0 },
-                { phrase: ['300'], mask: 4, ender: true, endingType: 0 },
-                { phrase: ['2##'], mask: 2, ender: false, endingType: 0 },
-                { phrase: ['200'], mask: 2, ender: false, endingType: 0 },
-                { phrase: ['100'], mask: 1, ender: false, endingType: 0 },
-                { phrase: ['3##'], mask: 4, ender: true, endingType: 0 }
+                { phrase: ['100', '200', '300'], mask: 7, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['3##', '100', '200'], mask: 7, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##', '200', '300'], mask: 7, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['3##', '200'], mask: 6, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##', '200'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['2##', '300'], mask: 6, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['200', '300'], mask: 6, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['100', '200'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['2##', '100'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['1##'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['300'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['2##'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['200'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['100'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
+                { phrase: ['3##'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] }
             ];
             const actual = bearablePermutations(a);
             t.deepEqual(actual, expected);
@@ -394,7 +396,7 @@ tape('fuzzyMatchMulti - autocomplete sets word_boundary', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['st'], edit_distance: 0, ending_type: 2 }]
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 2, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -418,7 +420,7 @@ tape('fuzzyMatchMulti - autocomplete sets enabled', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['st'], edit_distance: 0, ending_type: 1 }]
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 1, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -442,7 +444,7 @@ tape('fuzzyMatchMulti - single term', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['baltimore'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['baltimore'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -469,11 +471,11 @@ tape('fuzzyMatchMulti - basic masks', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -504,11 +506,11 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##', 'herman', 'str'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##', 'herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -548,15 +550,15 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##', 'main', 'springfield'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['springfield'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['100', 'main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##', 'main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -604,12 +606,12 @@ tape('fuzzyMatchMulti - masks for removed terms at the end of a query', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0 }],
-                [{ 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0 }],
-                [{ 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0 }],
-                [{ 'phrase':['roma'],'edit_distance':0,'ending_type':0 }],
-                [{ 'phrase':['termini'],'edit_distance':0,'ending_type':0 }],
-                [{ 'phrase':['rs'],'edit_distance':0,'ending_type':0 }]
+                [{ 'phrase':['roma','termini','rs'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }],
+                [{ 'phrase':['roma','termini'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }],
+                [{ 'phrase':['termini','rs'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }],
+                [{ 'phrase':['roma'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }],
+                [{ 'phrase':['termini'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }],
+                [{ 'phrase':['rs'],'edit_distance':0,'ending_type':0,'phrase_id_range':[0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -650,11 +652,11 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
         fuzzyMatchMulti: (a, b, c, d) => {
             const results = fakeFuzzyMatches(a);
             const expected = [
-                [{ phrase: ['1st', 'and', 'main', 'st'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['1st', 'and', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['st'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['+intersection', '1st', ',', 'main'], edit_distance: 0, ending_type: 0 }],
-                [{ phrase: ['+intersection', '1st', ',', 'main', 'st'], edit_distance: 0, ending_type: 0 }]
+                [{ phrase: ['1st', 'and', 'main', 'st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['1st', 'and', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['+intersection', '1st', ',', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
+                [{ phrase: ['+intersection', '1st', ',', 'main', 'st'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;

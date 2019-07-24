@@ -22,10 +22,10 @@ tape('index country', (t) => {
         t.ifError(err);
         buildQueued(conf.country, (err) => {
             t.ifError(err);
-            t.ok(country._geocoder, 'sets source._geocoder on original instance');
-            t.ok(country._dictcache, 'sets source._dictcache on original instance');
-            t.equal(country._geocoder, a.indexes.country._geocoder, 'clone cache === source cache');
-            t.equal(country._dictcache, a.indexes.country._dictcache, 'clone dictcache === source dictcache');
+            t.ok(country._gridstore, 'sets source._gridstore on original instance');
+            t.ok(country._fuzzyset, 'sets source._fuzzyset on original instance');
+            t.equal(country._gridstore, a.indexes.country._gridstore, 'clone cache === source cache');
+            t.equal(country._fuzzyset, a.indexes.country._fuzzyset, 'clone dictcache === source dictcache');
             t.end();
         });
     });
@@ -41,8 +41,8 @@ tape('geocodes', (t) => {
 });
 tape('sets cache/dictcache', (t) => {
     const b = new Carmen({ country: country });
-    t.equal(b.indexes.country._geocoder, a.indexes.country._geocoder, 'a cache === b cache');
-    t.equal(b.indexes.country._dictcache, a.indexes.country._dictcache, 'a dictcache === b dictcache');
+    t.equal(b.indexes.country._gridstore, a.indexes.country._gridstore, 'a cache === b cache');
+    t.equal(b.indexes.country._fuzzyset, a.indexes.country._fuzzyset, 'a dictcache === b dictcache');
     t.end();
 });
 tape('teardown', (t) => {

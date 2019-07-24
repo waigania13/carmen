@@ -7,8 +7,8 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
+const carmenCore = require('@mapbox/carmen-core');
 const termops = require('./lib/text-processing/termops');
-const cxxcache = require('./lib/indexer/cxxcache');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
 const geocode = require('./lib/geocoder/geocode');
@@ -96,7 +96,8 @@ function Geocoder(indexes, options) {
         if (results) results.forEach((data, i) => {
             const id = data.id;
             const info = data.info;
-            const dictcache = data.dictcache;
+            const fuzzyset = data.fuzzyset;
+            const gridstore = data.gridstore;
             const source = indexes[id];
             const name = info.geocoder_name || id;
             const type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
@@ -111,22 +112,13 @@ function Geocoder(indexes, options) {
 
             if (names.indexOf(name) === -1) names.push(name);
 
-            source._dictcache = source._original._dictcache || dictcache;
+            source._fuzzyset = source._original._fuzzyset || fuzzyset;
+            source._gridstore = source._original._gridstore || gridstore;
 
-            if (!(source._original._geocoder && Object.keys(source._original._geocoder).length)) {
-                source._geocoder = {
-                    grid: (data.grid && fs.existsSync(data.grid)) ?
-                        new cxxcache.RocksDBCache(name + '.grid', data.grid) :
-                        new cxxcache.MemoryCache(name + '.grid')
-                };
-            } else {
-                source._geocoder = source._original._geocoder;
-            }
-
-            // Set references to _geocoder, _dictcache on original source to
+            // Set references to _geocoder, _fuzzyset on original source to
             // avoid duplication if it's loaded again.
-            source._original._geocoder = source._geocoder;
-            source._original._dictcache = source._dictcache;
+            source._original._gridstore = source._gridstore;
+            source._original._fuzzyset = source._fuzzyset;
 
             if (info.geocoder_address) {
                 source.geocoder_address = info.geocoder_address;
@@ -171,6 +163,11 @@ function Geocoder(indexes, options) {
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
+
+            if (source._fuzzyset.writer && !source._fuzzyset.replacementsLoaded) {
+                source._fuzzyset.writer.loadWordReplacements(source.categorized_replacement_words.simple);
+                source._fuzzyset.replacementsLoaded = true;
+            }
 
             source.categories = false;
             if (info.geocoder_categories) {
@@ -298,7 +295,7 @@ function Geocoder(indexes, options) {
     /**
      * Loads an index. The source clone is opened and all of the information
      * needed for adding the index to the geocoder is obtained. If the
-     * original source object does not have a `_dictcache` member, then it is
+     * original source object does not have a `_fuzzyset` member, then it is
      * instantiated here, included in the returned object.
      *
      * @access private
@@ -327,49 +324,67 @@ function Geocoder(indexes, options) {
             q.defer((done) => { source.getInfo(done); });
             q.defer((done) => {
                 const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
-                if (source._original._dictcache || !fs.existsSync(fuzzySetFile)) {
-                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _dictcache.writer
+                if (source._original._fuzzyset || !fs.existsSync(fuzzySetFile)) {
+                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _fuzzyset.writer
                     done(null, { path: fuzzySetFile, exists: false });
                 } else {
-                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _dictcache.reader
+                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _fuzzyset.reader
                     done(null, { path: fuzzySetFile, exists: true });
+                }
+            });
+            q.defer((done) => {
+                const gridStoreFile = source.getBaseFilename() + '.gridstore.rocksdb';
+                if (source._original._gridstore || !fs.existsSync(gridStoreFile)) {
+                    // write case: we'll be creating a GridStoreBuilder and storing it in _gridstore.writer
+                    done(null, { path: gridStoreFile, exists: false });
+                } else {
+                    // read case: we'll be creating a GridStore and storing it in _gridstore.reader
+                    done(null, { path: gridStoreFile, exists: true });
                 }
             });
             q.awaitAll((err, loaded) => {
                 if (err) return callback(err);
 
-                let props;
-                // if dictcache is already initialized don't recreate
-                if (source._original._dictcache) {
-                    props = {
-                        id: id,
-                        info: loaded[0]
-                    };
-                // create dictcache at load time to allow incremental gc
+                const props = {
+                    id: id,
+                    info: loaded[0]
+                };
+                // if fuzzyset is already initialized don't recreate
+                if (source._original._fuzzyset) {
+                    props.fuzzyset = source._original._fuzzyset;
+                // create fuzzyset at load time to allow incremental gc
                 } else if (loaded[1].exists) {
                     // read cache
-                    props = {
-                        id: id,
-                        info: loaded[0],
-                        dictcache: {
-                            reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
-                            writer: null
-                        }
+                    props.fuzzyset = {
+                        reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
+                        writer: null
                     };
                 } else {
                     // write cache
-                    props = {
-                        id: id,
-                        info: loaded[0],
-                        dictcache: {
-                            reader: null,
-                            writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
-                        }
+                    props.fuzzyset = {
+                        reader: null,
+                        writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
                     };
                 }
 
-                const filename = source.getBaseFilename();
-                props.grid = filename + '.grid.rocksdb';
+                // if gridstore is already initialized don't recreate
+                if (source._original._gridstore) {
+                    props.gridstore = source._original._gridstore;
+                // create gridstore at load time to allow incremental gc
+                } else if (loaded[2].exists) {
+                    // read cache
+                    props.gridstore = {
+                        reader: new carmenCore.GridStore(loaded[2].path),
+                        writer: null
+                    };
+                } else {
+                    // write cache
+                    props.gridstore = {
+                        reader: null,
+                        writer: new carmenCore.GridStoreBuilder(loaded[2].path)
+                    };
+                }
+
                 callback(null, props);
             });
         });
