@@ -797,9 +797,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-core@github:mapbox/carmen-core#3716bc4ed2e8df87fae9dbd346416658029c1b8b":
-  version "0.1.0-order-change-1"
-  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/3716bc4ed2e8df87fae9dbd346416658029c1b8b"
+"@mapbox/carmen-core@github:mapbox/carmen-core#ed3160689c6df60f78105eb4f38da348a4f4dea6":
+  version "0.1.0-dev"
+  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/ed3160689c6df60f78105eb4f38da348a4f4dea6"
   dependencies:
     neon-cli "^0.2.0"
     node-pre-gyp "~0.13.0"
@@ -863,9 +863,9 @@
     d3-queue "~2.0.3"
     sqlite3 "4.x"
 
-"@mapbox/node-fuzzy-phrase@github:mapbox/node-fuzzy-phrase#a20437cff682bd03a8413d28e0284e2fc1250d84":
-  version "0.2.0-phrase-id-3"
-  resolved "https://codeload.github.com/mapbox/node-fuzzy-phrase/tar.gz/a20437cff682bd03a8413d28e0284e2fc1250d84"
+"@mapbox/node-fuzzy-phrase@github:mapbox/node-fuzzy-phrase#512225828af288f6f8e46766c51e52953e1a9664":
+  version "0.2.0-phrase-id-4"
+  resolved "https://codeload.github.com/mapbox/node-fuzzy-phrase/tar.gz/512225828af288f6f8e46766c51e52953e1a9664"
   dependencies:
     "@mapbox/cfn-config" "^2.15.0"
     "@mapbox/cloudfriend" "^1.9.1"
