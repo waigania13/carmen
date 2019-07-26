@@ -101,6 +101,12 @@ test('index.update errors', (t) => {
             q.end();
         });
     });
+    t.test('error constructor word in data', (q) => {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'constructor' }, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 1 }, (err) => {
+            q.ifError(err);
+            q.end();
+        });
+    });
     t.test('indexes single doc', (q) => {
         index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0] }, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, (err) => {
             q.ifError(err);
