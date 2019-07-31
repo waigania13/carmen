@@ -797,9 +797,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-core@github:mapbox/carmen-core#39cdd300a756974f2a35c42599a0a26c7a38227d":
-  version "0.1.0-prox-radius-dedupe-3"
-  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/39cdd300a756974f2a35c42599a0a26c7a38227d"
+"@mapbox/carmen-core@github:mapbox/carmen-core#3a224532abefd1d67a0d07e6e45a8a84153b6422":
+  version "0.1.0-prox-radius-dedupe-4"
+  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/3a224532abefd1d67a0d07e6e45a8a84153b6422"
   dependencies:
     neon-cli "^0.2.0"
     node-pre-gyp "~0.13.0"
