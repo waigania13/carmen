@@ -33,7 +33,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             properties: {
                 'carmen:text':'20001',
                 'carmen:zxy':['12/2048/2048'],
-                'carmen:center':[0,0],
+                'carmen:center':[0.05,-0.05],
                 'carmen:score': 100
             }
         };
@@ -46,7 +46,20 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             properties: {
                 'carmen:text':'20002',
                 'carmen:zxy':['12/2049/2048'],
-                'carmen:center':[0.1, 0],
+                'carmen:center':[0.14, -0.05],
+                'carmen:score': 100
+            }
+        };
+        queueFeature(conf.postcode, postcode, t.end);
+    });
+
+    tape('index postcode', (t) => {
+        const postcode = {
+            id:3,
+            properties: {
+                'carmen:text':'20003',
+                'carmen:zxy':['12/2048/2049'],
+                'carmen:center':[0.05, -0.14],
                 'carmen:score': 100
             }
         };
@@ -55,11 +68,11 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     tape('index place', (t) => {
         const place = {
-            id:3,
+            id:4,
             properties: {
                 'carmen:text':'Parker',
                 'carmen:zxy':['6/32/32'],
-                'carmen:center':[0,0],
+                'carmen:center':[3,-3],
                 'carmen:score': 200
             }
         };
@@ -68,10 +81,10 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
     tape('index address', (t) => {
         const address = {
-            id:4,
+            id:5,
             properties: {
                 'carmen:text': 'fake street',
-                'carmen:center': [0,0],
+                'carmen:center': [0.05,-0.05],
                 'carmen:addressnumber': ['9B', '10C', '7'],
                 // The default postcode resides in 'override:postcode' it is simply
                 // the postcode that was most commonly found in a given address cluster
@@ -87,7 +100,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             },
             geometry: {
                 type: 'MultiPoint',
-                coordinates: [[0,0],[0,0],[0,0]]
+                coordinates: [[0.05,-0.049],[0.05,-0.05],[0.05,-0.051]]
             }
         };
 
@@ -110,8 +123,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '9b fake street Parker 20002', 'found 9b fake street');
             t.equals(res.features[0].relevance, 1.00);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20002' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20002' }
             ], 'Found id from address');
             t.end();
         });
@@ -123,8 +136,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '10c fake street Parker 20003', 'found 10c fake street');
             t.equals(res.features[0].relevance, 1.00);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20003' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20003' }
             ], 'Found id from address');
             t.end();
         });
@@ -136,9 +149,22 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '7 fake street Parker 20001', 'found 7 fake street');
             t.equals(res.features[0].relevance, 1.00);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
+                { id: 'place.4', text: 'Parker' },
                 { id: 'postcode.1', text: '20001' }
             ], 'Found id from postcode');
+            t.end();
+        });
+    });
+
+    tape('Test Address Override', (t) => {
+        c.geocode('10C FAKE STREET 20003', { limit_verify: 2 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, '10c fake street Parker 20003', 'found 10c fake street');
+            t.equals(res.features[0].relevance, 0.55);
+            t.deepEquals(res.features[0].context, [
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20003' }
+            ], 'Found id from address');
             t.end();
         });
     });
@@ -149,8 +175,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '9b fake street Parker 20002', 'found 9b fake street 20002');
             t.equals(res.features[0].relevance, 0.55);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20002' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20002' }
             ], 'Found id from postcode');
             t.end();
         });
@@ -162,8 +188,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '9b fake street Parker 20002', 'found 9b fake street 20002 w/ 20001 query');
             t.equals(res.features[0].relevance, 0.50);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20002' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20002' }
             ], 'Found id from postcode');
             t.end();
         });
@@ -175,8 +201,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '9b fake street Parker 20002', 'found 9b fake street parker 20002');
             t.equals(res.features[0].relevance, 2 / 3);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20002' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20002' }
             ], 'Found id from postcode');
             t.end();
         });
@@ -188,8 +214,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.equals(res.features[0].place_name, '9b fake street Parker 20002', 'found 9b fake street parker 20002 w/ 20001 query');
             t.equals(res.features[0].relevance, 2 / 3);
             t.deepEquals(res.features[0].context, [
-                { id: 'place.3', text: 'Parker' },
-                { id: 'postcode.4', text: '20002' }
+                { id: 'place.4', text: 'Parker' },
+                { id: 'postcode.5', text: '20002' }
             ], 'Found id from postcode');
             t.end();
         });
