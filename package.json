@@ -6,7 +6,7 @@
   "author": "Mapbox (https://www.mapbox.com)",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "@mapbox/carmen-core": "github:mapbox/carmen-core#3a224532abefd1d67a0d07e6e45a8a84153b6422",
+    "@mapbox/carmen-core": "github:mapbox/carmen-core#3425ee512b9bc20edd4d11ba82d68cb3c8a06324",
     "@mapbox/geojsonhint": "^2.0.1",
     "@mapbox/locking": "^3.0.0",
     "@mapbox/mbtiles": "^0.10.0",
