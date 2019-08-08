@@ -40,14 +40,13 @@ tape('indexdocs.loadDoc', (t) => {
 
     t.deepEqual(patch.grid.size, 2, '2 patch.grid entries');
     t.deepEqual(Array.from(patch.grid.values().next().value.keys()), ['default'], '1 language in patch.grid[0]');
-    t.deepEqual(patch.grid.values().next().value.get('default').length, 2, '2 grids for language "all" in patch.grid[0]');
+    t.deepEqual(patch.grid.values().next().value.get('default').length, 1, '1 grid chunk for language "all" in patch.grid[0]');
     t.deepEqual(patch.grid.values().next().value.get('default')[0], {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
-        x: 32,
-        y: 32,
-        source_phrase_hash: 112
+        source_phrase_hash: 112,
+        coords: [[33, 33], [32, 32]]
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);
