@@ -1,6 +1,11 @@
 # Changelog
 
+## 29.0.3
+
+- Convert numeric `override:*` values to strings before indexing.
+
 ## 29.0.2
+
 - Add `&` support for intersection search queries which allows users to search for an intersection using `&` between street names. For example, "Street A & Street B"
 
 ## 29.0.1
