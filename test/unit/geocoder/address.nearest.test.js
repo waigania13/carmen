@@ -108,3 +108,8 @@ test('nearest stability 3', (t) => {
     t.end();
 });
 
+test('\'20 Molen Rd Ferron UT 84523\' doesn\'t return an interpolated result', (t) => {
+    const a = addressItp.forward(require('../../fixtures/range-feature-4a.json'), 20);
+    t.equal(a, undefined);
+    t.end();
+});
