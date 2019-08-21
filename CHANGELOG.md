@@ -1,5 +1,9 @@
 # Changelog
 
+## 29.0.4
+
+- Don't de-duplicate address results based on matched text and context if the matched text is a numerical autocomplete or other short query.
+
 ## 29.0.3
 
 - Convert numeric `override:*` values to strings before indexing.
