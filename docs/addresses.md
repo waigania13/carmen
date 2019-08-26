@@ -155,6 +155,30 @@ this format and used with few modifications.
 }
 ```
 
+Note: Interpolation properties all contain `l` (left) and `r` (right) prefixes. These
+left/right prefixes are based on the direction of the linestring from the 0th coordinate
+onward. When visualizing these values, ensure you check the orientation of the linestring
+as a common gotcha is using the L/R of your orientation to the feature on your screen.
+
+- `properties.carmen:rangetype`
+    - REQUIRED: Carmen has the potential to support multiple forms of interpolation,
+      however at the moment only `tiger` is currently implemented and supported.
+- `properties.carmen:parityl`
+    - REQUIRED: Even/Odd identification for the left side of the linestring.
+      Accepted values: `E` (even numbers), `O` (odd numbers) `null`, no interpolation
+- `properties.carmen:lfromhn`
+    - REQUIRED: The address that the interpolation segment begins at on the left side.
+      Note that this is based purely on the direction of the linestring and as such
+      `lfromhn > ltohn` & `ltohn > lfromhn` are both valid logical statements.
+- `properties.carmen:ltohn`
+   - REQUIRED: The address at the end of a given segment on the left side.
+- `properties.carmen:parityr`
+   - REQUIRED: same as `parityl` except for the right side
+- `properties.carmen:rfromhn`
+   - REQUIRED: same as `lfromhn` except for the right side
+- `properties.carmen:rtohn`
+   - REQUIRED: same as `ltohn` except for the right side
+
 ### Intersections
 
 ```JSON
