@@ -15,11 +15,29 @@ index.
 
 ## Address Features
 
+Address features can encode one or all of several different types of address like data.
+These data types can include address points, interpolation lines, and/or intersections.
+
+Data types can be submitted to carmen individually, or for optimal use, combined together
+into features containing all three, based on geographic proximity/like street name.
+
 ### Address Points
+
+The most basic and common type of address data is a `Point` type. Each point can
+represent any geographic accuracy of address, from entrance, rooftop, to parcel centroid, etc.
+
+Address points must be clustered before being passed into carmen. This is typically
+done by combining addresses based on geographic proximity, like street name, and
+a max size metric to ensure long highways are broken up into smaller town sized units.
+
+Although carmen itself does not perform clustering, [PT2ITP](https://github.com/mapbox/pt2itp).
+can create clusters that follow this format.
+
+*Example JSON for Address Point Only Cluster*
 
 ```JSON
 {
-    "id": 4914387757785060
+    "id": 4914387757785060,
     "type": "Feature",
     "properties": {
         "carmen:addressnumber": [
@@ -44,8 +62,40 @@ index.
         ]
     }
 }
-
 ```
+
+- `id`
+    - REQUIRED: An integer id unique accross features in this index
+- `type`
+    - REQUIRED: Must be a GeoJSON `Feature` type
+- `properties.carmen:addressnumber`
+    - REQUIRED: a flat array of address numbers that have been clustered within this feature
+    - Each address number can be a string or integer type. For example `100, "100", "100a"`
+      are all valid examples of supported addresses
+    - The `properties.carmen:addressnumber` is a parallel array to the coordinates array
+      found at `geometry.coordinates`. This means that the lengths must be the same and that
+      the address number of a given element within this array shares the coordinate with the
+      element in the parallel geometry array. For example the number at `properties.carmen:addressnumber[0]`
+      has its corresponding coordinate at `geometry.coordinates[0]`.
+- `properties.carmen:text`
+    - REQUIRED: The street name of the address feature
+    - The `carmen:text` value can contain multiple synonyms, delimited by a `,`
+    - The primary street name should be the first value, with less relevant, or non-display
+      names included after. The primary name will be returned in the `place_name` output for a
+      geocode, while synonyms, if searched for will apear in `matching_place_name`
+- `properties.carmen:geocoder_stack`
+    - OPTIONAL: This value can be used to allow users to filter results by an index vertical.
+      Internally we populate this with the two letter country code, to allow users to filter
+      values by country.
+- `properties.carmen:center`
+    - REQUIRED: A Calculated center point that falls on the surface of the `MultiPoint` feature.
+- `geometry.type`
+    - REQUIRED: A geojson `MultiPoint` type
+    - As per above, the `geometry.coordinates` array must be parallel two, and equal in length with
+      the `properties.addressnumber` array.
+    - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
+    [Combined Features](#combined-features) section of the document. `GeometryCollections`
+    cannot follow the format as in the example above.
 
 ### Interpolation Lines
 
@@ -114,7 +164,7 @@ index.
 }
 ```
 
-### Putting it all together
+### Combined Features
 
 ```JSON
 {
