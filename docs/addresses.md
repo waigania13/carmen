@@ -9,10 +9,6 @@ for describing the expected format of address data as well as pitfalls you may e
 This document assumes that you have already read the generic [Data Sources](./docs/data-sources.md)
 document.
 
-The document is broken into two sections, firstly the expected format of features within a given
-index, and secondly, useful configuration options to use when configuring and deploying an address
-index.
-
 ## Address Features
 
 Address features can encode one or all of several different types of address like data.
@@ -192,6 +188,9 @@ corresponding element in the geometry coordinates array.
 
 ### Intersections
 
+The final address data type are intersections. Carmen allows the user to search for intersections
+using the syntax `<street> and <street>`
+
 ```JSON
 {
     "id": 4914387757785060,
@@ -215,7 +214,39 @@ corresponding element in the geometry coordinates array.
 }
 ```
 
+- `properties.carmen:intersections`
+    - REQUIRED: A flat array containing a single name of each intersecting street
+      If the intersecting street has multiple synonyms that you want the user to be
+      able to search for, each synonym should have it's own element in the array.
+- `geometry.type`
+    - REQUIRED: A geojson `MultiPoint` type
+    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
+      the `properties.carmen:intersections` array
+    - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
+    [Combined Features](#combined-features) section of the document. `GeometryCollections`
+    cannot follow the format as in the example above.
+
+
 ### Combined Features
+
+Combined features allow a feature to be indexed in a more optimized form. By default, PT2ITP
+outputs combined features.
+
+The major difference between the individual features above and the combined features is simply
+the level of array nestling.
+
+Combined features are always a `GeometryCollection` type, and each of the address features
+defined above are nestled to be parallel with the geometry in the collection array that they refer to.
+
+For example, if a geometry collection has an interpolation MultiLineString in position 0, and an
+address MultiPoint geometry in position 1, then the properties would look like:
+
+```JSON
+{
+    "carmen:addressnumber": [null, [100, 101, 102]]
+}
+```
+
 
 ```JSON
 {
@@ -328,7 +359,6 @@ corresponding element in the geometry coordinates array.
         }]
     }
 }
-```
 
-## Index Features
+```
 
