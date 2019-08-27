@@ -38,7 +38,7 @@ are required for any carmen/address feature and are included here once for simpl
       geocode, while synonyms, if searched for will apear in `matching_place_name`
 - `properties.carmen:geocoder_stack`
     - OPTIONAL: This value can be used to allow users to filter results by an index vertical.
-      Internally we populate this with the two letter country code, to allow users to filter
+      Internally we populate this with the to letter country code, to allow users to filter
       values by country.
 - `properties.carmen:center`
     - REQUIRED: A Calculated center point that falls on the surface of the `MultiPoint` feature.
@@ -163,6 +163,10 @@ as a common gotcha is using the L/R of your orientation to the feature on your s
 - `properties.carmen:rangetype`
     - REQUIRED: Carmen has the potential to support multiple forms of interpolation,
       however at the moment only `tiger` is currently implemented and supported.
+
+Like address points, each element in the following flat arrays refers to the
+corresponding element in the geometry coordinates array.
+
 - `properties.carmen:parityl`
     - REQUIRED: Even/Odd identification for the left side of the linestring.
       Accepted values: `E` (even numbers), `O` (odd numbers) `null`, no interpolation
@@ -178,6 +182,13 @@ as a common gotcha is using the L/R of your orientation to the feature on your s
    - REQUIRED: same as `lfromhn` except for the right side
 - `properties.carmen:rtohn`
    - REQUIRED: same as `ltohn` except for the right side
+- `geometry.type`
+    - REQUIRED: A geojson `MultiLineString` type
+    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
+      the `parity` & `from/to` arrays.
+    - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
+    [Combined Features](#combined-features) section of the document. `GeometryCollections`
+    cannot follow the format as in the example above.
 
 ### Intersections
 
