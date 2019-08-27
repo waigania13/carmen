@@ -518,3 +518,18 @@ tape('indexdocs.generateFrequency', (t) => {
     });
     t.end();
 });
+
+tape('indexdocs.isOutlierDetected', (t) => {
+    t.equal(indexdocs.isOutlierDetected([[1,2,3,4,5]]), false);
+    t.equal(indexdocs.isOutlierDetected([[1,20,30,40,50]]), false);
+    t.equal(indexdocs.isOutlierDetected([[1,200,300,400,500]]), false);
+    t.equal(indexdocs.isOutlierDetected([[1,2,3,4,50]]), true);
+    t.equal(indexdocs.isOutlierDetected([[10,2,3,4,5]]), true);
+    t.equal(indexdocs.isOutlierDetected([[100,200,300,400,5000]]), true);
+
+    // Pulled for a real cluster, where outlier detection removed interpolation data.
+    t.equal(indexdocs.isOutlierDetected([[2000,2600,2651,2807,2950]]), false);
+
+    t.end();
+
+});
