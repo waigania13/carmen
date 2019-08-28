@@ -520,16 +520,95 @@ tape('indexdocs.generateFrequency', (t) => {
 });
 
 tape('indexdocs.isOutlierDetected', (t) => {
-    t.equal(indexdocs.isOutlierDetected([[1,2,3,4,5]]), false);
-    t.equal(indexdocs.isOutlierDetected([[1,20,30,40,50]]), false);
-    t.equal(indexdocs.isOutlierDetected([[1,200,300,400,500]]), false);
-    t.equal(indexdocs.isOutlierDetected([[1,2,3,4,50]]), true);
-    t.equal(indexdocs.isOutlierDetected([[10,2,3,4,5]]), true);
-    t.equal(indexdocs.isOutlierDetected([[100,200,300,400,5000]]), true);
 
-    // Pulled for a real cluster, where outlier detection removed interpolation data.
-    t.equal(indexdocs.isOutlierDetected([[2000,2600,2651,2807,2950]]), false);
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:parityl': [['O'], null, null],
+            'carmen:lfromhn': [[3001], null, null],
+            'carmen:ltohn': [[2001], null, null],
+            'carmen:parityr': [['E'], null, null],
+            'carmen:rfromhn': [[3000], null, null],
+            'carmen:rtohn': [[2000], null, null],
+        }
+    }), false, 'Single ranges pass');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:parityl': [['O'], null, null],
+            'carmen:lfromhn': [[200000], null, null],
+            'carmen:ltohn': [[1], null, null],
+            'carmen:parityr': [['E'], null, null],
+            'carmen:rfromhn': [[3000], null, null],
+            'carmen:rtohn': [[2000], null, null],
+        }
+    }), true, '...unless they are huge');
+
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 99]],
+            'carmen:ltohn':   [[99, 5999]],
+            'carmen:parityl': [['O', 'O']],
+            'carmen:rfromhn': [[null, null]],
+            'carmen:rtohn':   [[null, null]],
+            'carmen:parityr': [[null, null]]
+        }
+    }), false, 'Two ranges always pass');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 51, 99]],
+            'carmen:ltohn':   [[50, 99, 5999]],
+            'carmen:parityl': [['O', 'O']],
+            'carmen:rfromhn': [[null, null]],
+            'carmen:rtohn':   [[null, null]],
+            'carmen:parityr': [[null, null]]
+        }
+    }), true, 'Outlier in three is detected');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 101, 201, 301, 401]],
+            'carmen:ltohn':   [[99, 199, 299, 399, 499]],
+            'carmen:parityl': [['O', 'O', 'O', 'O', 'O']],
+            'carmen:rfromhn': [[null, null, null, null, null]],
+            'carmen:rtohn':   [[null, null, null, null, null]],
+            'carmen:parityr': [[null, null, null, null, null]]
+        }
+    }), false, 'Predictable hundred blocks pass');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 1001, 2001, 3001, 4001]],
+            'carmen:ltohn':   [[99, 1999, 2999, 3999, 4999]],
+            'carmen:parityl': [['O', 'O', 'O', 'O', 'O']],
+            'carmen:rfromhn': [[null, null, null, null, null]],
+            'carmen:rtohn':   [[null, null, null, null, null]],
+            'carmen:parityr': [[null, null, null, null, null]]
+        }
+    }), true, 'A hundred range with low thousands contains outlier');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 10001, 20001, 30001, 40001]],
+            'carmen:ltohn':   [[99, 19999, 29999, 39999, 49999]],
+            'carmen:parityl': [['O', 'O', 'O', 'O', 'O']],
+            'carmen:rfromhn': [[null, null, null, null, null]],
+            'carmen:rtohn':   [[null, null, null, null, null]],
+            'carmen:parityr': [[null, null, null, null, null]]
+        }
+    }), true, 'A hundred range with 10k ranges contains outlier');
+
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+            'carmen:lfromhn': [[1, 201, 301, 401, 501]],
+            'carmen:ltohn':   [[1000, 299, 399, 499, 599]],
+            'carmen:parityl': [['O', 'O', 'O', 'O', 'O']],
+            'carmen:rfromhn': [[null, null, null, null, null]],
+            'carmen:rtohn':   [[null, null, null, null, null]],
+            'carmen:parityr': [[null, null, null, null, null]]
+        }
+    }), true, 'A 10k range with hundred ranges contains outlier');
 
     t.end();
-
 });

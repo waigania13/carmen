@@ -10,8 +10,8 @@
         "carmen:rangetype": "tiger",
         "carmen:parityl": [
             [
-                1,
-                2,
+                "E",
+                "E",
                 null,
                 null
             ],
@@ -28,8 +28,8 @@
         ],
         "carmen:ltohn": [
             [
-                0,
-                10000,
+                700,
+                100,
                 null,
                 null
             ],
@@ -47,7 +47,7 @@
         "carmen:rfromhn": [
             [
                 753,
-                10001,
+                101,
                 null,
                 null
             ],
@@ -55,7 +55,7 @@
         ],
         "carmen:rtohn": [
             [
-                1,
+                101,
                 9,
                 null,
                 null,
