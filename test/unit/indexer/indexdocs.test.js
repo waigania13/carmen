@@ -586,7 +586,7 @@ tape('indexdocs.isOutlierDetected', (t) => {
             'carmen:rtohn':   [[null, null, null, null, null]],
             'carmen:parityr': [[null, null, null, null, null]]
         }
-    }), true, 'A hundred range with low thousands contains outlier');
+    }), false, 'A hundred range with low thousands is ok');
 
     t.equal(indexdocs.isOutlierDetected({
         properties: {
@@ -597,7 +597,7 @@ tape('indexdocs.isOutlierDetected', (t) => {
             'carmen:rtohn':   [[null, null, null, null, null]],
             'carmen:parityr': [[null, null, null, null, null]]
         }
-    }), true, 'A hundred range with 10k ranges contains outlier');
+    }), false, 'A hundred range with 10k ranges is ok');
 
     t.equal(indexdocs.isOutlierDetected({
         properties: {
