@@ -1,5 +1,11 @@
 # Changelog
 
+## 29.1.0
+
+- Replaced mapnik with VTQuery
+- Adjusted sorting in reverse geocoding with scoring to use distance as a tie breaker
+- Tuned minimum distance for distscore from 50 m down to 25 m
+
 ## 29.0.4
 
 - Don't de-duplicate address results based on matched text and context if the matched text is a numerical autocomplete or other short query.
