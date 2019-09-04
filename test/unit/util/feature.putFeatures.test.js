@@ -139,6 +139,13 @@ tape('getFeatureByCover, collision', (t) => {
     });
 });
 
+tape('getFeatureByCover, text collision', (t) => {
+    feature.getFeatureByCover(conf.source, { id:187838, x:32, y:32, score:2000, text:'street a' }, (err, data) => {
+        t.equal(data.id, 3333333333499326);
+        t.end();
+    });
+});
+
 tape('getFeatureByCover, intersection collision', (t) => {
     feature.getFeatureByCover(conf.source, { id:187838, x:32, y:32, score:2000, text:'+intersection street a , b' }, (err, data) => {
         t.pass('doesn\'t crash');
