@@ -90,27 +90,32 @@ can create clusters that follow this format.
       are all valid examples of supported addresses.
     - The `properties.carmen:addressnumber` is a parallel array to the coordinates array
       found at `geometry.coordinates`. This means that the lengths must be the same and that
-      the address number of a given element within this array shares the coordinate with the
-      element in the parallel geometry array. For example the number at `properties.carmen:addressnumber[0]`
-      has its corresponding coordinate at `geometry.coordinates[0]`.
+      the address number of a given element within this array will have the same
+      element position as the coordinates in the parallel geometry array. For example the number at `properties.carmen:addressnumber[0]`
+      has its corresponding coordinates at `geometry.coordinates[0]`.
 - `geometry.type`
     - REQUIRED: A geojson `MultiPoint` type
-    - As per above, the `geometry.coordinates` array must be parallel two, and equal in length with
-      the `properties.addressnumber` array.
     - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
     [Combined Features](#combined-features) section of the document. `GeometryCollections`
     cannot follow the format as in the example above.
+    - As per above, the `geometry.coordinates` array must be parallel two, and equal in length with
+      the `properties.addressnumber` array.
 
 ### Interpolation Lines
 
 Interpolation lines allow the user to search for addresses that do not have a specific known
-point representation. For more information and background on what interpolation is, visit
+point representation. For more information and background on interpolation, visit
 [What is Interpolation](http://wiki.gis.com/wiki/index.php/Geocoding#Address_interpolation)
 
 Like address points, interpolation lines should be clusterd into features that share
-geographic proximity, like street name, and a max length metric. [PT2ITP](https://github.com/mapbox/pt2itp) is
-one tool that will generate this data from scratch. [CENSUS TIGER](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) data can also be converted into
+geographic proximity and like street names.
+- [PT2ITP](https://github.com/mapbox/pt2itp) is a tool that will generate this data given a road network and address points.
+- [CENSUS TIGER](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) data can also be converted into
 this format and used with few modifications.
+
+Below is a compilation of the previous three address-like data formats (points, interpolation, & intersections) combined
+into the single, more optimized indexing format. The only significant difference being the `geometry.type` being
+a `GeometryCollection` and the double nesting of each of the address-like property values.
 
 ```JSON
 {
@@ -155,7 +160,7 @@ this format and used with few modifications.
 Note: Interpolation properties all contain `l` (left) and `r` (right) prefixes. These
 left/right prefixes are based on the direction of the linestring from the 0th coordinate
 onward. When visualizing these values, ensure you check the orientation of the linestring
-as a common gotcha is using the L/R of your orientation to the feature on your screen.
+rather than using the L/R of your orientation to the feature on your screen.
 
 - `properties.carmen:rangetype`
     - REQUIRED: Carmen has the potential to support multiple forms of interpolation,
@@ -166,11 +171,11 @@ corresponding element in the geometry coordinates array.
 
 - `properties.carmen:parityl`
     - REQUIRED: Even/Odd identification for the left side of the linestring.
-      Accepted values: `E` (even numbers), `O` (odd numbers) `null`, no interpolation
+      Accepted values: `E` (even address numbers), `O` (odd address numbers) `null`, no interpolation.
 - `properties.carmen:lfromhn`
-    - REQUIRED: The address that the interpolation segment begins at on the left side.
+    - REQUIRED: The address number that the interpolation segment begins at on the left side.
       Note that this is based purely on the direction of the linestring and as such
-      `lfromhn > ltohn` & `ltohn > lfromhn` are both valid logical statements.
+       lfromhn may be greater than or less than ltohn depending on the direction of the linestring.
 - `properties.carmen:ltohn`
    - REQUIRED: The address at the end of a given segment on the left side.
 - `properties.carmen:parityr`
@@ -181,11 +186,11 @@ corresponding element in the geometry coordinates array.
    - REQUIRED: same as `ltohn` except for the right side
 - `geometry.type`
     - REQUIRED: A geojson `MultiLineString` type
-    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
-      the `parity` & `from/to` arrays.
     - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
     [Combined Features](#combined-features) section of the document. `GeometryCollections`
     cannot follow the format as in the example above.
+    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
+      the `parity` & `from/to` arrays.
 
 ### Intersections
 
@@ -221,23 +226,23 @@ using the syntax `<street> and <street>`
       able to search for, each synonym should have it's own element in the array.
 - `geometry.type`
     - REQUIRED: A geojson `MultiPoint` type
-    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
-      the `properties.carmen:intersections` array
     - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
     [Combined Features](#combined-features) section of the document. `GeometryCollections`
     cannot follow the format as in the example above.
+    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
+      the `properties.carmen:intersections` array
 
 
 ### Combined Features
 
-Combined features allow a feature to be indexed in a more optimized form. By default, PT2ITP
+Combined features allow address-like data to be combined into a
+single GeoJSON Feature and to be indexed in a more optimized form. By default, PT2ITP
 outputs combined features.
 
-The major difference between the individual features above and the combined features is simply
-the level of array nestling.
+The major difference between the individual features above and the combined features is the level of array nesting.
 
 Combined features are always a `GeometryCollection` type, and each of the address features
-defined above are nestled to be parallel with the geometry in the collection array that they refer to.
+defined above are nested to be parallel with the geometry in the collection array that they refer to.
 
 For example, if a geometry collection has an interpolation MultiLineString in position 0, and an
 address MultiPoint geometry in position 1, then the properties would look like:
