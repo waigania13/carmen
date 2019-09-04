@@ -2,7 +2,7 @@
 
 Although carmen is designed to serve as a data agnostic spatial search engine, one of the primary
 use cases is to load address data into the engine. As such, some concessions have been made
-in our data format for the optimization searching address data, that are not applicable
+in our data format to optimize for searching address data that are not applicable
 for other layers of spatial data.  This document will serve as a guideline
 for describing the expected format of address data as well as pitfalls you may encounter.
 
@@ -11,16 +11,15 @@ document.
 
 ## Address Features
 
-Address features can encode one or all of several different types of address like data.
+Address features can encode one or all of several different types of address-like data.
 These data types can include address points, interpolation lines, and/or intersections.
 
 Data types can be submitted to carmen individually, or for optimal use, combined together
 into features containing all three, based on geographic proximity/like street name.
 
-### Required Properties
+### Universal Properties
 
-To keep each section of the document most relevant, these are propeties that
-are required for any carmen/address feature and are included here once for simplicity.
+The following properties are universal for all carmen address-like features:
 
 - `id`
     - REQUIRED: An integer id unique accross features in this index
@@ -31,13 +30,15 @@ are required for any carmen/address feature and are included here once for simpl
     - The `carmen:text` value can contain multiple synonyms, delimited by a `,`
     - The primary street name should be the first value, with less relevant, or non-display
       names included after. The primary name will be returned in the `place_name` output for a
-      geocode, while synonyms, if searched for will apear in `matching_place_name`
+      geocode, while synonyms, if searched for, will apear in `matching_place_name`
+- `properties.carmen:center`
+    - REQUIRED: A calculated center point that falls on the surface of the `MultiPoint` feature.
 - `properties.carmen:geocoder_stack`
     - OPTIONAL: This value can be used to allow users to filter results by an index vertical.
-      Internally we populate this with the to letter country code, to allow users to filter
-      values by country.
-- `properties.carmen:center`
-    - REQUIRED: A Calculated center point that falls on the surface of the `MultiPoint` feature.
+      An index vertical is the stacking of multiple indexes to form a result, ie (address, place, postcode, etc),
+      while an index horizontal would be a single index (ie address or place, or postcode, etc)
+      Internally we populate this with the two letter country code, to allow users to filter
+      values by country. [ISO 3166-1 Alpha2 Standard](https://www.iso.org/iso-3166-country-codes.html)
 
 
 ### Address Points
@@ -86,7 +87,7 @@ can create clusters that follow this format.
 - `properties.carmen:addressnumber`
     - REQUIRED: a flat array of address numbers that have been clustered within this feature
     - Each address number can be a string or integer type. For example `100, "100", "100a"`
-      are all valid examples of supported addresses
+      are all valid examples of supported addresses.
     - The `properties.carmen:addressnumber` is a parallel array to the coordinates array
       found at `geometry.coordinates`. This means that the lengths must be the same and that
       the address number of a given element within this array shares the coordinate with the
