@@ -50,6 +50,7 @@ module.exports = Geocoder;
  * @param {Object<string, CarmenSource>} indexes - A one-to-one mapping from index layer name to a {@link CarmenSource}.
  * @param {Object} options - options
  * @param {PatternReplaceMap} options.tokens - A {@link PatternReplaceMap} used to perform custom string replacement at index and query time.
+ * @param {Object} options.helper - helper functions to used for formatting
  * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see {@link #text-processsing Text Processing} for details.
  *
  */
@@ -62,11 +63,14 @@ function Geocoder(indexes, options) {
     this.indexes = indexes;
 
     const globalTokens = options.tokens || {};
+    const helperFunctions = options.helper || {};
     if (typeof globalTokens !== 'object') throw new Error('globalTokens must be an object');
+    if (typeof helperFunctions !== 'object') throw new Error('helper functions must be an object');
 
     this.replacer = token.createGlobalReplacer(globalTokens);
 
     this.globaltokens = options.tokens;
+    this.helperFunctions = options.helper;
     this.byname = {};
     this.bytype = {};
     this.bysubtype = {};

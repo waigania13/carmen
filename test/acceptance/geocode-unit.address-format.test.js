@@ -11,7 +11,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     queueFeature = addFeature.queueFeature,
     buildQueued = addFeature.buildQueued;
 
-//Test geocoder_address formatting + return place_name as germany style address (address number follows name)
+// Test geocoder_address formatting + return place_name as germany style address (address number follows name)
 (() => {
     const conf = {
         address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_format: '{{address.name}} {{address.number}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
