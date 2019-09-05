@@ -5,6 +5,7 @@ const EventEmitter = require('events').EventEmitter;
 const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
+const Handlebars = require('handlebars');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const termops = require('./lib/text-processing/termops');
@@ -148,12 +149,16 @@ function Geocoder(indexes, options) {
             }
 
             // Fold language templates into geocoder_format object
-            source.geocoder_format = { default: info.geocoder_format };
+            if (info.geocoder_format && typeof info.geocoder_format == 'string') {
+                source.geocoder_format = { default: Handlebars.compile(info.geocoder_format, { noEscape: true }) };
+            } else source.geocoder_format = { default: null };
+
             Object.keys(info).forEach((key) => {
                 if (/^geocoder_format_/.exec(key)) {
-                    source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
+                    source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
                 }
             });
+
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_ignore_order = info.geocoder_ignore_order || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
             source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();

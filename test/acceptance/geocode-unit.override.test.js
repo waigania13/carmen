@@ -21,7 +21,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         address: new mem({
             maxzoom: 14,
             geocoder_address: 1,
-            geocoder_format: '{address._number} {address._name} {place._name} {postcode._name}'
+            geocoder_format: '{{address.number}} {{address.name}} {{place.name}} {{postcode.name}}'
         }, () => {})
     };
 

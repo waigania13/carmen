@@ -9,7 +9,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
     buildQueued = addFeature.buildQueued;
 
 const conf = {
-    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._name} {address._number}', geocoder_name:'address' }, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.name}} {{address.number}}', geocoder_name:'address' }, () => {})
 };
 const c = new Carmen(conf);
 
