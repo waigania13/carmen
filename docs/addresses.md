@@ -98,7 +98,7 @@ can create clusters that follow this format.
     - CAN be a `GeometryCollection` but if so it must follow the rules of defined in the
     [Combined Features](#combined-features) section of the document. `GeometryCollections`
     cannot follow the format as in the example above.
-    - As per above, the `geometry.coordinates` array must be parallel two, and equal in length with
+    - As per above, the `geometry.coordinates` array must be parallel to, and equal in length with
       the `properties.addressnumber` array.
 
 ### Interpolation Lines
@@ -163,7 +163,8 @@ onward. When visualizing these values, ensure you check the orientation of the l
 rather than using the L/R of your orientation to the feature on your screen.
 
 - `properties.carmen:rangetype`
-    - REQUIRED: Carmen has the potential to support multiple forms of interpolation,
+    - REQUIRED: The interpolation format. Accepted values: tiger
+    - Carmen has the potential to support multiple forms of interpolation,
       however at the moment only `tiger` is currently implemented and supported.
 
 Like address points, each element in the following flat arrays refers to the
@@ -253,6 +254,14 @@ address MultiPoint geometry in position 1, then the properties would look like:
 }
 ```
 
+The following is a combined feature that has the properties necessary for address points, interpolation,
+and intersection data combined into a single feature. Note the use of double nesting, and the `GeometryCollection`
+geometry type.
+
+Note: The order of the geometries in the array is solely based on where the non-null values are found
+in the corresponding propreties. For example, a geometry ordering of `ITP Geometry, Points, Intersections` and
+`Intersects, ITP Geometry, Points` are both equally valid. Do not hardcode scripts to assume the position
+of a given type of address-like data in the `geometries` array.
 
 ```JSON
 {
