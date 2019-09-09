@@ -78,7 +78,7 @@ can create clusters that follow this format.
             [ -76.9994929, 38.8237324 ],
             [ -76.9994077, 38.82405 ],
             [ -76.9994363, 38.8237197 ],
-            [ -76.9993205, 38.8240264 ],
+            [ -76.9993205, 38.8240264 ]
         ]
     }
 }
@@ -131,7 +131,7 @@ a `GeometryCollection` and the double nesting of each of the address-like proper
         "carmen:rtohn": [ 631 ],
         "carmen:text": "Galveston Street Southeast,US Highway 123",
         "carmen:geocoder_stack": "us",
-        "carmen:center": [ -76.9989961, 38.8235612 ],
+        "carmen:center": [ -76.9989961, 38.8235612 ]
     },
     "geometry": {
         "type": "MultiLineString",
@@ -283,7 +283,7 @@ of a given type of address-like data in the `geometries` array.
                 "601",
                 "602",
                 "603",
-                "604",
+                "604"
             ],
             null
         ],
@@ -332,7 +332,7 @@ of a given type of address-like data in the `geometries` array.
         ],
         "carmen:text": "Galveston Street Southeast",
         "carmen:geocoder_stack": "us",
-        "carmen:center": [ -76.9989961, 38.8235612 ],
+        "carmen:center": [ -76.9989961, 38.8235612 ]
     },
     "geometry": {
         "type": "GeometryCollection",
@@ -363,7 +363,7 @@ of a given type of address-like data in the `geometries` array.
                 [ -76.9994929, 38.8237324 ],
                 [ -76.9994077, 38.82405 ],
                 [ -76.9994363, 38.8237197 ],
-                [ -76.9993205, 38.8240264 ],
+                [ -76.9993205, 38.8240264 ]
             ]
         },{
             "type": "MultiPoint",
