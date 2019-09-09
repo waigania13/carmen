@@ -1,6 +1,8 @@
 'use strict';
 const format = require('../../../lib/geocoder/format-features');
 const test = require('tape');
+const Carmen = require('../../..');
+const mem = require('../../../lib/sources/api-mem');
 const Handlebars = require('handlebars');
 
 test('toFeature', (t) => {
@@ -381,12 +383,8 @@ test('toFeature + formatter + languageMode=strict + arabic comma', (t) => {
 });
 
 test('toFeatures - should prefer non-interpolated addresses', (t) => {
-    const fakeIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null } };
-    const fakeCarmen = {
-        indexes: { address: fakeIndex },
-        byIdx: { 1: fakeIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({ address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {
@@ -427,12 +425,8 @@ test('toFeatures - should prefer non-interpolated addresses', (t) => {
 });
 
 test('toFeatures - should prefer non-omitted addresses', (t) => {
-    const fakeIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {} };
-    const fakeCarmen = {
-        indexes: { address: fakeIndex },
-        byidx: { 1: fakeIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({ address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {
@@ -473,13 +467,11 @@ test('toFeatures - should prefer non-omitted addresses', (t) => {
 });
 
 test('toFeatures - Consider full context w/o format', (t) => {
-    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, type: 'address' };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, type: 'place' };
-    const fakeCarmen = {
-        indexes: { address: fakeAddressIndex, place: fakeAddressIndex },
-        byidx: { 1: fakePlaceIndex, 2: fakePlaceIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({
+        address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}),
+        place: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {})
+    });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {

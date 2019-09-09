@@ -158,6 +158,7 @@ function Geocoder(indexes, options) {
             } else source.geocoder_format = { default: null };
 
             Object.keys(info).forEach((key) => {
+                // todo make sure they're all strings
                 if (/^geocoder_format_/.exec(key)) {
                     source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
                 }
@@ -180,6 +181,7 @@ function Geocoder(indexes, options) {
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
+            source.helper_function = options.helper;
 
             source.categories = false;
             if (info.geocoder_categories) {
