@@ -1,5 +1,10 @@
 # Changelog
 
+## 29.2.0
+
+- Improve handling of ID collisions that sometimes previously resulted in failing to return any results
+- Adjust relevance calculations to change how different administrative components of a query are weighed relative to one another
+
 ## 29.1.0
 
 - Replaced mapnik with VTQuery
