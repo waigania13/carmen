@@ -67,11 +67,12 @@ const addFeature = require('../../../lib/indexer/addfeature'),
 
 (() => {
     const conf = {
-        country: new mem({ maxzoom:6,  geocoder_format: '{{country.name}}' }, () => {}),
+        country: new mem({ maxzoom:6, geocoder_format: '{{country.name}}' }, () => {}),
         postcode: new mem({ maxzoom: 6, geocoder_format: '{{region.name}}, {{postcode.name}}, {{country.name}}' }, () => {}),
-        place: new mem({ maxzoom: 6,    geocoder_format: '{{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
-        locality: new mem({ maxzoom: 6,  geocoder_format: '{{locality.name}}, {{place.name}} {{region.name}}' }, () => {}),
-        address: new mem({ maxzoom: 6,  geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}} {{postcode.name}}, {{country.name}}',
+        place: new mem({ maxzoom: 6, geocoder_format: '{{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
+        poi: new mem({ maxzoom: 6, geocoder_format: '{{poi.name}}, {{poi.properties.address}}, {{place.name}}, {{country.name}}' }, () => {}),
+        locality: new mem({ maxzoom: 6, geocoder_format: '{{locality.name}}, {{place.name}} {{region.name}}' }, () => {}),
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}} {{postcode.name}}, {{country.name}}',
         geocoder_format_zh: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}}, {{country.name}}',
         geocoder_languages: ['en', 'es', 'zh'] }, () => {})
     };
@@ -192,6 +193,22 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         queueFeature(conf.address, address, t.end);
     });
 
+    tape('index poi', (t) => {
+        const poi = {
+            id:1,
+            properties: {
+                'carmen:text': 'Shake Shack',
+                'carmen:center': [0,0],
+                'address': 'C. C Mar Shopping'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.poi, poi, t.end);
+    });
+
     tape('build queued features', (t) => {
         const q = queue();
         Object.keys(conf).forEach((c) => {
@@ -241,6 +258,15 @@ const addFeature = require('../../../lib/indexer/addfeature'),
             t.end();
         });
     });
+
+    tape('{{poi.address}} test', (t) => {
+        c.geocode('Shake Shack', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'Shake Shack, C. C Mar Shopping, New York, United States');
+            t.end();
+        });
+    });
+
 
     tape('teardown', (t) => {
         context.getTile.cache.reset();
