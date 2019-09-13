@@ -383,7 +383,7 @@ test('toFeature + formatter + languageMode=strict + arabic comma', (t) => {
 });
 
 test('toFeatures - should prefer non-interpolated addresses', (t) => {
-    const geocoder = new Carmen({ address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
+    const geocoder = new Carmen({ address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
     const results = format.toFeatures(geocoder, [
         [
             {
@@ -425,7 +425,7 @@ test('toFeatures - should prefer non-interpolated addresses', (t) => {
 });
 
 test('toFeatures - should prefer non-omitted addresses', (t) => {
-    const geocoder = new Carmen({ address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
+    const geocoder = new Carmen({ address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
     const results = format.toFeatures(geocoder, [
         [
             {
@@ -468,8 +468,8 @@ test('toFeatures - should prefer non-omitted addresses', (t) => {
 
 test('toFeatures - Consider full context w/o format', (t) => {
     const geocoder = new Carmen({
-        address: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}),
-        place: new mem({maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {})
     });
     const results = format.toFeatures(geocoder, [
         [
