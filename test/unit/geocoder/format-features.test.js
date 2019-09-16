@@ -675,3 +675,70 @@ test('toFeatures - Consider full context with format and dedupe', (t) => {
     t.equal(results.features[0].place_name, 'Main Street');
     t.end();
 });
+
+
+test('toFeatures - Dont consider full context and spatialmatch text for short address queries', (t) => {
+    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address' };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place' };
+    const fakeCarmen = {
+        indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
+        byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }
+    };
+    const results = format.toFeatures(fakeCarmen, [
+        [
+            {
+                properties: {
+                    'carmen:index': 'address',
+                    'carmen:idx': 1,
+                    'carmen:address': '100',
+                    'carmen:spatialmatch': { covers: [
+                        { text: '1## ma' }
+                    ] },
+                    'carmen:text': 'Main Street',
+                    'carmen:types': ['address'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'address.1'
+                },
+                geometry: {}
+            },
+            {
+                properties: {
+                    'carmen:index': 'place',
+                    'carmen:idx': 2,
+                    'carmen:text': 'Springfield',
+                    'carmen:types': ['place'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'place.3'
+                }
+            }
+        ], [
+            {
+                properties: {
+                    'carmen:index': 'address',
+                    'carmen:idx': 1,
+                    'carmen:address': '100',
+                    'carmen:spatialmatch': { covers: [
+                        { text: '1## ma' }
+                    ] },
+                    'carmen:text': 'Market st',
+                    'carmen:types': ['address'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'address.2'
+                },
+                geometry: {}
+            },
+            {
+                properties: {
+                    'carmen:index': 'place',
+                    'carmen:idx': 2,
+                    'carmen:text': 'Springfield',
+                    'carmen:types': ['place'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'place.3'
+                }
+            }
+        ]
+    ], {});
+    t.equal(results.features.length, 2, 'Short address queries with the same spatialmatch text should not be deduped');
+    t.end();
+});

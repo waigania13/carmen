@@ -903,6 +903,14 @@
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/@mapbox/tiletype/-/tiletype-0.3.1.tgz#1a1498f6a1b777630e0b4d3a2fed9d94959560cc"
 
+"@mapbox/vtquery@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/vtquery/-/vtquery-0.3.0.tgz#773a9adc264977d0fcc1a1a8576eb526c54a162f"
+  integrity sha512-4ZRqqFvr3TfkNZeT8bL5bxD6FQmmqiEoWk7q7zRnDcDvWRiJHAaWIMb0TK3K2HTnkhtVAU3oo7vl6UJ3QBm1Xw==
+  dependencies:
+    nan "~2.10.0"
+    node-pre-gyp "~0.10.2"
+
 "@turf/bbox-clip@^6.0.3":
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/@turf/bbox-clip/-/bbox-clip-6.0.3.tgz#648b8eef157640b88ad66941644e2566a65f0f3c"
@@ -3810,7 +3818,7 @@ nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
 
-node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0:
+node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0, node-pre-gyp@~0.10.2:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   dependencies:

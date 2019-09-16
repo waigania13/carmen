@@ -213,6 +213,7 @@ tape('100 main st washington dc - without fuzzy', (t) => {
         t.ifError(err);
         t.deepEqual(res.features[0].place_name, '100 Main St, Washington, DC', '100 Main St');
         t.deepEqual(res.features[0].id, 'address.100');
+        console.log(res.features[0].relevance);
         t.assert(res.features[0].relevance === 1, 'relevance = 1');
         t.assert(res.features.length === 1, '1 feature returned');
         t.end();
