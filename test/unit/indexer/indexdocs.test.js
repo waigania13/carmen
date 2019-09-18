@@ -609,15 +609,29 @@ tape.only('indexdocs.isOutlierDetected', (t) => {
         }
     }), true, 'A 10k range with hundred ranges contains outlier');
 
+    // Real range that is fairly normal
+    t.equal(indexdocs.isOutlierDetected({
+        properties: {
+
+            'carmen:lfromhn': [[null, null, null, null, null, null, null]],
+            'carmen:ltohn':   [[null, null, null, null, null, null, null]],
+            'carmen:parityl': [[null, null, null, null, null, null, null]],
+
+            'carmen:rfromhn': [[60, 140, 190, 390, null, 1720, 2590]],
+            'carmen:rtohn':   [[0,  190, 360, 620, null, 1720, 3000]],
+            'carmen:parityr': [['E', 'E', 'E', 'E','E','E','E']]
+        }
+    }), false, 'Molen Road in UT is ok');
+
     // This is a real range w/ the ends compressed 0/1 -> 1000/1001, 10000/10001 -> 6000/60001
     t.equal(indexdocs.isOutlierDetected({
         properties: {
             'carmen:lfromhn': [[null,1900,2050,2118,2200,2228,2292,2452,2480,2514,2602,2646,2678,2684,2714,2816,2823,2824,null,null,null,null,null,null,null,null,null,null,null,null,null,3479,3599,3645,3697,3733,3773,3849,3855,3885,null,null,4009,4033,4081,4103,4141,4189,4207,4333,4344,4382,4472,null,4538,4558,4594,4622,4678,4710,4750,4802,4834,4846,4866,4920,4956,null,5130,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
             'carmen:ltohn': [[null,1000,2050,2140,2214,2290,2390,2452,2512,2584,2640,2646,2678,2708,2772,2820,2823,2824,null,null,null,null,null,null,null,null,null,null,null,null,null,3495,3585,3601,3665,3733,3773,3843,3855,3885,null,null,3999,4033,4081,4095,4133,4163,4197,4219,4372,4408,4506,null,4544,4574,4612,4654,4702,4726,4766,4802,4840,4852,4908,4940,5040,null,6000,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
-            'carmen:parityl': [[null,"E","E","E","E","E","E","E","E","E","E","E","E","E","E","E","O","E",null,null,null,null,null,null,null,null,null,null,null,null,null,"O","O","O","O","O","O","O","O","O",null,null,"O","O","O","O","O","O","O","O","E","E","E",null,"E","E","E","E","E","E","E","E","E","E","E","E","E",null,"E",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
+            'carmen:parityl': [[null,'E','E','E','E','E','E','E','E','E','E','E','E','E','E','E','O','E',null,null,null,null,null,null,null,null,null,null,null,null,null,'O','O','O','O','O','O','O','O','O',null,null,'O','O','O','O','O','O','O','O','E','E','E',null,'E','E','E','E','E','E','E','E','E','E','E','E','E',null,'E',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
             'carmen:rfromhn': [[1000,1861,null,null,null,null,2325,2429,2471,2515,2605,2649,2667,2691,2723,2805,null,null,2889,2896,3003,3028,3147,3154,3194,3220,3288,3289,3312,3408,3411,3484,3530,3650,3700,3730,3746,null,null,null,3934,3964,null,4054,null,4114,null,4184,4202,4330,4363,4383,4439,4517,4533,4557,null,4627,4673,null,4735,4791,null,null,4865,4923,4963,5051,5085,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
             'carmen:rtohn': [[2903,1871,null,null,null,null,2331,2443,2535,2589,2633,2659,2667,2699,2781,2805,null,null,2899,2888,3005,2900,3205,3070,3166,3204,3250,3317,3312,3322,3411,3484,3504,3568,3648,3730,3746,null,null,null,3930,3946,null,4054,null,4114,null,4166,4196,4210,4375,4417,4507,4517,4549,4575,null,4627,4697,null,4785,4799,null,null,4895,4935,5045,5073,6001,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null],
-            'carmen:parityr': [["O","O",null,null,null,null,"O","O","O","O","O","O","O","O","O","O",null,null,"O","E","O","E","O","E","E","E","E","O","E","E","O","E","E","E","E","E","E",null,null,null,"E","E",null,"E",null,"E",null,"E","E","E","O","O","O","O","O","O",null,"O","O",null,"O","O",null,null,"O","O","O","O","O",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null]
+            'carmen:parityr': [['O','O',null,null,null,null,'O','O','O','O','O','O','O','O','O','O',null,null,'O','E','O','E','O','E','E','E','E','O','E','E','O','E','E','E','E','E','E',null,null,null,'E','E',null,'E',null,'E',null,'E','E','E','O','O','O','O','O','O',null,'O','O',null,'O','O',null,null,'O','O','O','O','O',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],null,null]
         }
     }), false,  'Chamblee Tucker Road in Atlanta is ok');
 
