@@ -152,10 +152,20 @@ function Geocoder(indexes, options) {
                 source.shardlevel = info.geocoder_shardlevel || 0;
             }
 
+
             // Fold language templates into geocoder_format object
             if (info.geocoder_format && typeof info.geocoder_format == 'string') {
+                const p = /(?:[^{]*)\{\{([^.]+)\.[^}]+\}\}/y;
+                const types = new Set();
+                let m;
+                // eslint-disable-next-line no-cond-assign
+                while (m = p.exec(info.geocoder_format)) types.add(m[1]);
+                source.geocoder_types = types;
                 source.geocoder_format = { default: Handlebars.compile(info.geocoder_format, { noEscape: true }) };
-            } else source.geocoder_format = { default: null };
+            } else {
+                source.geocoder_format = { default: null };
+                source.geocoder_types = false;
+            }
 
             Object.keys(info).forEach((key) => {
                 // todo make sure they're all strings
