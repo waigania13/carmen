@@ -1,6 +1,6 @@
 # Changelog
 
-## 29.2.1
+## 29.3.0
 
 - Increase VERIFYMATCH_STACK_LIMIT to 100
 - Add backfill for loading more contexts if relevance doesnt match expected relevance from spatialmatch
