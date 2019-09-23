@@ -1,5 +1,10 @@
 # Changelog
 
+## 29.2.1
+
+- Increase VERIFYMATCH_STACK_LIMIT to 100
+- Add backfill for loading more contexts if relevance doesnt match expected relevance from spatialmatch
+
 ## 29.2.0
 
 - Improve handling of ID collisions that sometimes previously resulted in failing to return any results
