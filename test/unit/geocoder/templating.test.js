@@ -1,4 +1,4 @@
-const Handlebars = require('handlebars');
+'use strict';
 const tape = require('tape');
 const queue = require('d3-queue').queue;
 const Carmen = require('../../..');
@@ -72,9 +72,14 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         place: new mem({ maxzoom: 6, geocoder_format: '{{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
         poi: new mem({ maxzoom: 6, geocoder_format: '{{poi.name}}, {{poi.properties.address}}, {{place.name}}, {{country.name}}' }, () => {}),
         locality: new mem({ maxzoom: 6, geocoder_format: '{{locality.name}}, {{place.name}} {{region.name}}' }, () => {}),
-        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}} {{postcode.name}}, {{country.name}}',
-        geocoder_format_zh: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}}, {{country.name}}',
-        geocoder_languages: ['en', 'es', 'zh'] }, () => {})
+        address: new mem(
+            {
+                maxzoom: 6, geocoder_address: 1,
+                geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}} {{postcode.name}}, {{country.name}}',
+                geocoder_format_zh: '{{address.number}} {{address.name}} {{place.name}}, {{locality.name}}, {{country.name}}',
+                geocoder_languages: ['en', 'es', 'zh']
+            }, () => {}
+        )
     };
     const c = new Carmen(conf);
     tape('index country', (t) => {

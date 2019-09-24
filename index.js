@@ -170,7 +170,11 @@ function Geocoder(indexes, options) {
             Object.keys(info).forEach((key) => {
                 // todo make sure they're all strings
                 if (/^geocoder_format_/.exec(key)) {
-                    source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
+                    if (typeof info[key] === 'string') {
+                        source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
+                    } else {
+                        source.geocoder_format[key.replace(/^geocoder_format_/, '')] = null;
+                    }
                 }
             });
 
