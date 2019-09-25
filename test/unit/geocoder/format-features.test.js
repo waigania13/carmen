@@ -602,8 +602,8 @@ test('toFeatures - Consider full context w/o format and dedupe', (t) => {
 test('toFeatures - Consider full context with format and dedupe', (t) => {
     const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {
         default: Handlebars.compile('{{address.name}}', { noEscape: true })
-    }, type: 'address', geocoder_types: new Set(['address']) };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, geocoder_types: false, type: 'place' };
+    }, type: 'address', geocoder_feature_types_in_format: new Set(['address']) };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, geocoder_feature_types_in_format: false, type: 'place' };
     const fakeCarmen = {
         indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
         byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }
@@ -671,8 +671,8 @@ test('toFeatures - Consider full context with format and dedupe', (t) => {
 
 
 test('toFeatures - Dont consider full context and spatialmatch text for short address queries', (t) => {
-    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address', geocoder_types: false };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place', geocoder_types: false };
+    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address', geocoder_feature_types_in_format: false };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place', geocoder_feature_types_in_format: false };
     const fakeCarmen = {
         indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
         byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }

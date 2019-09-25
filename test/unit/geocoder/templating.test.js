@@ -19,7 +19,7 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         }, () => {})
     };
     const opts = {
-        helper: {
+        formatHelpers: {
             toUpper: function(str) {
                 return str.toUpperCase();
             },

@@ -63,14 +63,14 @@ function Geocoder(indexes, options) {
     this.indexes = indexes;
 
     const globalTokens = options.tokens || {};
-    const helperFunctions = options.helper || {};
+    const formatHelpers = options.formatHelpers || {};
     if (typeof globalTokens !== 'object') throw new Error('globalTokens must be an object');
-    if (typeof helperFunctions !== 'object') throw new Error('helper functions must be an object');
+    if (typeof formatHelpers !== 'object') throw new Error('helper functions must be an object');
 
     this.replacer = token.createGlobalReplacer(globalTokens);
 
     this.globaltokens = options.tokens;
-    this.helperFunctions = options.helper;
+    this.formatHelpers = options.formatHelpers;
     this.byname = {};
     this.bytype = {};
     this.bysubtype = {};
@@ -160,15 +160,14 @@ function Geocoder(indexes, options) {
                 let m;
                 // eslint-disable-next-line no-cond-assign
                 while (m = p.exec(info.geocoder_format)) types.add(m[1]);
-                source.geocoder_types = types;
+                source.geocoder_feature_types_in_format = types;
                 source.geocoder_format = { default: Handlebars.compile(info.geocoder_format, { noEscape: true }) };
             } else {
                 source.geocoder_format = { default: null };
-                source.geocoder_types = false;
+                source.geocoder_feature_types_in_format = false;
             }
 
             Object.keys(info).forEach((key) => {
-                // todo make sure they're all strings
                 if (/^geocoder_format_/.exec(key)) {
                     if (typeof info[key] === 'string') {
                         source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
@@ -195,7 +194,7 @@ function Geocoder(indexes, options) {
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
-            source.helper_function = options.helper;
+            source.format_helpers = options.formatHelpers;
 
             source.categories = false;
             if (info.geocoder_categories) {
