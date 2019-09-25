@@ -1,5 +1,10 @@
 # Changelog
 
+## 29.3.1
+
+- Decrease VERIFYMATCH_STACK_LIMIT to 50
+- Decrease MAX_CONTEXTS_LIMIT to 20
+
 ## 29.3.0
 
 - Increase VERIFYMATCH_STACK_LIMIT to 100
