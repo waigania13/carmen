@@ -13,13 +13,13 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         region: new mem({ maxzoom: 6 }, () => {}),
         place: new mem({ maxzoom: 6 }, () => {}),
         postcode: new mem({ maxzoom: 6,
-            geocoder_format: '{place._name}, {region._name} {postcode._name}',
+            geocoder_format: '{{place.name}}, {{region.name}} {{postcode.name}}',
             geocoder_ignore_order: true
         },() => {}),
         address: new mem({
             maxzoom: 6,
             geocoder_address:1,
-            geocoder_format: '{address._number} {address._name}, {place._name}, {region._name} {postcode._name}',
+            geocoder_format: '{{address.number}} {{address.name}}, {{place.name}}, {{region.name}} {{postcode.name}}',
             geocoder_tokens: { 'Lane': 'La' }
         }, () => {}),
     };

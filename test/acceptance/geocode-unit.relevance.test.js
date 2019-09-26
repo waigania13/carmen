@@ -15,7 +15,7 @@ const conf = {
         maxzoom: 6,
         geocoder_address: 1,
         geocoder_tokens: { 'Drive': 'Dr' },
-        geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}'
+        geocoder_format: '{{country.name}}, {{region.name}}{{place.name}}{{address.name}}{{address.number}}'
     }, () => {})
 };
 const c = new Carmen(conf);

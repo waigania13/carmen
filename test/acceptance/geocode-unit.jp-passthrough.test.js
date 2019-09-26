@@ -31,7 +31,7 @@ const conf = {
         geocoder_address: 1,
         geocoder_name:'address',
         geocoder_tokens: tokens,
-        geocoder_format: '{country._name}, {region._name}{place._name}{locality._name}{address._name}{address._number}'
+        geocoder_format: '{{country.name}}, {{region.name}}{{place.name}}{locality._name}{{address.name}}{{address.number}}'
     }, () => {})
 };
 const c = new Carmen(conf);

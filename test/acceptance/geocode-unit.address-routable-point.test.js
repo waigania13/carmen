@@ -9,7 +9,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test non-interpolated address routable_points
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -78,7 +78,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test interpolated address
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -133,7 +133,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test feature that doesn't have linestring data
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -278,7 +278,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test reverse geocoding
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {
@@ -346,7 +346,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 // Test where limit is > 1, all address features should have routable_points
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{address._number} {address._name} {place._name}, {region._name} {postcode._name}, {country._name}' }, () => {}),
+        address: new mem({ maxzoom: 6,  geocoder_address:1, geocoder_routable:1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
     const address1 = {

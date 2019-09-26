@@ -32,6 +32,7 @@
     "err-code": "^1.1.2",
     "fs-extra": "^7.0.0",
     "geojson-rewind": "^0.3.1",
+    "handlebars": "^4.1.2",
     "iter-tools": "^6.1.6",
     "leven": "^3.1.0",
     "mapnik": "^4.0.2",
