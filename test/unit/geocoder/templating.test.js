@@ -289,7 +289,7 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         });
     });
 
-    tape('!-- comment -- test', (t) => {
+    tape('!-- comment -- in format test', (t) => {
         c.geocode('California', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'California');
@@ -297,6 +297,67 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         });
     });
 
+    tape('teardown', (t) => {
+        context.getTile.cache.reset();
+        t.end();
+    });
+})();
+
+(() => {
+    const conf = {
+        address: new mem({
+            maxzoom: 6, geocoder_address: 1, geocoder_name:'address', geocoder_tokens: { 'Street': 'st' }, geocoder_format: '{{!-- comment --}} {{address.number}} {{address.name}} {{place.name}}, {{locality.name}} {{postcode.name}}, {{country.name}}'
+        }, () => {})
+    };
+    const c = new Carmen(conf);
+
+    tape('index address', (t) => {
+        const addresses = [
+            {
+                id:1,
+                properties: {
+                    'carmen:text':'Main st',
+                    'carmen:center':[0,0],
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [0,0]
+                }
+            },
+            {
+                id:2,
+                properties: {
+                    'carmen:text':'Main street',
+                    'carmen:center':[0,0],
+                    'carmen:addressnumber': ['1','2','3','4','5']
+                },
+                geometry: {
+                    type: 'MultiPoint',
+                    coordinates: [[0,0],[1,1],[2,2],[3,3],[4,4]]
+                }
+            }
+        ];
+        queueFeature(conf.address, addresses, t.end);
+    });
+
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('Main st -- will allow dedupes because format string contains special characters', (t) => {
+        c.geocode('Main st', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features.length, 2);
+            t.deepEqual(res.features.map((v) => v.place_name), ['Main st', 'Main street']);
+            t.end();
+        });
+    });
 
     tape('teardown', (t) => {
         context.getTile.cache.reset();
