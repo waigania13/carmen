@@ -152,14 +152,19 @@ function Geocoder(indexes, options) {
                 source.shardlevel = info.geocoder_shardlevel || 0;
             }
 
-
             // Fold language templates into geocoder_format object
             if (info.geocoder_format && typeof info.geocoder_format == 'string') {
-                const p = /(?:[^{]*)\{\{([^.]+)\.[^}]+\}\}/y;
-                const types = new Set();
+                const p = /\{\{(.*?)\}\}/g;
+                let types = new Set();
                 let m;
                 // eslint-disable-next-line no-cond-assign
-                while (m = p.exec(info.geocoder_format)) types.add(m[1]);
+                while (m = p.exec(info.geocoder_format)) {
+                    if (/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(m[1])) {
+                        types = null;
+                        break;
+                    }
+                    else types.add(m[1].split('.')[0]);
+                }
                 source.geocoder_feature_types_in_format = types;
                 source.geocoder_format = { default: Handlebars.compile(info.geocoder_format, { noEscape: true }) };
             } else {

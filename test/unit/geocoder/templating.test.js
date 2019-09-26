@@ -72,6 +72,7 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         place: new mem({ maxzoom: 6, geocoder_format: '{{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}' }, () => {}),
         poi: new mem({ maxzoom: 6, geocoder_format: '{{poi.name}}, {{poi.properties.address}}, {{place.name}}, {{country.name}}' }, () => {}),
         locality: new mem({ maxzoom: 6, geocoder_format: '{{locality.name}}, {{place.name}} {{region.name}}' }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_format: '{{!-- comment --}} {{region.name}}' }, () => {}),
         address: new mem(
             {
                 maxzoom: 6, geocoder_address: 1,
@@ -214,6 +215,22 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         queueFeature(conf.poi, poi, t.end);
     });
 
+    tape('index region - !-- format', (t) => {
+        const region = {
+            id:1,
+            properties: {
+                'carmen:text': 'California',
+                'carmen:center': [0,0]
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        t.equals(conf.region.geocoder_feature_types_in_format, null, 'special characters in the format string are set to null');
+        queueFeature(conf.region, region, t.end);
+    });
+
     tape('build queued features', (t) => {
         const q = queue();
         Object.keys(conf).forEach((c) => {
@@ -268,6 +285,14 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         c.geocode('Shake Shack', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features[0].place_name, 'Shake Shack, C. C Mar Shopping, New York, United States');
+            t.end();
+        });
+    });
+
+    tape('!-- comment -- test', (t) => {
+        c.geocode('California', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].place_name, 'California');
             t.end();
         });
     });
