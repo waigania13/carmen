@@ -195,6 +195,7 @@ function Geocoder(indexes, options) {
             source.geocoder_intersection_token = info.geocoder_intersection_token || '';
             source.geocoder_coalesce_radius = info.geocoder_coalesce_radius;
 
+            source.geocoder_frequent_word_list = info.geocoder_frequent_word_list;
             source.categorized_replacement_words = token.categorizeTokenReplacements(info.geocoder_tokens);
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);

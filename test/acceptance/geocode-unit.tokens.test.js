@@ -495,3 +495,48 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
+
+(() => {
+    const conf = {
+        address: new mem({
+            maxzoom: 6,
+            geocoder_frequent_word_list: ['Street', 'North']
+        }, () => {})
+    };
+    const c = new Carmen(conf);
+    tape('index address', (t) => {
+        const address = {
+            id:1,
+            properties: {
+                'carmen:text':'North Capitol Street',
+                'carmen:center':[0,0],
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
+        queueFeature(conf.address, address, () => { buildQueued(conf.address, t.end); });
+    });
+    tape('test frequency word list - capitol street', (t) => {
+        c.geocode('capitol street', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 0.8, 'capitol street indexed with lower relevance');
+            t.end();
+        });
+    });
+    tape('test frequency word list - north capitol street', (t) => {
+        c.geocode('north capitol street', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance, 1, 'north capitol street indexed with relevance of 1');
+            t.end();
+        });
+    });
+    tape('test frequency word list - north street', (t) => {
+        c.geocode('north street', {}, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features.length, 0, 'reduce relevance for features that have more than 1 frequent word');
+            t.end();
+        });
+    });
+})();
