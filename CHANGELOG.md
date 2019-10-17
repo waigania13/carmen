@@ -1,5 +1,10 @@
 # Changelog
 
+## 30.3.1
+
+- Added missing JSDocs
+- Added missing changelog entries
+
 ## 30.3.0
 
 - Improve outlier detection for interpolation ranges
