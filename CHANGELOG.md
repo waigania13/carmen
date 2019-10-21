@@ -1,5 +1,9 @@
 # Changelog
 
+## 30.3.2
+
+- Tweaked result sort order for address results outside of interpolation ranges in proximity queries
+
 ## 30.3.1
 
 - Added missing JSDocs
