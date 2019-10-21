@@ -132,7 +132,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('test tiger interpolation house number', (t) => {
-        c.geocode('102 f', {proximity: [0, 0.5]}, (err, res) => {
+        c.geocode('102 f', { proximity: [0, 0.5] }, (err, res) => {
             t.equals(res.features.length, 2, 'got both features back');
             t.equals(res.features[0].id, 'address.1', 'got back omitted feature first with close prox point');
             t.equals(res.features[0].geometry.omitted, true, 'omitted set on address.1');
@@ -144,7 +144,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     });
 
     tape('test tiger interpolation house number', (t) => {
-        c.geocode('102 f', {proximity: [0, -3]}, (err, res) => {
+        c.geocode('102 f', { proximity: [0, -3] }, (err, res) => {
             t.equals(res.features.length, 2, 'got both features back');
             t.equals(res.features[0].id, 'address.2', 'got back non-omitted feature first');
             t.equals(typeof res.features[0].geometry.omitted, 'undefined', 'omitted not set on address.2');
