@@ -286,6 +286,7 @@
                 "carmen:extid": "place.1",
                 "carmen:tmpid": 67108865,
                 "carmen:distance": 0,
+                "carmen:inside_radius": null,
                 "carmen:position": 0,
                 "carmen:spatialmatch": {
                     "relev": 1,
