@@ -26,7 +26,7 @@ test('termops.getIndexablePhrases', (t) => {
 
 test('termops.getIndexablePhrases - frequentWords', (t) => {
     const tokens = ['main', 'st', 'nw'];
-    const frequentWords = ['st', 'nw'];
+    const frequentWords = new Set(['st', 'nw']);
     const freq = {};
     freq['__COUNT__'] = [10];
 
