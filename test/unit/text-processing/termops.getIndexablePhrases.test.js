@@ -21,10 +21,35 @@ test('termops.getIndexablePhrases', (t) => {
             'phrase': 'main'
         }
     ]);
-
     t.end();
 });
 
+test('termops.getIndexablePhrases - frequentWords', (t) => {
+    const tokens = ['main', 'st', 'nw'];
+    const frequentWords = ['st', 'nw'];
+    const freq = {};
+    freq['__COUNT__'] = [10];
+
+    t.deepEqual(termops.getIndexablePhrases({ tokens } , freq, frequentWords), [
+        {
+            'relev': 1,
+            'text': 'main st nw',
+            'phrase': 'main st nw',
+        },
+        {
+            'relev': 0.8,
+            'text': 'main st',
+            'phrase': 'main st'
+        },
+        {
+            'relev': 0.8,
+            'text': 'main nw',
+            'phrase': 'main nw'
+        }
+    ]);
+
+    t.end();
+});
 
 test('termops.getIndexablePhrases (weight sieve)', (t) => {
     const tokens = ['jose', 'de', 'la', 'casa'];
