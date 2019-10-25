@@ -1,5 +1,11 @@
 # Changelog
 
+## 30.4.0
+
+- Add and update various limiting constants for verifymatch
+- Add backfill process for loading more features as needed in verifymatch, up to 50
+- Add named callbacks for most verifymatch functions
+
 ## 30.3.2
 
 - Tweaked result sort order for address results outside of interpolation ranges in proximity queries
