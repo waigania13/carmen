@@ -1,5 +1,10 @@
 # Changelog
 
+## 30.5.0
+
+- Added modular address style matching
+- Added Queens address style
+
 ## 30.4.0
 
 - Add and update various limiting constants for verifymatch
