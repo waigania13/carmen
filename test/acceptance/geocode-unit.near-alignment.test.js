@@ -7,9 +7,9 @@ const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 const conf = {
-    region: new mem({maxzoom: 6}, () => {}),
-    postcode: new mem({geocoder_ignore_order: true, maxzoom: 12}, () => {}),
-    place: new mem({maxzoom: 12}, () => {}),
+    region: new mem({ maxzoom: 6 }, () => {}),
+    postcode: new mem({ geocoder_ignore_order: true, maxzoom: 12 }, () => {}),
+    place: new mem({ maxzoom: 12 }, () => {}),
     address: new mem({
         maxzoom: 14,
         geocoder_address: 1,
