@@ -26,7 +26,7 @@ tape('index region', (t) => {
         properties: {
             'carmen:center': [0,0],
             'carmen:score': 50,
-            'carmen:text':'georgia'
+            'carmen:text':'georgia,xeorxia'
         },
         geometry: {
             type: 'Polygon',
@@ -90,7 +90,7 @@ tape('index place 1', (t) => {
     const place = {
         id:1,
         properties: {
-            'carmen:text':'athens',
+            'carmen:text':'athens,xeorxia',
             'carmen:center': [-5,-5],
             'carmen:score': 50
         },
@@ -171,6 +171,20 @@ tape('Check misaligned one', (t) => {
         t.equals(res.features.length, 2);
         t.assert(res.features[0].relevance < 1, 'relevance < 1');
         t.assert(res.features[0].relevance > res.features[1].relevance, 'near-aligned relevance beats city relevance');
+        t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
+        t.end();
+    });
+});
+
+tape('Check version with synonym', (t) => {
+    c.geocode('100 main st xeorxia 80139', { limit_verify: 10 }, (err, res) => {
+        // "xeorxia" is both a synonym for our region feature (which correctly aligns)
+        // and our place feature "athens" (which does not). We should still get the
+        // full relevance here, because the word "xeorxia" should be claimed by the
+        // correctly-aligned feature rather than the near-miss
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.equals(res.features[0].relevance, 1);
         t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
         t.end();
     });
