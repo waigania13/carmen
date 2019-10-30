@@ -1,5 +1,10 @@
 # Changelog
 
+## 30.6.0
+
+- Use a list of frequent words to drop common words while indexing phrases
+- Add logic for giving partial relevance credit to close-but-misaligned context features
+
 ## 30.5.0
 
 - Added modular address style matching
