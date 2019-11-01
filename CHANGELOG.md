@@ -1,5 +1,8 @@
 # Changelog
 
+## 30.6.1
+- Adjust the penalty applied to longer stacks to penalize stacks of length 2 less
+
 ## 30.6.0
 
 - Use a list of frequent words to drop common words while indexing phrases
