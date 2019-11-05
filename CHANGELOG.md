@@ -1,5 +1,10 @@
 # Changelog
 
+## 30.7.0
+
+- Upgrade VTQuery to 0.5.0
+- Require polygons to be direct hits on reverse geocodes
+
 ## 30.6.1
 - Adjust the penalty applied to longer stacks to penalize stacks of length 2 less
 
