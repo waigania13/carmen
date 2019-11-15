@@ -12,7 +12,7 @@ const conf = {
     country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     place: new mem(null, () => {}),
-    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}' }, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{{country.name}}, {{region.name}}{{place.name}}{{address.name}}{{address.number}}' }, () => {})
 };
 const c = new Carmen(conf);
 

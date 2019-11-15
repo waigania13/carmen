@@ -64,6 +64,7 @@ test('contextVector deflate', (t) => {
                 'carmen:center': [-99.6932, 37.2453],
                 'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
+                'carmen:idx': 0,
                 'carmen:geomtype': 'Point',
                 'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
@@ -126,6 +127,7 @@ test('contextVector gzip', (t) => {
                 'carmen:center': [-99.6932, 37.2453],
                 'carmen:extid': 'test.1',
                 'carmen:index': 'testA',
+                'carmen:idx': 0,
                 'carmen:geomtype': 'Point',
                 'carmen:tmpid': 1,
                 'carmen:text': 'United States of America, United States, America, USA, US',
@@ -671,9 +673,9 @@ test('Context eliminates correct properties', (t) => {
             context(c, [0, 0], { full: false }, (err, contexts) => {
                 t.ifError(err);
                 let contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:idx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
                 contextObj = contexts.pop();
-                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
+                t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:idx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text'].sort(), 'found expected keys on region object');
                 t.end();
             });
         });

@@ -11,8 +11,8 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, () => {}),
-        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {}),
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{{country.name}}' }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{{region.name}} {{country.name}}' }, () => {}),
         poi: new mem({
             maxzoom: 14,
             geocoder_categories: [
@@ -182,7 +182,7 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._number} {address._name}' }, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}}' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {

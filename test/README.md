@@ -39,7 +39,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
 // satisfies the constraints - https://github.com/mapbox/tilelive/blob/master/API.md
 
 const conf = {
-    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._name} {address._number}', geocoder_name:'address' }, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.name}} {{address.number}}', geocoder_name:'address' }, () => {})
 };
 
 //instantiate a geocoder

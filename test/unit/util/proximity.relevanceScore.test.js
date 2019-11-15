@@ -14,7 +14,6 @@ function calculateRelevanceScore(input) {
             feat.properties['carmen:spatialmatch'].relev,
             feat.properties['carmen:scoredist'],
             feat.properties['carmen:address'],
-            feat.geometry && feat.geometry.omitted,
             feat.properties['carmen:score'] < 0
         );
     }
@@ -28,12 +27,9 @@ test('calculate relevanceScore', (t) => {
     t.equal(proximity.relevanceScore(minRelev, minScoredist), 0, 'min relevanceScore value is 0');
     t.equal(proximity.relevanceScore(maxRelev, maxScoredist), 1, 'max relevanceScore value is 1');
     t.ok(proximity.relevanceScore(maxRelev, minScoredist, null) < proximity.relevanceScore(maxRelev, maxScoredist), 'features with carmen:address of null receive a lower relevanceScore');
-    t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, true) < proximity.relevanceScore(maxRelev, maxScoredist, 123), 'features with geometry.omitted receive a lower relevanceScore');
-    t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, null, true) < proximity.relevanceScore(maxRelev, maxScoredist, 123, null), 'ghost features receive a lower relevanceScore');
+    t.ok(proximity.relevanceScore(maxRelev, minScoredist, 123, true) < proximity.relevanceScore(maxRelev, maxScoredist, 123, false), 'ghost features receive a lower relevanceScore');
     t.equal(proximity.relevanceScore(minRelev, minScoredist, null), 0, 'min relevanceScore with carmen:address of null is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, true), 0, 'min relevanceScore with geometry.omitted is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, null, true), 0, 'min relevanceScore with ghost feature is 0');
-    t.equal(proximity.relevanceScore(minRelev, minScoredist, null, true, true), 0, 'min relevanceScore with carmen:address of null, geometry.omitted, and ghost feature is 0');
+    t.equal(proximity.relevanceScore(minRelev, minScoredist, 123, true), 0, 'min relevanceScore with ghost feature is 0');
     t.end();
 });
 

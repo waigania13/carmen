@@ -5,6 +5,7 @@ const EventEmitter = require('events').EventEmitter;
 const queue = require('d3-queue').queue;
 const fs = require('fs');
 const crypto = require('crypto');
+const Handlebars = require('handlebars');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const carmenCore = require('@mapbox/carmen-core');
@@ -49,6 +50,7 @@ module.exports = Geocoder;
  * @param {Object<string, CarmenSource>} indexes - A one-to-one mapping from index layer name to a {@link CarmenSource}.
  * @param {Object} options - options
  * @param {PatternReplaceMap} options.tokens - A {@link PatternReplaceMap} used to perform custom string replacement at index and query time.
+ * @param {Object} options.helper - helper functions to used for formatting
  * @param {Object<string, (string|Function)>} options.geocoder_inverse_tokens - for reversing abbreviations. Replace key with a stipulated string value or pass it to a function that returns a string. see {@link #text-processsing Text Processing} for details.
  *
  */
@@ -61,11 +63,14 @@ function Geocoder(indexes, options) {
     this.indexes = indexes;
 
     const globalTokens = options.tokens || {};
+    const formatHelpers = options.formatHelpers || {};
     if (typeof globalTokens !== 'object') throw new Error('globalTokens must be an object');
+    if (typeof formatHelpers !== 'object') throw new Error('helper functions must be an object');
 
     this.replacer = token.createGlobalReplacer(globalTokens);
 
     this.globaltokens = options.tokens;
+    this.formatHelpers = options.formatHelpers;
     this.byname = {};
     this.bytype = {};
     this.bysubtype = {};
@@ -140,12 +145,35 @@ function Geocoder(indexes, options) {
             }
 
             // Fold language templates into geocoder_format object
-            source.geocoder_format = { default: info.geocoder_format };
+            if (info.geocoder_format && typeof info.geocoder_format == 'string') {
+                const p = /\{\{(.*?)\}\}/g;
+                let types = new Set();
+                let m;
+                // eslint-disable-next-line no-cond-assign
+                while (m = p.exec(info.geocoder_format)) {
+                    if (/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(m[1])) {
+                        types = null;
+                        break;
+                    }
+                    else types.add(m[1].split('.')[0]);
+                }
+                source.geocoder_feature_types_in_format = types;
+                source.geocoder_format = { default: Handlebars.compile(info.geocoder_format, { noEscape: true }) };
+            } else {
+                source.geocoder_format = { default: null };
+                source.geocoder_feature_types_in_format = false;
+            }
+
             Object.keys(info).forEach((key) => {
                 if (/^geocoder_format_/.exec(key)) {
-                    source.geocoder_format[key.replace(/^geocoder_format_/, '')] = info[key];
+                    if (typeof info[key] === 'string') {
+                        source.geocoder_format[key.replace(/^geocoder_format_/, '')] = Handlebars.compile(info[key], { noEscape: true });
+                    } else {
+                        source.geocoder_format[key.replace(/^geocoder_format_/, '')] = null;
+                    }
                 }
             });
+
             source.geocoder_address_order = info.geocoder_address_order || 'ascending'; // get expected address order from index-level setting
             source.geocoder_ignore_order = info.geocoder_ignore_order || false; // if true, don't apply `backy` penalty if this layer's matches are not in the expected order (eg US postcodes)
             source.geocoder_layer = (info.geocoder_layer || '').split('.').shift();
@@ -159,10 +187,18 @@ function Geocoder(indexes, options) {
             source.geocoder_intersection_token = info.geocoder_intersection_token || '';
             source.geocoder_coalesce_radius = info.geocoder_coalesce_radius;
 
+            source.geocoder_frequent_word_list = false;
+            if (info.geocoder_frequent_word_list) {
+                source.geocoder_frequent_word_list = new Set();
+                for (const word of info.geocoder_frequent_word_list) {
+                    source.geocoder_frequent_word_list.add(word.toLowerCase());
+                }
+            }
             source.categorized_replacement_words = token.categorizeTokenReplacements(info.geocoder_tokens);
             source.simple_replacer = token.createSimpleReplacer(source.categorized_replacement_words.simple);
             source.complex_query_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex);
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true });
+            source.format_helpers = options.formatHelpers;
 
             if (source._fuzzyset.writer && !source._fuzzyset.replacementsLoaded) {
                 source._fuzzyset.writer.loadWordReplacements(source.categorized_replacement_words.simple);

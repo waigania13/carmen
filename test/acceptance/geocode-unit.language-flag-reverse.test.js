@@ -14,7 +14,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
 (() => {
     const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['zh'] }, () => {}),
-        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['zh'], geocoder_format_zh: '{country._name}{region._name}{place._name}' }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_languages: ['zh'], geocoder_format_zh: '{{country.name}}{{region.name}}{{place.name}}' }, () => {}),
     };
     const c = new Carmen(conf);
 

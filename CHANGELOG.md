@@ -1,5 +1,67 @@
 # Changelog
 
+## 30.7.0
+
+- Upgrade VTQuery to 0.5.0
+- Require polygons to be direct hits on reverse geocodes
+
+## 30.6.1
+- Adjust the penalty applied to longer stacks to penalize stacks of length 2 less
+
+## 30.6.0
+
+- Use a list of frequent words to drop common words while indexing phrases
+- Add logic for giving partial relevance credit to close-but-misaligned context features
+
+## 30.5.0
+
+- Added modular address style matching
+- Added Queens address style
+
+## 30.4.0
+
+- Add and update various limiting constants for verifymatch
+- Add backfill process for loading more features as needed in verifymatch, up to 50
+- Add named callbacks for most verifymatch functions
+
+## 30.3.2
+
+- Tweaked result sort order for address results outside of interpolation ranges in proximity queries
+
+## 30.3.1
+
+- Added missing JSDocs
+- Added missing changelog entries
+
+## 30.3.0
+
+- Improve outlier detection for interpolation ranges
+
+## 30.2.0
+
+- Enable selective filtering in VTQuery
+- Improve VTQuery performance
+
+## 30.1.0
+
+- Revert VTQuery Filtering
+
+## 30.0.0
+
+- Changes templating engine to handlebars
+- Enabled per feature templating overwrites
+- Enable filtering in VTQuery
+
+## 29.3.1
+
+- Decrease VERIFYMATCH_STACK_LIMIT to 50
+- Decrease MAX_CONTEXTS_LIMIT to 20
+
+## 29.3.0
+
+- Increase VERIFYMATCH_STACK_LIMIT to 100
+- Add backfill for loading more contexts if relevance doesnt match expected relevance from spatialmatch
+
 ## 29.2.0
 
 - Improve handling of ID collisions that sometimes previously resulted in failing to return any results

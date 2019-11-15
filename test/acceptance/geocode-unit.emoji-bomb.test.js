@@ -56,4 +56,3 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
-
