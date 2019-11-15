@@ -30,21 +30,21 @@ test('termops.getIndexablePhrases - frequentWords', (t) => {
     const freq = {};
     freq['__COUNT__'] = [10];
 
-    t.deepEqual(termops.getIndexablePhrases({ tokens } , freq, frequentWords), [
+    t.deepEqual(termops.getIndexablePhrases({ hash: 0, tokens } , freq, frequentWords), [
         {
             'relev': 1,
-            'text': 'main st nw',
             'phrase': 'main st nw',
+            'hash': 0
         },
         {
             'relev': 0.8,
-            'text': 'main st',
-            'phrase': 'main st'
+            'phrase': 'main st',
+            'hash': 0
         },
         {
             'relev': 0.8,
-            'text': 'main nw',
-            'phrase': 'main nw'
+            'phrase': 'main nw',
+            'hash': 0
         }
     ]);
 
