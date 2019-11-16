@@ -300,7 +300,7 @@
                             "tmpid": 67108865,
                             "distance": 0,
                             "score": 1,
-                            "scoredist": 1,
+                            "scoredist":  1.0014224866118175,
                             "scorefactor": 1,
                             "matches_language": true,
                             "prefix": 2,
@@ -311,7 +311,7 @@
                     ],
                     "partialNumber": false,
                     "address": null,
-                    "scoredist": 1
+                    "scoredist":  1.0014224866118175
                 },
                 "carmen:relev": 1,
                 "carmen:geocoder_address_order": "ascending",
