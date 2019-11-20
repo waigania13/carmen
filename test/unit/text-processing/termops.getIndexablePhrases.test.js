@@ -29,7 +29,7 @@ test('termops.getIndexablePhrases', (t) => {
         {
             tokens: ['4', 'st', 'nw'],
             languages: ['default'],
-            variant: 1
+            reduceRelevance: true
         };
 
     const freq = {};
@@ -38,7 +38,7 @@ test('termops.getIndexablePhrases', (t) => {
     freq[tokens.tokens[1]] = [1];
     freq[tokens.tokens[2]] = [1];
 
-    t.deepEqual(termops.getIndexablePhrases(tokens , freq), [{ relev: 1, text: '4 st nw', phrase: '4 st nw' }]);
+    t.deepEqual(termops.getIndexablePhrases(tokens , freq), [{ relev: 0.8, text: '4 st nw', phrase: '4 st nw' }]);
     t.end();
 });
 
