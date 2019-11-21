@@ -587,6 +587,8 @@ tape('teardown', (t) => {
             maxzoom: 6,
             geocoder_frequent_word_list: ['Street'],
             geocoder_tokens: {
+                // regex to drop ordinals
+                // changes 4th -> 4
                 '([0-9]+)(?:st|nd|rd|th)': {
                     'regex': true,
                     'text': '$1',
@@ -626,6 +628,8 @@ tape('teardown', (t) => {
         address: new mem({
             maxzoom: 6,
             geocoder_tokens: {
+                // regex to drop ordinals
+                // changes 4th -> 4
                 '([0-9]+)(?:st|nd|rd|th)': {
                     'regex': true,
                     'text': '$1',
