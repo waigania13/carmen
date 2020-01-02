@@ -905,8 +905,8 @@
     to-fast-properties "^2.0.0"
 
 "@mapbox/carmen-core@github:mapbox/carmen-core#nocomp-acadia":
-  version "0.1.0-nocomp-acadia-1"
-  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/ca41d13f5d3a1cd5377dd2506658813647ad55d0"
+  version "0.1.0-nocomp-acadia-2"
+  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/a16981f06a1cbd2082445c54f6a8a4205df08377"
   dependencies:
     neon-cli "^0.2.0"
     node-pre-gyp "~0.13.0"
