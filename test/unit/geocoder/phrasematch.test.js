@@ -339,10 +339,8 @@ tape('fuzzyMatchMulti - correct address permutations', (t) => {
                 { phrase: ['100','main'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['main','street'], mask: 6, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['1##','main'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['100'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['main'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['street'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['1##'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] }
             ];
             const actual = bearablePermutations(a);
             t.deepEqual(actual, expected);
@@ -370,12 +368,6 @@ tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
                 { phrase: ['200', '300'], mask: 6, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['100', '200'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
                 { phrase: ['2##', '100'], mask: 3, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['1##'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['300'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['2##'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['200'], mask: 2, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['100'], mask: 1, ender: false, ending_type: 0, phrase_id_range: [0, 0] },
-                { phrase: ['3##'], mask: 4, ender: true, ending_type: 0, phrase_id_range: [0, 0] }
             ];
             const actual = bearablePermutations(a);
             t.deepEqual(actual, expected);
@@ -473,9 +465,7 @@ tape('fuzzyMatchMulti - basic masks', (t) => {
             const expected = [
                 [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -485,10 +475,8 @@ tape('fuzzyMatchMulti - basic masks', (t) => {
 
     phrasematch(c, termops.tokenize('100 main'), {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 5);
+        t.equal(results.phrasematches.length, 3);
         const expected = {
-            '1##': { mask: 1, weight: 0.5 },
-            '100': { mask: 1, weight: 0.5 },
             'main': { mask: 2, weight: 0.5 },
             '100 main': { mask: 3, weight: 1 },
             '1## main': { mask: 3, weight: 1 }
@@ -509,8 +497,6 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
                 [{ phrase: ['herman', 'str', '100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['1##', 'herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['herman', 'str'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -528,13 +514,11 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 5);
+        t.equal(results.phrasematches.length, 3);
         const expected = {
             'herman str 100': { mask: 3, weight: 1 },
             '1## herman str': { mask: 3, weight: 1 },
             'herman str': { mask: 1, weight: 0.5 },
-            '100': { mask: 2, weight: 0.5 },
-            '1##': { mask: 2, weight: 0.5 },
         };
         results.phrasematches.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
@@ -555,10 +539,8 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
                 [{ phrase: ['100', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['main', 'springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['1##', 'main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['100'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['main'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
                 [{ phrase: ['springfield'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }],
-                [{ phrase: ['1##'], edit_distance: 0, ending_type: 0, phrase_id_range: [0, 0] }]
             ];
             t.deepEqual(results, expected);
             return results;
@@ -576,7 +558,7 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 13);
+        t.equal(results.phrasematches.length, 11);
         const expected = new Set([
             '100 main springfield - 31 - 1',
             '1## main springfield - 31 - 1',
@@ -587,8 +569,6 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
             'main springfield - 30 - 0.8',
             'main - 2 - 0.2',
             'main - 14 - 0.6',
-            '100 - 1 - 0.2',
-            '1## - 1 - 0.2',
             'springfield - 16 - 0.2',
             'springfield - 28 - 0.6',
         ]);
