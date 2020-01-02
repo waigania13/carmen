@@ -409,8 +409,11 @@ function Geocoder(indexes, options) {
                 // create gridstore at load time to allow incremental gc
                 } else if (loaded[2].exists) {
                     // read cache
+                    const reader = new carmenCore.GridStore(loaded[2].path);
+                    reader.path = loaded[2].path;
+                    reader.pathname = loaded[2].pathname;
                     props.gridstore = {
-                        reader: new carmenCore.GridStore(loaded[2].path),
+                        reader: reader,
                         writer: null
                     };
                 } else {
