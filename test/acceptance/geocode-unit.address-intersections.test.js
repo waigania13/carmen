@@ -129,7 +129,8 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             properties: {
                 'carmen:text': 'F Street Northwest',
                 'carmen:center': [0,1],
-                'carmen:addressnumber': [500]
+                'carmen:addressnumber': [500],
+                'carmen:score': 1
             },
             geometry: {
                 type: 'MultiPoint',

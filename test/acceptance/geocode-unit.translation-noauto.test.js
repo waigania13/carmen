@@ -83,11 +83,11 @@ tape('de (language: hu)', (t) => {
     c.geocode('de', { language: 'hu' }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
-        t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
-        t.deepEqual(res.features[0].id, 'region.1');
+        t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware (in second place)');
+        t.deepEqual(res.features[0].id, 'region.2');
 
-        t.deepEqual(res.features[1].place_name, 'Delaware', 'found: Delaware (in second place)');
-        t.deepEqual(res.features[1].id, 'region.2');
+        t.deepEqual(res.features[1].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
+        t.deepEqual(res.features[1].id, 'region.1');
 
         t.ok(res.features[0].relevance - res.features[1].relevance < .1, 'Delaware has no relevance penalty vs. South Carolina/Dél-Karolina because Delaware is also called "Delaware" in Hungarian');
 
@@ -98,11 +98,11 @@ tape('de (language: hu-HU)', (t) => {
     c.geocode('de', { language: 'hu-HU' }, (err, res) => {
         t.ifError(err);
         t.deepEqual(res.features.length, 2, '2 results');
-        t.deepEqual(res.features[0].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
-        t.deepEqual(res.features[0].id, 'region.1');
+        t.deepEqual(res.features[0].place_name, 'Delaware', 'found: Delaware (in second place)');
+        t.deepEqual(res.features[0].id, 'region.2');
 
-        t.deepEqual(res.features[1].place_name, 'Delaware', 'found: Delaware (in second place)');
-        t.deepEqual(res.features[1].id, 'region.2');
+        t.deepEqual(res.features[1].place_name, 'Dél-Karolina', 'found: Dél-Karolina (South Carolina\'s Hungarian name)');
+        t.deepEqual(res.features[1].id, 'region.1');
 
         t.ok(res.features[0].relevance - res.features[1].relevance < .1, 'Delaware has no relevance penalty vs. South Carolina/Dél-Karolina because Delaware is also called "Delaware" in Hungarian');
 
@@ -150,4 +150,3 @@ tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
 });
-

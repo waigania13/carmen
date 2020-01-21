@@ -165,7 +165,7 @@ const buildQueued = addFeature.buildQueued;
     tape('arena, Jayhawks - poi translation that looks like a category and region synonym', (t) => {
         c.geocode('arena, Jayhawks', { limit_verify: 1 }, (err, res) => {
             t.ifError(err, 'No errors');
-            t.equal(res.features[0].place_name, 'Sand, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].place_name, 'Whole Foods Market, Kansas, United States', 'Place name should be the primary poi name and primary context name');
             t.equal(res.features[0].matching_text, 'arena', 'matching_text should be the matching translation, even if the translation is the same as a category name');
             t.equal(res.features[0].matching_place_name, 'arena, Jayhawks, United States', 'matching_place_name should be the primary poi name and matching context');
             t.end();

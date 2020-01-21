@@ -27,7 +27,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             properties: {
                 'carmen:text': 'delicious,tofu',
                 'carmen:center': [0,0],
-                category: 'vegetarian'
+                category: 'vegetarian',
+                'carmen:score': 1
             },
             geometry: {
                 type: 'Point',

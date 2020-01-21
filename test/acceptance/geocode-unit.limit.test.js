@@ -62,11 +62,11 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('place', {  }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 5, 'returns 5 results');
-            t.equal(res.features[0].place_name, 'place 11, United States');
-            t.equal(res.features[1].place_name, 'place 1, United States');
-            t.equal(res.features[2].place_name, 'place 3, United States');
-            t.equal(res.features[3].place_name, 'place 4, United States');
-            t.equal(res.features[4].place_name, 'place 5, United States');
+            t.equal(
+                new Set(res.features.map((feature) => feature.place_name)).size,
+                5,
+                '5 different place names'
+            );
             t.end();
         });
     });
@@ -74,7 +74,6 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('place', { limit: 1 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 1, 'returns 1 result');
-            t.equal(res.features[0].place_name, 'place 11, United States');
             t.end();
         });
     });
@@ -82,16 +81,11 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('place', { limit: 10 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 10, 'returns 10 results');
-            t.equal(res.features[0].place_name, 'place 11, United States');
-            t.equal(res.features[1].place_name, 'place 1, United States');
-            t.equal(res.features[2].place_name, 'place 3, United States');
-            t.equal(res.features[3].place_name, 'place 4, United States');
-            t.equal(res.features[4].place_name, 'place 5, United States');
-            t.equal(res.features[5].place_name, 'place 6, United States');
-            t.equal(res.features[6].place_name, 'place 7, United States');
-            t.equal(res.features[7].place_name, 'place 8, United States');
-            t.equal(res.features[8].place_name, 'place 9, United States');
-            t.equal(res.features[9].place_name, 'place 10, United States');
+            t.equal(
+                new Set(res.features.map((feature) => feature.place_name)).size,
+                10,
+                '10 different place names'
+            );
             t.end();
         });
     });
@@ -99,16 +93,11 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('place', { limit: 11 }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 10, 'hard limit of 10');
-            t.equal(res.features[0].place_name, 'place 11, United States');
-            t.equal(res.features[1].place_name, 'place 1, United States');
-            t.equal(res.features[2].place_name, 'place 3, United States');
-            t.equal(res.features[3].place_name, 'place 4, United States');
-            t.equal(res.features[4].place_name, 'place 5, United States');
-            t.equal(res.features[5].place_name, 'place 6, United States');
-            t.equal(res.features[6].place_name, 'place 7, United States');
-            t.equal(res.features[7].place_name, 'place 8, United States');
-            t.equal(res.features[8].place_name, 'place 9, United States');
-            t.equal(res.features[9].place_name, 'place 10, United States');
+            t.equal(
+                new Set(res.features.map((feature) => feature.place_name)).size,
+                10,
+                '10 different place names'
+            );
             t.end();
         });
     });
