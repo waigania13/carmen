@@ -1,5 +1,10 @@
 # Changelog
 
+## 31.0.0
+- Switch backing storage engine from carmen-cache to carmen-core, a new Rust datastore
+- Update to a newer version and format of fuzzy-phrase that corresponds with carmen-core
+- Update geocoder_version to 10 -- this is an index format breaking change
+
 ## 30.7.2
 - Indexes features with ordinals dropped with lower relevance to handle missing ordinals in queries
 - Performance improvements from removing deadcode
