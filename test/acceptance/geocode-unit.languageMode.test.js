@@ -85,8 +85,8 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('c', { language: 'en', languageMode: 'strict' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 2, 'filters features to just those with "en" (x2)');
-            t.equal(res.features[0].place_name, 'China', '0 - China');
-            t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
+            t.equal(res.features[0].place_name, 'Canada', '0 - Canada');
+            t.equal(res.features[1].place_name, 'China', '1 - China');
             t.end();
         });
     });
@@ -95,9 +95,9 @@ const addFeature = require('../../lib/indexer/addfeature'),
         c.geocode('c', { languageMode: 'strict' }, (err, res) => {
             t.ifError(err);
             t.equal(res.features.length, 3, 'does nothing without language code');
-            t.equal(res.features[0].place_name, 'China', '0 - China');
+            t.equal(res.features[0].place_name, 'Cambodia', '0 - Cambodia');
             t.equal(res.features[1].place_name, 'Canada', '1 - Canada');
-            t.equal(res.features[2].place_name, 'Cambodia', '2 - Cambodia');
+            t.equal(res.features[2].place_name, 'China', '2 - China');
             t.end();
         });
     });

@@ -22,7 +22,8 @@ tape('index Hron', (t) => {
             'carmen:text_en':'Hron',
             'carmen:text_universal':'HO',
             'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center':[0,0],
+            'carmen:score': 1
         }
     };
     queueFeature(conf.region, region, t.end);
@@ -119,7 +120,7 @@ tape('Find features using universal text', (t) => {
 });
 
 tape('Finds and ranks features using universal text with language codes', (t) => {
-    c.geocode('HO', { language: 'en' }, (err, res) => {
+    c.geocode('HO', { language: 'fr' }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, 'finds both features even using a language code');
         t.equal(res.features[0].text, 'Hron', 'ranks complete match of universal text above autocompleted default text');

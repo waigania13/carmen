@@ -425,12 +425,12 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             t.ifError(err);
             t.deepEquals(
                 res.features[0].routable_points,
-                { points: [{ coordinates: [1.111, 1.11] }] },
+                { points: [{ coordinates: [2.111, 2.11] }] },
                 'First address should have correct routable points'
             );
             t.deepEquals(
                 res.features[1].routable_points,
-                { points: [{ coordinates: [2.111, 2.11] }] },
+                { points: [{ coordinates: [1.111, 1.11] }] },
                 'Second address should have correct routable points'
             );
             t.end();

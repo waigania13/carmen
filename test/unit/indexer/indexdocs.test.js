@@ -1,6 +1,5 @@
 'use strict';
 const indexdocs = require('../../../lib/indexer/indexdocs.js');
-const grid = require('../../../lib/util/grid.js');
 const tape = require('tape');
 const token = require('../../../lib/text-processing/token.js');
 const rewind = require('geojson-rewind');
@@ -11,7 +10,7 @@ tape('indexdocs.loadDoc', (t) => {
     const simple_replacer = token.createSimpleReplacer({});
     const complex_replacer = token.createComplexReplacer({});
 
-    const patch = { grid:{}, docs:[], text:[] };
+    const patch = { grid:new Map(), docs:[] };
     const freq = {};
     const tokens = ['main', 'st'];
     const zoom = 12;
@@ -39,19 +38,19 @@ tape('indexdocs.loadDoc', (t) => {
     const err = indexdocs.loadDoc(freq, patch, doc, { lang: { has_languages: false, autopopulate: {} } }, zoom, simple_replacer, complex_replacer);
     t.ok(typeof err !== 'number', 'no error');
 
-    t.deepEqual(Object.keys(patch.grid).length, 2, '2 patch.grid entries');
-    t.deepEqual(Array.from(patch.grid[Object.keys(patch.grid)[0]].keys()), ['default'], '1 language in patch.grid[0]');
-    t.deepEqual(patch.grid[Object.keys(patch.grid)[0]].get('default').length, 2, '2 grids for language "all" in patch.grid[0]');
-    t.deepEqual(grid.decode(patch.grid[Object.keys(patch.grid)[0]].get('default')[0]), {
+    t.deepEqual(patch.grid.size, 2, '2 patch.grid entries');
+    t.deepEqual(Array.from(patch.grid.values().next().value.keys()), ['default'], '1 language in patch.grid[0]');
+    t.deepEqual(patch.grid.values().next().value.get('default').length, 1, '1 grid chunk for language "all" in patch.grid[0]');
+    t.deepEqual(patch.grid.values().next().value.get('default')[0], {
         id: 1,
         relev: 1,
         score: 7, // log scales score of 100 based on max score value of 200
-        x: 32,
-        y: 32
+        source_phrase_hash: 112,
+        coords: [[33, 33], [32, 32]]
     }, 'patch.grid[0][0]');
     t.deepEqual(patch.docs.length, 1);
     t.deepEqual(patch.docs[0], doc);
-    t.deepEqual(patch.text, ['main st', 'main']);
+    t.deepEqual(Array.from(patch.grid.keys()), ['main st', 'main']);
 
     t.end();
 });

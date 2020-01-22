@@ -904,13 +904,13 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-cache@0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-cache/-/carmen-cache-0.27.0.tgz#4c764163def25c746e59933781d6380afd70a2e4"
-  integrity sha512-PYVhnHLF8AttSPLRE60hKE9XKE+oIsV24VYEhgfsDWkTFwIKy1cxm0oNPQGg5mbNSM4yifZ5z0ZhgXzopbDkaA==
+"@mapbox/carmen-core@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-core/-/carmen-core-0.1.1.tgz#dea441af76d360aecd2a140ce34f6472f8f6bd98"
+  integrity sha512-yQreA+klXKai1XZsT84oFgGqj66n/O+5lp79R8rWAdRzycgIWqfR4x73vCByj92xvl7g415Dr2S++6pcGAO+vg==
   dependencies:
-    nan "~2.10.0"
-    node-pre-gyp "~0.10.1"
+    neon-cli "^0.2.0"
+    node-pre-gyp "~0.13.0"
 
 "@mapbox/cfn-config@^2.15.0":
   version "2.20.1"
@@ -991,10 +991,10 @@
     d3-queue "~2.0.3"
     sqlite3 "4.x"
 
-"@mapbox/node-fuzzy-phrase@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/node-fuzzy-phrase/-/node-fuzzy-phrase-0.2.0.tgz#0d8d1d4355584da6de2a28de8eea81ca73e53452"
-  integrity sha512-AXu0LQZ55UWDE/gbqQW8XmZgDDBoC2/TdeyTAMGSj+tgqk8DH72HTcCkBnCd/PjUZdNYCusTe7XnYu5VYWARGg==
+"@mapbox/node-fuzzy-phrase@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/node-fuzzy-phrase/-/node-fuzzy-phrase-0.3.0.tgz#410736016810cb540d7753559dce9fd226a86e6d"
+  integrity sha512-yTusZPK5P5tvfLVHJqrk+1Dbi3+taL1R17hh0xokrblLlD8tEowo0OGerzB61dUrODvrPJ8r05orBROujA8Wgg==
   dependencies:
     "@mapbox/cfn-config" "^2.15.0"
     "@mapbox/cloudfriend" "^1.9.1"
@@ -4364,12 +4364,20 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
+murmurhash-native@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/murmurhash-native/-/murmurhash-native-3.4.1.tgz#1c929bd46c3d2e3d4fffe042bd5ab90262413823"
+  integrity sha512-uQVthrPc6ChkQSkwJ6Ro1kzVnJXX3Ks95w06rZP7Ath2MXTmK9C/nQL0GY8AM/mi1vdX8be3QcyP3/mShHYXNQ==
+  dependencies:
+    nan "^2.13.2"
+    node-pre-gyp "^0.13.0"
+
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
-nan@^2.14.0:
+nan@^2.13.2, nan@^2.14.0:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
@@ -4451,12 +4459,34 @@ neon-cli@^0.1.23:
     validate-npm-package-license "^3.0.1"
     validate-npm-package-name "^3.0.0"
 
+neon-cli@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/neon-cli/-/neon-cli-0.2.0.tgz#cc02148ea7d032f6774e645cc2a9e44e09248b4b"
+  integrity sha512-IsrxCyUcuAyWiq4Z+JnTXrjurj2SAL2VtWnCXS8iBYGJeIs1NIhFuLaM6fe7+rOyFfDcqUUTWGxZmkvUqwweRA==
+  dependencies:
+    chalk "~2.1.0"
+    command-line-args "^4.0.2"
+    command-line-commands "^2.0.0"
+    command-line-usage "^4.0.0"
+    git-config "0.0.7"
+    handlebars "^4.0.3"
+    inquirer "^3.0.6"
+    mkdirp "^0.5.1"
+    quickly-copy-file "^1.0.0"
+    rimraf "^2.6.1"
+    rsvp "^4.6.1"
+    semver "^5.1.0"
+    toml "^2.3.0"
+    ts-typed-json "^0.2.2"
+    validate-npm-package-license "^3.0.1"
+    validate-npm-package-name "^3.0.0"
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0, node-pre-gyp@~0.10.1:
+node-pre-gyp@^0.10.0, node-pre-gyp@~0.10.0:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.10.3.tgz#3070040716afdc778747b61b6887bf78880b80fc"
   integrity sha512-d1xFs+C/IPS8Id0qPTZ4bUT8wWryfR/OzzAFxweG+uLN85oPzyo2Iw6bVlLQ/JOdgNonXLCoRyqDzDWq4iw72A==
@@ -4488,7 +4518,7 @@ node-pre-gyp@^0.11.0:
     semver "^5.3.0"
     tar "^4"
 
-node-pre-gyp@^0.13.0:
+node-pre-gyp@^0.13.0, node-pre-gyp@~0.13.0:
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.13.0.tgz#df9ab7b68dd6498137717838e4f92a33fc9daa42"
   integrity sha512-Md1D3xnEne8b/HGVQkZZwV27WUi1ZRuZBij24TNaZwUPU3ZAFtvT6xxJGaUVillfmMKnn5oD1HoGsp2Ftik7SQ==

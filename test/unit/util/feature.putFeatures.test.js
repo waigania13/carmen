@@ -41,7 +41,7 @@ tape('putFeatures', (t) => {
             }
         },
         {
-            id: Math.pow(2,20) + 1,
+            id: Math.pow(2,24) + 1,
             type: 'Feature',
             properties: {
                 'carmen:text': 'c',
@@ -68,7 +68,7 @@ tape('putFeatures', (t) => {
             }
         },
         {
-            id: 11111222222183870,
+            id: 207053060723367358,
             type: 'Feature',
             properties: {
                 'carmen:text': 'Dr Jekyll',
@@ -82,7 +82,7 @@ tape('putFeatures', (t) => {
             }
         },
         {
-            id: 6832527855771070,
+            id: 2065683849600446,
             type: 'Feature',
             properties: {
                 'carmen:text': 'Mr Hyde',
@@ -96,7 +96,7 @@ tape('putFeatures', (t) => {
             }
         },
         {
-            id: 3333333333499326,
+            id: 136439250738622,
             type: 'Feature',
             properties: {
                 'carmen:text': 'Street A',
@@ -109,10 +109,26 @@ tape('putFeatures', (t) => {
                 type: 'Point',
                 coordinates: [0, 0]
             }
+        },
+        {
+            id: 341283364286,
+            type: 'Feature',
+            properties: {
+                // 'Avenue D7' hash-collides with 'Street A'
+                'carmen:text': 'Avenue D7',
+                'carmen:center': [0, 0],
+                'carmen:intersection': ['Street B'],
+                'carmen:zxy': ['6/32/32'],
+                'carmen:score': 1000
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [0, 0]
+            }
         }
     ], (err) => {
         t.ifError(err);
-        t.equal(source._shards.feature[1], '{"1":{"id":1,"type":"Feature","properties":{"carmen:text":"a","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}},"1048577":{"id":1048577,"type":"Feature","properties":{"carmen:text":"c","carmen:center":[5.626,0],"carmen:zxy":["6/33/32"]},"geometry":{"type":"Point","coordinates":[5.626,0]}}}', 'has feature shard 1');
+        t.equal(source._shards.feature[1], '{"1":{"id":1,"type":"Feature","properties":{"carmen:text":"a","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}},"16777217":{"id":16777217,"type":"Feature","properties":{"carmen:text":"c","carmen:center":[5.626,0],"carmen:zxy":["6/33/32"]},"geometry":{"type":"Point","coordinates":[5.626,0]}}}', 'has feature shard 1');
         t.equal(source._shards.feature[2], '{"2":{"id":2,"type":"Feature","properties":{"carmen:text":"b","carmen:center":[0,0],"carmen:zxy":["6/32/32"]},"geometry":{"type":"Point","coordinates":[0,0]}}}', 'has feature shard 2');
         t.end();
     });
@@ -127,28 +143,21 @@ tape('getFeatureByCover', (t) => {
 
 tape('getFeatureByCover', (t) => {
     feature.getFeatureByCover(conf.source, { id:1, x:33, y:32 }, (err, data) => {
-        t.equal(data.id, 1048577);
+        t.equal(data.id, 16777217);
         t.end();
     });
 });
 
 tape('getFeatureByCover, collision', (t) => {
-    feature.getFeatureByCover(conf.source, { id:187838, x:32, y:32, score:2000, text:'Mr Hyde' }, (err, data) => {
-        t.equal(data.id, 6832527855771070);
-        t.end();
-    });
-});
-
-tape('getFeatureByCover, text collision', (t) => {
-    feature.getFeatureByCover(conf.source, { id:187838, x:32, y:32, score:2000, text:'street a' }, (err, data) => {
-        t.equal(data.id, 3333333333499326);
+    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'Mr Hyde', source_phrase_hash: 14 }, (err, data) => {
+        t.equal(data.id, 2065683849600446);
         t.end();
     });
 });
 
 tape('getFeatureByCover, intersection collision', (t) => {
-    feature.getFeatureByCover(conf.source, { id:187838, x:32, y:32, score:2000, text:'+intersection street a , b' }, (err, data) => {
-        t.pass('doesn\'t crash');
+    feature.getFeatureByCover(conf.source, { id:1236414, x:32, y:32, score:2000, text:'+intersection street a , b', source_phrase_hash: 145 }, (err, data) => {
+        t.equal(data.id, 136439250738622);
         t.end();
     });
 });

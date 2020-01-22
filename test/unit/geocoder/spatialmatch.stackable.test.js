@@ -10,9 +10,9 @@ const PhrasematchResult = phrasematch.PhrasematchResult;
 const test = require('tape');
 
 test('stackable simple', (t) => {
-    const a1 = new Phrasematch(['a1'], 0.5, parseInt('10', 2), null, null, 0, null, 0);
-    const b1 = new Phrasematch(['b1'], 0.5, parseInt('1', 2), null, null, 1, null, 1);
-    const b2 = new Phrasematch(['b2'], 0.5, parseInt('1', 2), null, null, 1, null, 1);
+    const a1 = new Phrasematch(['a1'], 0.5, parseInt('10', 2), null, [0, 0], null, 0, null, 0);
+    const b1 = new Phrasematch(['b1'], 0.5, parseInt('1', 2), null, [0, 0], null, 1, null, 1);
+    const b2 = new Phrasematch(['b2'], 0.5, parseInt('1', 2), null, [0, 0], null, 1, null, 1);
     let debug = stackable([
         new PhrasematchResult([a1], { idx: 0, bmask: {}, ndx: 0 }),
         new PhrasematchResult([b1, b2], { idx: 1, bmask: {}, ndx: 1 })
@@ -32,9 +32,9 @@ test('stackable simple', (t) => {
 });
 
 test('stackable nmask', (t) => {
-    const a1 = new Phrasematch(['a1'], 0.33, parseInt('100', 2), null, null, 0, null, 1);
-    const b1 = new Phrasematch(['b1'], 0.33, parseInt('10', 2), null, null, 1, null, 1);
-    const c1 = new Phrasematch(['c1'], 0.33, parseInt('1', 2), null, null, 2, null, 1);
+    const a1 = new Phrasematch(['a1'], 0.33, parseInt('100', 2), null, [0, 0], null, 0, null, 1);
+    const b1 = new Phrasematch(['b1'], 0.33, parseInt('10', 2), null, [0, 0], null, 1, null, 1);
+    const c1 = new Phrasematch(['c1'], 0.33, parseInt('1', 2), null, [0, 0], null, 2, null, 1);
     let debug = stackable([
         new PhrasematchResult([a1], { idx: 0, bmask: {}, ndx: 0 }),
         new PhrasematchResult([b1], { idx: 1, bmask: {}, ndx: 1 }),
@@ -55,8 +55,8 @@ test('stackable nmask', (t) => {
 });
 
 test('stackable bmask', (t) => {
-    const a1 = new Phrasematch(['a1'], 0.66, parseInt('100', 2), null, null, 0, null, 1);
-    const b1 = new Phrasematch(['b1'], 0.66, parseInt('10', 2), null, null, 1, null, 1);
+    const a1 = new Phrasematch(['a1'], 0.66, parseInt('100', 2), null, [0, 0], null, 0, null, 1);
+    const b1 = new Phrasematch(['b1'], 0.66, parseInt('10', 2), null, [0, 0], null, 1, null, 1);
     let debug = stackable([
         new PhrasematchResult([a1], { idx: 0, bmask: [0, 1], ndx: 0 }),
         new PhrasematchResult([b1], { idx: 1, bmask: [1, 0], ndx: 1 })
@@ -76,12 +76,12 @@ test('stackable bmask', (t) => {
 });
 
 test('stackable complex', (t) => {
-    const a1 = new Phrasematch(['a1'], 0.33, parseInt('10', 2), null, null, 0, null, 0);
-    const a2 = new Phrasematch(['a2'], 0.66, parseInt('110', 2), null, null, 0, null, 0);
-    const b1 = new Phrasematch(['b1'], 0.33, parseInt('1', 2), null, null, 1, null, 1);
-    const b2 = new Phrasematch(['b2'], 0.33, parseInt('100', 2), null, null, 1, null, 1);
-    const c1 = new Phrasematch(['c1'], 0.33, parseInt('1', 2), null, null, 1, null, 1);
-    const c2 = new Phrasematch(['c2'], 0.33, parseInt('100', 2), null, null, 1, null, 1);
+    const a1 = new Phrasematch(['a1'], 0.33, parseInt('10', 2), null, [0, 0], null, 0, null, 0);
+    const a2 = new Phrasematch(['a2'], 0.66, parseInt('110', 2), null, [0, 0], null, 0, null, 0);
+    const b1 = new Phrasematch(['b1'], 0.33, parseInt('1', 2), null, [0, 0], null, 1, null, 1);
+    const b2 = new Phrasematch(['b2'], 0.33, parseInt('100', 2), null, [0, 0], null, 1, null, 1);
+    const c1 = new Phrasematch(['c1'], 0.33, parseInt('1', 2), null, [0, 0], null, 1, null, 1);
+    const c2 = new Phrasematch(['c2'], 0.33, parseInt('100', 2), null, [0, 0], null, 1, null, 1);
     let debug = stackable([
         new PhrasematchResult([a1, a2], { idx: 0, bmask: [], ndx: 0 }),
         new PhrasematchResult([b1, b2], { idx: 1, bmask: [], ndx: 1 }),
@@ -109,14 +109,14 @@ test('stackable complex', (t) => {
 });
 
 test('stackable direction change', (t) => {
-    const a1 = new Phrasematch(['a1'], 0.25, parseInt('0001', 2), null, null, 0, null, 0);
-    const a2 = new Phrasematch(['a2'], 0.25, parseInt('1000', 2), null, null, 0, null, 0);
-    const b1 = new Phrasematch(['b1'], 0.25, parseInt('0010', 2), null, null, 1, null, 1);
-    const b2 = new Phrasematch(['b2'], 0.25, parseInt('0100', 2), null, null, 1, null, 1);
-    const c1 = new Phrasematch(['c1'], 0.25, parseInt('0100', 2), null, null, 2, null, 2);
-    const c2 = new Phrasematch(['c2'], 0.25, parseInt('0010', 2), null, null, 2, null, 2);
-    const d1 = new Phrasematch(['d1'], 0.25, parseInt('1000', 2), null, null, 3, null, 3);
-    const d2 = new Phrasematch(['d2'], 0.25, parseInt('0001', 2), null, null, 3, null, 4);
+    const a1 = new Phrasematch(['a1'], 0.25, parseInt('0001', 2), null, [0, 0], null, 0, null, 0);
+    const a2 = new Phrasematch(['a2'], 0.25, parseInt('1000', 2), null, [0, 0], null, 0, null, 0);
+    const b1 = new Phrasematch(['b1'], 0.25, parseInt('0010', 2), null, [0, 0], null, 1, null, 1);
+    const b2 = new Phrasematch(['b2'], 0.25, parseInt('0100', 2), null, [0, 0], null, 1, null, 1);
+    const c1 = new Phrasematch(['c1'], 0.25, parseInt('0100', 2), null, [0, 0], null, 2, null, 2);
+    const c2 = new Phrasematch(['c2'], 0.25, parseInt('0010', 2), null, [0, 0], null, 2, null, 2);
+    const d1 = new Phrasematch(['d1'], 0.25, parseInt('1000', 2), null, [0, 0], null, 3, null, 3);
+    const d2 = new Phrasematch(['d2'], 0.25, parseInt('0001', 2), null, [0, 0], null, 3, null, 4);
     let debug = stackable([
         new PhrasematchResult([a1, a2], { idx: 0, bmask: [], ndx: 0 }),
         new PhrasematchResult([b1, b2], { idx: 1, bmask: [], ndx: 1 }),
@@ -184,7 +184,7 @@ test('stackable bench', (t) => {
                 }
                 phraseMatches[i] = phraseMatches[i] || new PhrasematchResult([], { idx: i, bmask: [], ndx: i });
                 const weight = matchingTerms / termCount;
-                phraseMatches[i].phrasematches.push(new Phrasematch([t + '-' + i], weight, mask, null, null, i, null, 0));
+                phraseMatches[i].phrasematches.push(new Phrasematch([t + '-' + i], weight, mask, null, [0, 0], null, i, null, 0));
             }
         }
         const start = +new Date;

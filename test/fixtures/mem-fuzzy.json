@@ -258,8 +258,7 @@
         }
     },
     "geocoder": {
-        "grid": {
-            "id": "to.grid"
-        }
+        "reader": {},
+        "writer": null
     }
 }

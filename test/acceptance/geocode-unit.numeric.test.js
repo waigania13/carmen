@@ -65,9 +65,9 @@ tape('query', (t) => {
     c.geocode('22209', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         // 22209 does not win here until we have suggest vs final modes.
-        t.equals(res.features[0].place_name, '22209', 'found 22209');
+        t.equals(res.features[0].place_name, '22209 restaurant', 'found 22209 restaurant');
         t.equals(res.features[0].relevance, 1.00);
-        t.equals(res.features[1].place_name, '22209 restaurant', 'found 22209 restaurant');
+        t.equals(res.features[1].place_name, '22209', 'found 22209');
         t.equals(res.features[1].relevance, 1.00);
         t.end();
     });

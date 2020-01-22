@@ -57,8 +57,14 @@ const addFeature = require('../../lib/indexer/addfeature'),
     });
 
     tape('make sure indexes contain pre-computed fallbacks', (t) => {
+        const keys = Array.from(conf.country._gridstore.reader.keys()).map((k) => {
+            return [
+                conf.country._fuzzyset.reader.getByPhraseId(k.phrase_id).join(' '),
+                k.lang_set
+            ];
+        });
         t.deepEquals(
-            conf.country._geocoder.grid.list(),
+            keys,
             [
                 ['india', [0]],
                 ['united states', [0, 1]],

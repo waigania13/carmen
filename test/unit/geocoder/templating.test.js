@@ -354,7 +354,7 @@ const addFeature = require('../../../lib/indexer/addfeature'),
         c.geocode('Main st', {}, (err, res) => {
             t.ifError(err);
             t.equals(res.features.length, 2);
-            t.deepEqual(res.features.map((v) => v.place_name), ['Main st', 'Main street']);
+            t.deepEqual(res.features.map((v) => v.place_name).sort(), ['Main st', 'Main street']);
             t.end();
         });
     });
