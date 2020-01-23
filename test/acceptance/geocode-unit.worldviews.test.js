@@ -110,11 +110,11 @@ tape('index japan as country for both', (t) => {
             ]]
         }
     };
-    let q = queue();
+    const q = queue();
     for (const index of [conf.country_wv_us, conf.country_wv_cn]) {
         q.defer((cb) => {
             queueFeature(index, japan, cb);
-        })
+        });
     }
     q.awaitAll(t.end);
 });
@@ -163,11 +163,11 @@ tape('index beijing as region for both', (t) => {
             ]]
         }
     };
-    let q = queue();
+    const q = queue();
     for (const index of [conf.region_wv_us, conf.region_wv_cn]) {
         q.defer((cb) => {
             queueFeature(index, beijing, cb);
-        })
+        });
     }
     q.awaitAll(t.end);
 });
@@ -188,7 +188,7 @@ tape('index three Starbucks POIs in shared POI layer', (t) => {
         { center: [117, 42], stack: 'cn' },
         { center: [140, 40], stack: 'jp' }
     ];
-    let q = queue(1);
+    const q = queue(1);
     for (let i = 0; i < where.length; i++) {
         q.defer((i, instance, cb) => {
             const feature = JSON.parse(JSON.stringify(starbucks));
@@ -215,7 +215,7 @@ tape('build queued features', (t) => {
 
 // invalid options.types type
 tape('geocode hong kong', (t) => {
-    c.geocode('starbucks', {worldview: 'cn'}, (err, res) => {
+    c.geocode('starbucks', { worldview: 'cn' }, (err, res) => {
         console.log(JSON.stringify(res, null, 4));
         t.end();
     });

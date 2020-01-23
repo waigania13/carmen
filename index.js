@@ -130,7 +130,7 @@ function Geocoder(indexes, options) {
 
             if (info.geocoder_worldview) {
                 if (this.worldviews.indexOf(info.geocoder_worldview) === -1) {
-                    throw new Error("Worldview must be a worldview configured on Geocoder instance");
+                    throw new Error('Worldview must be a worldview configured on Geocoder instance');
                 } else {
                     source.geocoder_worldview = info.geocoder_worldview;
                     // if it's worldview-specific, only add to its worldview
