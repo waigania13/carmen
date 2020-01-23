@@ -13,12 +13,12 @@ const conf = {
     country_wv_us: new mem({ geocoder_name: 'country', maxzoom: 6, geocoder_stack: ['cn', 'hk', 'jp'], geocoder_worldview: 'us' }, () => {}),
     country_wv_cn: new mem({ geocoder_name: 'country', maxzoom: 6, geocoder_stack: ['cn', 'jp'], geocoder_worldview: 'cn' }, () => {}),
     region_wv_us: new mem({ geocoder_name: 'region', maxzoom: 6, geocoder_stack: ['cn', 'hk', 'jp'], geocoder_worldview: 'us' }, () => {}),
-    region_wv_cn: new mem({ geocoder_name: 'region', maxzoom: 6, geocoder_stack: ['cn', 'jp'], geocoder_worldview: 'us' }, () => {}),
+    region_wv_cn: new mem({ geocoder_name: 'region', maxzoom: 6, geocoder_stack: ['cn', 'jp'], geocoder_worldview: 'cn' }, () => {}),
     poi: new mem({ geocoder_name: 'poi', minscore: 0, maxscore: 500, maxzoom: 14, geocoder_stack: ['cn', 'hk', 'jp'] }, () => {}),
 };
 
 const c = new Carmen(conf, { worldviews: ['us', 'cn'] });
-tape('index china for us', (t) => {
+tape('index china as country for us', (t) => {
     // this is a rectangle with a square missing from the lower right corner
     // for hong kong
     queueFeature(conf.country_wv_us, {
@@ -67,7 +67,7 @@ tape('index honk kong as country for us', (t) => {
         }
     }, t.end);
 });
-tape('index china for china', (t) => {
+tape('index china as country for china', (t) => {
     // this is a rectangle without the missing corner (so, includes "hong kong")
     queueFeature(conf.country_wv_cn, {
         id: 3,
@@ -89,7 +89,7 @@ tape('index china for china', (t) => {
         }
     }, t.end);
 });
-tape('index japan for both', (t) => {
+tape('index japan as country for both', (t) => {
     // this is a rectangle that overlaps with nothing and is in both worldviews
     const japan = {
         id: 4,
@@ -120,7 +120,7 @@ tape('index japan for both', (t) => {
 });
 tape('index honk kong as region for china', (t) => {
     // this is a feature that's the same as the above HK except for stack/types/id
-    queueFeature(conf.region_wv_us, {
+    queueFeature(conf.region_wv_cn, {
         id: 52,
         properties: {
             'carmen:score': 5000,
@@ -189,17 +189,16 @@ tape('index three Starbucks POIs in shared POI layer', (t) => {
         { center: [140, 40], stack: 'jp' }
     ];
     let q = queue(1);
-    for (const instance of where) {
-        let counter = 0;
-        q.defer((instance, cb) => {
+    for (let i = 0; i < where.length; i++) {
+        q.defer((i, instance, cb) => {
             const feature = JSON.parse(JSON.stringify(starbucks));
-            counter += 1;
-            feature.id = feature.id + counter;
+            feature.id = feature.id + i;
             feature.properties['carmen:center'] = instance.center;
             feature.geometry.coordinates = instance.center;
             feature.properties['carmen:geocoder_stack'] = instance.stack;
+            console.log(feature);
             queueFeature(conf.poi, feature, cb);
-        }, instance);
+        }, i, where[i]);
     }
     q.awaitAll(t.end);
 });
@@ -216,7 +215,7 @@ tape('build queued features', (t) => {
 
 // invalid options.types type
 tape('geocode hong kong', (t) => {
-    c.geocode('hong kong', {}, (err, res) => {
+    c.geocode('starbucks', {worldview: 'cn'}, (err, res) => {
         console.log(JSON.stringify(res, null, 4));
         t.end();
     });

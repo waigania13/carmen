@@ -69,6 +69,8 @@ function Geocoder(indexes, options) {
 
     this.replacer = token.createGlobalReplacer(globalTokens);
 
+    this.worldviews = options.worldviews || ['default'];
+
     this.globaltokens = options.tokens;
     this.formatHelpers = options.formatHelpers;
     this.byname = {};
@@ -76,6 +78,7 @@ function Geocoder(indexes, options) {
     this.bysubtype = {};
     this.bystack = {};
     this.byidx = [];
+    this.byworldview = new Map(this.worldviews.map((wv) => [wv, []]));
 
     // Cloning each index. Below, many of the properties on the source object are
     // set due to the configuration of the Geocoder instance itself. Cloning
@@ -124,6 +127,22 @@ function Geocoder(indexes, options) {
             // avoid duplication if it's loaded again.
             source._original._gridstore = source._gridstore;
             source._original._fuzzyset = source._fuzzyset;
+
+            if (info.geocoder_worldview) {
+                if (this.worldviews.indexOf(info.geocoder_worldview) === -1) {
+                    throw new Error("Worldview must be a worldview configured on Geocoder instance");
+                } else {
+                    source.geocoder_worldview = info.geocoder_worldview;
+                    // if it's worldview-specific, only add to its worldview
+                    this.byworldview.get(source.geocoder_worldview).push(source);
+                }
+            } else {
+                source.geocoder_worldview = '_all';
+                // if it's not worldview-specific, add it to all worldviews
+                for (const worldview of this.worldviews) {
+                    this.byworldview.get(worldview).push(source);
+                }
+            }
 
             if (info.geocoder_address) {
                 source.geocoder_address = info.geocoder_address;
