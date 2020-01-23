@@ -719,7 +719,7 @@ test('Context eliminates correct properties', (t) => {
     q.defer((cb) => { buildQueued(conf.region, cb); });
     q.awaitAll(() => {
         c._open(() => {
-            context(c, [0, 0], { full: false }, (err, contexts) => {
+            context(c, [0, 0], { full: false, worldview: c.worldviews[0] }, (err, contexts) => {
                 t.ifError(err);
                 let contextObj = contexts.pop();
                 t.deepEqual(Object.keys(contextObj.properties).sort(), ['carmen:extid', 'carmen:tmpid', 'carmen:index', 'carmen:idx', 'carmen:vtquerydist', 'carmen:geomtype', 'carmen:types', 'carmen:center', 'carmen:text', 'idaho_potatoes', 'short_code'].sort(), 'found expected keys on country object');
