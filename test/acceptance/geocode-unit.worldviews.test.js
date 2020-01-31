@@ -196,7 +196,6 @@ tape('index three Starbucks POIs in shared POI layer', (t) => {
             feature.properties['carmen:center'] = instance.center;
             feature.geometry.coordinates = instance.center;
             feature.properties['carmen:geocoder_stack'] = instance.stack;
-            console.log(feature);
             queueFeature(conf.poi, feature, cb);
         }, i, where[i]);
     }
@@ -213,10 +212,169 @@ tape('build queued features', (t) => {
     q.awaitAll(t.end);
 });
 
-// invalid options.types type
-tape('geocode hong kong', (t) => {
-    c.geocode('starbucks', { worldview: 'cn' }, (err, res) => {
-        console.log(JSON.stringify(res, null, 4));
+tape('geocode hong kong with worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us' }, {}]) {
+        q.defer((opts, cb) => c.geocode('hong kong', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        const res = reses[0];
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong', 'no china in context');
+        t.end();
+    })
+});
+
+tape('geocode hong kong with worldview=cn', (t) => {
+    c.geocode('hong kong', { worldview: 'cn' }, (err, res) => {
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong, China', 'china in context');
+        t.end();
+    });
+});
+
+tape('geocode hong kong china with worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us' }, {}]) {
+        q.defer((opts, cb) => c.geocode('hong kong china', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        // only look at full-relevance results so we don't get stand-alone "china"
+        const features = reses[0].features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 0, 'got back no full-relevance results');
+        t.end();
+    })
+});
+
+tape('geocode hong kong china with worldview=cn', (t) => {
+    c.geocode('hong kong china', { worldview: 'cn' }, (err, res) => {
+        const features = res.features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 1, 'got back one result');
+        t.equals(features[0].place_name, 'Hong Kong, China', 'china in context');
+        t.end();
+    });
+});
+
+tape('geocode hong kong with country=cn, worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us', stacks: ['cn'] }, { stacks: ['cn'] }]) {
+        q.defer((opts, cb) => c.geocode('hong kong', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        console.log(reses[0]);
+        t.equals(reses[0].features.length, 0, 'got back no full-relevance results');
+        t.end();
+    })
+});
+
+tape('geocode hong kong with country=cn, worldview=cn', (t) => {
+    c.geocode('hong kong', { worldview: 'cn', stacks: ['cn'] }, (err, res) => {
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong, China', 'china in context');
+        t.end();
+    });
+});
+
+tape('geocode beijing with worldview=us,cn, and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us' }, { worldview: 'cn' }, {}]) {
+        q.defer((opts, cb) => c.geocode('beijing', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[2], 'no worldview and worldview=us produce same results');
+        for (const res of reses) {
+            t.equals(res.features.length, 1, 'got back one result');
+            t.equals(res.features[0].place_name, 'Beijing, China', 'china in context');
+        }
+        t.end();
+    })
+});
+
+tape('geocode starbucks with worldview=us,cn, and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us' }, { worldview: 'cn' }, {}]) {
+        q.defer((opts, cb) => c.geocode('starbucks', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[2], 'no worldview and worldview=us produce same results');
+        for (const res of reses) {
+            const features = reses[0].features.filter((feature) => feature.relevance === 1);
+            t.equals(features.length, 3, 'got back three result');
+            t.assert(features[0].place_name.match(/^Starbucks, .+/), 'everything is a starbucks');
+        }
+        t.end();
+    })
+});
+
+tape('geocode starbucks china with worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us' }, {}]) {
+        q.defer((opts, cb) => c.geocode('starbucks china', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        // only look at full-relevance results so we don't get stand-alone "china"
+        const features = reses[0].features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 1, 'got back one results (beijing only)');
+        t.equals(features[0].place_name, "Starbucks, Beijing, China", "only result is in Beijing");
+        t.end();
+    })
+});
+
+tape('geocode starbucks china with worldview=cn', (t) => {
+    c.geocode('starbucks china', { worldview: 'cn' }, (err, res) => {
+        const features = res.features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 2, 'got back two results (one in beijing and one in hk)');
+        t.assert(features[0].place_name.match(/China/), 'china in all contexts');
+        t.end();
+    });
+});
+
+tape('geocode starbucks with country=cn, worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us', stacks: ['cn'] }, { stacks: ['cn'] }]) {
+        q.defer((opts, cb) => c.geocode('starbucks china', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        // only look at full-relevance results so we don't get stand-alone "china"
+        const features = reses[0].features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 1, 'got back one results (beijing only)');
+        t.equals(features[0].place_name, "Starbucks, Beijing, China", "only result is in Beijing");
+        t.end();
+    })
+});
+
+tape('geocode starbucks with country=cn, worldview=cn', (t) => {
+    c.geocode('starbucks', { worldview: 'cn', stacks: ['cn'] }, (err, res) => {
+        const features = res.features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 2, 'got back two results (one in beijing and one in hk)');
+        t.assert(features[0].place_name.match(/China/), 'china in all contexts');
+        t.end();
+    });
+});
+
+tape('reverse geocode hong kong centerpoint with worldview=us and no worldview', (t) => {
+    const q = queue();
+    for (const opts of [{ worldview: 'us', types: ['region'] }, { types: ['region'] }]) {
+        q.defer((opts, cb) => c.geocode('120,25', opts, cb), opts);
+    }
+    q.awaitAll((err, reses) => {
+        t.deepEquals(reses[0], reses[1], 'no worldview and worldview=us produce same results');
+        const res = reses[0];
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong', 'no china in context');
+        t.end();
+    })
+});
+
+tape('reverse geocode hong kong centerpoint with worldview=cn', (t) => {
+    c.geocode('120,25', { worldview: 'cn', types: ['region'] }, (err, res) => {
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong, China', 'china in context');
         t.end();
     });
 });
