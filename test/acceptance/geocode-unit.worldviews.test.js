@@ -378,6 +378,23 @@ tape('reverse geocode hong kong centerpoint with worldview=us and no worldview',
 //     });
 // });
 
+tape('worldview query error', (t) => {
+    c.geocode('china', { worldview: 'in' }, (err, results) => {
+        t.assert(err);
+        t.assert(err.toString().match(/Worldview must be/i));
+        t.end();
+    });
+});
+
+tape('misconfigured worldview index error', (t) => {
+    const bad_conf = {
+        country_wv_us: new mem({ geocoder_name: 'country', maxzoom: 6, geocoder_stack: ['cn', 'hk', 'jp'], geocoder_worldview: 'us' }, () => {}),
+    };
+
+    t.throws(() => new Carmen(bad_conf, { worldviews: ['cn'] }), 'must use a configured worldview');
+    t.end();
+});
+
 tape('teardown', (t) => {
     context.getTile.cache.reset();
     t.end();
