@@ -26,7 +26,8 @@ function calculateScoreDist(input) {
             minScore,
             maxScore,
             feat.properties['carmen:distance'],
-            feat.properties['carmen:zoom']
+            feat.properties['carmen:zoom'],
+            feat.properties['carmen:proximity_radius']
         ).toFixed(6));
     }
 }
@@ -205,6 +206,27 @@ test('scoredist', (t) => {
             { id: 19, properties: { 'carmen:text': 'Mission-Foothill', 'carmen:distance': 19.97574371302543, 'carmen:score': 44, 'carmen:zoom': ZOOM_LEVELS.neighborhood } },
             { id: 13, properties: { 'carmen:text': 'Mission Workshop,bicycle, bike, cycle', 'carmen:distance': 0.821663496329208, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi } },
             { id: 14, properties: { 'carmen:text': 'Mission Pet Hospital', 'carmen:distance': 0.6281933184839765, 'carmen:score': 0, 'carmen:zoom': ZOOM_LEVELS.poi } },
+        ];
+
+        calculateScoreDist(input);
+        input.sort(compareScoreDist);
+        for (let i = 0; i < input.length; i++) {
+            const feat = input[i];
+            t.equal(i + 1, feat.id, `${feat.properties['carmen:text']}`);
+        }
+        t.end();
+    });
+
+    t.test('jfk airport near Yonkers', (t) => {
+        // -- query="JFK" --proximity="-73.8987,40.9312"
+        // Withouth the proximity radius, JFK Marina would have the highest scoredist, since it's much closer to the proximity point in Yonkers, NY
+        const input = [
+            { 'id': 2, 'properties': { 'carmen:text': 'JFK Marina', 'carmen:distance': 1.5874323231313108, 'carmen:score': 2, 'carmen:zoom': ZOOM_LEVELS.poi } },
+            { 'id': 1, 'properties': { 'carmen:text': 'JFK Airport', 'carmen:distance': 20.869597236876366, 'carmen:score': 323, 'carmen:zoom': ZOOM_LEVELS.poi, 'carmen:proximity_radius': 1000 } },
+            { 'id': 3, 'properties': { 'carmen:text': 'JFK Fried Chicken', 'carmen:distance': 8.337828979299953, 'carmen:score':  0, 'carmen:zoom': ZOOM_LEVELS.poi } },
+            { 'id': 4, 'properties': { 'carmen:text': 'JFK Memorial Library', 'carmen:distance': 12.372310018772831, 'carmen:score': 1, 'carmen:zoom': ZOOM_LEVELS.poi } },
+            { 'id': 5, 'properties': { 'carmen:text': 'JFK Liquors', 'carmen:distance': 16.226635859349628, 'carmen:score': 6, 'carmen:zoom': ZOOM_LEVELS.poi } },
+            { 'id': 6, 'properties': { 'carmen:text': 'JFK AirTrain', 'carmen:distance': 16.721436332089933, 'carmen:score': 10, 'carmen:zoom': ZOOM_LEVELS.poi } }
         ];
 
         calculateScoreDist(input);
