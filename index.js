@@ -111,6 +111,7 @@ function Geocoder(indexes, options) {
             const languages = info.geocoder_languages || [];
             const autopopulate = info.geocoder_languages_from_default || {};
             if (typeof stack === 'string') stack = [stack];
+            if (!stack) stack = [];
 
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
