@@ -9,6 +9,7 @@ const Handlebars = require('handlebars');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const carmenCore = require('@mapbox/carmen-core');
+const constants = require('./lib/constants');
 const termops = require('./lib/text-processing/termops');
 const getContext = require('./lib/geocoder/context');
 const loader = require('./lib/sources/loader');
@@ -83,7 +84,15 @@ function Geocoder(indexes, options) {
     // setting these properties differently for each clone.
     for (const k in indexes) {
         indexes[k] = clone(indexes[k]);
-        q.defer(loadIndex, k, indexes[k]);
+        q.defer((id, source, callback) => {
+            source.open((err) => {
+                if (err) return callback(err);
+                source.getInfo((err, info) => {
+                    if (err) return callback(err);
+                    callback(null, { id, info });
+                });
+            });
+        }, k, indexes[k]);
     }
 
     /**
@@ -101,8 +110,6 @@ function Geocoder(indexes, options) {
         if (results) results.forEach((data, i) => {
             const id = data.id;
             const info = data.info;
-            const fuzzyset = data.fuzzyset;
-            const gridstore = data.gridstore;
             const source = indexes[id];
             const name = info.geocoder_name || id;
             const type = info.geocoder_type || info.geocoder_name || id.replace('.mbtiles', '');
@@ -115,11 +122,7 @@ function Geocoder(indexes, options) {
 
             const scoreRangeKeys = info.scoreranges ? Object.keys(info.scoreranges) : [];
 
-
             if (names.indexOf(name) === -1) names.push(name);
-
-            source._fuzzyset = source._original._fuzzyset || fuzzyset;
-            source._gridstore = source._original._gridstore || gridstore;
 
             // Set references to _geocoder, _fuzzyset on original source to
             // avoid duplication if it's loaded again.
@@ -201,11 +204,6 @@ function Geocoder(indexes, options) {
             source.complex_indexing_replacer = token.createComplexReplacer(source.categorized_replacement_words.complex, { includeUnambiguous: true , includeRelevanceReduction: true });
             source.format_helpers = options.formatHelpers;
 
-            if (source._fuzzyset.writer && !source._fuzzyset.replacementsLoaded) {
-                source._fuzzyset.writer.loadWordReplacements(source.categorized_replacement_words.simple);
-                source._fuzzyset.replacementsLoaded = true;
-            }
-
             source.categories = false;
             if (info.geocoder_categories) {
                 source.categories = new Set();
@@ -282,6 +280,18 @@ function Geocoder(indexes, options) {
                 this.bystack[stack[j]].push(source);
             }
 
+            source.getBaseFilename = function() {
+                const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
+                if (filename) {
+                    return filename.replace('.mbtiles', '');
+                } else if (source._original.tmpFilename) {
+                    return source._original.tmpFilename;
+                } else {
+                    source._original.tmpFilename = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
+                    return source._original.tmpFilename;
+                }
+            };
+
             // add byidx index lookup
             this.byidx[i] = source;
 
@@ -314,6 +324,47 @@ function Geocoder(indexes, options) {
         this.minScore = this.byidx.reduce((min, source) => Math.min(min, source.minScore), 0) || 0;
         this.maxScore = this.byidx.reduce((max, source) => Math.max(max, source.maxscore), 0) || 1;
 
+        for (const source of this.byidx) {
+            if (!source._fuzzyset) {
+                const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
+                if (!fs.existsSync(fuzzySetFile)) {
+                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _fuzzyset.writer
+                    source._fuzzyset = {
+                        reader: null,
+                        writer: new fuzzy.FuzzyPhraseSetBuilder(fuzzySetFile)
+                    };
+                    source._fuzzyset.writer.loadWordReplacements(source.categorized_replacement_words.simple);
+                } else {
+                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _fuzzyset.reader
+                    source._fuzzyset = {
+                        reader: new fuzzy.FuzzyPhraseSet(fuzzySetFile),
+                        writer: null
+                    };
+                }
+            }
+
+            if (!source._gridstore) {
+                const gridStoreFile = source.getBaseFilename() + '.gridstore.rocksdb';
+                if (!fs.existsSync(gridStoreFile)) {
+                    // write case: we'll be creating a GridStoreBuilder and storing it in _gridstore.writer
+                    source._gridstore = {
+                        reader: null,
+                        writer: new carmenCore.GridStoreBuilder(gridStoreFile)
+                    };
+                } else {
+                    // read case: we'll be creating a GridStore and storing it in _gridstore.reader
+                    source._gridstore = {
+                        reader: new carmenCore.GridStore(gridStoreFile, {
+                            type_id: source.ndx,
+                            non_overlapping_indexes: source.bmask,
+                            coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS
+                        }),
+                        writer: null
+                    };
+                }
+            }
+        }
+
         this._error = err;
         this._opened = true;
 
@@ -327,106 +378,6 @@ function Geocoder(indexes, options) {
         });
 
     });
-
-
-    /**
-     * Loads an index. The source clone is opened and all of the information
-     * needed for adding the index to the geocoder is obtained. If the
-     * original source object does not have a `_fuzzyset` member, then it is
-     * instantiated here, included in the returned object.
-     *
-     * @access private
-     *
-     * @param {string} id - the name of the index, eg "place" or "address"
-     * @param {CarmenSource} source - a (clone of) a CarmenSource
-     * @param {function(error, Object)} callback - callback function.
-     */
-    function loadIndex(id, source, callback) {
-        source.open((err) => {
-            if (err) return callback(err);
-
-            source.getBaseFilename = function() {
-                const filename = source._original.cacheSource ? source._original.cacheSource.filename : source._original.filename;
-                if (filename) {
-                    return filename.replace('.mbtiles', '');
-                } else if (source._original.tmpFilename) {
-                    return source._original.tmpFilename;
-                } else {
-                    source._original.tmpFilename = require('os').tmpdir() + '/temp.' + Math.random().toString(36).substr(2, 5);
-                    return source._original.tmpFilename;
-                }
-            };
-
-            const q = queue();
-            q.defer((done) => { source.getInfo(done); });
-            q.defer((done) => {
-                const fuzzySetFile = source.getBaseFilename() + '.fuzzy';
-                if (source._original._fuzzyset || !fs.existsSync(fuzzySetFile)) {
-                    // write case: we'll be creating a FuzzyPhraseSetBuilder and storing it in _fuzzyset.writer
-                    done(null, { path: fuzzySetFile, exists: false });
-                } else {
-                    // read case: we'll be creating a FuzzyPhraseSet and storing it in _fuzzyset.reader
-                    done(null, { path: fuzzySetFile, exists: true });
-                }
-            });
-            q.defer((done) => {
-                const gridStoreFile = source.getBaseFilename() + '.gridstore.rocksdb';
-                if (source._original._gridstore || !fs.existsSync(gridStoreFile)) {
-                    // write case: we'll be creating a GridStoreBuilder and storing it in _gridstore.writer
-                    done(null, { path: gridStoreFile, exists: false });
-                } else {
-                    // read case: we'll be creating a GridStore and storing it in _gridstore.reader
-                    done(null, { path: gridStoreFile, exists: true });
-                }
-            });
-            q.awaitAll((err, loaded) => {
-                if (err) return callback(err);
-
-                const props = {
-                    id: id,
-                    info: loaded[0]
-                };
-                // if fuzzyset is already initialized don't recreate
-                if (source._original._fuzzyset) {
-                    props.fuzzyset = source._original._fuzzyset;
-                // create fuzzyset at load time to allow incremental gc
-                } else if (loaded[1].exists) {
-                    // read cache
-                    props.fuzzyset = {
-                        reader: new fuzzy.FuzzyPhraseSet(loaded[1].path),
-                        writer: null
-                    };
-                } else {
-                    // write cache
-                    props.fuzzyset = {
-                        reader: null,
-                        writer: new fuzzy.FuzzyPhraseSetBuilder(loaded[1].path)
-                    };
-                }
-
-                // if gridstore is already initialized don't recreate
-                if (source._original._gridstore) {
-                    props.gridstore = source._original._gridstore;
-                // create gridstore at load time to allow incremental gc
-                } else if (loaded[2].exists) {
-                    // read cache
-                    props.gridstore = {
-                        reader: new carmenCore.GridStore(loaded[2].path),
-                        writer: null
-                    };
-                } else {
-                    // write cache
-                    props.gridstore = {
-                        reader: null,
-                        writer: new carmenCore.GridStoreBuilder(loaded[2].path)
-                    };
-                }
-
-                callback(null, props);
-            });
-        });
-    }
-
 }
 
 /**
