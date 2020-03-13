@@ -355,6 +355,8 @@ function Geocoder(indexes, options) {
                     // read case: we'll be creating a GridStore and storing it in _gridstore.reader
                     source._gridstore = {
                         reader: new carmenCore.GridStore(gridStoreFile, {
+                            idx: source.idx,
+                            zoom: source.zoom,
                             type_id: source.ndx,
                             non_overlapping_indexes: source.bmask,
                             coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS
