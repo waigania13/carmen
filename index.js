@@ -124,9 +124,9 @@ function Geocoder(indexes, options) {
 
             if (names.indexOf(name) === -1) names.push(name);
 
-            // Set references to _geocoder, _fuzzyset on original source to
-            // avoid duplication if it's loaded again.
-            source._original._gridstore = source._gridstore;
+            if (source._original._gridstore) source._gridstore = source._original._gridstore;
+            if (source._original._fuzzyset) source._fuzzyset = source._original._fuzzyset;
+
             source._original._fuzzyset = source._fuzzyset;
 
             if (info.geocoder_address) {
@@ -341,6 +341,7 @@ function Geocoder(indexes, options) {
                         writer: null
                     };
                 }
+                source._original._fuzzyset = source._fuzzyset;
             }
 
             if (!source._gridstore) {
@@ -364,6 +365,7 @@ function Geocoder(indexes, options) {
                         writer: null
                     };
                 }
+                source._original._gridstore = source._gridstore;
             }
         }
 
