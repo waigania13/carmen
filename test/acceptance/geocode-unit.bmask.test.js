@@ -12,9 +12,9 @@ tape('boundsmask', (t) => {
         east: new mem({ maxzoom:6, geocoder_stack: ['east'] }, () => {})
     };
     const c = new Carmen(conf);
-    t.deepEqual(conf.small.bmask, [], 'small overlaps with all');
-    t.deepEqual(conf.west.bmask, [2], 'west overlaps with small');
-    t.deepEqual(conf.east.bmask, [1], 'east overlaps with small');
+    t.deepEqual(conf.small.non_overlapping_indexes, [], 'small overlaps with all');
+    t.deepEqual(conf.west.non_overlapping_indexes, [2], 'west overlaps with small');
+    t.deepEqual(conf.east.non_overlapping_indexes, [1], 'east overlaps with small');
     t.ok(c);
     t.end();
 });

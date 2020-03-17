@@ -297,23 +297,23 @@ function Geocoder(indexes, options) {
 
         });
 
-        // Second pass -- generate bmask (geocoder_stack) per index.
-        // The bmask of an index represents a mask of all indexes that their
+        // Second pass -- generate non_overlapping_indexes (geocoder_stack) per index.
+        // The non_overlapping_indexes of an index represents a mask of all indexes that their
         // geocoder_stacks do not intersect with -- ie. a spatialmatch with any of
         // these indexes should not be attempted as it will fail anyway.
         for (let i = 0; i < this.byidx.length; i++) {
-            const bmask = new Set();
+            const non_overlapping_indexes = new Set();
             const a = this.byidx[i];
             if (a.stack) {
                 const a_stack = new Set(a.stack);
                 for (let j = 0; j < this.byidx.length; j++) {
                     const b = this.byidx[j];
                     if (b.stack && b.stack.filter((s) => a_stack.has(s)).length === 0) {
-                        bmask.add(j);
+                        non_overlapping_indexes.add(j);
                     }
                 }
             }
-            this.byidx[i].bmask = Array.from(bmask);
+            this.byidx[i].non_overlapping_indexes = Array.from(non_overlapping_indexes);
         }
         // Find the min and max score of all features in all indexes
         this.minScore = this.byidx.reduce((min, source) => Math.min(min, source.minScore), 0) || 0;
@@ -354,7 +354,7 @@ function Geocoder(indexes, options) {
                             idx: source.idx,
                             zoom: source.zoom,
                             type_id: source.ndx,
-                            non_overlapping_indexes: source.bmask,
+                            non_overlapping_indexes: source.non_overlapping_indexes,
                             coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS
                         }),
                         writer: null

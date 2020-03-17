@@ -352,7 +352,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             geocoder_stack: ['ca', 'us']
         }, () => {})
     };
-    const c = new Carmen(conf);
+    // const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
         queueFeature(conf.country, {
