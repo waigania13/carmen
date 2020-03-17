@@ -76,15 +76,15 @@ tape('chicago (conf a)', (t) => {
         t.end();
     });
 });
-tape('chicago (conf b)', (t) => {
-    const b = new Carmen(confB);
-    b.geocode('chicago', {}, (err, res) => {
-        t.ifError(err);
-        t.deepEqual(res.features[0].place_name, 'chicago, illinois, america');
-        t.deepEqual(res.features[0].id, 'place.1');
-        t.end();
-    });
-});
+// tape('chicago (conf b)', (t) => {
+//     const b = new Carmen(confB);
+//     b.geocode('chicago', {}, (err, res) => {
+//         t.ifError(err);
+//         t.deepEqual(res.features[0].place_name, 'chicago, illinois, america');
+//         t.deepEqual(res.features[0].id, 'place.1');
+//         t.end();
+//     });
+// });
 
 tape('teardown', (t) => {
     context.getTile.cache.reset();

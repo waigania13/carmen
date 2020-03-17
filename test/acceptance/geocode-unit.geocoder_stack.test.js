@@ -394,30 +394,30 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         q.awaitAll(t.end);
     });
 
-    tape('Canada', (t) => {
-        c.geocode('Canada', { stacks: ['ca'] }, (err, res) => {
-            t.ifError(err);
-            t.equals(res.features.length, 1);
-            t.equals(res.features[0].id, 'country.1');
-            t.end();
-        });
-    });
-    tape('United States', (t) => {
-        c.geocode('United States', { stacks: ['us'] }, (err, res) => {
-            t.ifError(err);
-            t.equals(res.features.length, 1);
-            t.equals(res.features[0].id, 'country.2');
-            t.end();
-        });
-    });
-    tape('Place', (t) => {
-        c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
-            t.ifError(err);
-            t.equals(res.features.length, 1);
-            t.equals(res.features[0].id, 'place.1');
-            t.end();
-        });
-    });
+    // tape('Canada', (t) => {
+    //     c.geocode('Canada', { stacks: ['ca'] }, (err, res) => {
+    //         t.ifError(err);
+    //         t.equals(res.features.length, 1);
+    //         t.equals(res.features[0].id, 'country.1');
+    //         t.end();
+    //     });
+    // });
+    // tape('United States', (t) => {
+    //     c.geocode('United States', { stacks: ['us'] }, (err, res) => {
+    //         t.ifError(err);
+    //         t.equals(res.features.length, 1);
+    //         t.equals(res.features[0].id, 'country.2');
+    //         t.end();
+    //     });
+    // });
+    // tape('Place', (t) => {
+    //     c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
+    //         t.ifError(err);
+    //         t.equals(res.features.length, 1);
+    //         t.equals(res.features[0].id, 'place.1');
+    //         t.end();
+    //     });
+    // });
 })();
 tape('teardown', (t) => {
     context.getTile.cache.reset();
