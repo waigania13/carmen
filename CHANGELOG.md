@@ -1,5 +1,9 @@
 # Changelog
 
+##31.1.0
+- Allow carmen:proximity_radius to be stored in a feature doc
+- Use carmen:proximity_radius to override the zoom-based proximity radius in scoredist
+
 ## 31.0.0
 - Switch backing storage engine from carmen-cache to carmen-core, a new Rust datastore
 - Update to a newer version and format of fuzzy-phrase that corresponds with carmen-core
