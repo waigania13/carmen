@@ -1,4 +1,6 @@
 'use strict';
+
+/*
 const rebalance = require('../../../lib/geocoder/spatialmatch').rebalance;
 const Phrasematch = require('../../../lib/geocoder/phrasematch').Phrasematch;
 const test = require('tape');
@@ -74,4 +76,4 @@ test('rebalance copies', (t) => {
 
     t.end();
 });
-
+*/
