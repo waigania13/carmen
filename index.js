@@ -223,7 +223,7 @@ function Geocoder(indexes, options) {
                 }
             }
 
-            source.maxzoom = info.maxzoom;
+            source.maxzoom = info.maxzoom || 6;
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
             source.stack = stack;
