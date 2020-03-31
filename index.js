@@ -308,6 +308,7 @@ function Geocoder(indexes, options) {
                 const a_stack = new Set(a.stack);
                 for (let j = 0; j < this.byidx.length; j++) {
                     const b = this.byidx[j];
+                    if (b.stack.length === 0 && a.stack.length === 0) continue;
                     if (b.stack && b.stack.filter((s) => a_stack.has(s)).length === 0) {
                         non_overlapping_indexes.add(j);
                     }
