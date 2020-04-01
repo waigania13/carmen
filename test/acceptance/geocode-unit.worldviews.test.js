@@ -327,7 +327,9 @@ tape('geocode starbucks china with worldview=cn', (t) => {
     c.geocode('starbucks china', { worldview: 'cn' }, (err, res) => {
         const features = res.features.filter((feature) => feature.relevance === 1);
         t.equals(features.length, 2, 'got back two results (one in beijing and one in hk)');
-        t.assert(features[0].place_name.match(/China/), 'china in all contexts');
+        for (const feature of features) {
+            t.assert(feature.place_name.match(/China/), 'china in context');
+        }
         t.end();
     });
 });
@@ -347,14 +349,16 @@ tape('geocode starbucks with country=cn, worldview=us and no worldview', (t) => 
     });
 });
 
-// tape('geocode starbucks with country=cn, worldview=cn', (t) => {
-//     c.geocode('starbucks', { worldview: 'cn', stacks: ['cn'] }, (err, res) => {
-//         const features = res.features.filter((feature) => feature.relevance === 1);
-//         t.equals(features.length, 2, 'got back two results (one in beijing and one in hk)');
-//         t.assert(features[0].place_name.match(/China/), 'china in all contexts');
-//         t.end();
-//     });
-// });
+tape('geocode starbucks with country=cn, worldview=cn', (t) => {
+    c.geocode('starbucks', { worldview: 'cn', stacks: ['cn'] }, (err, res) => {
+        const features = res.features.filter((feature) => feature.relevance === 1);
+        t.equals(features.length, 2, 'got back two results (one in beijing and one in hk)');
+        for (const feature of features) {
+            t.assert(feature.place_name.match(/China/), 'china in context');
+        }
+        t.end();
+    });
+});
 
 tape('reverse geocode hong kong centerpoint with worldview=us and no worldview', (t) => {
     const q = queue();
@@ -370,13 +374,13 @@ tape('reverse geocode hong kong centerpoint with worldview=us and no worldview',
     });
 });
 
-// tape('reverse geocode hong kong centerpoint with worldview=cn', (t) => {
-//     c.geocode('120,25', { worldview: 'cn', types: ['region'] }, (err, res) => {
-//         t.equals(res.features.length, 1, 'got back one result');
-//         t.equals(res.features[0].place_name, 'Hong Kong, China', 'china in context');
-//         t.end();
-//     });
-// });
+tape('reverse geocode hong kong centerpoint with worldview=cn', (t) => {
+    c.geocode('120,25', { worldview: 'cn', types: ['region'] }, (err, res) => {
+        t.equals(res.features.length, 1, 'got back one result');
+        t.equals(res.features[0].place_name, 'Hong Kong, China', 'china in context');
+        t.end();
+    });
+});
 
 tape('worldview query error', (t) => {
     c.geocode('china', { worldview: 'in' }, (err, results) => {
