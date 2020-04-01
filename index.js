@@ -222,8 +222,8 @@ function Geocoder(indexes, options) {
                     source.categories.add(category.join(' '));
                 }
             }
-
-            source.maxzoom = info.maxzoom || 6;
+            info.maxzoom = info.maxzoom || 6;
+            source.maxzoom =  info.maxzoom;
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
             source.stack = stack;
