@@ -354,6 +354,7 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             geocoder_stack: ['ca', 'us']
         }, () => {})
     };
+    /* eslint-disable no-unused-vars */
     const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
