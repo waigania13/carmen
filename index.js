@@ -222,7 +222,7 @@ function Geocoder(indexes, options) {
                     source.categories.add(category.join(' '));
                 }
             }
-
+            info.maxzoom = info.maxzoom || 6;
             source.maxzoom = info.maxzoom;
             source.maxscore = info.maxscore;
             source.minscore = info.minscore;
@@ -308,7 +308,7 @@ function Geocoder(indexes, options) {
                 const a_stack = new Set(a.stack);
                 for (let j = 0; j < this.byidx.length; j++) {
                     const b = this.byidx[j];
-                    if (b.stack && b.stack.filter((s) => a_stack.has(s)).length === 0) {
+                    if (b.stack.length !== 0 && b.stack.filter((s) => a_stack.has(s)).length === 0) {
                         non_overlapping_indexes.add(j);
                     }
                 }
