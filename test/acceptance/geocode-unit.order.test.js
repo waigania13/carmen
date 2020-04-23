@@ -116,7 +116,7 @@ tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
     c.geocode('Log Cabin Ln North Carolina Winston-Salem', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].text, 'Log Cabin Ln', 'ok when query order is mixed up');
-        t.equal(res.features[0].relevance, 0.834048, 'Mixed-up order lowers relevance');
+        t.equal(res.features[0].relevance, 0.857143, 'Mixed-up order lowers relevance');
         t.end();
     });
 });
@@ -124,7 +124,7 @@ tape('Log Cabin Ln North Carolina Winston-Salem', (t) => {
 tape('No descending order POIs', (t) => {
     c.geocode('North Carolina United States', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 2, 'feaatures matching in both directions are returned');
+        t.equal(res.features.length, 2, 'features matching in both directions are returned');
         t.deepEqual(res.features[0].id, 'region.1', 'First result matches expected order');
         t.end();
     });
@@ -133,7 +133,7 @@ tape('No descending order POIs', (t) => {
 tape('Descending Gappy', (t) => {
     c.geocode('United States Winston-Salem', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 2, 'feaatures matching in both directions are returned');
+        t.equal(res.features.length, 2, 'features matching in both directions are returned');
         t.deepEqual(res.features[0].id, 'poi.2', 'First result matches expected order');
         t.end();
     });
