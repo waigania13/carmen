@@ -904,9 +904,9 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-core@github:mapbox/carmen-core#0761df2014f5f4c2d32ae21b68ca25b0b09d50f7":
-  version "0.1.1-treeify-stacks-maybe-like-12"
-  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/0761df2014f5f4c2d32ae21b68ca25b0b09d50f7"
+"@mapbox/carmen-core@github:mapbox/carmen-core#ba6a8e56425570986754d89a9a454e266af9df12":
+  version "0.1.1-double-size"
+  resolved "https://codeload.github.com/mapbox/carmen-core/tar.gz/ba6a8e56425570986754d89a9a454e266af9df12"
   dependencies:
     neon-cli "^0.2.0"
     node-pre-gyp "~0.13.0"
