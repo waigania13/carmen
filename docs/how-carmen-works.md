@@ -1,12 +1,12 @@
-# How carmen works
+# How Carmen works
 
 A user searches for
 
-> West Lake View Rd Englewood
+> West Lake View Road Englewood
 
-How does an appropriately indexed carmen geocoder come up with its results?
+How does the Carmen geocoder come up with its results in a forward geocode?
 
-For the purpose of this example, we will assume the carmen geocoder is working with the following indexes:
+For the purpose of this example, we will assume the Carmen geocoder is working with the following indexes:
 
     01 country
     02 region
@@ -15,11 +15,33 @@ For the purpose of this example, we will assume the carmen geocoder is working w
 
 ## 0. Indexing
 
-The heavy lifting in carmen occurs when indexes are generated. As an index is generated for a datasource carmen tokenizes the text into distinct terms. For example, for a street feature:
+Carmen has several different data structures used to facilitate a forward geocode. They are:
 
-    "West Lake View Rd" => ["west", "lake", "view", "rd"]
+### The fuzzy phrase store
 
-Each term in the dataset is tallied, generating a frequency index which can be used to determine the relative importance of terms against each other. In this example, because `west` and `rd` are very common terms while `lake` and `view` are comparatively less common the following weights might be assigned:
+This structure is provided by the `fuzzy-phrase` library, and contains a representation of every indexed phrase (standardized and normalized feature label) in the index, and maps each one to a unique phrase ID.
+
+### The grid store
+
+This structure is provided by the `carmen-core` library. It maps from a phrase ID as provided by `fuzzy-phrase`, along with language metadata, to a list of the IDs of all the features that phrase describes along with their approximate spatial locations.
+
+### The feature table
+
+This structure maps from feature IDs and locations to full feature metadata and geometry.
+
+### Vector tiles
+
+This structure holds the geometries of all features in the index in Mapbox vector tile format, and is used in forward geocodes for determining the geospatial context of features.
+
+### How indexing occurs
+
+The heavy lifting in Carmen occurs when indexes are generated. As an index is generated for a datasource, Carmen tokenizes each label the feature has into distinct terms, and normalizes some terms to select a standard abbreviation or spelling for words that can be represented more than one way. For example, for a street feature:
+
+    "West Lake View Road" => ["west", "lake", "view", "rd"]
+
+If the feature has multiple valid names, or names in multiple languages, it might have multiple labels, all of which will be processed this way.
+
+Each term in the dataset is tallied, generating a temporary frequency table which can be used to determine the relative importance of terms against each other. In this example, because `west` and `rd` are very common terms while `lake` and `view` are comparatively less common the following weights might be assigned:
 
     west lake view rd
     0.2  0.5  0.2  0.1
@@ -46,90 +68,81 @@ It drops any of the subqueries below a threshold (e.g. 0.4). This will also save
     0.9 west lake view
     1.0 west lake view rd
 
-Finally the indexer generates degenerates for all these subqueries, making it possible to match using typeahead, like this:
+We will also generate geospatial information about each feature. The specific information we capture includes:
 
-    0.5 l
-    0.5 la
-    0.5 lak
-    0.5 lake
-    0.7 w
-    0.7 we
-    0.7 wes
-    0.7 west
-    0.7 west l
-    0.7 west la
-    ...
+| field                | bits     | notes |
+|----------------------|----------|-------|
+| x                    | 14 bits  | the X tile coordinate of the feature |
+| y                    | 14 bits  | the Y tile coordinate of the feature |
+| feature id           | 20 bits  |  |
+| phrase relev         |  2 bits  | (0 1 2 3 => 0.4, 0.6, 0.8, 1) -- how much of the original phrase this version (which may be missing words) represents |
+| score                |  3 bits  | (0 1 2 3 4 5 6 7) -- how globally salient this feature is |
+| source_phrase_hash   |  8 bits  | a hash to determine which pre-normalization phrase from this feature corresponds to this post-normalization phrase |
 
-Finally, the indexer stores the results of all this using `phrase_id` in the `grid` index:
+Once we have all the phrases and all the grids, we can insert each phrase into the fuzzy-phrase structure, and determine its phrase ID. For each phrase ID, we can then insert that ID along with all of the corresponding grids for that feature.
 
-    lake      => [ grid, grid, grid, grid ... ]
-    west lake => [ grid, grid, grid, grid ... ]
 
-The `phrase_id` uses the final bit to mark whether the phrase is a "degen" or "complete". e.g
-
-    west lak          0
-    west lake         1
-
-Grids encode the following information for each XYZ `x,y` coordinate covered by a feature geometry:
-
-    x            14 bits
-    y            14 bits
-    feature id   20 bits  (previously 25)
-    phrase relev  2 bits  (0 1 2 3 => 0.4, 0.6, 0.8, 1)
-    score         3 bits  (0 1 2 3 4 5 6 7)
+    [ID of lake]      => [ grid, grid, grid, grid ... ]
+    [ID of west lake] => [ grid, grid, grid, grid ... ]
 
 This is done for both our `01 place` and `02 street` indexes. Now we're ready to search.
 
 ## 1. Phrasematch
 
-Ok so what happens at runtime when a user searches?
+Okay, so what happens at runtime when a user searches? We start by tokenizing it, and standardizing any potentially abbreviated or varied words (so, e.g., replacing "road" with "rd"). We then ask the fuzzy-phrase store for each index "are there any subsequences of tokens in this query that correspond to phrases you know about?" Each index can then report if it contains any feature containing, for example, "west lake", or "englewood". `fuzzy-phrase` contains a graph structure that makes this lookup efficient, and it can also detect if there are phrases that are similar in spelling to the query, even if they aren't exact matches. Additionally, it can determine of a token subsequence at the end of the query might form the *start* of a phrase it knows about, even if it's not the whole thing, to allow for autocomplete matches.
 
-We take the entire query and break it into all the possible subquery permutations. We then lookup all possible matches in all the indexes for all of these permutations:
+For each result, we end up with a phrase ID for each match (or a range of IDs, in the case of prefix matches), as well as a bitmask representing which tokens from the original query the result matches.
 
-> West Lake View Englewood USA
+For our query of:
 
-Leads to 15 subquery permutations:
+> West Lake View Road Englewood USA
 
-    1  west lake view englewood usa
-    2  west lake view englewood
-    3  lake view englewood usa
-    4  west lake view
-    5  lake view englewood
-    6  view englewood usa
-    7  west lake
-    8  lake view
-    9  view englewood
-    10 englewood usa
-    11 west
-    12 lake
-    13 view
-    14 englewood
-    15 usa
+We might return matches like:
 
-Once phrasematch results are retrieved any subqueries that didn't match any results are eliminated.
+    street
+    ------
+    | phrase_id | phrase            | mask   |
+    |-----------|-------------------|--------|
+    | 52        | west lake view rd | 111100 |
+    | 51        | west lake         | 110000 |
+    | 30        | lake view         | 011000 |
+    | 49        | west              | 100000 |
+    | 29        | lake              | 010000 |
+    | 59        | view              | 001000 |
+    | 14        | englewood         | 000010 |
 
-    4  west lake view   11100 street
-    7  west lake        11000 street
-    8  lake view        01100 street
-    11 west             10000 street, place, country
-    12 lake             01000 street, place
-    13 view             00100 street
-    14 englewood        00010 street, place
-    15 usa              00001 country
+    place
+    ------
+    | phrase_id | phrase         | mask   |
+    |-----------|----------------|--------|
+    | 29        | west           | 100000 |
+    | 24        | lake           | 010000 |
+    | 12        | englewood      | 000010 |
+
+    country
+    ------
+    | phrase_id | phrase         | mask   |
+    |-----------|----------------|--------|
+    | 18        | west           | 100000 |
+    | 11        | usa            | 000001 |
 
 By assigning a bitmask to each subquery representing the positions of the input query it represents we can evaluate all the permutations that *could* be "stacked" to match the input query more completely. We can also calculate a *potential* max relevance score that would result from each permutation if the features matched by these subqueries do indeed stack spatially. Examples:
 
-    4  west lake view   11100 street
-    14 englewood        00010 place
-    15 usa              00001 country
+    | phrase_id | phrase            | mask   | layer   |
+    |-----------|-------------------|--------|---------|
+    | 52        | west lake view rd | 111100 | street  |
+    | 12        | englewood         | 000010 | place   |
+    | 11        | usa               | 000001 | country |
 
-    potential relev 5/5 query terms = 1
+    potential relev 6/6 query terms = 1
 
-    14 englewood        00010 street
-    11 west             10000 place
-    15 usa              00001 country
+    | phrase_id | phrase         | mask   | layer   |
+    |-----------|----------------|--------|---------|
+    | 14        | englewood      | 000010 | street  |
+    | 29        | west           | 100000 | place   |
+    | 11        | usa            | 000001 | country |
 
-    potential relev 3/5 query terms = 0.6
+    potential relev 3/6 query terms = 0.5
 
     etc.
 
@@ -137,7 +150,7 @@ Now we're ready to use the spatial properties of our indexes to see if these tex
 
 ## 2. Spatial matching
 
-To make sense of the "result soup" from step 1 -- sometimes thousands of potential resulting features match the same text -- the zxy coordinates in the grid index are used to determine which results overlap in geographic space. This is the `grid` index, which maps phrases to individual feature IDs and their respective zxy coordinates.
+To make sense of the "result soup" from step 1 -- sometimes thousands of potential resulting features match the same text -- the X and Y coordinates in the grid store are used to determine which results overlap in geographic space. This is the `grid` store, which maps phrases to individual feature IDs and their respective zxy coordinates.
 
     04 street
     ................
@@ -161,19 +174,23 @@ To make sense of the "result soup" from step 1 -- sometimes thousands of potenti
     xx..............
     xxxx............ <== west town
 
-Features which overlap in the grid index are candidates to have their subqueries combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with, leading to a lower total relev.
+Features which overlap in the grid store are candidates to have their subqueries combined. Non-overlapping features are still considered as potential final results, but have no partnering features to combine scores with, leading to a lower total relevance.
 
-    4  west lake view   11100 street
-    14 englewood        00010 place
-    15 usa              00001 country
+    | phrase_id | phrase            | mask   | layer   |
+    |-----------|-------------------|--------|---------|
+    | 52        | west lake view rd | 111100 | street  |
+    | 12        | englewood         | 000010 | place   |
+    | 11        | usa               | 000001 | country |
 
     All three features stack, relev = 1
 
-    14 englewood        00010 street
-    11 west             10000 place
-    15 usa              00001 country
+    | phrase_id | phrase         | mask   | layer   |
+    |-----------|----------------|--------|---------|
+    | 14        | englewood      | 000010 | street  |
+    | 29        | west           | 100000 | place   |
+    | 11        | usa            | 000001 | country |
 
-    Englewood St does not overlap others, relev = 0.2
+    Englewood St does not overlap others, relev = 0.1666
 
 The stack of subqueries has has a score of 1.0 if,
 
@@ -183,19 +200,20 @@ The stack of subqueries has has a score of 1.0 if,
 
 ## 3. Verify, interpolate
 
-The `grid` index is fast but not 100% accurate. It answers the question "Do features A + B overlap?" with **No/Maybe** -- leaving open the possibility of false positives. The best results from step 4 are now verified by querying real geometries in vector tiles.
-
-Finally, if a geocoding index support *address interpolation*, an initial query token that might represent a housenumber like `350` can be used to interpolate a point position along the line geometry of the matching feature.
+Once we've done the stacking for results from each index, we combine the results from all of our stacking operations together and choose the best ones. We then fetch detailed feature metadata for each from our feature store, fill in any missing context elements using our vector tiles (if, for example, the query doesn't mention the country, we'll look it up). We also confirm that any user-submitted filters (e.g., bounding box filters) for the feature accommodate each result, and perform additional calculations as needed. For example:
+* if a geocoding index support *address interpolation*, an initial query token that might represent a housenumber like `350` can be used to interpolate a point position along the line geometry of the matching feature
+* if an index supports *routable points* and the user has requested them, we'll calculate the nearest point on the feature's street to the feature centerpoint
+etc.
 
 ## 4. Challenging cases
 
-Most challenging cases are solvable but stress performance/optimization assumptions in the carmen codebase.
+Most challenging cases are solvable but stress performance/optimization assumptions in the Carmen codebase.
 
 ### Continuity of feature hierarchy
 
     5th st new york
 
-The user intends to match 5th st in New York City with this query. She may, instead, receive equally relevant results that match a 5th st in Albany or any other 5th st in the state of New York. To address this case, carmen introduces a slight penalty for "index gaps" when query matching. Consider the two following query matches:
+The user intends to match 5th st in New York City with this query. She may, instead, receive equally relevant results that match a 5th st in Albany or any other 5th st in the state of New York. To address this case, Carmen introduces a slight penalty for "index gaps" when query matching. Consider the two following query matches:
 
     04 street   5th st    1100
     03 place    new york  0011
@@ -215,9 +233,10 @@ But this works better:
 
 ## 5. Carmen is more complex
 
-Unfortunately, the carmen codebase is more complex than this explanation.
+Unfortunately, the Carmen codebase is more complex than this explanation.
 
 1. There's more code cleanup, organization, and documentation to do.
-2. Indexes are *sharded*, designed for *updates* and hot-swapping with other indexes. This means algorithmic code is sometimes interrupted by lazy loading and other I/O.
-3. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it extremely challenging to identify the semantic equivalents in the middle of a geocode.
+2. Much of the performance-critical work now lives outside of Carmen, in `fuzzy-phrase` and `carmen-core`, so that it can be implemented in Rust, and optionally run in a multi-threaded way.
+3. Text normalization and word replacement was only briefly touched on here; we actually have more than one kind of word replacement, depending on whether the replacement is a one-for-one swap (this simple class can be handled by fuzzy-phrase) or a more complex one that changes the total number of tokens in a query, perhaps dropping words, combining words together, splitting words apart, etc. (these are handled by Carmen). For more information on the kinds of replacements we do, see the [geocoder-abbreviations](https://github.com/mapbox/geocoder-abbreviations) repository.
+4. The use of integer hashes, bitmasks, and other performance optimizations (inlined code rather than function calls) makes it challenging to identify the semantic equivalents in the middle of a geocode.
 
