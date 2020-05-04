@@ -1,5 +1,108 @@
 # Changelog
 
+##31.1.0
+- Allow carmen:proximity_radius to be stored in a feature doc
+- Use carmen:proximity_radius to override the zoom-based proximity radius in scoredist
+
+## 31.0.0
+- Switch backing storage engine from carmen-cache to carmen-core, a new Rust datastore
+- Update to a newer version and format of fuzzy-phrase that corresponds with carmen-core
+- Update geocoder_version to 10 -- this is an index format breaking change
+
+## 30.7.2
+- Indexes features with ordinals dropped with lower relevance to handle missing ordinals in queries
+- Performance improvements from removing deadcode
+
+## 30.7.1
+
+- Give a slight boost to scorefactors of 1 when adjusting scoredist in spatialmatch
+
+## 30.7.0
+
+- Upgrade VTQuery to 0.5.0
+- Require polygons to be direct hits on reverse geocodes
+
+## 30.6.1
+
+- Adjust the penalty applied to longer stacks to penalize stacks of length 2 less
+
+## 30.6.0
+
+- Use a list of frequent words to drop common words while indexing phrases
+- Add logic for giving partial relevance credit to close-but-misaligned context features
+
+## 30.5.0
+
+- Added modular address style matching
+- Added Queens address style
+
+## 30.4.0
+
+- Add and update various limiting constants for verifymatch
+- Add backfill process for loading more features as needed in verifymatch, up to 50
+- Add named callbacks for most verifymatch functions
+
+## 30.3.2
+
+- Tweaked result sort order for address results outside of interpolation ranges in proximity queries
+
+## 30.3.1
+
+- Added missing JSDocs
+- Added missing changelog entries
+
+## 30.3.0
+
+- Improve outlier detection for interpolation ranges
+
+## 30.2.0
+
+- Enable selective filtering in VTQuery
+- Improve VTQuery performance
+
+## 30.1.0
+
+- Revert VTQuery Filtering
+
+## 30.0.0
+
+- Changes templating engine to handlebars
+- Enabled per feature templating overwrites
+- Enable filtering in VTQuery
+
+## 29.3.1
+
+- Decrease VERIFYMATCH_STACK_LIMIT to 50
+- Decrease MAX_CONTEXTS_LIMIT to 20
+
+## 29.3.0
+
+- Increase VERIFYMATCH_STACK_LIMIT to 100
+- Add backfill for loading more contexts if relevance doesnt match expected relevance from spatialmatch
+
+## 29.2.0
+
+- Improve handling of ID collisions that sometimes previously resulted in failing to return any results
+- Adjust relevance calculations to change how different administrative components of a query are weighed relative to one another
+
+## 29.1.0
+
+- Replaced mapnik with VTQuery
+- Adjusted sorting in reverse geocoding with scoring to use distance as a tie breaker
+- Tuned minimum distance for distscore from 50 m down to 25 m
+
+## 29.0.4
+
+- Don't de-duplicate address results based on matched text and context if the matched text is a numerical autocomplete or other short query.
+
+## 29.0.3
+
+- Convert numeric `override:*` values to strings before indexing.
+
+## 29.0.2
+
+- Add `&` support for intersection search queries which allows users to search for an intersection using `&` between street names. For example, "Street A & Street B"
+
 ## 29.0.1
 
 - Ensure `carmen:text` is stringified before entering `clostest-lang`

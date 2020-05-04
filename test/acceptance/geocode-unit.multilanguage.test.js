@@ -15,8 +15,8 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
         place: new mem({
             maxzoom:6,
             geocoder_name: 'place',
-            geocoder_format_es: '{place._name} {country._name}',
-            geocoder_format_ja: '{country._name} {place._name}'
+            geocoder_format_es: '{{place.name}} {{country.name}}',
+            geocoder_format_ja: '{{country.name}} {{place.name}}'
         }, () => {})
     };
     const c = new Carmen(conf);

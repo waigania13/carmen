@@ -7,38 +7,35 @@ const queue = require('d3-queue').queue;
 const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
 
 const conf = {
-    country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     postcode: new mem(null, () => {}),
-    place: new mem(null, () => {}),
     address: new mem({
         maxzoom: 6,
         geocoder_address: 1,
-        geocoder_tokens: { 'Drive': 'Dr' },
-        geocoder_format: '{{country.name}}, {{region.name}}{{place.name}}{{address.name}}{{address.number}}'
     }, () => {})
 };
 const c = new Carmen(conf);
 
-tape('index country', (t) => {
-    const country = {
-        id:1,
-        properties: {
-            'carmen:text':'United States',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-    queueFeature(conf.country, country, t.end);
-});
+// the region contains both the postcode and the address, below, but the address
+// isn't in the postcode
 
 tape('index region', (t) => {
     const region = {
         id:1,
         properties: {
-            'carmen:text':'Colorado',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center': [0,0],
+            'carmen:score': 50,
+            'carmen:text':'georgia'
+        },
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [-20,-20],
+                [-20,20],
+                [20,20],
+                [20,-20],
+                [-20,-20],
+            ]]
         }
     };
     queueFeature(conf.region, region, t.end);
@@ -49,37 +46,34 @@ tape('index postcode', (t) => {
         id:1,
         properties: {
             'carmen:text':'80138',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
+            'carmen:center': [0,0],
+            'carmen:score': 50
+        },
+        geometry: {
+            type: 'Polygon',
+            coordinates: [[
+                [-20,-20],
+                [-20,0],
+                [0,0],
+                [0,-20],
+                [-20,-20],
+            ]]
         }
     };
     queueFeature(conf.postcode, postcode, t.end);
-});
-
-tape('index place', (t) => {
-    const place = {
-        id:1,
-        properties: {
-            'carmen:text':'Parker',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0]
-        }
-    };
-    queueFeature(conf.place, place, t.end);
 });
 
 tape('index address', (t) => {
     const address = {
         id:1,
         properties: {
-            'carmen:text':'S Pikes Peak Dr',
-            'carmen:zxy':['6/32/32'],
-            'carmen:center':[0,0],
+            'carmen:text':'Main St',
+            'carmen:center':[10,10],
             'carmen:addressnumber': ['11027']
         },
         geometry: {
             type: 'MultiPoint',
-            coordinates: [[0,0]]
+            coordinates: [[10,10]]
         }
     };
     queueFeature(conf.address, address, t.end);
@@ -95,13 +89,12 @@ tape('build queued features', (t) => {
 });
 
 tape('Check relevance scoring', (t) => {
-    c.geocode('11027 S. Pikes Peak Drive #201', { limit_verify: 1 }, (err, res) => {
+    c.geocode('11027 main st georgia 80138', { limit_verify: 10 }, (err, res) => {
         t.ifError(err);
-        t.equal(res.features[0].relevance, 0.506667, 'Apt. number lowers relevance');
-    });
-    c.geocode('11027 S. Pikes Peak Drive', { limit_verify: 1 }, (err, res) => {
-        t.ifError(err);
-        t.equal(res.features[0].relevance, 1.00, 'High relevance with no apartment number');
+        t.equal(res.features.length, 2, 'got both results back');
+        t.equal(res.features[0].id, 'address.1', 'address beats postcode even with lower score');
+        t.equal(res.features[1].id, 'postcode.1', 'address beats postcode even with lower score');
+        t.assert(res.features[0].relevance > res.features[1].relevance, 'address has a higher relevance than postcode');
         t.end();
     });
 });

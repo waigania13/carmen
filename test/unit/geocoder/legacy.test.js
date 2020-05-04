@@ -43,7 +43,7 @@ tape('legacy version (v1 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -66,7 +66,7 @@ tape('legacy version (v2 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -89,7 +89,7 @@ tape('legacy version (3 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -112,7 +112,7 @@ tape('legacy version (v4 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -135,7 +135,7 @@ tape('legacy version (v5 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -158,7 +158,7 @@ tape('legacy version (v6 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });
@@ -181,7 +181,7 @@ tape('legacy version (v7 => error)', (t) => {
         buildQueued(conf.test, () => {
             c.geocode('test', {}, (err, res) => {
                 t.ok(err);
-                t.deepEqual(err.toString(), 'Error: geocoder version is not 9, index: test');
+                t.deepEqual(err.toString(), 'Error: geocoder version is not 10, index: test');
                 t.end();
             });
         });

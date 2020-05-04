@@ -101,6 +101,12 @@ test('index.update errors', (t) => {
             q.end();
         });
     });
+    t.test('error constructor word in data', (q) => {
+        index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'constructor' }, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 1 }, (err) => {
+            q.ifError(err);
+            q.end();
+        });
+    });
     t.test('indexes single doc', (q) => {
         index.update(conf.to, [{ id: 1, type: 'Feature', properties: { 'carmen:text': 'main st', 'carmen:center':[0,0] }, geometry: { type: 'Point', coordinates: [0,0] } }], { zoom: 6 }, (err) => {
             q.ifError(err);
@@ -265,11 +271,22 @@ test('index phrase collection', (t) => {
             coordinates: [0,0]
         }
     }];
-    index.update(conf.test, docs, { zoom: 6 }, afterUpdate);
+    index.update(conf.test, docs, { zoom: 6 }, () => { index.store(conf.test, afterUpdate); });
     function afterUpdate(err) {
         t.ifError(err);
-        t.deepEqual(conf.test._geocoder.grid.list(), [['a', [0]]], '1 phrase');
-        t.deepEqual(conf.test._geocoder.grid.get('a', [0]), [6755949230424066, 6755949230424065], 'grid has 2 zxy+feature ids');
+        const keys = Array.from(conf.test._gridstore.reader.keys()).map((k) => {
+            return [
+                conf.test._fuzzyset.reader.getByPhraseId(k.phrase_id).join(' '),
+                k.lang_set
+            ];
+        });
+        t.deepEqual(keys, [['a', [0]]], '1 phrase');
+        t.deepEqual(
+            conf.test._gridstore.reader.get({ phrase_id: 0, lang_set: [0] }),
+            [
+                { relev: 1, score: 0, x: 32, y: 32, id: 2, source_phrase_hash: 60 },
+                { relev: 1, score: 0, x: 32, y: 32, id: 1, source_phrase_hash: 60 }
+            ], 'grid has 2 zxy+feature ids');
         t.end();
     }
 });

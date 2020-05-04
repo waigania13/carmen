@@ -15,13 +15,13 @@ const addFeature = require('../../lib/indexer/addfeature'),
     const conf = {
         country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_languages: ['es', 'ru'] }, () => {}),
         region: new mem({ maxzoom: 6, geocoder_name: 'region',
-            geocoder_format_ru: '{country._name}, {region._name}',
-            geocoder_format_zh: '{country._name}{region._name}',
-            geocoder_format_es: '{region._name} {region._name} {country._name}',
+            geocoder_format_ru: '{{country.name}}, {{region.name}}',
+            geocoder_format_zh: '{{country.name}}{{region.name}}',
+            geocoder_format_es: '{{region.name}} {{region.name}} {{country.name}}',
             geocoder_languages: ['zh', 'zh_Hant', 'eo', 'ru']
         }, () => {}),
-        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{country._name} {place._name} {region._name}', geocoder_languages: ['ru'] }, () => {}),
-        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{country._name}{region._name}{place._name}', geocoder_languages: ['zh'] }, () => {})
+        place: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_eo: '{{country.name}} {{place.name}} {{region.name}}', geocoder_languages: ['ru'] }, () => {}),
+        place2: new mem({ maxzoom: 6, geocoder_name: 'place', geocoder_format_zh: '{{country.name}}{{region.name}}{{place.name}}', geocoder_languages: ['zh'] }, () => {})
     };
     const c = new Carmen(conf);
 
@@ -106,7 +106,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
             geometry: {
                 type: 'MultiPolygon',
                 coordinates: [
-                    [[[-5.625,0],[-5.625,5.615985819155337],[0,5.615985819155337],[0,0],[-5.625,0]]]
+                    [[[-5.625,0.001],[-5.625,5.615985819155337],[0.001,5.615985819155337],[0.001,0.001],[-5.625,0.001]]]
                 ]
             },
             bbox: [-5.625,0,0,5.615985819155337]

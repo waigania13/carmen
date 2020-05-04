@@ -286,6 +286,7 @@
                 "carmen:extid": "place.1",
                 "carmen:tmpid": 67108865,
                 "carmen:distance": 0,
+                "carmen:inside_radius": null,
                 "carmen:position": 0,
                 "carmen:spatialmatch": {
                     "relev": 1,
@@ -299,9 +300,10 @@
                             "tmpid": 67108865,
                             "distance": 0,
                             "score": 1,
-                            "scoredist": 1,
+                            "scoredist":  1.0014224866118175,
                             "scorefactor": 1,
                             "matches_language": true,
+                            "source_phrase_hash": 82,
                             "prefix": 2,
                             "mask": 1,
                             "text": "toronto",
@@ -310,13 +312,14 @@
                     ],
                     "partialNumber": false,
                     "address": null,
-                    "scoredist": 1
+                    "scoredist":  1.0014224866118175
                 },
                 "carmen:relev": 1,
                 "carmen:geocoder_address_order": "ascending",
                 "carmen:zoom": 6,
                 "carmen:scoredist": 1,
                 "carmen:matches_language": true,
+                "carmen:source_phrase_hash": 82,
                 "carmen:prefix": 2,
                 "carmen:query_text": "toronto",
                 "carmen:idx": 2

@@ -890,3 +890,148 @@ test('prefix', (t) => {
     );
     t.end();
 });
+
+test('queens', (t) => {
+    const standardStyle = 'standard';
+    const queensStyle = 'queens';
+    const feature = {
+        type: 'Feature',
+        properties: {
+            accuracy: 'building',
+            'carmen:addressnumber': [['10-10', 200, '10-200', 10, 100, 1010, '1-010']],
+            'carmen:address_style': standardStyle,
+            'carmen:address_styles': [standardStyle, queensStyle],
+            'carmen:addressprops': {
+                'carmen:address_style': {
+                    0: queensStyle,
+                    2: queensStyle,
+                    6: queensStyle
+                }
+            }
+        },
+        geometry: {
+            type: 'GeometryCollection',
+            geometries: [{
+                type: 'MultiPoint',
+                coordinates: [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]]
+            }]
+        }
+    };
+    t.deepEqual(
+        addressCluster.forward(feature, '10-10'),
+        [{
+            type: 'Feature',
+            properties: {
+                accuracy: 'building',
+                'carmen:addressnumber': [['10-10', 200, '10-200', 10, 100, 1010, '1-010']],
+                'carmen:address_style': queensStyle,
+                'carmen:address_styles': [standardStyle, queensStyle],
+                'carmen:address': '10-10',
+                'carmen:addressprops': {
+                    'carmen:address_style': {
+                        0: queensStyle,
+                        2: queensStyle,
+                        6: queensStyle
+                    }
+                }
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [1,1]
+            }
+        }, {
+            type: 'Feature',
+            properties: {
+                accuracy: 'building',
+                'carmen:addressnumber': [['10-10', 200, '10-200', 10, 100, 1010, '1-010']],
+                'carmen:address_style': standardStyle,
+                'carmen:address_styles': [standardStyle, queensStyle],
+                'carmen:addressprops': {
+                    'carmen:address_style': {
+                        0: queensStyle,
+                        2: queensStyle,
+                        6: queensStyle
+                    }
+                }
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [6,6]
+            }
+        }],
+        'Retrieve Queens Address with Hyphen'
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(feature, '10-'),
+        [
+            {
+                idx: 0,
+                number: '10-10',
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [1, 1] },
+            },
+            {
+                idx: 2,
+                number: '10-200',
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [3, 3] },
+            },
+            {
+                idx: 3,
+                number: 10,
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [4, 4] },
+            },
+            {
+                idx: 4,
+                number: 100,
+                numberAsInt: 100,
+                geometry: { type: 'Point', coordinates: [5, 5] },
+            },
+            {
+                idx: 5,
+                number: 1010,
+                numberAsInt: 1010,
+                geometry: { type: 'Point', coordinates: [6, 6] },
+            }
+        ],
+        'Prefix on Queens Addresses',
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(feature, '10-1'),
+        [
+            {
+                idx: 0,
+                number: '10-10',
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [1, 1] },
+            },
+            {
+                idx: 5,
+                number: 1010,
+                numberAsInt: 1010,
+                geometry: { type: 'Point', coordinates: [6, 6] },
+            }
+        ],
+        'Prefix on Queens Addresses Hyphen in Correct Spot',
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(feature, '1-01'),
+        [
+            {
+                idx: 5,
+                number: 1010,
+                numberAsInt: 1010,
+                geometry: { type: 'Point', coordinates: [6, 6] },
+            },
+            {
+                idx: 6,
+                number: '1-010',
+                numberAsInt: 1,
+                geometry: { type: 'Point', coordinates: [7, 7] },
+            }
+        ],
+        'Prefix on Queens Addresses Hyphen in Incorrect Spot',
+    );
+    t.end();
+});

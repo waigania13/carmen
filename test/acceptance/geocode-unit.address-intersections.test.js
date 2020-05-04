@@ -79,7 +79,7 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             geocoder_address: 1,
             geocoder_tokens: { street: 'st', northwest: 'nw', road: 'rd' },
             geocoder_intersection_token: 'and',
-            geocoder_format: '{address._number} {address._name}{locality._name}, {place._name}, {region._name} {postcode._name}, {country._name}'
+            geocoder_format: '{{address.number}} {{address.name}}{{locality.name}}, {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}'
         }, () => {})
     };
 
@@ -129,7 +129,8 @@ If there is more than one name for F Street Northwest and it intersects with 9th
             properties: {
                 'carmen:text': 'F Street Northwest',
                 'carmen:center': [0,1],
-                'carmen:addressnumber': [500]
+                'carmen:addressnumber': [500],
+                'carmen:score': 1
             },
             geometry: {
                 type: 'MultiPoint',
@@ -461,6 +462,73 @@ If there is more than one name for F Street Northwest and it intersects with 9th
                 type: 'Point',
                 coordinates: [1,1],
             }, 'Returns the correct geometry for 1 Main Street Northwest');
+            t.end();
+        });
+    });
+})();
+
+(() => {
+    const conf = {
+        address: new mem({
+            maxzoom: 14,
+            geocoder_address: 1,
+            geocoder_tokens: {
+                street: 'st',
+                northwest: 'nw',
+                road: 'rd',
+                '(.+) & (.+)': {
+                    regex: true,
+                    spanBoundaries: 1,
+                    text: '$1 and $2'
+                }
+            },
+            geocoder_intersection_token: 'and',
+            geocoder_format: '{{address.number}} {{address.name}}{{locality.name}}, {{place.name}}, {{region.name}} {{postcode.name}}, {{country.name}}'
+        }, () => {})
+    };
+
+    const c = new Carmen(conf);
+
+    // intersection address data
+    tape('index address', (t) => {
+        const address = {
+            id:2,
+            properties: {
+                // Synonyms of the feature go in 'carmen:text'
+                'carmen:text': 'Highway Number 6,Huckleberry Finn Road,9th Street Northwest,US HWY 1',
+                'carmen:center': [0,0],
+                // intersections with the feature go here
+                'carmen:intersections': ['F Street Northwest', 'Highway Number 4', 'Highway Number 2']
+            },
+            geometry: {
+                type: 'MultiPoint',
+                // coordinates correspond to the street in 'carmen:intersection'
+                // for example, F Street Northwest and 9th Street Northwest intersect at [0,2]
+                coordinates: [[0,2], [0,2], [0,1]]
+            }
+        };
+        queueFeature(conf.address, address, t.end);
+    });
+
+    tape('build queued features', (t) => {
+        const q = queue();
+        Object.keys(conf).forEach((c) => {
+            q.defer((cb) => {
+                buildQueued(conf[c], cb);
+            });
+        });
+        q.awaitAll(t.end);
+    });
+
+    tape('Searching for the intersection - F st nw & 9th st nw', (t) => {
+        c.geocode('F st nw & 9th st nw', {}, (err, res) => {
+            t.ifError(err);
+            t.deepEquals(res.features[0].place_name, 'F Street Northwest and 9th Street Northwest', 'F Street Northwest and 9th Street Northwest');
+            t.deepEquals(res.features[0].geometry, {
+                type: 'Point',
+                coordinates: [0,2],
+                intersection: true
+            }, 'Returns the correct geometry for F st nw & 9th st nw');
             t.end();
         });
     });

@@ -12,7 +12,7 @@ const conf = {
     country: new mem(null, () => {}),
     region: new mem(null, () => {}),
     place: new mem(null, () => {}),
-    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{country._name}, {region._name}{place._name}{address._name}{address._number}' }, () => {})
+    address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_address_order: 'descending', geocoder_format: '{{country.name}}, {{region.name}}{{place.name}}{{address.name}}{{address.number}}' }, () => {})
 };
 const c = new Carmen(conf);
 
@@ -99,7 +99,7 @@ tape('Check order, 632 中黒 Japan 岩出市', (t) => {
     c.geocode('632 中黒 Japan 岩出市', { limit_verify: 1 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features[0].address, '632', 'Gets correct address');
-        t.equal(res.features[0].relevance, 0.8233333333333333, 'Mixed-up order lowers relevance');
+        t.equal(res.features[0].relevance, 0.82619, 'Mixed-up order lowers relevance');
         t.end();
     });
 });

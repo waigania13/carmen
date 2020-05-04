@@ -11,8 +11,8 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{country._name}' }, () => {}),
-        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{region._name} {country._name}' }, () => {}),
+        country: new mem({ maxzoom: 6, geocoder_name: 'country', geocoder_format: '{{country.name}}' }, () => {}),
+        region: new mem({ maxzoom: 6, geocoder_name: 'region', geocoder_format: '{{region.name}} {{country.name}}' }, () => {}),
         poi: new mem({
             maxzoom: 14,
             geocoder_categories: [
@@ -88,9 +88,24 @@ const buildQueued = addFeature.buildQueued;
                 coordinates: [0,0]
             }
         };
+        const poi3 = {
+            type: 'Feature',
+            properties: {
+                'carmen:center': [0,0],
+                'carmen:zxy': ['14/8192/8192'],
+                'carmen:text': 'Whole Foods Market,Whole Foods #340',
+                'carmen:text_es': 'arena'
+            },
+            id: 3,
+            geometry: {
+                type: 'Point',
+                coordinates: [0,0]
+            }
+        };
         const q = queue();
         q.defer(queueFeature, conf.poi, poi);
         q.defer(queueFeature, conf.poi, poi2);
+        q.defer(queueFeature, conf.poi, poi3);
         q.awaitAll(t.end);
     });
     tape('build queued features', (t) => {
@@ -150,9 +165,16 @@ const buildQueued = addFeature.buildQueued;
     tape('arena, Jayhawks - poi translation that looks like a category and region synonym', (t) => {
         c.geocode('arena, Jayhawks', { limit_verify: 1 }, (err, res) => {
             t.ifError(err, 'No errors');
-            t.equal(res.features[0].place_name, 'Sand, Kansas, United States', 'Place name should be the primary poi name and primary context name');
+            t.equal(res.features[0].place_name, 'Whole Foods Market, Kansas, United States', 'Place name should be the primary poi name and primary context name');
             t.equal(res.features[0].matching_text, 'arena', 'matching_text should be the matching translation, even if the translation is the same as a category name');
             t.equal(res.features[0].matching_place_name, 'arena, Jayhawks, United States', 'matching_place_name should be the primary poi name and matching context');
+            t.end();
+        });
+    });
+    tape('whole foods - phrase hash collision', (t) => {
+        c.geocode('whole foods #340', { limit_verify: 1 }, (err, res) => {
+            t.ifError(err, 'No errors');
+            t.equal(res.features[0].matching_text, 'Whole Foods #340', 'in the event of a phrase hash collision, levenshtein distance should select the right synonym');
             t.end();
         });
     });
@@ -160,7 +182,7 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._number} {address._name}' }, () => {})
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}}' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index address', (t) => {

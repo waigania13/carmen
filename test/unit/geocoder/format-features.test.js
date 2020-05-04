@@ -1,6 +1,9 @@
 'use strict';
 const format = require('../../../lib/geocoder/format-features');
 const test = require('tape');
+const Carmen = require('../../..');
+const mem = require('../../../lib/sources/api-mem');
+const Handlebars = require('handlebars');
 
 test('toFeature', (t) => {
     let feat = [{
@@ -36,7 +39,7 @@ test('toFeature', (t) => {
         }
     }];
     feat._relevance = 1;
-    t.deepEqual(format.toFeature(feat, '{address._name} {address._number}'), { address: '9', center: [-99.392855, 63.004759], geometry: { coordinates: [-99.392855, 63.004759], type: 'Point' }, id: 'address.1833980151', place_name: 'Fake Street 9', place_type: ['address'], properties: {}, relevance: 1, text: 'Fake Street', type: 'Feature' });
+    t.deepEqual(format.toFeature(feat, { default: Handlebars.compile('{{address.name}} {{address.number}}', { noEscape: true }) }), { address: '9', center: [-99.392855, 63.004759], geometry: { coordinates: [-99.392855, 63.004759], type: 'Point' }, id: 'address.1833980151', place_name: 'Fake Street 9', place_type: ['address'], properties: {}, relevance: 1, text: 'Fake Street', type: 'Feature' });
 
     t.deepEqual(format.toFeature([{
         properties: {
@@ -45,7 +48,7 @@ test('toFeature', (t) => {
             'carmen:text': 'Fake Street',
             'carmen:extid': 'address.1833980151'
         }
-    }], '{address._number} {address._name}').place_name, '9 Fake Street', 'Address number & name exist');
+    }], { default: Handlebars.compile('{{address.number}} {{address.name}}', { noEscape: true }) }).place_name, '9 Fake Street', 'Address number & name exist');
 
     t.deepEqual(format.toFeature([{
         properties: {
@@ -53,16 +56,7 @@ test('toFeature', (t) => {
             'carmen:text': 'Fake Street',
             'carmen:extid': 'address.1833980151'
         }
-    }], '{address._number} {address._name}').place_name, 'Fake Street', 'Address number missing');
-
-    t.deepEqual(format.toFeature([{
-        properties: {
-            'carmen:center': [-99.392855,63.004759],
-            'carmen:address': 9,
-            'carmen:text': 'Fake Street',
-            'carmen:extid': 'address.1833980151'
-        }
-    }], '{address._number} {address.name}').place_name, '9', 'Address name missing');
+    }], { default: Handlebars.compile('{{address.number}} {{address.name}}', { noEscape: true }) }).place_name, 'Fake Street', 'Address number missing');
 
     t.deepEqual(format.toFeature([{
         properties: {
@@ -71,13 +65,7 @@ test('toFeature', (t) => {
             'carmen:text': 'Fake Street',
             'carmen:extid': 'address.1833980151'
         }
-    },{
-        properties: {
-            'carmen:center': [0,0],
-            'carmen:text': 'Andor',
-            'carmen:extid': 'place.1'
-        }
-    }], '{address._number} {address._name}, {place._name}').place_name, '9 Fake Street, Andor', 'Address & Place');
+    }], { default: Handlebars.compile('{{address.number}}', { noEscape: true }) }).place_name, '9', 'Address name missing');
 
     t.deepEqual(format.toFeature([{
         properties: {
@@ -92,7 +80,22 @@ test('toFeature', (t) => {
             'carmen:text': 'Andor',
             'carmen:extid': 'place.1'
         }
-    }], '{address._number} {address._name}, {place.name}').place_name, '9 Fake Street', 'Address & no Place');
+    }], { default: Handlebars.compile('{{address.number}} {{address.name}}, {{place.name}}', { noEscape: true }) }).place_name, '9 Fake Street, Andor', 'Address & Place');
+
+    t.deepEqual(format.toFeature([{
+        properties: {
+            'carmen:center': [-99.392855,63.004759],
+            'carmen:address': 9,
+            'carmen:text': 'Fake Street',
+            'carmen:extid': 'address.1833980151'
+        }
+    },{
+        properties: {
+            'carmen:center': [0,0],
+            'carmen:text': 'Andor',
+            'carmen:extid': 'place.1'
+        }
+    }], { default: Handlebars.compile('{{address.number}} {{address.name}}', { noEscape: true }) }).place_name, '9 Fake Street', 'Address & no Place');
 
 
     t.deepEqual(format.toFeature([{
@@ -108,7 +111,7 @@ test('toFeature', (t) => {
             'carmen:text': 'Andor',
             'carmen:extid': 'place.1'
         }
-    }], '{address._number} {address.name}, {place._name}').place_name, '9, Andor', 'No Address street & Place');
+    }], { default: Handlebars.compile('{{address.number}}, {{place.name}}', { noEscape: true }) }).place_name, '9, Andor', 'No Address street & Place');
 
 
     t.deepEqual(format.toFeature([{
@@ -123,7 +126,7 @@ test('toFeature', (t) => {
             'carmen:text': 'Andor',
             'carmen:extid': 'place.1'
         }
-    }], '{address._number} {address.name}, {place._name}').place_name, 'Andor', 'Just place');
+    }], { default: Handlebars.compile('{{address.number}}, {{place.name}}', { noEscape: true }) }).place_name, 'Andor', 'Just place');
 
     // This stack used for the next series of tests
     const fullStack = [{
@@ -160,8 +163,8 @@ test('toFeature', (t) => {
         }
     }];
 
-    t.deepEqual(format.toFeature(fullStack, '{address._number} {address._name}, {place._name}, {region._name} {postcode._name}').place_name, 'Fake Street, Caemlyn, Andor 1234', 'Full stack');
-    t.deepEqual(format.toFeature(fullStack, '{address._number} {address._name}, {place.name}, {region._name} {postcode._name}').place_name, 'Fake Street, Andor 1234', 'Full stack');
+    t.deepEqual(format.toFeature(fullStack, { default: Handlebars.compile('{{address.number}} {{address.name}}, {{place.name}}, {{region.name}} {{postcode.name}}', { noEscape: true }) }).place_name, 'Fake Street, Caemlyn, Andor 1234', 'Full stack');
+    t.deepEqual(format.toFeature(fullStack, { default: Handlebars.compile('{{address.number}} {{address.name}}, {{region.name}} {{postcode.name}}', { noEscape: true }) }).place_name, 'Fake Street, Andor 1234', 'Full stack');
     t.equals(format.toFeature(fullStack).context.pop().short_code, 'ca', 'short_code property made it into context array');
 
     // Test language option
@@ -324,8 +327,8 @@ test('toFeature + formatter + languageMode=strict', (t) => {
     let feature;
 
     feature = format.toFeature(context, {
-        en: '{place._name}, {country._name}',
-        zh: '{country._name}{place._name}'
+        en: Handlebars.compile('{{place.name}}, {{country.name}}', { noEscape: true }),
+        zh: Handlebars.compile('{{country.name}}{{place.name}}', { noEscape: true })
     }, ['en'], 'strict', true);
     t.deepEqual(feature.place_name, 'Chicago, United States');
     t.deepEqual(feature.context, [
@@ -334,8 +337,8 @@ test('toFeature + formatter + languageMode=strict', (t) => {
     ]);
 
     feature = format.toFeature(context, {
-        en: '{place._name}, {country._name}',
-        zh: '{country._name}{place._name}'
+        en: Handlebars.compile('{{place.name}}, {{country.name}}', { noEscape: true }),
+        zh: Handlebars.compile('{{country.name}}{{place.name}}', { noEscape: true })
     }, ['zh'], 'strict', true);
     t.deepEqual(feature.place_name, '美国芝加哥');
     t.deepEqual(feature.context, [
@@ -368,8 +371,8 @@ test('toFeature + formatter + languageMode=strict + arabic comma', (t) => {
     }];
 
     const feature = format.toFeature(context, {
-        en: '{place._name}, {country._name}',
-        ar: '{place._name}، {country._name}'
+        en: Handlebars.compile('{{place.name}}, {{country.name}}', { noEscape: true }),
+        ar: Handlebars.compile('{{place.name}}، {{country.name}}', { noEscape: true })
     }, ['ar'], 'strict', true);
     t.deepEqual(feature.place_name, 'القاهرة، مصر');
     t.deepEqual(feature.context, [
@@ -380,12 +383,8 @@ test('toFeature + formatter + languageMode=strict + arabic comma', (t) => {
 });
 
 test('toFeatures - should prefer non-interpolated addresses', (t) => {
-    const fakeIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {} };
-    const fakeCarmen = {
-        indexes: { address: fakeIndex },
-        byIdx: { 1: fakeIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({ address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: { default: null } }, () => {}) });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {
@@ -426,12 +425,8 @@ test('toFeatures - should prefer non-interpolated addresses', (t) => {
 });
 
 test('toFeatures - should prefer non-omitted addresses', (t) => {
-    const fakeIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {} };
-    const fakeCarmen = {
-        indexes: { address: fakeIndex },
-        byidx: { 1: fakeIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({ address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}) });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {
@@ -472,13 +467,11 @@ test('toFeatures - should prefer non-omitted addresses', (t) => {
 });
 
 test('toFeatures - Consider full context w/o format', (t) => {
-    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address' };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place' };
-    const fakeCarmen = {
-        indexes: { address: fakeAddressIndex, place: fakeAddressIndex },
-        byidx: { 1: fakePlaceIndex, 2: fakePlaceIndex }
-    };
-    const results = format.toFeatures(fakeCarmen, [
+    const geocoder = new Carmen({
+        address: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {}),
+        place: new mem({ maxzoom: 6, geocoder_address:1, geocoder_format: null }, () => {})
+    });
+    const results = format.toFeatures(geocoder, [
         [
             {
                 properties: {
@@ -540,8 +533,8 @@ test('toFeatures - Consider full context w/o format', (t) => {
 });
 
 test('toFeatures - Consider full context w/o format and dedupe', (t) => {
-    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address' };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place' };
+    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, type: 'address' };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, type: 'place' };
     const fakeCarmen = {
         indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
         byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }
@@ -608,9 +601,9 @@ test('toFeatures - Consider full context w/o format and dedupe', (t) => {
 
 test('toFeatures - Consider full context with format and dedupe', (t) => {
     const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {
-        'default': '{address._name}'
-    }, type: 'address' };
-    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place' };
+        default: Handlebars.compile('{{address.name}}', { noEscape: true })
+    }, type: 'address', geocoder_feature_types_in_format: new Set(['address']) };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: { default: null }, geocoder_feature_types_in_format: false, type: 'place' };
     const fakeCarmen = {
         indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
         byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }
@@ -673,5 +666,72 @@ test('toFeatures - Consider full context with format and dedupe', (t) => {
     t.equal(results.features.length, 1);
     t.equal(results.features[0].id, 'address.1');
     t.equal(results.features[0].place_name, 'Main Street');
+    t.end();
+});
+
+
+test('toFeatures - Dont consider full context and spatialmatch text for short address queries', (t) => {
+    const fakeAddressIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'address', geocoder_feature_types_in_format: false };
+    const fakePlaceIndex = { simple_replacer: [], complex_query_replacer: [], geocoder_format: {}, type: 'place', geocoder_feature_types_in_format: false };
+    const fakeCarmen = {
+        indexes: { address: fakeAddressIndex, place: fakePlaceIndex },
+        byidx: { 1: fakeAddressIndex, 2: fakePlaceIndex }
+    };
+    const results = format.toFeatures(fakeCarmen, [
+        [
+            {
+                properties: {
+                    'carmen:index': 'address',
+                    'carmen:idx': 1,
+                    'carmen:address': '100',
+                    'carmen:spatialmatch': { covers: [
+                        { text: '1## ma' }
+                    ] },
+                    'carmen:text': 'Main Street',
+                    'carmen:types': ['address'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'address.1'
+                },
+                geometry: {}
+            },
+            {
+                properties: {
+                    'carmen:index': 'place',
+                    'carmen:idx': 2,
+                    'carmen:text': 'Springfield',
+                    'carmen:types': ['place'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'place.3'
+                }
+            }
+        ], [
+            {
+                properties: {
+                    'carmen:index': 'address',
+                    'carmen:idx': 1,
+                    'carmen:address': '100',
+                    'carmen:spatialmatch': { covers: [
+                        { text: '1## ma' }
+                    ] },
+                    'carmen:text': 'Market st',
+                    'carmen:types': ['address'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'address.2'
+                },
+                geometry: {}
+            },
+            {
+                properties: {
+                    'carmen:index': 'place',
+                    'carmen:idx': 2,
+                    'carmen:text': 'Springfield',
+                    'carmen:types': ['place'],
+                    'carmen:center': [0, 0],
+                    'carmen:extid': 'place.3'
+                }
+            }
+        ]
+    ], {});
+    t.equal(results.features.length, 2, 'Short address queries with the same spatialmatch text should not be deduped');
     t.end();
 });

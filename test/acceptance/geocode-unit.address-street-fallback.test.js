@@ -13,8 +13,8 @@ const buildQueued = addFeature.buildQueued;
 
 (() => {
     const conf = {
-        place: new mem({ maxzoom: 6, geocoder_format: '{place._name}' }, () => {}),
-        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{address._number} {address._name} {place._name}' }, () => {})
+        place: new mem({ maxzoom: 6, geocoder_format: '{{place.name}}' }, () => {}),
+        address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_format: '{{address.number}} {{address.name}} {{place.name}}' }, () => {})
     };
     const c = new Carmen(conf);
     tape('index place', (t) => {
