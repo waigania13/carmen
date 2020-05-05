@@ -9,6 +9,7 @@ const Handlebars = require('handlebars');
 
 const fuzzy = require('@mapbox/node-fuzzy-phrase');
 const carmenCore = require('@mapbox/carmen-core');
+const bbox = require('./lib/util/bbox');
 const constants = require('./lib/constants');
 const termops = require('./lib/text-processing/termops');
 const getContext = require('./lib/geocoder/context');
@@ -244,6 +245,16 @@ function Geocoder(indexes, options) {
             source.ndx = names.indexOf(name);
             source.bounds = info.bounds || [-180, -85, 180, 85];
 
+            if (source.bounds[0] < source.bounds[2]) {
+                source.tileBounds = bbox.insideTile(source.bounds, source.zoom).slice(1);
+                //console.log("no am", source.tileBounds);
+            } else {
+                // this index crosses the antemeridian; just blow it out around the earth
+                const blownBounds = [-180, source.bounds[1], 180, source.bounds[3]];
+                source.tileBounds = bbox.insideTile(blownBounds, source.zoom).slice(1);
+                console.log("yes am", source.tileBounds);
+            }
+
             // arrange languages into something presentable
             const lang = {};
             lang.has_languages = languages.length > 0;
@@ -353,7 +364,8 @@ function Geocoder(indexes, options) {
                         reader: new carmenCore.GridStore(gridStoreFile, {
                             zoom: source.zoom,
                             type_id: source.ndx,
-                            coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS
+                            coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS,
+                            bbox: source.tileBounds
                         }),
                         writer: null
                     };
