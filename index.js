@@ -247,12 +247,10 @@ function Geocoder(indexes, options) {
 
             if (source.bounds[0] < source.bounds[2]) {
                 source.tileBounds = bbox.insideTile(source.bounds, source.zoom).slice(1);
-                //console.log("no am", source.tileBounds);
             } else {
                 // this index crosses the antemeridian; just blow it out around the earth
                 const blownBounds = [-180, source.bounds[1], 180, source.bounds[3]];
                 source.tileBounds = bbox.insideTile(blownBounds, source.zoom).slice(1);
-                console.log("yes am", source.tileBounds);
             }
 
             // arrange languages into something presentable
