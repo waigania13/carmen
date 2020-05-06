@@ -27,13 +27,13 @@ const us_sample = {
     id:1,
     properties: {
         'carmen:text':'Evergreen Terrace',
-        'carmen:center':[0,0],
+        'carmen:center':[-121,40],
         'carmen:geocoder_stack': 'us',
         'carmen:addressnumber': ['742']
     },
     geometry: {
         type: 'MultiPoint',
-        coordinates: [[0,0]]
+        coordinates: [[-121,40]]
     }
 };
 
@@ -55,16 +55,16 @@ const us_itp = {
         geometries: [{
             type:'MultiLineString',
             coordinates:[
-                [[0,0],[0,10]],
-                [[0,40],[0,50]]
+                [[-121,40],[-121,41]],
+                [[-121,45],[-121,46]]
             ]
         }]
     }
 };
 
 const fr_extent = extent(fr_sample);
-// pad the us extent to give us room to play with bboxes inside
-const us_extent = cheapRuler(0, 'miles').bufferPoint([0, 0], 20);
+// the actual bounds of part of the US (note: this is an antemeridian-crossing bounding box)
+const us_extent = [173.1329215, 18.9198449, -101.696897, 71.3567692];
 
 const conf = {
     fr_address: new mem({ maxzoom: 6, geocoder_address: 1, geocoder_name:'address', bounds: fr_extent }, () => {}),
@@ -101,7 +101,7 @@ tape('geocode with in-index prox for france', (t) => {
 });
 
 tape('geocode with in-index prox for us', (t) => {
-    c.geocode('7', { proximity: [0,0] }, (err, res) => {
+    c.geocode('7', { proximity: [-121,40] }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 1, 'only one result returned');
         t.equal(res.features[0].id, 'address.1', 'result was from expected index');
@@ -112,7 +112,7 @@ tape('geocode with in-index prox for us', (t) => {
 
 tape('geocode with in-index prox for us plus bbox', (t) => {
     c.geocode('7', {
-        proximity: [0,0],
+        proximity: [-121,40],
         bbox: cheapRuler(0, 'miles').bufferPoint([us_extent[0], us_extent[1]], 1)
     }, (err, res) => {
         t.ifError(err);
