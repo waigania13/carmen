@@ -232,6 +232,9 @@ tape('fuzzyMatchWindows - removed term', (t) => {
             t.ok(expected.has(k), `has "${k}"`);
         });
         t.deepEqual(query, clone, 'replacements did not altery query');
+
+        t.deepEqual(results[0], results[0].clone(), 'phrasematch clone works');
+
         t.end();
     });
 });
