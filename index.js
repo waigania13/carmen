@@ -245,13 +245,7 @@ function Geocoder(indexes, options) {
             source.ndx = names.indexOf(name);
             source.bounds = info.bounds || [-180, -85, 180, 85];
 
-            if (source.bounds[0] < source.bounds[2]) {
-                source.tileBounds = bbox.insideTile(source.bounds, source.zoom).slice(1);
-            } else {
-                // this index crosses the antemeridian; just blow it out around the earth
-                const blownBounds = [-180, source.bounds[1], 180, source.bounds[3]];
-                source.tileBounds = bbox.insideTile(blownBounds, source.zoom).slice(1);
-            }
+            source.tileBounds = bbox.amInsideTile(source.bounds, source.zoom).slice(1);
 
             // arrange languages into something presentable
             const lang = {};
@@ -363,7 +357,7 @@ function Geocoder(indexes, options) {
                             zoom: source.zoom,
                             type_id: source.ndx,
                             coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS,
-                            bbox: source.tileBounds
+                            bboxes: source.tileBounds
                         }),
                         writer: null
                     };
