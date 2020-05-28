@@ -939,7 +939,12 @@ test('queens', (t) => {
                 type: 'Point',
                 coordinates: [1,1]
             }
-        }, {
+        }],
+        'Retrieve Queens Address with Hyphen'
+    );
+    t.deepEqual(
+        addressCluster.forward(feature, '1010'),
+        [{
             type: 'Feature',
             properties: {
                 accuracy: 'building',
@@ -959,10 +964,53 @@ test('queens', (t) => {
                 coordinates: [6,6]
             }
         }],
-        'Retrieve Queens Address with Hyphen'
+        'Retrieve Queens Address without Hyphen'
+    );
+    t.deepEqual(
+        addressCluster.forward(feature, '10200'),
+        [{
+            type: 'Feature',
+            properties: {
+                accuracy: 'building',
+                'carmen:addressnumber': [['10-10', 200, '10-200', 10, 100, 1010, '1-010']],
+                'carmen:address_style': queensStyle,
+                'carmen:address_styles': [standardStyle, queensStyle],
+                'carmen:address': '10-200',
+                'carmen:addressprops': {
+                    'carmen:address_style': {
+                        0: queensStyle,
+                        2: queensStyle,
+                        6: queensStyle
+                    }
+                }
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [3,3]
+            }
+        }],
+        'Match hyphenated result to hyphen-less query'
     );
     t.deepEqual(
         addressCluster.forwardPrefix(feature, '10-'),
+        [
+            {
+                idx: 0,
+                number: '10-10',
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [1, 1] },
+            },
+            {
+                idx: 2,
+                number: '10-200',
+                numberAsInt: 10,
+                geometry: { type: 'Point', coordinates: [3, 3] },
+            }
+        ],
+        'Prefix on Queens Addresses with hyphen',
+    );
+    t.deepEqual(
+        addressCluster.forwardPrefix(feature, '10'),
         [
             {
                 idx: 0,
@@ -995,7 +1043,7 @@ test('queens', (t) => {
                 geometry: { type: 'Point', coordinates: [6, 6] },
             }
         ],
-        'Prefix on Queens Addresses',
+        'Prefix on Queens Addresses without hyphen',
     );
     t.deepEqual(
         addressCluster.forwardPrefix(feature, '10-1'),
@@ -1005,12 +1053,6 @@ test('queens', (t) => {
                 number: '10-10',
                 numberAsInt: 10,
                 geometry: { type: 'Point', coordinates: [1, 1] },
-            },
-            {
-                idx: 5,
-                number: 1010,
-                numberAsInt: 1010,
-                geometry: { type: 'Point', coordinates: [6, 6] },
             }
         ],
         'Prefix on Queens Addresses Hyphen in Correct Spot',
@@ -1018,12 +1060,6 @@ test('queens', (t) => {
     t.deepEqual(
         addressCluster.forwardPrefix(feature, '1-01'),
         [
-            {
-                idx: 5,
-                number: 1010,
-                numberAsInt: 1010,
-                geometry: { type: 'Point', coordinates: [6, 6] },
-            },
             {
                 idx: 6,
                 number: '1-010',
