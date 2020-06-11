@@ -55,6 +55,11 @@ module.exports = Geocoder;
  *
  */
 function Geocoder(indexes, options) {
+    function javascript_abort()
+    {
+        throw new Error('fatal abort');
+    }
+    javascript_abort();
     if (!indexes) throw new Error('Geocoder indexes required.');
     options = options || {};
 
