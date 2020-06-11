@@ -2783,6 +2783,15 @@ fasterror@^1.0.0:
   resolved "https://registry.yarnpkg.com/fasterror/-/fasterror-1.1.0.tgz#0bc11c02117a9ae7b3e9ea57db606eb09f8523ac"
   integrity sha1-C8EcAhF6muez6epX22BusJ+FI6w=
 
+fastlog@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/fastlog/-/fastlog-1.1.0.tgz#5b9faa8191b7069571638951d66194bd967d4b4e"
+  integrity sha1-W5+qgZG3BpVxY4lR1mGUvZZ9S04=
+  dependencies:
+    minimist "^1.1.0"
+    split "~0.3.1"
+    underscore "~1.5.2"
+
 faye-websocket@~0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/faye-websocket/-/faye-websocket-0.10.0.tgz#4e492f8d04dfb6f89003507f6edbf2d501e7c6f4"
@@ -5931,6 +5940,13 @@ split@~0.2.10:
   dependencies:
     through "2"
 
+split@~0.3.1:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/split/-/split-0.3.3.tgz#cd0eea5e63a211dfff7eb0f091c4133e2d0dd28f"
+  integrity sha1-zQ7qXmOiEd//frDwkcQTPi0N0o8=
+  dependencies:
+    through "2"
+
 sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
@@ -6421,6 +6437,11 @@ unc-path-regex@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/unc-path-regex/-/unc-path-regex-0.1.2.tgz#e73dd3d7b0d7c5ed86fbac6b0ae7d8c6a69d50fa"
   integrity sha1-5z3T17DXxe2G+6xrCufYxqadUPo=
+
+underscore@~1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.5.2.tgz#1335c5e4f5e6d33bbb4b006ba8c86a00f556de08"
+  integrity sha1-EzXF5PXm0zu7SwBrqMhqAPVW3gg=
 
 underscore@~1.6.0:
   version "1.6.0"
