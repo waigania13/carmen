@@ -76,9 +76,15 @@ function stopWriting(err) {
 function index(err) {
     if (err) throw err;
 
-    const carmen = new Carmen(conf, {
+    const opts = {
         tokens: config.tokens,
-    });
+    };
+
+    if (conf.to._info.geocoder_worldview) {
+        opts.worldviews = [conf.to._info.geocoder_worldview];
+    }
+
+    const carmen = new Carmen(conf, opts);
     config.output = process.stdout;
 
     let last = +new Date;
