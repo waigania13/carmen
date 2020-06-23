@@ -1,6 +1,11 @@
 # Changelog
 
+## 32.0.0
+
+- Add "worldview" concept, where multiple versions of some indexes can be loaded for different views of the world, sharing other indexes that don't differ across worldviews
+
 ## 31.1.1
+
 - Fix issue where exact matches and partial matches of address numbers were treated as equally good
 
 ## 31.1.0
