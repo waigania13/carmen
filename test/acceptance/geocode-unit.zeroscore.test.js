@@ -12,7 +12,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
 
 const conf = {
     // make maxscore a string to simulate how carmen will encounter it after pulling it from the meta table in an mbtiles file
-    place: new mem({ geocoder_name: 'place', maxzoom: 6, minscore: '0', maxscore: '0', geocoder_stack: 'us' }, () => {}),
+    place: new mem({ geocoder_name: 'place', maxzoom: 6, minscore: 0, maxscore: 0, geocoder_stack: 'us' }, () => {}),
 };
 
 const c = new Carmen(conf);

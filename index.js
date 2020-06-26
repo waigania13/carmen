@@ -357,7 +357,8 @@ function Geocoder(indexes, options) {
                             zoom: source.zoom,
                             type_id: source.ndx,
                             coalesce_radius: source.geocoder_coalesce_radius || constants.COALESCE_PROXIMITY_RADIUS,
-                            bboxes: source.tileBounds
+                            bboxes: source.tileBounds,
+                            max_score: +source.maxscore
                         }),
                         writer: null
                     };
