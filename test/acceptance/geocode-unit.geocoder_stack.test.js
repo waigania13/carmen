@@ -355,7 +355,6 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
             geocoder_stack: ['ca', 'us']
         }, () => {})
     };
-    /* eslint-disable no-unused-vars */
     const c = new Carmen(conf);
 
     tape('index country ca', (t) => {
@@ -414,14 +413,14 @@ const { queueFeature, buildQueued } = require('../../lib/indexer/addfeature');
     //         t.end();
     //     });
     // });
-    // tape('Place', (t) => {
-    //     c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
-    //         t.ifError(err);
-    //         t.equals(res.features.length, 1);
-    //         t.equals(res.features[0].id, 'place.1');
-    //         t.end();
-    //     });
-    // });
+    tape('Place', (t) => {
+        c.geocode('Tess, Canada', { stacks: ['ca'] }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features.length, 1);
+            t.equals(res.features[0].id, 'place.1');
+            t.end();
+        });
+    });
 })();
 tape('teardown', (t) => {
     context.getTile.cache.reset();
