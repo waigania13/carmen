@@ -95,13 +95,13 @@ tape('should handle a query including emoji', (t) => {
     });
 });
 
-//@FIXME limit
 tape('should handle a CJK query including emoji that triggers stacking', (t) => {
     // Black star
     const query = 'Anarres 南🗾';
     c.geocode(query, {}, (err, res) => {
         t.ifError(err);
-        t.equal(res.features.length, 0, 'finds no features');
+        t.equal(res.features.length, 1, 'finds a feature with low relevance');
+        t.equal(res.features[0].relevance < 0.5, true, 'finds a feature with low relevance');
         t.end();
     });
 });
