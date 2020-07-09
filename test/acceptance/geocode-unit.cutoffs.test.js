@@ -87,7 +87,7 @@ const addFeature = require('../../lib/indexer/addfeature'),
         // for a query whose length is greater than the max_correction_length
         c.geocode('place places 11 unitted states america however extreme', { max_correction_length: 0 }, (err, res) => {
             t.ifError(err);
-            t.equals(res.features[0].relevance < 1, true, 'ok, returns a feature with relevance < 1');
+            t.equals(res.features[0].relevance < 0.6, true, 'ok, returns a feature with relevance < 0.6');
             t.end();
         });
     });
