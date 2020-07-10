@@ -80,18 +80,17 @@ const addFeature = require('../../lib/indexer/addfeature'),
         q.awaitAll(t.end);
     });
 
-    // @FIXME limit
-    // tape('max_correction_length > query length', (t) => {
-    //     // Number of words in the query = 6
-    //     // parameterized max_correction_length = 5
-    //     // this test case should not return results because we should not attempt fuzzy search
-    //     // for a query whose length is greater than the max_correction_length
-    //     c.geocode('place places 11 unitted states america', { max_correction_length: 5 }, (err, res) => {
-    //         t.ifError(err);
-    //         t.equals(res.features.length, 0, 'ok, does not return a result for max_correction_length > query length');
-    //         t.end();
-    //     });
-    // });
+    tape('max_correction_length > query length', (t) => {
+        // Number of words in the query = 6
+        // parameterized max_correction_length = 5
+        // this test case should not return results because we should not attempt fuzzy search
+        // for a query whose length is greater than the max_correction_length
+        c.geocode('place places 11 unitted states america however extreme', { max_correction_length: 0 }, (err, res) => {
+            t.ifError(err);
+            t.equals(res.features[0].relevance < 0.6, true, 'ok, returns a feature with relevance < 0.6');
+            t.end();
+        });
+    });
 
     tape('max_correction_length <= query length', (t) => {
         // Number of words in the query = 6

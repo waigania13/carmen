@@ -176,20 +176,19 @@ tape('Check misaligned one', (t) => {
     });
 });
 
-// @FIXME limit
-// tape('Check version with synonym', (t) => {
-//     c.geocode('100 main st xeorxia 80139', { limit_verify: 10 }, (err, res) => {
-//         // "xeorxia" is both a synonym for our region feature (which correctly aligns)
-//         // and our place feature "athens" (which does not). We should still get the
-//         // full relevance here, because the word "xeorxia" should be claimed by the
-//         // correctly-aligned feature rather than the near-miss
-//         t.ifError(err);
-//         t.equals(res.features.length, 1);
-//         t.equals(res.features[0].relevance, 1);
-//         t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
-//         t.end();
-//     });
-// });
+tape('Check version with synonym', (t) => {
+    c.geocode('100 main st xeorxia 80139', { limit_verify: 1 }, (err, res) => {
+        // "xeorxia" is both a synonym for our region feature (which correctly aligns)
+        // and our place feature "athens" (which does not). We should still get the
+        // full relevance here, because the word "xeorxia" should be claimed by the
+        // correctly-aligned feature rather than the near-miss
+        t.ifError(err);
+        t.equals(res.features.length, 1);
+        t.equals(res.features[0].relevance, 1);
+        t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
+        t.end();
+    });
+});
 
 tape('teardown', (t) => {
     context.getTile.cache.reset();
