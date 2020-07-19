@@ -1,5 +1,9 @@
 # Changelog
 
+## 32.0.1
+
+- Fix a bug in selecting templates for per-feature template override
+
 ## 32.0.0
 
 - Add "worldview" concept, where multiple versions of some indexes can be loaded for different views of the world, sharing other indexes that don't differ across worldviews
