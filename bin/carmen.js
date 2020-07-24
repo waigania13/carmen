@@ -73,7 +73,8 @@ if (argv.tokens) {
 }
 
 const carmen = new Carmen(opts, {
-    tokens: tokens
+    tokens: tokens,
+    worldviews: ['us', 'cn', 'in', 'jp']
 });
 
 if (argv.proximity) {
