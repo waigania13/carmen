@@ -1,5 +1,9 @@
 # Changelog
 
+## 33.0.0
+
+- Replace the `stackable`, `coalesce`, and `rebalance` algorithms with new ones that differently explore the possible combinations of index components to generate results.
+
 ## 32.0.1
 
 - Fix a bug in selecting templates for per-feature template override
