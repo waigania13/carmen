@@ -14,6 +14,7 @@ const conf = {
         geocoder_address: 1,
     }, () => {})
 };
+/* eslint-disable no-unused-vars */
 const c = new Carmen(conf);
 
 // the region contains both the postcode and the address, below, but the address
@@ -89,7 +90,7 @@ tape('build queued features', (t) => {
 });
 
 tape('Check relevance scoring', (t) => {
-    c.geocode('11027 main st georgia 80138', { limit_verify: 10 }, (err, res) => {
+    c.geocode('11027 main st georgia 80138', { limit_verify: 2 }, (err, res) => {
         t.ifError(err);
         t.equal(res.features.length, 2, 'got both results back');
         t.equal(res.features[0].id, 'address.1', 'address beats postcode even with lower score');

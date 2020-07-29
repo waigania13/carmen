@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+
 'use strict';
 const tape = require('tape');
 const phrasematch = require('../../../lib/geocoder/phrasematch');
@@ -175,18 +176,18 @@ tape('fuzzyMatchWindows - expanded tokens', (t) => {
     ]);
     phrasematch(c, termops.tokenize('100 hermanstrasse'), {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 3);
+        t.equal(results.length, 3);
         const expected = {
             '100 herman str': { mask: 3, weight: 1 },
             'herman str': { mask: 2, weight: 0.5 },
             '100': { mask: 1, weight: 0.5 },
         };
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
-        t.end();
     });
+    t.end();
 });
 
 tape('fuzzyMatchWindows - removed term', (t) => {
@@ -214,7 +215,7 @@ tape('fuzzyMatchWindows - removed term', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 9);
+        t.equal(results.length, 9);
         const expected = new Set([
             '100 main springfield - 31 - 1',
             'main springfield - 30 - 0.8',
@@ -226,11 +227,14 @@ tape('fuzzyMatchWindows - removed term', (t) => {
             'springfield - 16 - 0.2',
             'springfield - 28 - 0.6'
         ]);
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
             t.ok(expected.has(k), `has "${k}"`);
         });
         t.deepEqual(query, clone, 'replacements did not altery query');
+
+        t.deepEqual(results[0], results[0].clone(), 'phrasematch clone works');
+
         t.end();
     });
 });
@@ -266,7 +270,7 @@ tape('fuzzyMatchWindows - expanded & removed term', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 9);
+        // t.equal(results.length, 9);
         const expected = new Set([
             'herman str 100 berlin - 15 - 1',
             'herman str 100 - 7 - 0.75',
@@ -278,11 +282,11 @@ tape('fuzzyMatchWindows - expanded & removed term', (t) => {
             '100 - 6 - 0.5',
             '100 - 2 - 0.25'
         ]);
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
             t.ok(expected.has(k), `has "${k}"`);
         });
-        t.deepEqual(query, clone, 'replacements did not altery query');
+        t.deepEqual(query, clone, 'replacements did not alter query');
         t.end();
     });
 });
@@ -312,7 +316,7 @@ tape('fuzzyMatchWindows - removed term at the end of a query', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 5);
+        t.equal(results.length, 5);
         const expected = {
             'roma termini rs': { mask: 15, weight: 1 },
             'roma termini': { mask: 3, weight: 0.5 },
@@ -321,7 +325,7 @@ tape('fuzzyMatchWindows - removed term at the end of a query', (t) => {
             'termini': { mask: 2, weight: 0.25 },
             'roma': { mask: 1, weight: 0.25 },
         };
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
@@ -381,7 +385,6 @@ tape('fuzzyMatchMulti - correct address permutations: all numbers', (t) => {
         t.end();
     });
 });
-
 
 tape('fuzzyMatchMulti - autocomplete sets word_boundary', (t) => {
     const c = fakeCarmen({
@@ -446,11 +449,11 @@ tape('fuzzyMatchMulti - single term', (t) => {
 
     phrasematch(c, termops.tokenize('baltimore'), {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 1);
+        t.equal(results.length, 1);
         const expected = {
             'baltimore': { mask: 1, weight: 1 },
         };
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
@@ -475,13 +478,13 @@ tape('fuzzyMatchMulti - basic masks', (t) => {
 
     phrasematch(c, termops.tokenize('100 main'), {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 3);
+        t.equal(results.length, 3);
         const expected = {
             'main': { mask: 2, weight: 0.5 },
             '100 main': { mask: 3, weight: 1 },
             '1## main': { mask: 3, weight: 1 }
         };
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
@@ -514,13 +517,13 @@ tape('fuzzyMatchMulti - masks for expanded terms', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 3);
+        t.equal(results.length, 3);
         const expected = {
             'herman str 100': { mask: 3, weight: 1 },
             '1## herman str': { mask: 3, weight: 1 },
             'herman str': { mask: 1, weight: 0.5 },
         };
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             t.equal(v.mask, expected[v.phrase].mask, `Correct mask for "${v.phrase}"`);
             t.equal(v.weight, expected[v.phrase].weight, `Correct weight for "${v.phrase}"`);
         });
@@ -558,7 +561,7 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 11);
+        t.equal(results.length, 11);
         const expected = new Set([
             '100 main springfield - 31 - 1',
             '1## main springfield - 31 - 1',
@@ -572,7 +575,7 @@ tape('fuzzyMatchMulti - masks for removed terms', (t) => {
             'springfield - 16 - 0.2',
             'springfield - 28 - 0.6',
         ]);
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
             t.ok(expected.has(k), `has "${k}"`);
         });
@@ -609,7 +612,7 @@ tape('fuzzyMatchMulti - masks for removed terms at the end of a query', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 6);
+        t.equal(results.length, 6);
         const expected = new Set([
             'roma termini rs - 15 - 1',
             'roma termini - 3 - 0.5',
@@ -618,7 +621,7 @@ tape('fuzzyMatchMulti - masks for removed terms at the end of a query', (t) => {
             'termini - 2 - 0.25',
             'rs - 12 - 0.5'
         ]);
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
             t.ok(expected.has(k), `has "${k}"`);
         });
@@ -655,7 +658,7 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
     const clone = JSON.parse(JSON.stringify(query));
     phrasematch(c, query, {}, (err, results, source) => {
         t.error(err);
-        t.equal(results.phrasematches.length, 8);
+        t.equal(results.length, 8);
         const expected = new Set([
             'st - 4 - 0.3333333333333333',
             'st - 6 - 0.6666666666666666',
@@ -666,7 +669,7 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
             '+intersection 1st , main - 3 - 0.6666666666666666',
             '+intersection 1st , main st - 7 - 1'
         ]);
-        results.phrasematches.forEach((v) => {
+        results.forEach((v) => {
             const k = `${v.phrase} - ${v.mask} - ${v.weight}`;
             t.ok(expected.has(k), `has "${k}"`);
         });
@@ -674,3 +677,4 @@ tape('fuzzyMatchMulti - masks for intersection queries', (t) => {
         t.end();
     });
 });
+

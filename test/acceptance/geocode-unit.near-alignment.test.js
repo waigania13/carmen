@@ -158,7 +158,7 @@ tape('build queued features', (t) => {
 tape('Check correctly aligned one', (t) => {
     c.geocode('100 main st atlanta georgia 80139', { limit_verify: 10 }, (err, res) => {
         t.ifError(err);
-        t.equals(res.features.length, 2);
+        t.equals(res.features.length, 4);
         t.equals(res.features[0].relevance, 1);
         t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
         t.end();
@@ -168,7 +168,7 @@ tape('Check correctly aligned one', (t) => {
 tape('Check misaligned one', (t) => {
     c.geocode('100 main st athens georgia 80138', { limit_verify: 10 }, (err, res) => {
         t.ifError(err);
-        t.equals(res.features.length, 2);
+        t.equals(res.features.length, 4);
         t.assert(res.features[0].relevance < 1, 'relevance < 1');
         t.assert(res.features[0].relevance > res.features[1].relevance, 'near-aligned relevance beats city relevance');
         t.equals(res.features[0].place_name, '100 Main St, atlanta, 80139, georgia', 'got back full address first');
@@ -177,7 +177,7 @@ tape('Check misaligned one', (t) => {
 });
 
 tape('Check version with synonym', (t) => {
-    c.geocode('100 main st xeorxia 80139', { limit_verify: 10 }, (err, res) => {
+    c.geocode('100 main st xeorxia 80139', { limit_verify: 1 }, (err, res) => {
         // "xeorxia" is both a synonym for our region feature (which correctly aligns)
         // and our place feature "athens" (which does not). We should still get the
         // full relevance here, because the word "xeorxia" should be claimed by the

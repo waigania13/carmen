@@ -904,10 +904,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@mapbox/carmen-core@0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@mapbox/carmen-core/-/carmen-core-0.1.1.tgz#dea441af76d360aecd2a140ce34f6472f8f6bd98"
-  integrity sha512-yQreA+klXKai1XZsT84oFgGqj66n/O+5lp79R8rWAdRzycgIWqfR4x73vCByj92xvl7g415Dr2S++6pcGAO+vg==
+"@mapbox/carmen-core@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/carmen-core/-/carmen-core-0.2.0.tgz#0a1f767034ca6d0ff12ee063948896fd998b2bab"
+  integrity sha512-xBsKrrwAIRBfFa6Q/eaDXIZoGtZ7r64bqTZ6C5d2SUiBB1wSRxESL43C768amhef36wjXu/nTgnsGTrp2vbgYA==
   dependencies:
     neon-cli "^0.2.0"
     node-pre-gyp "~0.13.0"
